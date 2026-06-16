@@ -11,9 +11,8 @@ def home():
     mesaj = request.args.get("mesaj", "")
 
     cevap = "Bir şey yaz 😊"
-
+    
     if mesaj:
-        
 try:
     response = client.chat.completions.create(
         model="gpt-4o-mini",
