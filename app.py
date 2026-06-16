@@ -1,13 +1,10 @@
-
-from flask import Flask, request
 from openai import OpenAI
+import os
 
-app = Flask(__name__)
+client = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
-client = OpenAI(api_key="sk-...OoUA")
-@app.route("/")
-def home():
-    mesaj = request.args.get("mesaj", "")
 
     cevap = "Bir şey yaz 😊"
 
