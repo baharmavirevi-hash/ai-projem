@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT Clone</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="chat">
+
+    <div id="box"></div>
+
+    <div class="input">
+        <input id="msg" placeholder="Mesaj yaz..." />
+        <button onclick="send()">Gönder</button>
+    </div>
+
+</div>
+
+<script>
+async function send() {
+    let input = document.getElementById("msg");
+    let text = input.value;
+    input.value = "";
+
+    document.getElementById("box").innerHTML +=
+        "<div class='user'>Sen: " + text + "</div>";
+
+    let res = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: text})
+    });
+
+    let data = await res.json();
+
+    document.getElementById("box").innerHTML +=
+        "<div class='bot'>AI: " + data.reply + "</div>";
+}
+</script>
+
+</body>
+</html>
