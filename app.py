@@ -13,16 +13,19 @@ def home():
     cevap = "Bir şey yaz 😊"
 
     if mesaj:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Sen yardımcı bir asistansın."},
-                {"role": "user", "content": mesaj}
-            ]
-        )
+        
+try:
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Sen yardımcı bir asistansın."},
+            {"role": "user", "content": mesaj}
+        ]
+    )
+    cevap = response.choices[0].message.content
 
-        cevap = response.choices[0].message.content
-
+except Exception as e:
+    cevap = f"Hata oluştu: {e}"
     return f"""
     <html>
     <body style="font-family:Arial; background:#343541; color:white; text-align:center;">
