@@ -1,12 +1,31 @@
-print("Merhaba! Ben mini AI botum 🤖")
+from flask import Flask, request
 
-while True:
-    soru = input("Sen: ")
+app = Flask(__name__)
 
-    if soru.lower() == "çık":
-        print("AI: Görüşürüz 👋")
-        break
-    elif soru.lower() == "merhaba":
-        print("AI: Merhaba! Nasılsın?")
+@app.route("/")
+def home():
+    mesaj = request.args.get("mesaj", "")
+
+    if mesaj.lower() == "merhaba":
+        cevap = "Merhaba! 😄"
+    elif mesaj.lower() == "nasılsın":
+        cevap = "İyiyim 🤖"
+    elif mesaj == "":
+        cevap = "Bir şey yaz 😊"
     else:
-        print("AI: Bunu henüz bilmiyorum 😅")
+        cevap = "Bunu henüz bilmiyorum 😅"
+
+    return f"""
+    <h1>🤖 BaharGPT</h1>
+
+    <form>
+        <input name="mesaj" placeholder="Bir şey yaz">
+        <button>Gönder</button>
+    </form>
+
+    <p><b>Sen:</b> {mesaj}</p>
+    <p><b>AI:</b> {cevap}</p>
+    """
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
