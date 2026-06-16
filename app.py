@@ -13,7 +13,7 @@ client = OpenAI(
 
 @app.route("/")
 def home():
-    return "BAHAR TEST 123"
+    return "BAHAR TEST"
 
     if mesaj:
         response = client.chat.completions.create(
