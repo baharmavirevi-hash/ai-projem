@@ -1,10 +1,14 @@
+
+from flask import Flask, request
 from openai import OpenAI
-import os
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+app = Flask(__name__)
 
+client = OpenAI()
+
+@app.route("/")
+def home():
+    mesaj = request.args.get("mesaj", "")
 
     cevap = "Bir şey yaz 😊"
 
@@ -16,12 +20,13 @@ client = OpenAI(
                 {"role": "user", "content": mesaj}
             ]
         )
+
         cevap = response.choices[0].message.content
 
     return f"""
     <html>
     <body style="font-family:Arial; background:#343541; color:white; text-align:center;">
-        <h1>🤖 BaharGPT (Gerçek AI)</h1>
+        <h1>🤖 BaharGPT</h1>
 
         <form>
             <input name="mesaj" style="padding:10px; width:60%;">
