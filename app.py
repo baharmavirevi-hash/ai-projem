@@ -1,83 +1,40 @@
 
 from flask import Flask, request
+from openai import OpenAI
 
 app = Flask(__name__)
+
+client = OpenAI(api_key="131110")
 
 @app.route("/")
 def home():
     mesaj = request.args.get("mesaj", "")
 
-    if mesaj.lower() == "merhaba":
-        cevap = "Merhaba! 😄"
-    elif mesaj.lower() == "nasılsın":
-        cevap = "İyiyim 🤖 Sen nasılsın?"
-    elif mesaj == "":
-        cevap = "Bir şey yaz 👇"
-    else:
-        cevap = "Bunu henüz bilmiyorum 😅"
+    cevap = "Bir şey yaz 😊"
+
+    if mesaj:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Sen yardımcı bir asistansın."},
+                {"role": "user", "content": mesaj}
+            ]
+        )
+        cevap = response.choices[0].message.content
 
     return f"""
     <html>
-    <head>
-        <title>BaharGPT</title>
-        <style>
-            body {{
-                font-family: Arial;
-                background: #343541;
-                color: white;
-                margin: 0;
-                display: flex;
-                justify-content: center;
-            }}
+    <body style="font-family:Arial; background:#343541; color:white; text-align:center;">
+        <h1>🤖 BaharGPT (Gerçek AI)</h1>
 
-            .container {{
-                width: 600px;
-                margin-top: 50px;
-            }}
+        <form>
+            <input name="mesaj" style="padding:10px; width:60%;">
+            <button>Gönder</button>
+        </form>
 
-            h1 {{
-                text-align: center;
-                color: #10a37f;
-            }}
-
-            .chat {{
-                background: #444654;
-                padding: 15px;
-                border-radius: 10px;
-                margin-top: 10px;
-            }}
-
-            input {{
-                width: 80%;
-                padding: 10px;
-                border-radius: 8px;
-                border: none;
-            }}
-
-            button {{
-                padding: 10px;
-                border: none;
-                background: #10a37f;
-                color: white;
-                border-radius: 8px;
-                cursor: pointer;
-            }}
-        </style>
-    </head>
-
-    <body>
-        <div class="container">
-            <h1>🤖 BaharGPT</h1>
-
-            <form>
-                <input name="mesaj" placeholder="Mesaj yaz...">
-                <button>Gönder</button>
-            </form>
-
-            <div class="chat">
-                <p><b>Sen:</b> {mesaj}</p>
-                <p><b>BaharGPT:</b> {cevap}</p>
-            </div>
+        <div style="margin-top:20px;">
+            <p><b>Sen:</b> {mesaj}</p>
+            <p><b>AI:</b> {cevap}</p>
         </div>
     </body>
     </html>
