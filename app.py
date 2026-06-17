@@ -9,10 +9,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @app.route("/")
 def home():
-mesaj = request.args.get("mesaj", "")
-cevap = "Bir şey yaz 😊"
-
-```
+    mesaj = request.args.get("mesaj", "")
+    cevap = "Bir şey yaz 😊"
 if mesaj:
     try:
         response = client.chat.completions.create(
@@ -25,8 +23,10 @@ if mesaj:
 
         cevap = response.choices[0].message.content
 
-    except Exception as e:
-        cevap = f"Hata oluştu: {e}"
+   except Exception as e:
+    import traceback
+    cevap = f"{type(e).__name__}: {str(e)}"
+    print(traceback.format_exc())
 
 return f"""
 <html>
