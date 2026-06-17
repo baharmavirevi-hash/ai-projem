@@ -22,7 +22,7 @@ if mesaj:
 
         cevap = response.choices[0].message.content
 
-   except Exception as e:
+   except Exception as 
     import traceback
     cevap = f"{type(e).__name__}: {str(e)}"
     print(traceback.format_exc())
