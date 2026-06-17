@@ -1,13 +1,7 @@
-
 import os
-from flask import Flask, request
-from openai import OpenAI
 
-app = Flask(__name__)
-
-# 🔑 API KEY ortam değişkeninden alınır
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
+print("API KEY VAR MI:", os.getenv("OPENAI_API_KEY") is not None)
+print("API KEY İLK 10 KARAKTER:", str(os.getenv("OPENAI_API_KEY"))[:10])
 
 @app.route("/")
 def home():
