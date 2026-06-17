@@ -22,11 +22,20 @@ if mesaj:
 
         cevap = response.choices[0].message.content
 
-   except Exception as 
-    import traceback
-    cevap = f"{type(e).__name__}: {str(e)}"
-    print(traceback.format_exc())
+  if mesaj:
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Sen yardımcı bir asistansın."},
+                {"role": "user", "content": mesaj}
+            ]
+        )
 
+        cevap = response.choices[0].message.content
+
+    except Exception as e:
+        cevap = f"Hata oluştu: {e}"
 return f"""
 <html>
 <body style="font-family:Arial; background:#343541; color:white; text-align:center;">
