@@ -23,8 +23,9 @@ def home():
             ]
         )
 
-        cevap = response.choices[0].message.content
-        return jsonify({"cevap": cevap})
+        return jsonify({
+            "cevap": response.choices[0].message.content
+        })
 
     except Exception as e:
         return jsonify({"hata": str(e)})
