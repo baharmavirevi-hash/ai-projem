@@ -1,43 +1,20 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ChatGPT Clone</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>BaharGPT</title>
 </head>
 <body>
+    <h2>💚 BaharGPT</h2>
 
-<div class="chat">
+    <form method="POST">
+        <input name="mesaj" placeholder="Bir şey yaz..." style="width:250px;" />
+        <button type="submit">Gönder</button>
+    </form>
 
-    <div id="box"></div>
+    <hr>
 
-    <div class="input">
-        <input id="msg" placeholder="Mesaj yaz..." />
-        <button onclick="send()">Gönder</button>
-    </div>
-
-</div>
-
-<script>
-async function send() {
-    let input = document.getElementById("msg");
-    let text = input.value;
-    input.value = "";
-
-    document.getElementById("box").innerHTML +=
-        "<div class='user'>Sen: " + text + "</div>";
-
-    let res = await fetch("/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({message: text})
-    });
-
-    let data = await res.json();
-
-    document.getElementById("box").innerHTML +=
-        "<div class='bot'>AI: " + data.reply + "</div>";
-}
-</script>
-
+    <p>{{ cevap }}</p>
 </body>
-</html>
+</html>  
