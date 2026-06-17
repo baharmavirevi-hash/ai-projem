@@ -2,7 +2,7 @@ from flask import Flask, request
 from openai import OpenAI
 import os
 
-app = Flask(**name**)
+app = Flask(__name__)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
