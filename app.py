@@ -1,5 +1,5 @@
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from openai import OpenAI
 import os
 
@@ -7,24 +7,28 @@ app = Flask(__name__)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    mesaj = request.args.get("mesaj")
+    cevap = ""
 
-    if not mesaj:
-        return "Bir şey yaz 😊"
+    if request.method == "POST":
+        mesaj = request.form.get("mesaj")
 
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": mesaj}
-            ]
-        )
-        return response.choices[0].message.content
+        if mesaj:
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "user", "content": mesaj}
+                    ]
+                )
+                cevap = response.choices[0].message.content
 
-    except Exception as e:
-        return f"Hata: {e}"
+            except Exception as e:
+                cevap = f"Hata: {e}"
+
+    return render_template("index.html", cevap=cevap)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
