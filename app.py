@@ -1,41 +1,33 @@
 import os
 from flask import Flask, request, render_template
-from openai import OpenAI
+from google import genai
 
 app = Flask(__name__)
 
-key = os.environ.get("XAI_API_KEY")
-
-client = OpenAI(
-    api_key=key,
-    base_url="https://api.x.ai/v1"
-)
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.route("/")
 def home():
     mesaj = request.args.get("mesaj", "")
-
     cevap = ""
 
-    if not key:
-        cevap = "❌ XAI_API_KEY bulunamadı!"
-    elif mesaj:
+    if mesaj:
         try:
-            response = client.chat.completions.create(
-                model="grok-4",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Sen MaviGPT'sin. Türkçe konuşan, samimi ve derslerde yardımcı olan bir yapay zekasın."
-                    },
-                    {
-                        "role": "user",
-                        "content": mesaj
-                    }
-                ]
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=f"""
+Sen MaviGPT'sin.
+Türkçe konuş.
+Samimi ol.
+Öğrencilere derslerinde yardımcı ol.
+Cevaplarını anlaşılır yaz.
+
+Kullanıcının mesajı:
+{mesaj}
+"""
             )
 
-            cevap = response.choices[0].message.content
+            cevap = response.text
 
         except Exception as e:
             cevap = f"Hata: {e}"
