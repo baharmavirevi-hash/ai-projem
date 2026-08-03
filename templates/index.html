@@ -6,50 +6,103 @@
 <title>Cebimdeki Doktor</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
+
 <body>
 
-<div class="container">
+<div class="app">
 
-<h1>🩺 Cebimdeki Doktor</h1>
+    <div class="sidebar">
 
-<p class="subtitle">
-Belirtinizi yazın, size genel sağlık bilgisi sunayım.
-</p>
+        <div class="logo">
+            🌊 MaviGPT
+        </div>
 
-<form action="/" method="get">
+        <button class="new-chat">
+            ＋ Yeni Sohbet
+        </button>
 
-<textarea
-name="mesaj"
-placeholder="Örneğin: 2 gündür boğazım ağrıyor ve ateşim var..."
-></textarea>
+        <div class="history">
 
-<button type="submit">
-Gönder
-</button>
+            <div class="chat-item">
+                🩺 Boğaz Ağrısı
+            </div>
 
-</form>
+            <div class="chat-item">
+                🤒 Ateş
+            </div>
 
-{% if cevap %}
+            <div class="chat-item">
+                🤕 Baş Ağrısı
+            </div>
 
-<div class="cevap">
+        </div>
 
-<h2>Yanıt</h2>
+        <div class="bottom">
+            ⚙️ Ayarlar
+        </div>
 
-<p>{{ cevap }}</p>
+    </div>
 
-</div>
 
-{% endif %}
+    <div class="chat">
 
-<div class="uyari">
+        <div class="header">
 
-⚠️ Bu uygulama yalnızca genel sağlık bilgisi sunar.
-Kesin tanı ve tedavi yerine geçmez.
-Acil durumlarda en yakın sağlık kuruluşuna başvurunuz.
+            <h2>🩺 Cebimdeki Doktor</h2>
 
-</div>
+            <p>Sağlık Asistanın</p>
+
+        </div>
+
+        <div class="messages">
+
+            <div class="ai">
+
+                👋 Merhaba Bahar!
+
+                <br><br>
+
+                Belirtini yaz, sana yardımcı olmaya çalışayım.
+
+            </div>
+
+            {% if cevap %}
+
+            <div class="user">
+
+                {{ request.args.get("mesaj") }}
+
+            </div>
+
+            <div class="ai">
+
+                {{ cevap }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <form action="/" method="get" class="input-bar">
+
+            <input
+            type="text"
+            name="mesaj"
+            placeholder="Belirtini yaz..."
+            autocomplete="off"
+            >
+
+            <button>
+
+                ➤
+
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
 
