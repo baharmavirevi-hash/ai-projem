@@ -4,10 +4,12 @@ from openai import OpenAI
 
 app = Flask(__name__)
 
-client = OpenAI(
-    api_key=os.environ.get("XAI_API_KEY"),
-    base_url="https://api.x.ai/v1"
-)
+key = os.environ.get("XAI_API_KEY")
+
+if not key:
+    cevap = "XAI_API_KEY bulunamadı!"
+else:
+    cevap = f"API anahtarı bulundu. İlk 8 karakter: {key[:8]}..."
 
 @app.route("/")
 def home():
