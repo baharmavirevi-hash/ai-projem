@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaviGPT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
+<body>
+
+<div class="app">
+
+<div class="sidebar">
+
+<div class="logo">
+🌊 MaviGPT
+</div>
+
+<button class="new-chat">＋ Yeni Sohbet</button>
+
+<div class="history">
+
+<div class="chat-item">🤖 MaviGPT</div>
+
+<div class="chat-item"
+onclick="window.location='/doctor'">
+🩺 Cebimdeki Doktor
+</div>
+
+</div>
+
+<div class="bottom">
+⚙️ Ayarlar
+</div>
+
+</div>
+
+<div class="chat">
+
+<div class="header">
+<h2>🌊 MaviGPT</h2>
+<p>Merhaba Bahar 👋</p>
+</div>
+
+<div class="messages">
+
+<div class="ai">
+Merhaba! 💙
+
+Ben MaviGPT.
+
+Derslerinde, kod yazarken veya günlük sorularında sana yardımcı olabilirim.
+</div>
+
+{% if cevap %}
+
+<div class="user">
+{{ request.args.get("mesaj") }}
+</div>
+
+<div class="ai">
+{{ cevap }}
+</div>
+
+{% endif %}
+
+</div>
+
+<form class="input-bar" method="get">
+
+<input
+type="text"
+name="mesaj"
+placeholder="MaviGPT'ye yaz..."
+autocomplete="off">
+
+<button>➤</button>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+</html>
