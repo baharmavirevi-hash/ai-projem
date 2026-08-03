@@ -1,28 +1,40 @@
+import os
 from flask import Flask, request, render_template
+from openai import OpenAI
 
 app = Flask(__name__)
+
+client = OpenAI(
+    api_key=os.environ.get("XAI_API_KEY"),
+    base_url="https://api.x.ai/v1"
+)
 
 @app.route("/")
 def home():
     mesaj = request.args.get("mesaj", "")
 
-    if mesaj == "":
-        cevap = "Bir şey yaz 😊"
+    cevap = ""
 
-    elif "merhaba" in mesaj.lower():
-        cevap = "Merhaba Bahar! 😊"
+    if mesaj:
+        try:
+            response = client.chat.completions.create(
+                model="grok-4",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Sen MaviGPT'sin. Türkçe konuşan, samimi, derslerde yardımcı olan bir yapay zekasın."
+                    },
+                    {
+                        "role": "user",
+                        "content": mesaj
+                    }
+                ]
+            )
 
-    elif "nasılsın" in mesaj.lower():
-        cevap = "Ben iyiyim 🌱 Sen nasılsın?"
+            cevap = response.choices[0].message.content
 
-    elif "adın ne" in mesaj.lower():
-        cevap = "Ben BaharGPT'yim 😎"
-
-    elif "kaç yaşındasın" in mesaj.lower():
-        cevap = "Benim yaşım yok ama hep genç kalacağım 😄"
-
-    else:
-        cevap = f"'{mesaj}' yazdın. Henüz öğreniyorum 🌱"
+        except Exception as e:
+            cevap = f"Hata: {e}"
 
     return render_template("index.html", cevap=cevap)
 
