@@ -6,10 +6,10 @@ app = Flask(__name__)
 
 key = os.environ.get("XAI_API_KEY")
 
-if not key:
-    cevap = "XAI_API_KEY bulunamadı!"
-else:
-    cevap = f"API anahtarı bulundu. İlk 8 karakter: {key[:8]}..."
+client = OpenAI(
+    api_key=key,
+    base_url="https://api.x.ai/v1"
+)
 
 @app.route("/")
 def home():
@@ -17,14 +17,16 @@ def home():
 
     cevap = ""
 
-    if mesaj:
+    if not key:
+        cevap = "❌ XAI_API_KEY bulunamadı!"
+    elif mesaj:
         try:
             response = client.chat.completions.create(
                 model="grok-4",
                 messages=[
                     {
                         "role": "system",
-                        "content": "Sen MaviGPT'sin. Türkçe konuşan, samimi, derslerde yardımcı olan bir yapay zekasın."
+                        "content": "Sen MaviGPT'sin. Türkçe konuşan, samimi ve derslerde yardımcı olan bir yapay zekasın."
                     },
                     {
                         "role": "user",
