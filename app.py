@@ -87,8 +87,8 @@ Kullanıcı:
 {mesaj}
 """
             )
-
 cevap = response.text
+
 conn = sqlite3.connect("chat.db")
 c = conn.cursor()
 
