@@ -1,4 +1,21 @@
 import sqlite3
+def init_db():
+    conn = sqlite3.connect("chat.db")
+    c = conn.cursor()
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS chats (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            message TEXT,
+            answer TEXT
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+init_db()
 import os
 from flask import Flask, request, render_template
 from google import genai
