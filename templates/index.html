@@ -1,18 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Chatbot</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cebimdeki Doktor</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 <body>
 
-<h2>Yeşil Bot 💚</h2>
+<div class="container">
 
-<form>
-    <input name="mesaj" placeholder="Bir şey yaz...">
-    <button type="submit">Gönder</button>
+<h1>🩺 Cebimdeki Doktor</h1>
+
+<p class="subtitle">
+Belirtinizi yazın, size genel sağlık bilgisi sunayım.
+</p>
+
+<form action="/" method="get">
+
+<textarea
+name="mesaj"
+placeholder="Örneğin: 2 gündür boğazım ağrıyor ve ateşim var..."
+></textarea>
+
+<button type="submit">
+Gönder
+</button>
+
 </form>
 
+{% if cevap %}
+
+<div class="cevap">
+
+<h2>Yanıt</h2>
+
 <p>{{ cevap }}</p>
+
+</div>
+
+{% endif %}
+
+<div class="uyari">
+
+⚠️ Bu uygulama yalnızca genel sağlık bilgisi sunar.
+Kesin tanı ve tedavi yerine geçmez.
+Acil durumlarda en yakın sağlık kuruluşuna başvurunuz.
+
+</div>
+
+</div>
 
 </body>
 </html>
