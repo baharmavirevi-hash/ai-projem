@@ -87,18 +87,20 @@ Kullanıcı:
 {mesaj}
 """
             )
-cevap = response.text
+            )
 
-conn = sqlite3.connect("chat.db")
-c = conn.cursor()
+            cevap = response.text
 
-c.execute(
-    "INSERT INTO chats(title, message, answer) VALUES (?, ?, ?)",
-    (mesaj[:30], mesaj, cevap)
-)
+            conn = sqlite3.connect("chat.db")
+            c = conn.cursor()
 
-conn.commit()
-conn.close()
+            c.execute(
+                "INSERT INTO chats(title, message, answer) VALUES (?, ?, ?)",
+                (mesaj[:30], mesaj, cevap)
+            )
+
+            conn.commit()
+            conn.close()
 
         except Exception as e:
             cevap = str(e)
