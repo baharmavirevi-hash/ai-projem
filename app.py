@@ -1,3 +1,4 @@
+from database import init_db
 from flask import Flask
 from routes import register_routes
 import os
@@ -12,6 +13,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Route'ları yükle
+init_db()
 register_routes(app)
 
 if __name__ == "__main__":
