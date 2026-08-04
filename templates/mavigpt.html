@@ -4,92 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaviGPT</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
 <div class="app">
 
-<div class="sidebar">
+    <!-- SOL MENÜ -->
+    <div class="sidebar">
 
-<div class="logo">
-🌊 MaviGPT
-</div>
+        <div class="logo">
+            🌊 MaviGPT
+        </div>
 
-<button class="new-chat">＋ Yeni Sohbet</button>
-<div class="chat-item" onclick="location.href='/'">
-🌊 MaviGPT
-</div>
+        <button class="new-chat"
+                onclick="window.location='/'">
+            ＋ Yeni Sohbet
+        </button>
 
-<div class="chat-item" onclick="location.href='/doctor'">
-🩺 Cebimdeki Doktor
-</div>
+        <div class="history">
 
-<hr style="margin:10px;border-color:#333;">
-<div class="history">
+            {% for chat in sohbetler %}
 
-<div class="chat-item">🤖 MaviGPT</div>
+            <div class="chat-item">
+                💬 {{ chat[1] }}
+            </div>
 
-<div class="chat-item"
-onclick="window.location='/doctor'">
-🩺 Cebimdeki Doktor
-</div>
+            {% endfor %}
 
-</div>
+        </div>
 
-<div class="bottom">
-⚙️ Ayarlar
-</div>
+        <div class="bottom">
 
-</div>
+            <div class="chat-item"
+                 onclick="window.location='/doctor'">
 
-<div class="chat">
+                🩺 Cebimdeki Doktor
 
-<div class="header">
-<h2>🌊 MaviGPT</h2>
-<p>Merhaba Bahar 👋</p>
-</div>
+            </div>
 
-<div class="messages">
+        </div>
 
-<div class="ai">
-Merhaba! 💙
+    </div>
 
-Ben MaviGPT.
+    <!-- SOHBET -->
 
-Derslerinde, kod yazarken veya günlük sorularında sana yardımcı olabilirim.
-</div>
+    <div class="chat">
 
-{% if cevap %}
+        <div class="header">
 
-<div class="user">
-{{ request.args.get("mesaj") }}
-</div>
+            <h2>🌊 MaviGPT</h2>
 
-<div class="ai">
-{{ cevap }}
-</div>
+            <p>Merhaba Bahar 👋</p>
 
-{% endif %}
+        </div>
 
-</div>
+        <div class="messages">
 
-<form class="input-bar" method="get">
+            <div class="ai">
 
-<input
-type="text"
-name="mesaj"
-placeholder="MaviGPT'ye yaz..."
-autocomplete="off">
+                Merhaba! 💙
 
-<button>➤</button>
+                <br><br>
 
-</form>
+                Sana nasıl yardımcı olabilirim?
 
-</div>
+            </div>
+
+            {% if cevap %}
+
+            <div class="user">
+
+                {{ mesaj }}
+
+            </div>
+
+            <div class="ai">
+
+                {{ cevap }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <form class="input-bar"
+              method="get">
+
+            <input
+                type="text"
+                name="mesaj"
+                placeholder="MaviGPT'ye mesaj yaz..."
+                autocomplete="off">
+
+            <button>
+                ➤
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
 
 </body>
-</html>
+    </html>
