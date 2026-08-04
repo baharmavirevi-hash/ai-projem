@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaviGPT</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -20,20 +19,29 @@
             🌊 MaviGPT
         </div>
 
-        <button class="new-chat"
-                onclick="window.location='/'">
+        <button class="new-chat" onclick="window.location='/'">
             ＋ Yeni Sohbet
         </button>
 
         <div class="history">
 
-            {% for chat in sohbetler %}
+            {% if sohbetler %}
 
-            <div class="chat-item">
-                💬 {{ chat[1] }}
-            </div>
+                {% for chat in sohbetler %}
 
-            {% endfor %}
+                <div class="chat-item">
+                    💬 {{ chat[1] }}
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="chat-item">
+                    Henüz sohbet yok
+                </div>
+
+            {% endif %}
 
         </div>
 
@@ -50,7 +58,7 @@
 
     </div>
 
-    <!-- SOHBET -->
+    <!-- SAĞ TARAF -->
 
     <div class="chat">
 
@@ -66,21 +74,27 @@
 
             <div class="ai">
 
-                Merhaba! 💙
+                👋 Merhaba!
 
                 <br><br>
 
-                Sana nasıl yardımcı olabilirim?
+                Ben MaviGPT.
+
+                Bana istediğin her şeyi sorabilirsin.
 
             </div>
 
-            {% if cevap %}
+            {% if mesaj %}
 
             <div class="user">
 
                 {{ mesaj }}
 
             </div>
+
+            {% endif %}
+
+            {% if cevap %}
 
             <div class="ai">
 
@@ -92,24 +106,16 @@
 
         </div>
 
-        <form class="input-bar"
-              method="get">
+        <!-- MESAJ FORMU -->
 
-            <input
-                type="text"
-                name="mesaj"
-                placeholder="MaviGPT'ye mesaj yaz..."
-                autocomplete="off">
+        <form
+            class="input-bar"
+            action="/"
+            method="post"
+            enctype="multipart/form-data">
 
-            <button>
-                ➤
-            </button>
+            <label for="photo" class="upload-btn">
+                📎
+            </label>
 
-        </form>
-
-    </div>
-
-</div>
-
-</body>
-    </html>
+           
