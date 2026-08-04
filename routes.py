@@ -1,14 +1,12 @@
 from flask import render_template, request
-
 from ai import ask_mavigpt
 from doctor import ask_doctor
-
 from database import save_chat, get_chats
 
 
 def register_routes(app):
 
-    @app.route("/")
+    @app.route("/", methods=["GET"])
     def home():
 
         mesaj = request.args.get("mesaj", "")
@@ -23,11 +21,12 @@ def register_routes(app):
         return render_template(
             "mavigpt.html",
             cevap=cevap,
-            sohbetler=sohbetler
+            sohbetler=sohbetler,
+            mesaj=mesaj
         )
 
 
-    @app.route("/doctor")
+    @app.route("/doctor", methods=["GET"])
     def doctor():
 
         mesaj = request.args.get("mesaj", "")
@@ -42,5 +41,6 @@ def register_routes(app):
         return render_template(
             "doctor.html",
             cevap=cevap,
-            sohbetler=sohbetler
+            sohbetler=sohbetler,
+            mesaj=mesaj
         )
