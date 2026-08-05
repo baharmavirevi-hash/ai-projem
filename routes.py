@@ -1,1 +1,129 @@
+from flask import render_template, request
+import os
 
+from werkzeug.utils import secure_filename
+
+from PIL import Image
+
+from google import genai
+
+from database import save_chat, get_chats
+
+
+client = genai.Client(
+    api_key=os.environ.get("GEMINI_API_KEY")
+)
+
+
+def ask_mavigpt(message, image_path=None):
+
+    try:
+
+        if image_path:
+
+            image = Image.open(image_path)
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[
+                    image,
+                    f"""
+Sen MaviGPT'sin.
+
+Kurallar:
+- Her zaman Türkçe konuş.
+- Samimi ve yardımsever ol.
+- Fotoğrafı ve kullanıcının mesajını birlikte değerlendir.
+
+Kullanıcı mesajı:
+{message}
+"""
+                ]
+            )
+
+        else:
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=f"""
+Sen MaviGPT'sin.
+
+Kurallar:
+- Her zaman Türkçe konuş.
+- Samimi ve yardımsever ol.
+- Kod, ders ve sohbet konularında yardımcı ol.
+
+Kullanıcının mesajı:
+
+{message}
+"""
+            )
+
+
+        return response.text
+
+
+    except Exception as e:
+
+        return "Hata oluştu: " + str(e)
+      def register_routes(app):
+
+    @app.route("/", methods=["GET", "POST"])
+    def home():
+
+        mesaj = None
+        cevap = None
+        sohbetler = get_chats("normal")
+
+        if request.method == "POST":
+
+            mesaj = request.form.get("mesaj")
+
+            foto = None
+
+
+            # FOTOĞRAF YÜKLEME
+
+            if "photo" in request.files:
+
+                file = request.files["photo"]
+
+                if file.filename != "":
+
+                    filename = secure_filename(file.filename)
+
+                    upload_path = os.path.join(
+                        app.config["UPLOAD_FOLDER"],
+                        filename
+                    )
+
+                    file.save(upload_path)
+
+                    foto = upload_path
+
+
+
+            # MaviGPT cevabı
+
+            if mesaj or foto:
+
+                cevap = ask_mavigpt(
+                    mesaj or "Bu fotoğrafı incele.",
+                    foto
+                )
+
+
+                save_chat(
+                    "normal",
+                    mesaj or "Fotoğraf",
+                    cevap
+                )
+
+
+
+        return render_template(
+            "mavigpt.html",
+            mesaj=mesaj,
+            cevap=cevap,
+            sohbetler=sohbetler
+      )
