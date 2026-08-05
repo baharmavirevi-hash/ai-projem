@@ -1,14 +1,9 @@
 from flask import render_template, request
 import os
-
 from werkzeug.utils import secure_filename
-
 from PIL import Image
-
 from google import genai
-
 from database import save_chat, get_chats
-
 
 client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
@@ -16,11 +11,8 @@ client = genai.Client(
 
 
 def ask_mavigpt(message, image_path=None):
-
     try:
-
         if image_path:
-
             image = Image.open(image_path)
 
             response = client.models.generate_content(
@@ -35,14 +27,12 @@ Kurallar:
 - Samimi ve yardımsever ol.
 - Fotoğrafı ve kullanıcının mesajını birlikte değerlendir.
 
-Kullanıcı mesajı:
+Kullanıcının mesajı:
 {message}
 """
                 ]
             )
-
         else:
-
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=f"""
@@ -54,16 +44,13 @@ Kurallar:
 - Kod, ders ve sohbet konularında yardımcı ol.
 
 Kullanıcının mesajı:
-
 {message}
 """
             )
 
-
         return response.text
 
-
-        except Exception as e:
+    except Exception as e:
         return "Hata oluştu: " + str(e)
 
 
@@ -74,23 +61,18 @@ def register_routes(app):
 
         mesaj = None
         cevap = None
+        foto = None
+
         sohbetler = get_chats("normal")
 
         if request.method == "POST":
 
             mesaj = request.form.get("mesaj")
 
-            foto = None
-
-
-            # FOTOĞRAF YÜKLEME
-
             if "photo" in request.files:
-
                 file = request.files["photo"]
 
                 if file.filename != "":
-
                     filename = secure_filename(file.filename)
 
                     upload_path = os.path.join(
@@ -99,12 +81,7 @@ def register_routes(app):
                     )
 
                     file.save(upload_path)
-
                     foto = upload_path
-
-
-
-            # MaviGPT cevabı
 
             if mesaj or foto:
 
@@ -113,18 +90,17 @@ def register_routes(app):
                     foto
                 )
 
-
                 save_chat(
                     "normal",
                     mesaj or "Fotoğraf",
                     cevap
                 )
 
-
+                sohbetler = get_chats("normal")
 
         return render_template(
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
             sohbetler=sohbetler
-      )
+        )
