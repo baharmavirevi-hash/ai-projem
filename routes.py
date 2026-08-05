@@ -41,20 +41,43 @@ def register_routes(app):
 
 
             # Şimdilik test cevabı
-            if mesaj:
-    
-    cevap = ask_mavigpt(mesaj)
+            def ask_mavigpt(message, image_path=None):
+    try:
 
+        if image_path:
+            image = Image.open(image_path)
 
-            if foto:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[
+                    image,
+                    f"""
+Sen MaviGPT'sin.
 
-                cevap = (cevap or "") + "\n📸 Fotoğraf alındı: " + foto
+Her zaman Türkçe konuş.
+Samimi ol.
+Kullanıcının mesajını ve fotoğrafını birlikte değerlendir.
 
+Kullanıcının mesajı:
+{message}
+"""
+                ]
+            )
+        else:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=f"""
+Sen MaviGPT'sin.
 
+Her zaman Türkçe konuş.
 
-        return render_template(
-            "mavigpt.html",
-            mesaj=mesaj,
-            cevap=cevap,
-            sohbetler=[]
-        )
+Kullanıcının mesajı:
+{message}
+"""
+            )
+
+        return response.text
+
+    except Exception as e:
+        return f"Hata oluştu: {e}"
+        
