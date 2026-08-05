@@ -1,6 +1,10 @@
-from flask import render_template, request
+from PIL import Image
+from google import genai
 import os
-from werkzeug.utils import secure_filename
+
+client = genai.Client(
+    api_key=os.environ.get("GEMINI_API_KEY")
+)
 
 
 def register_routes(app):
