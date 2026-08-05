@@ -45,6 +45,15 @@ def register_routes(app):
     try:
 
         if image_path:
+            if mesaj:
+
+    if foto:
+        cevap = ask_mavigpt(
+            mesaj,
+            os.path.join(app.config["UPLOAD_FOLDER"], foto)
+        )
+    else:
+        cevap = ask_mavigpt(mesaj)
             image = Image.open(image_path)
 
             response = client.models.generate_content(
