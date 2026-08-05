@@ -38,8 +38,8 @@ def register_routes(app):
 
             # Şimdilik test cevabı
             if mesaj:
-
-                cevap = "🌊 MaviGPT: " + mesaj + " mesajını aldım."
+    
+    cevap = ask_mavigpt(mesaj)
 
 
             if foto:
