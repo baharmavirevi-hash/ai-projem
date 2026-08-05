@@ -63,10 +63,11 @@ Kullanıcının mesajı:
         return response.text
 
 
-    except Exception as e:
-
+        except Exception as e:
         return "Hata oluştu: " + str(e)
-      def register_routes(app):
+
+
+def register_routes(app):
 
     @app.route("/", methods=["GET", "POST"])
     def home():
