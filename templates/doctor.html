@@ -71,11 +71,38 @@
             {% endif %}
 
         </section>
-
         <form
-            class="input-bar"
-            action="/doctor"
-            method="POST">
+    class="input-bar"
+    action="/doctor"
+    method="POST"
+    enctype="multipart/form-data">
+
+
+    <label for="doctor_photo" class="upload-btn">
+        📎
+    </label>
+
+
+    <input
+        type="file"
+        id="doctor_photo"
+        name="photo"
+        accept="image/*"
+        hidden>
+
+
+    <input
+        type="text"
+        name="mesaj"
+        placeholder="Şikayetini yaz...">
+
+
+    <button type="submit">
+        ➤
+    </button>
+
+
+        </form>
 
             <input
                 type="text"
