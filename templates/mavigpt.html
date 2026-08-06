@@ -85,7 +85,7 @@
 
 <div class="user">
 
-    <img src="{{ foto }}"
+    <img src="{{ url_for('static', filename=foto) }}"
          style="max-width:250px; border-radius:12px; margin-bottom:10px;">
 
     {% if mesaj %}
