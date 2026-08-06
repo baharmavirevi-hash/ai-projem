@@ -169,12 +169,42 @@ def register_routes(app):
 
 
 
+@app.route("/doctor", methods=["GET", "POST"])
+def doctor():
+
+    mesaj = None
+    cevap = None
 
 
-    @app.route("/doctor")
-    def doctor():
+    if request.method == "POST":
+
+        mesaj = request.form.get("mesaj")
 
 
-        return render_template(
-            "doctor.html"
+        if mesaj:
+
+            cevap = ask_mavigpt(
+                f"""
+Sen Cebimdeki Doktor'sun.
+
+Kurallar:
+- Türkçe konuş.
+- Samimi ve anlaşılır cevap ver.
+- Tanı koyma.
+- Kullanıcıya genel sağlık bilgisi ver.
+- Gerekirse doktora başvurmasını öner.
+
+Kullanıcının şikayeti:
+
+{mesaj}
+"""
+            )
+
+
+    return render_template(
+        "doctor.html",
+        mesaj=mesaj,
+        cevap=cevap
     )
+
+
