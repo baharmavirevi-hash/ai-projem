@@ -6,157 +6,209 @@
 
 <title>MaviGPT</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=4">
+
 </head>
 
 <body>
 
 <div class="app">
 
-    <aside class="sidebar">
 
-        <div class="logo">
-            🌊 MaviGPT
-        </div>
+<div class="sidebar">
 
-        <button class="new-chat" onclick="location.href='/'">
-            ＋ Yeni Sohbet
-        </button>
+<div class="logo">
+🌊 MaviGPT
+</div>
 
-        <div class="chat-item" onclick="location.href='/doctor'">
-            🩺 Cebimdeki Doktor
-        </div>
-
-        <div class="history">
-
-        {% if sohbetler %}
-
-            {% for chat in sohbetler %}
-
-            <div class="chat-item">
-                💬 {{ chat[1] }}
-            </div>
-
-            {% endfor %}
-
-        {% else %}
-
-            <div class="chat-item">
-                Henüz sohbet yok
-            </div>
-
-        {% endif %}
-
-        </div>
-
-    </aside>
+<button class="new-chat" onclick="location.href='/'">
+＋ Yeni Sohbet
+</button>
 
 
-
-    <main class="chat">
-
-        <header class="header">
-
-            <h2>🌊 MaviGPT</h2>
-
-            <p>Merhaba Bahar 👋</p>
-
-        </header>
+<div class="chat-item" onclick="location.href='/doctor'">
+🩺 Cebimdeki Doktor
+</div>
 
 
+<div class="history">
 
-        <section class="messages">
+{% if sohbetler %}
 
+{% for chat in sohbetler %}
 
-            <div class="ai">
-                👋 Merhaba!<br><br>
-                Ben MaviGPT.<br>
-                Bana istediğin her şeyi sorabilirsin.
-            </div>
+<div class="chat-item">
+💬 {{ chat[1] }}
+</div>
 
+{% endfor %}
 
+{% else %}
 
-            {% if foto %}
+<div class="chat-item">
+Henüz sohbet yok
+</div>
 
-            <div class="user">
+{% endif %}
 
-                <img 
-                src="{{ url_for('static', filename=foto_url) }}"
-                class="chat-image">
-
-                {% if mesaj %}
-                <br>
-                {{ mesaj }}
-                {% endif %}
-
-            </div>
-
-            {% endif %}
-
-
-
-            {% if not foto and mesaj %}
-
-            <div class="user">
-                {{ mesaj }}
-            </div>
-
-            {% endif %}
-
-
-
-            {% if cevap %}
-
-            <div class="ai">
-                {{ cevap }}
-            </div>
-
-            {% endif %}
-
-
-        </section>
-
-
-
-        <form 
-        class="input-bar"
-        action="/"
-        method="post"
-        enctype="multipart/form-data">
-
-
-            <label for="photo" class="upload-btn">
-                📎
-            </label>
-
-
-            <input 
-            type="file"
-            id="photo"
-            name="photo"
-            accept="image/*"
-            hidden>
-
-
-            <input
-            type="text"
-            name="mesaj"
-            placeholder="MaviGPT'ye yaz..."
-            autocomplete="off">
-
-
-            <button type="submit">
-                ➤
-            </button>
-
-
-        </form>
-
-
-    </main>
+</div>
 
 </div>
 
 
+
+<main class="chat">
+
+
+<button class="menu-btn" onclick="toggleMenu()">
+☰
+</button>
+
+
+
+<header class="header">
+
+<h2>🌊 MaviGPT</h2>
+
+<p>Merhaba Bahar 👋</p>
+
+</header>
+
+
+
+
+<section class="messages">
+
+
+<div class="ai">
+
+👋 Merhaba!
+
+<br><br>
+
+Ben MaviGPT.
+
+<br>
+
+Bana istediğin her şeyi sorabilirsin.
+
+</div>
+
+
+
+{% if foto %}
+
+<div class="user">
+
+<img 
+src="{{ url_for('static', filename=foto_url) }}"
+class="chat-image">
+
+
+{% if mesaj %}
+
+<br>
+
+{{ mesaj }}
+
+{% endif %}
+
+
+</div>
+
+{% endif %}
+
+
+
+
+{% if not foto and mesaj %}
+
+<div class="user">
+
+{{ mesaj }}
+
+</div>
+
+{% endif %}
+
+
+
+
+{% if cevap %}
+
+<div class="ai">
+
+{{ cevap }}
+
+</div>
+
+{% endif %}
+
+
+
+</section>
+
+
+
+
+<form class="input-bar"
+action="/"
+method="post"
+enctype="multipart/form-data">
+
+
+<label for="photo" class="upload-btn">
+
+📎
+
+</label>
+
+
+<input 
+type="file"
+id="photo"
+name="photo"
+accept="image/*"
+hidden>
+
+
+
+<input
+type="text"
+name="mesaj"
+placeholder="MaviGPT'ye yaz..."
+autocomplete="off">
+
+
+
+<button type="submit">
+
+➤
+
+</button>
+
+
+</form>
+
+
+
+</main>
+
+</div>
+
+
+
+<script>
+
+function toggleMenu(){
+
+document.querySelector(".sidebar")
+.classList.toggle("active");
+
+}
+
+</script>
+
+
 </body>
-            </html>
+    </html>
