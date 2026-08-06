@@ -352,4 +352,37 @@ def get_diarrhea_records():
 
     conn.close()
 
-    return data        
+    return data      
+    def save_medicine(name, dose, hour, start_date):
+
+    conn = sqlite3.connect("chat.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO medicines
+        (name, dose, hour, start_date)
+        VALUES (?, ?, ?, ?)
+    """, (name, dose, hour, start_date))
+
+    conn.commit()
+    conn.close()
+
+
+def get_medicines():
+
+    conn = sqlite3.connect("chat.db")
+    conn.row_factory = sqlite3.Row
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM medicines
+        ORDER BY hour
+    """)
+
+    medicines = cursor.fetchall()
+
+    conn.close()
+
+    return medicines
