@@ -1,214 +1,123 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "layout.html" %}
 
-<title>MaviGPT</title>
+{% block title %}MaviGPT{% endblock %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=4">
-
-</head>
-
-<body>
+{% block content %}
 
 <div class="app">
 
+    <!-- Sol Menü -->
+    <aside class="sidebar" id="sidebar">
 
-<div class="sidebar">
+        <div class="logo">
+            🌊 MaviGPT
+        </div>
 
-<div class="logo">
-🌊 MaviGPT
-</div>
+        <button class="new-chat" onclick="window.location='/'">
+            ＋ Yeni Sohbet
+        </button>
 
-<button class="new-chat" onclick="location.href='/'">
-＋ Yeni Sohbet
-</button>
+        <div class="chat-item" onclick="window.location='/doctor'">
+            🩺 Cebimdeki Doktor
+        </div>
 
+        <div class="history">
 
-<div class="chat-item" onclick="location.href='/doctor'">
-🩺 Cebimdeki Doktor
-</div>
+            {% if sohbetler %}
 
+                {% for chat in sohbetler %}
 
-<div class="history">
+                <div class="chat-item">
+                    💬 {{ chat["user_message"] }}
+                </div>
 
-{% if sohbetler %}
+                {% endfor %}
 
-{% for chat in sohbetler %}
+            {% else %}
 
-<div class="chat-item">
-💬 {{ chat[1] }}
-</div>
+                <div class="chat-item">
+                    Henüz sohbet yok
+                </div>
 
-{% endfor %}
+            {% endif %}
 
-{% else %}
+        </div>
 
-<div class="chat-item">
-Henüz sohbet yok
-</div>
+    </aside>
 
-{% endif %}
 
-</div>
+    <!-- Sağ Taraf -->
 
-</div>
+    <main class="chat">
 
+        <button class="menu-btn"
+                onclick="toggleMenu()">
 
+            ☰
 
-<main class="chat">
+        </button>
 
 
-<button class="menu-btn" onclick="toggleMenu()">
-☰
-</button>
+        <header class="header">
 
+            <h2>🌊 MaviGPT</h2>
 
+            <p>Merhaba Bahar 👋</p>
 
-<header class="header">
+        </header>
 
-<h2>🌊 MaviGPT</h2>
 
-<p>Merhaba Bahar 👋</p>
+        <section class="messages">
 
-</header>
+            <div class="ai">
 
+                👋 Merhaba!
 
+                <br><br>
 
+                Ben MaviGPT.
 
-<section class="messages">
+                <br><br>
 
+                Bana istediğin her şeyi sorabilirsin.
 
-<div class="ai">
+            </div>
 
-👋 Merhaba!
+            {% if foto %}
 
-<br><br>
+            <div class="user">
 
-Ben MaviGPT.
+                <img
+                    src="{{ url_for('static', filename=foto_url) }}"
+                    style="max-width:250px;border-radius:12px;">
 
-<br>
+                {% if mesaj %}
+                <br><br>
+                {{ mesaj }}
+                {% endif %}
 
-Bana istediğin her şeyi sorabilirsin.
+            </div>
 
-</div>
+            {% endif %}
 
+            {% if not foto and mesaj %}
 
+            <div class="user">
 
-{% if foto %}
+                {{ mesaj }}
 
-<div class="user">
+            </div>
 
-<img 
-src="{{ url_for('static', filename=foto_url) }}"
-class="chat-image">
+            {% endif %}
 
+            {% if cevap %}
 
-{% if mesaj %}
+            <div class="ai">
 
-<br>
+                {{ cevap }}
 
-{{ mesaj }}
+            </div>
 
-{% endif %}
+            {% endif %}
 
-
-</div>
-
-{% endif %}
-
-
-
-
-{% if not foto and mesaj %}
-
-<div class="user">
-
-{{ mesaj }}
-
-</div>
-
-{% endif %}
-
-
-
-
-{% if cevap %}
-
-<div class="ai">
-
-{{ cevap }}
-
-</div>
-
-{% endif %}
-
-
-
-</section>
-
-
-
-
-<form class="input-bar"
-action="/"
-method="post"
-enctype="multipart/form-data">
-
-
-<label for="photo" class="upload-btn">
-
-📎
-
-</label>
-
-
-<input 
-type="file"
-id="photo"
-name="photo"
-accept="image/*"
-hidden>
-
-
-
-<input
-type="text"
-name="mesaj"
-placeholder="MaviGPT'ye yaz..."
-autocomplete="off">
-
-
-
-<button type="submit">
-
-➤
-
-</button>
-
-
-</form>
-
-
-
-</main>
-
-</div>
-
-
-
-<script>
-
-function toggleMenu(){
-
-document.querySelector(".sidebar")
-.classList.toggle("active");
-
-}
-
-</script>
-
-
-</body>
-    </html>
+        </section>
