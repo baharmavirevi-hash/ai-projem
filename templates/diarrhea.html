@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
+
 {% block title %}İshal Takvimi{% endblock %}
+
+
 
 {% block content %}
 
@@ -13,15 +16,26 @@
 
 <header class="header">
 
-<h2>📅 İshal Takvimi</h2>
 
-<p>MaviGPT sağlık takibin</p>
+<button class="back-btn" onclick="window.location='/doctor'">
+←
+</button>
+
+
+<h2>🩺 İshal Takvimi</h2>
+
+
+<p>Günlük takip</p>
+
 
 </header>
 
 
 
+
+
 <section class="messages">
+
 
 
 <div class="ai">
@@ -32,7 +46,15 @@
 
 
 
-<form class="input-bar" method="POST">
+
+
+
+<form class="calendar-card" method="POST">
+
+
+<label>
+Tarih
+</label>
 
 
 <input
@@ -41,27 +63,51 @@ name="date"
 required>
 
 
+
+
+<label>
+Kaç kez?
+</label>
+
+
 <input
 type="number"
 name="count"
-placeholder="Kaç kez?">
+placeholder="Örnek: 3">
+
+
+
+
+<label>
+Durum
+</label>
 
 
 <input
 type="text"
 name="condition"
-placeholder="Durum">
+placeholder="Yumuşak, sulu vb.">
+
+
+
+
+<label>
+Not
+</label>
 
 
 <input
 type="text"
 name="note"
-placeholder="Not">
+placeholder="Karın ağrısı vb.">
 
 
-<button type="submit">
 
-➤
+
+
+<button class="save-btn">
+
+💾 Kaydet
 
 </button>
 
@@ -72,31 +118,41 @@ placeholder="Not">
 
 
 
+
 {% for kayit in kayitlar %}
 
-<div class="ai">
 
-🩺
+<div class="record-card">
 
-<br>
 
+<h3>
+🩺 Kayıt
+</h3>
+
+
+<p>
 Tarih:
 {{ kayit.date }}
+</p>
 
-<br>
 
+<p>
 Sayı:
 {{ kayit.count }}
+</p>
 
-<br>
 
+<p>
 Durum:
 {{ kayit.condition }}
+</p>
 
-<br>
 
+<p>
 Not:
 {{ kayit.note }}
+</p>
+
 
 </div>
 
@@ -106,7 +162,6 @@ Not:
 
 
 </section>
-
 
 
 </main>
