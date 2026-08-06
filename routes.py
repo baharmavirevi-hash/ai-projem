@@ -61,7 +61,20 @@ Kullanıcı:
 
     except Exception as e:
 
-        return "Hata oluştu: " + str(e)
+    hata = str(e)
+
+    if "429" in hata or "RESOURCE_EXHAUSTED" in hata:
+
+        return """
+🤖 MaviGPT şu anda biraz yoğun.
+
+Gemini kullanım kotası dolmuş görünüyor.
+Lütfen biraz sonra tekrar dene 💙
+"""
+
+    else:
+
+        return "Bir hata oluştu: " + hata
 
 
 
