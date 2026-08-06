@@ -1,234 +1,104 @@
-<!DOCTYPE html>
-<html lang="tr">
+{% extends "layout.html" %}
 
-<head>
+{% block title %}Cebimdeki Doktor{% endblock %}
 
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Cebimdeki Doktor</title>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=8">
-
-</head>
-
-
-<body>
-
+{% block content %}
 
 <div class="app">
 
+    <aside class="sidebar" id="sidebar">
 
-<div class="sidebar">
+        <div class="logo">
+            🌊 MaviGPT
+        </div>
 
-<div class="logo">
-🌊 MaviGPT
-</div>
+        <button class="new-chat" onclick="window.location='/'">
+            ＋ MaviGPT
+        </button>
 
+        <div class="chat-item">
+            🩺 Cebimdeki Doktor
+        </div>
 
-<button class="new-chat" onclick="location.href='/'">
-＋ Yeni Sohbet
-</button>
+    </aside>
 
+    <main class="chat">
 
-<div class="chat-item">
-🩺 Cebimdeki Doktor
-</div>
+        <button class="menu-btn" onclick="toggleMenu()">
+            ☰
+        </button>
 
+        <header class="header">
 
-</div>
+            <h2>🩺 Cebimdeki Doktor</h2>
 
+            <p>MaviGPT sağlık yardımcın</p>
 
+        </header>
 
+        <section class="messages">
 
+            <div class="ai">
 
-<main class="chat">
+                👋 Merhaba Bahar!
 
+                <br><br>
 
-<button class="menu-btn" onclick="toggleMenu()">
-☰
-</button>
+                Ben Cebimdeki Doktor.
 
+                <br><br>
 
+                Belirtilerini yazabilirsin.
 
-<header class="header">
+                Sana genel sağlık bilgileri verebilirim.
 
-<h2>🩺 Cebimdeki Doktor</h2>
+            </div>
 
-<p>MaviGPT sağlık yardımcın</p>
+            {% if mesaj %}
 
-</header>
+            <div class="user">
+                {{ mesaj }}
+            </div>
 
+            {% endif %}
 
+            {% if cevap %}
 
+            <div class="ai">
+                {{ cevap }}
+            </div>
 
+            {% endif %}
 
-<section class="messages">
+        </section>
 
+        <form
+            class="input-bar"
+            action="/doctor"
+            method="POST">
 
-<div class="ai">
+            <input
+                type="text"
+                name="mesaj"
+                placeholder="Şikayetini yaz..."
+                autocomplete="off">
 
-👋 Merhaba Bahar!
+            <button type="submit">
+                ➤
+            </button>
 
-<br><br>
+        </form>
 
-Belirtilerini yazabilir veya sağlık takibine kayıt ekleyebilirsin.
-
-</div>
-
-
-
-{% if mesaj %}
-
-<div class="user">
-{{ mesaj }}
-</div>
-
-{% endif %}
-
-
-
-
-{% if cevap %}
-
-<div class="ai">
-{{ cevap }}
-</div>
-
-{% endif %}
-
-
-
-
-{% if kayit_mesaji %}
-
-<div class="ai">
-{{ kayit_mesaji }}
-</div>
-
-{% endif %}
-
-
-
-</section>
-
-
-
-
-
-<form class="input-bar"
-method="post"
-action="/doctor">
-
-
-<input
-type="text"
-name="mesaj"
-placeholder="Şikayetini yaz...">
-
-
-<button type="submit">
-➤
-</button>
-
-
-</form>
-
-
-
-
-
-<div class="health-box">
-
-<h3>📋 Sağlık Takibi</h3>
-
-
-<form method="post" action="/doctor">
-
-
-<input
-type="text"
-name="symptom"
-placeholder="Belirti (örn: baş ağrısı)">
-
-
-<input
-type="text"
-name="medicine"
-placeholder="İlaç / tedavi notu">
-
-
-<input
-type="text"
-name="note"
-placeholder="Ek not">
-
-
-<button type="submit">
-💾 Kaydet
-</button>
-
-
-</form>
-
-
-
-{% if kayitlar %}
-
-<h4>Geçmiş kayıtlar</h4>
-
-
-{% for kayit in kayitlar %}
-
-<div class="record">
-
-🤒 {{ kayit["symptom"] }}
-
-<br>
-
-💊 {{ kayit["medicine"] }}
-
-<br>
-
-📝 {{ kayit["note"] }}
+    </main>
 
 </div>
-
-
-{% endfor %}
-
-
-{% endif %}
-
-
-</div>
-
-
-
-
-
-</main>
-
-
-</div>
-
-
-
-
 
 <script>
 
-function toggleMenu(){
-
-document.querySelector(".sidebar")
-.classList.toggle("active");
-
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("active");
 }
 
 </script>
 
-
-</body>
-
-  </html>
+{% endblock %}
