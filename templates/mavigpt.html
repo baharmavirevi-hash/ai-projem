@@ -121,3 +121,55 @@
             {% endif %}
 
         </section>
+                <form
+            class="input-bar"
+            action="/"
+            method="POST"
+            enctype="multipart/form-data">
+
+            <label for="photo" class="upload-btn">
+                📎
+            </label>
+
+            <input
+                type="file"
+                id="photo"
+                name="photo"
+                accept="image/*"
+                hidden>
+
+            <input
+                type="text"
+                name="mesaj"
+                placeholder="MaviGPT'ye yaz..."
+                autocomplete="off">
+
+            <button type="submit">
+                ➤
+            </button>
+
+        </form>
+
+    </main>
+
+</div>
+
+<script>
+
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("active");
+}
+
+const photoInput = document.getElementById("photo");
+
+if (photoInput) {
+    photoInput.addEventListener("change", function () {
+        if (this.files.length > 0) {
+            alert("📸 Fotoğraf seçildi: " + this.files[0].name);
+        }
+    });
+}
+
+</script>
+
+{% endblock %}
