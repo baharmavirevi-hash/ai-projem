@@ -9,7 +9,7 @@
 
 <title>Cebimdeki Doktor</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=7">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=8">
 
 </head>
 
@@ -52,7 +52,6 @@
 
 
 
-
 <header class="header">
 
 <h2>🩺 Cebimdeki Doktor</h2>
@@ -74,11 +73,7 @@
 
 <br><br>
 
-Ben Cebimdeki Doktor.
-
-<br><br>
-
-Belirtilerini yazabilirsin. Sana genel sağlık bilgileri hakkında yardımcı olabilirim.
+Belirtilerini yazabilir veya sağlık takibine kayıt ekleyebilirsin.
 
 </div>
 
@@ -87,9 +82,7 @@ Belirtilerini yazabilirsin. Sana genel sağlık bilgileri hakkında yardımcı o
 {% if mesaj %}
 
 <div class="user">
-
 {{ mesaj }}
-
 </div>
 
 {% endif %}
@@ -97,13 +90,21 @@ Belirtilerini yazabilirsin. Sana genel sağlık bilgileri hakkında yardımcı o
 
 
 
-
 {% if cevap %}
 
 <div class="ai">
-
 {{ cevap }}
+</div>
 
+{% endif %}
+
+
+
+
+{% if kayit_mesaji %}
+
+<div class="ai">
+{{ kayit_mesaji }}
 </div>
 
 {% endif %}
@@ -121,13 +122,10 @@ method="post"
 action="/doctor">
 
 
-
-<input 
+<input
 type="text"
 name="mesaj"
-placeholder="Şikayetini yaz..."
-autocomplete="off">
-
+placeholder="Şikayetini yaz...">
 
 
 <button type="submit">
@@ -135,8 +133,78 @@ autocomplete="off">
 </button>
 
 
+</form>
+
+
+
+
+
+<div class="health-box">
+
+<h3>📋 Sağlık Takibi</h3>
+
+
+<form method="post" action="/doctor">
+
+
+<input
+type="text"
+name="symptom"
+placeholder="Belirti (örn: baş ağrısı)">
+
+
+<input
+type="text"
+name="medicine"
+placeholder="İlaç / tedavi notu">
+
+
+<input
+type="text"
+name="note"
+placeholder="Ek not">
+
+
+<button type="submit">
+💾 Kaydet
+</button>
+
 
 </form>
+
+
+
+{% if kayitlar %}
+
+<h4>Geçmiş kayıtlar</h4>
+
+
+{% for kayit in kayitlar %}
+
+<div class="record">
+
+🤒 {{ kayit["symptom"] }}
+
+<br>
+
+💊 {{ kayit["medicine"] }}
+
+<br>
+
+📝 {{ kayit["note"] }}
+
+</div>
+
+
+{% endfor %}
+
+
+{% endif %}
+
+
+</div>
+
+
 
 
 
@@ -163,4 +231,4 @@ document.querySelector(".sidebar")
 
 </body>
 
-</html>
+  </html>
