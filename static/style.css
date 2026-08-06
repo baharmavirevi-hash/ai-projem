@@ -57,3 +57,116 @@ body{
     background:white;
     padding:20px;
     box-shadow:0 2px 10px rgba(0,0,0,.
+    /* 📱 Uygulama görünümü */
+
+body{
+    background:#dfeeff;
+}
+
+.app{
+    max-width:430px;
+    margin:auto;
+    height:100vh;
+    background:#f7f9fc;
+    box-shadow:0 0 25px rgba(0,0,0,.15);
+    position:relative;
+    overflow:hidden;
+}
+
+
+.sidebar{
+    position:absolute;
+    left:0;
+    top:0;
+    height:100%;
+    z-index:10;
+}
+
+
+.chat{
+    height:100vh;
+}
+
+
+.header{
+    text-align:center;
+    padding:18px;
+}
+
+
+.header h2{
+    font-size:22px;
+}
+
+
+.messages{
+    padding:15px;
+    padding-bottom:90px;
+}
+
+
+.ai,
+.user{
+    border-radius:20px;
+    padding:15px;
+    font-size:15px;
+    animation:gel .3s ease;
+}
+
+
+.ai{
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+
+.user{
+    border-bottom-right-radius:5px;
+}
+
+
+.input-bar{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    border-radius:20px 20px 0 0;
+}
+
+
+.input-bar input{
+    height:45px;
+    font-size:16px;
+}
+
+
+.input-bar button{
+    border-radius:50%;
+    width:45px;
+    height:45px;
+}
+
+
+@keyframes gel{
+
+from{
+    opacity:0;
+    transform:translateY(10px);
+}
+
+to{
+    opacity:1;
+    transform:translateY(0);
+}
+
+}
+
+
+@media(min-width:700px){
+
+.app{
+    margin-top:20px;
+    height:90vh;
+    border-radius:25px;
+}
+
+}
