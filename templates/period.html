@@ -2,57 +2,93 @@
 
 {% block title %}Regl Takvimi{% endblock %}
 
+
 {% block content %}
 
 <div class="app">
 
+
 <main class="chat">
+
 
 <header class="header">
 
-<h2>📅 Regl Takvimi</h2>
+<button class="back-btn" onclick="window.location='/doctor'">
+←
+</button>
 
-<p>MaviGPT sağlık takibin</p>
+
+<h2>🌸 Regl Takvimi</h2>
+
+<p>Döngünü takip et</p>
+
 
 </header>
+
+
+
 
 
 <section class="messages">
 
 
+
 <div class="ai">
 
-🌸 Regl takvimine hoş geldin.
+🌸 Regl takibine hoş geldin.
 
-Başlangıç ve bitiş tarihini kaydedebilirsin.
+Başlangıç ve bitiş tarihlerini kaydedebilirsin.
 
 </div>
 
 
 
-<form class="input-bar" method="POST">
 
 
-<input
+
+<form class="calendar-card" method="POST">
+
+
+<label>
+Başlangıç tarihi
+</label>
+
+<input 
 type="date"
 name="start_date"
 required>
 
 
-<input
+
+
+<label>
+Bitiş tarihi
+</label>
+
+<input 
 type="date"
 name="end_date">
 
 
+
+
+<label>
+Not
+</label>
+
 <input
 type="text"
 name="note"
-placeholder="Not ekle...">
+placeholder="Örnek: Ağrı, yoğunluk..."
+
+>
 
 
-<button type="submit">
 
-➤
+
+<button class="save-btn">
+
+💾 Kaydet
 
 </button>
 
@@ -61,31 +97,44 @@ placeholder="Not ekle...">
 
 
 
+
+
+
 {% for kayit in kayitlar %}
 
-<div class="ai">
 
-🌸
+<div class="record-card">
 
-<br>
 
+<h3>
+🌸 Regl Kaydı
+</h3>
+
+
+<p>
 Başlangıç:
 {{ kayit.start_date }}
+</p>
 
-<br>
 
+<p>
 Bitiş:
 {{ kayit.end_date }}
+</p>
 
-<br>
 
+<p>
 Not:
 {{ kayit.note }}
+</p>
+
 
 </div>
 
 
+
 {% endfor %}
+
 
 
 
