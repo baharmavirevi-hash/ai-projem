@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cebimdeki Doktor - MaviGPT</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    margin:0;
+    background:#eef8ff;
+}
+
+/* Üst bar */
+
+.top-bar{
+    height:65px;
+    background:#7dc9ff;
+    display:flex;
+    align-items:center;
+    padding:10px 15px;
+    gap:15px;
+    color:white;
+}
+
+.menu-btn{
+    font-size:30px;
+    background:none;
+    border:none;
+    color:white;
+}
+
+/* Menü */
+
+.side-menu{
+    position:fixed;
+    left:-280px;
+    top:0;
+    width:270px;
+    height:100%;
+    background:white;
+    padding:20px;
+    transition:.3s;
+    z-index:5;
+}
+
+.side-menu.active{
+    left:0;
+}
+
+.side-menu button{
+    width:100%;
+    padding:14px;
+    margin:8px 0;
+    border:none;
+    border-radius:15px;
+    background:#e7f5ff;
+    font-size:16px;
+}
+
+
+/* Karartma */
+
+#overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.3);
+    z-index:4;
+}
+
+#overlay.active{
+    display:block;
+}
+
+
+/* Sohbet */
+
+.chat{
+    padding:20px;
+    height:calc(100vh - 130px);
+    overflow:auto;
+}
+
+
+.bot{
+    background:white;
+    padding:15px;
+    border-radius:20px;
+    margin-bottom:15px;
+    max-width:85%;
+}
+
+
+/* Yazma alanı */
+
+.input-area{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    display:flex;
+    padding:10px;
+    background:white;
+}
+
+.input-area input{
+    flex:1;
+    padding:14px;
+    border-radius:20px;
+    border:1px solid #ccc;
+}
+
+
+.input-area button{
+    margin-left:10px;
+    border:none;
+    border-radius:20px;
+    padding:12px 18px;
+    background:#70c5ff;
+    color:white;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="top-bar">
+
+<button class="menu-btn" onclick="menuAc()">☰</button>
+
+<h2>🩺 Cebimdeki Doktor</h2>
+
+</div>
+
+
+
+<div id="side-menu" class="side-menu">
+
+<h2>🩺 Menü</h2>
+
+
+<button>➕ Yeni Sohbet</button>
+
+<button>💬 Sohbet Geçmişi</button>
+
+<button>📅 Regl Takibi</button>
+
+<button>📝 Belirti Takibi</button>
+
+<button>📷 Fotoğraf Yükle</button>
+
+<button>⚙️ Ayarlar</button>
+
+
+</div>
+
+
+
+<div id="overlay" onclick="menuAc()"></div>
+
+
+
+<div class="chat">
+
+
+<div class="bot">
+
+👋 Merhaba Bahar!
+
+<br><br>
+
+Ben <b>Cebimdeki Doktor</b>.
+
+<br><br>
+
+Belirtilerini yazabilirsin.
+
+Sana genel sağlık bilgileri ve öneriler sunabilirim.
+
+<br><br>
+
+⚠️ Verdiğim bilgiler genel bilgilendirme amaçlıdır.
+
+</div>
+
+
+</div>
+
+
+
+<div class="input-area">
+
+<input placeholder="Belirtilerini yaz...">
+
+<button>➤</button>
+
+</div>
+
+
+
+
+<script>
+
+
+function menuAc(){
+
+document.getElementById("side-menu")
+.classList.toggle("active");
+
+
+document.getElementById("overlay")
+.classList.toggle("active");
+
+}
+
+
+</script>
+
+
+</body>
+           </html>
