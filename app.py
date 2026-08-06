@@ -5,12 +5,10 @@ import os
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "static/uploads"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = "static/uploads"
 
-# uploads klasörü yoksa oluştur
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# Upload klasörü yoksa oluştur
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 # Veritabanını oluştur
 init_db()
@@ -21,5 +19,6 @@ register_routes(app)
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
+        port=int(os.environ.get("PORT", 5000)),
+        debug=True
     )
