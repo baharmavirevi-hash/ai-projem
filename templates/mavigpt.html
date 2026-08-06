@@ -1,134 +1,128 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaviGPT</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>MaviGPT</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
 <div class="app">
 
-    <!-- SOL MENÜ -->
-    <div class="sidebar">
+    <aside class="sidebar">
 
         <div class="logo">
             🌊 MaviGPT
         </div>
 
-        <button class="new-chat" onclick="window.location='/'">
+        <button class="new-chat" onclick="location.href='/'">
             ＋ Yeni Sohbet
         </button>
-        <div class="chat-item"
-     onclick="window.location='/doctor'">
 
-    🩺 Cebimdeki Doktor
-
+        <div class="chat-item" onclick="location.href='/doctor'">
+            🩺 Cebimdeki Doktor
         </div>
+
         <div class="history">
 
-            {% if sohbetler %}
+        {% if sohbetler %}
 
-                {% for chat in sohbetler %}
+            {% for chat in sohbetler %}
 
-                <div class="chat-item">
-                    💬 {{ chat[1] }}
-                </div>
+            <div class="chat-item">
+                💬 {{ chat[1] }}
+            </div>
 
-                {% endfor %}
+            {% endfor %}
 
-            {% else %}
+        {% else %}
 
-                <div class="chat-item">
-                    Henüz sohbet yok
-                </div>
+            <div class="chat-item">
+                Henüz sohbet yok
+            </div>
 
-            {% endif %}
+        {% endif %}
 
         </div>
 
-    </div>
+    </aside>
 
 
-    <!-- SAĞ TARAF -->
 
-    <div class="chat">
+    <main class="chat">
 
-        <div class="header">
+        <header class="header">
 
             <h2>🌊 MaviGPT</h2>
 
             <p>Merhaba Bahar 👋</p>
 
-        </div>
+        </header>
 
 
-        <div class="messages">
+
+        <section class="messages">
+
 
             <div class="ai">
-
-                👋 Merhaba!
-
-                <br><br>
-
-                Ben MaviGPT.
-
+                👋 Merhaba!<br><br>
+                Ben MaviGPT.<br>
                 Bana istediğin her şeyi sorabilirsin.
-
             </div>
+
 
 
             {% if foto %}
 
-<div class="user">
+            <div class="user">
 
-    <img src="{{ url_for('static', filename=foto_url) }}">
-         style="max-width:250px; border-radius:12px; margin-bottom:10px;">
+                <img 
+                src="{{ url_for('static', filename=foto_url) }}"
+                class="chat-image">
 
-    {% if mesaj %}
-        <br>
-        {{ mesaj }}
-    {% endif %}
-
-</div>
-
-{% endif %}
-
-{% if not foto and mesaj %}
-
-<div class="user">
-
-    {{ mesaj }}
-
-</div>
-
-{% endif %}
-
-
-            {% if cevap %}
-
-            <div class="ai">
-
-                {{ cevap }}
+                {% if mesaj %}
+                <br>
+                {{ mesaj }}
+                {% endif %}
 
             </div>
 
             {% endif %}
 
 
-        </div>
+
+            {% if not foto and mesaj %}
+
+            <div class="user">
+                {{ mesaj }}
+            </div>
+
+            {% endif %}
 
 
-        <!-- MESAJ FORMU -->
 
-        <form
-            class="input-bar"
-            action="/"
-            method="post"
-            enctype="multipart/form-data">
+            {% if cevap %}
+
+            <div class="ai">
+                {{ cevap }}
+            </div>
+
+            {% endif %}
+
+
+        </section>
+
+
+
+        <form 
+        class="input-bar"
+        action="/"
+        method="post"
+        enctype="multipart/form-data">
 
 
             <label for="photo" class="upload-btn">
@@ -137,18 +131,18 @@
 
 
             <input 
-                type="file"
-                id="photo"
-                name="photo"
-                accept="image/*"
-                hidden>
+            type="file"
+            id="photo"
+            name="photo"
+            accept="image/*"
+            hidden>
 
 
             <input
-                type="text"
-                name="mesaj"
-                placeholder="MaviGPT'ye yaz..."
-                autocomplete="off">
+            type="text"
+            name="mesaj"
+            placeholder="MaviGPT'ye yaz..."
+            autocomplete="off">
 
 
             <button type="submit">
@@ -159,28 +153,10 @@
         </form>
 
 
-    </div>
+    </main>
 
 </div>
 
 
-
-<script>
-
-const photoInput = document.getElementById("photo");
-
-photoInput.addEventListener("change", function(){
-
-    if(this.files.length > 0){
-
-        alert("📸 Fotoğraf seçildi: " + this.files[0].name);
-
-    }
-
-});
-
-</script>
-
-
 </body>
-    </html>
+            </html>
