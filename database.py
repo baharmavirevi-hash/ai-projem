@@ -9,9 +9,12 @@ def get_db():
     return conn
 
 
+
 def init_db():
+
     conn = get_db()
     cursor = conn.cursor()
+
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS messages (
@@ -22,40 +25,138 @@ def init_db():
     )
     """)
 
+
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS health_records (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        symptom TEXT,
+
+        medicine TEXT,
+
+        note TEXT,
+
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+    """)
+
+
+
     conn.commit()
     conn.close()
 
 
+
+
+
 def save_chat(chat_type, user_message, ai_message):
+
     conn = get_db()
     cursor = conn.cursor()
+
 
     cursor.execute("""
     INSERT INTO messages
     (chat_type, user_message, ai_message)
+
     VALUES (?, ?, ?)
+
     """, (
+
         chat_type,
+
         user_message,
+
         ai_message
+
     ))
+
 
     conn.commit()
     conn.close()
 
 
+
+
+
 def get_chats(chat_type):
+
     conn = get_db()
     cursor = conn.cursor()
 
+
     cursor.execute("""
     SELECT * FROM messages
+
     WHERE chat_type = ?
+
     ORDER BY id DESC
+
     """, (chat_type,))
+
 
     chats = cursor.fetchall()
 
     conn.close()
 
+
     return chats
+
+
+
+
+
+def save_health_record(symptom, medicine, note):
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    INSERT INTO health_records
+
+    (symptom, medicine, note)
+
+    VALUES (?, ?, ?)
+
+    """, (
+
+        symptom,
+
+        medicine,
+
+        note
+
+    ))
+
+
+    conn.commit()
+    conn.close()
+
+
+
+
+
+def get_health_records():
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    SELECT * FROM health_records
+
+    ORDER BY id DESC
+
+    """)
+
+
+    records = cursor.fetchall()
+
+    conn.close()
+
+
+    return records
