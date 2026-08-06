@@ -9,7 +9,7 @@
 
 <title>Cebimdeki Doktor</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=6">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=7">
 
 </head>
 
@@ -26,15 +26,19 @@
 🌊 MaviGPT
 </div>
 
+
 <button class="new-chat" onclick="location.href='/'">
 ＋ Yeni Sohbet
 </button>
+
 
 <div class="chat-item">
 🩺 Cebimdeki Doktor
 </div>
 
+
 </div>
+
 
 
 
@@ -48,6 +52,7 @@
 
 
 
+
 <header class="header">
 
 <h2>🩺 Cebimdeki Doktor</h2>
@@ -55,6 +60,8 @@
 <p>MaviGPT sağlık yardımcın</p>
 
 </header>
+
+
 
 
 
@@ -71,26 +78,62 @@ Ben Cebimdeki Doktor.
 
 <br><br>
 
-Belirtilerini yazabilirsin. Sana genel sağlık bilgileri verebilirim.
+Belirtilerini yazabilirsin. Sana genel sağlık bilgileri hakkında yardımcı olabilirim.
 
 </div>
+
+
+
+{% if mesaj %}
+
+<div class="user">
+
+{{ mesaj }}
+
+</div>
+
+{% endif %}
+
+
+
+
+
+{% if cevap %}
+
+<div class="ai">
+
+{{ cevap }}
+
+</div>
+
+{% endif %}
+
 
 
 </section>
 
 
 
-<form class="input-bar">
+
+
+<form class="input-bar"
+method="post"
+action="/doctor">
+
 
 
 <input 
 type="text"
-placeholder="Şikayetini yaz...">
+name="mesaj"
+placeholder="Şikayetini yaz..."
+autocomplete="off">
 
 
-<button type="button">
+
+<button type="submit">
 ➤
 </button>
+
 
 
 </form>
@@ -101,6 +144,8 @@ placeholder="Şikayetini yaz...">
 
 
 </div>
+
+
 
 
 
