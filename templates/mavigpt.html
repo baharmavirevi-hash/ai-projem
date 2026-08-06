@@ -81,15 +81,31 @@
             </div>
 
 
-            {% if mesaj %}
+            {% if foto %}
 
-            <div class="user">
+<div class="user">
 
-                {{ mesaj }}
+    <img src="{{ foto }}"
+         style="max-width:250px; border-radius:12px; margin-bottom:10px;">
 
-            </div>
+    {% if mesaj %}
+        <br>
+        {{ mesaj }}
+    {% endif %}
 
-            {% endif %}
+</div>
+
+{% endif %}
+
+{% if not foto and mesaj %}
+
+<div class="user">
+
+    {{ mesaj }}
+
+</div>
+
+{% endif %}
 
 
             {% if cevap %}
