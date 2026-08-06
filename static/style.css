@@ -324,5 +324,13 @@ to{
     box-shadow:0 5px 15px rgba(0,0,0,.08);
     font-size:17px;
 }
+.submenu{
+    display:none;
+    margin-left:18px;
+    margin-top:8px;
+}
 
+.menu-group .chat-item:first-child{
+    font-weight:bold;
+}
 
