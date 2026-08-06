@@ -9,7 +9,7 @@
 
 <title>Cebimdeki Doktor</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=6">
 
 </head>
 
@@ -20,7 +20,32 @@
 <div class="app">
 
 
-<div class="chat">
+<div class="sidebar">
+
+<div class="logo">
+🌊 MaviGPT
+</div>
+
+<button class="new-chat" onclick="location.href='/'">
+＋ Yeni Sohbet
+</button>
+
+<div class="chat-item">
+🩺 Cebimdeki Doktor
+</div>
+
+</div>
+
+
+
+
+<main class="chat">
+
+
+<button class="menu-btn" onclick="toggleMenu()">
+☰
+</button>
+
 
 
 <header class="header">
@@ -46,7 +71,7 @@ Ben Cebimdeki Doktor.
 
 <br><br>
 
-Belirtilerini yazabilirsin. Sana genel sağlık bilgileri ve öneriler sunabilirim.
+Belirtilerini yazabilirsin. Sana genel sağlık bilgileri verebilirim.
 
 </div>
 
@@ -71,10 +96,24 @@ placeholder="Şikayetini yaz...">
 </form>
 
 
-</div>
+
+</main>
 
 
 </div>
+
+
+
+<script>
+
+function toggleMenu(){
+
+document.querySelector(".sidebar")
+.classList.toggle("active");
+
+}
+
+</script>
 
 
 </body>
