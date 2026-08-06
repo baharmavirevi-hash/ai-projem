@@ -22,21 +22,58 @@
 
     </aside>
 
+
     <main class="chat">
+
 
         <button class="menu-btn" onclick="toggleMenu()">
             ☰
         </button>
 
+
         <header class="header">
 
-            <h2>🩺 Cebimdeki Doktor</h2>
 
-            <p>MaviGPT sağlık yardımcın</p>
+            <button class="menu-three" onclick="openHealthMenu()">
+                ⋮
+            </button>
+
+
+            <h2>
+                🩺 Cebimdeki Doktor
+            </h2>
+
+
+            <p>
+                MaviGPT sağlık yardımcın
+            </p>
+
+
+
+            <div class="health-menu" id="healthMenu">
+
+
+                <button onclick="window.location='/period'">
+                    📅 Regl Takvimi
+                </button>
+
+
+                <button onclick="window.location='/diarrhea'">
+                    📅 İshal Takvimi
+                </button>
+
+
+            </div>
+
 
         </header>
 
+
+
+
         <section class="messages">
+
+
 
             <div class="ai">
 
@@ -48,84 +85,148 @@
 
                 <br><br>
 
-                Belirtilerini yazabilirsin.
-
-                Sana genel sağlık bilgileri verebilirim.
+                Belirtilerini yazabilir veya fotoğraf gönderebilirsin.
 
             </div>
+
+
+
+
+            {% if foto_url %}
+
+            <div class="user">
+
+                📷 Gönderilen fotoğraf:
+
+                <br><br>
+
+                <img
+                src="{{ url_for('static', filename=foto_url) }}"
+                style="max-width:250px;border-radius:15px;">
+
+            </div>
+
+            {% endif %}
+
+
+
+
 
             {% if mesaj %}
 
             <div class="user">
+
                 {{ mesaj }}
+
             </div>
 
             {% endif %}
+
+
+
+
 
             {% if cevap %}
 
             <div class="ai">
+
                 {{ cevap }}
+
             </div>
 
             {% endif %}
 
+
+
         </section>
+
+
+
+
+
         <form
-    class="input-bar"
-    action="/doctor"
-    method="POST"
-    enctype="multipart/form-data">
+        class="input-bar"
+        action="/doctor"
+        method="POST"
+        enctype="multipart/form-data">
 
 
-    <label for="doctor_photo" class="upload-btn">
-        📎
-    </label>
+
+            <label for="doctor_photo"
+            class="upload-btn">
+
+                📎
+
+            </label>
 
 
-    <input
-        type="file"
-        id="doctor_photo"
-        name="photo"
-        accept="image/*"
-        hidden>
-
-
-    <input
-        type="text"
-        name="mesaj"
-        placeholder="Şikayetini yaz...">
-
-
-    <button type="submit">
-        ➤
-    </button>
-
-
-        </form>
 
             <input
-                type="text"
-                name="mesaj"
-                placeholder="Şikayetini yaz..."
-                autocomplete="off">
+            type="file"
+            id="doctor_photo"
+            name="photo"
+            accept="image/*"
+            hidden>
+
+
+
+
+
+            <input
+            type="text"
+            name="mesaj"
+            placeholder="Şikayetini yaz..."
+            autocomplete="off">
+
+
+
+
 
             <button type="submit">
+
                 ➤
+
             </button>
 
+
+
         </form>
+
+
 
     </main>
 
+
 </div>
+
+
+
+
 
 <script>
 
-function toggleMenu() {
-    document.getElementById("sidebar").classList.toggle("active");
+
+function toggleMenu(){
+
+    document
+    .getElementById("sidebar")
+    .classList.toggle("active");
+
 }
 
+
+
+function openHealthMenu(){
+
+    document
+    .getElementById("healthMenu")
+    .classList.toggle("show");
+
+}
+
+
 </script>
+
+
 
 {% endblock %}
