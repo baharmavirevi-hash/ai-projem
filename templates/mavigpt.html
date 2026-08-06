@@ -14,11 +14,33 @@
         </div>
 
         <button class="new-chat" onclick="window.location='/'">
-            ＋ Yeni Sohbet
+            ➕ Yeni Sohbet
         </button>
 
-        <div class="chat-item" onclick="window.location='/doctor'">
-            🩺 Cebimdeki Doktor
+        <div class="menu-group">
+
+            <div class="chat-item">
+                🩺 Cebimdeki Doktor
+            </div>
+
+            <div class="submenu">
+
+                <div class="chat-item"
+                     onclick="window.location='/doctor'">
+
+                    📅 Regl Takvimi
+
+                </div>
+
+                <div class="chat-item"
+                     onclick="window.location='/doctor'">
+
+                    🚽 İshal Takibi
+
+                </div>
+
+            </div>
+
         </div>
 
         <div class="history">
@@ -28,7 +50,9 @@
                 {% for chat in sohbetler %}
 
                 <div class="chat-item">
+
                     💬 {{ chat["user_message"] }}
+
                 </div>
 
                 {% endfor %}
@@ -36,7 +60,9 @@
             {% else %}
 
                 <div class="chat-item">
+
                     Henüz sohbet yok
+
                 </div>
 
             {% endif %}
@@ -44,84 +70,60 @@
         </div>
 
     </aside>
-
-
-    <!-- Sağ Taraf -->
-
+        <!-- Sağ Taraf -->
     <main class="chat">
 
-        <button class="menu-btn"
-                onclick="toggleMenu()">
-
+        <button class="menu-btn" onclick="toggleMenu()">
             ☰
-
         </button>
 
-
         <header class="header">
-
             <h2>🌊 MaviGPT</h2>
-
             <p>Merhaba Bahar 👋</p>
-
         </header>
-
 
         <section class="messages">
 
             <div class="ai">
+                👋 Merhaba!<br><br>
 
-                👋 Merhaba!
+                Ben <b>MaviGPT</b>.<br><br>
 
-                <br><br>
-
-                Ben MaviGPT.
-
-                <br><br>
-
-                Bana istediğin her şeyi sorabilirsin.
-
+                Sana kod yazarken, ders çalışırken,
+                günlük hayatta ve sağlık konularında
+                yardımcı olabilirim.
             </div>
 
             {% if foto %}
-
             <div class="user">
 
                 <img
                     src="{{ url_for('static', filename=foto_url) }}"
-                    style="max-width:250px;border-radius:12px;">
+                    class="chat-image">
 
                 {% if mesaj %}
-                <br><br>
-                {{ mesaj }}
+                    <br><br>
+                    {{ mesaj }}
                 {% endif %}
 
             </div>
-
             {% endif %}
 
             {% if not foto and mesaj %}
-
             <div class="user">
-
                 {{ mesaj }}
-
             </div>
-
             {% endif %}
 
             {% if cevap %}
-
             <div class="ai">
-
                 {{ cevap }}
-
             </div>
-
             {% endif %}
 
         </section>
-                <form
+
+        <form
             class="input-bar"
             action="/"
             method="POST"
@@ -149,8 +151,7 @@
             </button>
 
         </form>
-
-    </main>
+            </main>
 
 </div>
 
@@ -163,11 +164,19 @@ function toggleMenu() {
 const photoInput = document.getElementById("photo");
 
 if (photoInput) {
+
     photoInput.addEventListener("change", function () {
+
         if (this.files.length > 0) {
+
+            // Şimdilik dosya seçildiğini gösteriyoruz.
+            // Sonraki sürümde burada fotoğraf önizlemesi olacak.
             alert("📸 Fotoğraf seçildi: " + this.files[0].name);
+
         }
+
     });
+
 }
 
 </script>
