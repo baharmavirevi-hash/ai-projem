@@ -19,30 +19,29 @@
 
         <div class="menu-group">
 
-            <div class="chat-item">
-                🩺 Cebimdeki Doktor
-            </div>
+    <div class="chat-item" onclick="toggleDoctorMenu()">
+        🩺 Cebimdeki Doktor ▼
+    </div>
 
-            <div class="submenu">
+    <div class="submenu" id="doctorMenu">
 
-                <div class="chat-item"
-                     onclick="window.location='/doctor'">
+        <div class="chat-item"
+             onclick="window.location='/period'">
 
-                    📅 Regl Takvimi
-
-                </div>
-
-                <div class="chat-item"
-                     onclick="window.location='/doctor'">
-
-                    🚽 İshal Takibi
-
-                </div>
-
-            </div>
+            📅 Regl Takvimi
 
         </div>
 
+        <div class="chat-item"
+             onclick="window.location='/diarrhea'">
+
+            🚽 İshal Takibi
+
+        </div>
+
+    </div>
+
+        </div>
         <div class="history">
 
             {% if sohbetler %}
@@ -180,5 +179,16 @@ if (photoInput) {
 }
 
 </script>
+function toggleDoctorMenu(){
+
+    const menu = document.getElementById("doctorMenu");
+
+    if(menu.style.display==="block"){
+        menu.style.display="none";
+    }else{
+        menu.style.display="block";
+    }
+
+}
 
 {% endblock %}
