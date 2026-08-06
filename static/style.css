@@ -1,152 +1,222 @@
 *{
+    box-sizing:border-box;
+}
+
+html,body{
     margin:0;
     padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
-}
-
-body{
-    background:#eef5ff;
-}
-
-.app{
-    display:flex;
-    height:100vh;
-}
-
-.sidebar{
-    width:260px;
-    background:#0b5ed7;
-    color:white;
-    padding:20px;
-    overflow-y:auto;
-    transition:.3s;
-}
-
-.logo{
-    font-size:26px;
-    font-weight:bold;
-    margin-bottom:20px;
-}
-
-.new-chat,
-.chat-item{
-    width:100%;
-    border:none;
-    background:rgba(255,255,255,.15);
-    color:white;
-    padding:12px;
-    margin-bottom:10px;
-    border-radius:10px;
-    cursor:pointer;
-    text-align:left;
-}
-
-.new-chat:hover,
-.chat-item:hover{
-    background:rgba(255,255,255,.25);
-}
-
-.chat{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-}
-
-.header{
-    background:white;
-    padding:20px;
-    box-shadow:0 2px 10px rgba(0,0,0,.
-    /* 📱 Uygulama görünümü */
-
-body{
-    background:#dfeeff;
-}
-
-.app{
-    max-width:430px;
-    margin:auto;
-    height:100vh;
-    background:#f7f9fc;
-    box-shadow:0 0 25px rgba(0,0,0,.15);
-    position:relative;
-    overflow:hidden;
-}
-
-
-.sidebar{
-    position:absolute;
-    left:0;
-    top:0;
     height:100%;
+    font-family:"Arial",sans-serif;
+    background:#eaf4ff;
+}
+
+
+/* Ana uygulama */
+
+.app{
+    height:100vh;
+    width:100%;
+    display:flex;
+    overflow:hidden;
+    background:white;
+}
+
+
+/* Sol menü */
+
+.sidebar{
+    width:270px;
+    height:100%;
+    background:#f7fbff;
+    border-right:1px solid #dbe8f5;
+    padding:20px;
+    transition:.3s;
     z-index:10;
 }
 
 
-.chat{
-    height:100vh;
+.logo{
+    font-size:24px;
+    font-weight:bold;
+    color:#1683e8;
+    margin-bottom:25px;
 }
 
 
+.new-chat{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:18px;
+    background:#d9edff;
+    color:#1672c4;
+    font-size:16px;
+    cursor:pointer;
+}
+
+
+.chat-item{
+    margin-top:15px;
+    padding:12px;
+    border-radius:15px;
+    background:#ffffff;
+}
+
+
+/* Sohbet ekranı */
+
+.chat{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+
+/* Menü butonu */
+
+.menu-btn{
+    position:absolute;
+    top:15px;
+    left:15px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:none;
+    background:#e1f1ff;
+    font-size:22px;
+    cursor:pointer;
+    z-index:5;
+}
+
+
+/* Başlık */
+
 .header{
     text-align:center;
-    padding:18px;
+    padding:20px;
+    padding-top:65px;
+    background:white;
+    border-bottom:1px solid #eee;
 }
 
 
 .header h2{
-    font-size:22px;
+    margin:0;
+    color:#147bd1;
 }
 
+
+.header p{
+    margin:7px 0 0;
+    color:#777;
+}
+
+
+/* Mesaj alanı */
 
 .messages{
-    padding:15px;
-    padding-bottom:90px;
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+    background:#ffffff;
 }
 
 
-.ai,
-.user{
-    border-radius:20px;
-    padding:15px;
-    font-size:15px;
-    animation:gel .3s ease;
-}
-
+/* Yapay zeka mesajı */
 
 .ai{
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    max-width:80%;
+    background:#f0f5fb;
+    padding:14px 17px;
+    border-radius:20px;
+    border-bottom-left-radius:5px;
+    margin:10px 0;
+    color:#333;
+    line-height:1.5;
 }
 
+
+/* Kullanıcı mesajı */
 
 .user{
+    max-width:80%;
+    background:#bfe3ff;
+    padding:14px 17px;
+    border-radius:20px;
     border-bottom-right-radius:5px;
+    margin:10px 0 10px auto;
+    color:#003b6f;
+    line-height:1.5;
 }
 
 
+/* Yazı yazma alanı */
+
 .input-bar{
-    position:absolute;
-    bottom:0;
-    left:0;
-    width:100%;
-    border-radius:20px 20px 0 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    background:white;
+    border-top:1px solid #ddd;
 }
 
 
 .input-bar input{
-    height:45px;
+    flex:1;
+    height:48px;
+    border-radius:25px;
+    border:1px solid #ccdcec;
+    padding:0 18px;
     font-size:16px;
+    outline:none;
+}
+
+
+.input-bar input:focus{
+    border-color:#1683e8;
 }
 
 
 .input-bar button{
+    width:48px;
+    height:48px;
     border-radius:50%;
-    width:45px;
-    height:45px;
+    border:none;
+    background:#1683e8;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
 }
 
 
-@keyframes gel{
+/* Fotoğraf butonu varsa */
+
+input[type="file"]{
+    max-width:120px;
+}
+
+
+/* Sağlık kayıt kartları */
+
+.health-card{
+    background:#f3f8ff;
+    padding:15px;
+    margin:10px;
+    border-radius:18px;
+}
+
+
+/* Animasyon */
+
+.ai,
+.user{
+    animation:slide .25s ease;
+}
+
+
+@keyframes slide{
 
 from{
     opacity:0;
@@ -161,12 +231,48 @@ to{
 }
 
 
-@media(min-width:700px){
+/* Telefon görünümü */
+
+@media(max-width:700px){
+
+.sidebar{
+    position:absolute;
+    left:-280px;
+}
+
+
+.sidebar.active{
+    left:0;
+}
+
 
 .app{
-    margin-top:20px;
-    height:90vh;
-    border-radius:25px;
+    width:100%;
+    height:100vh;
+}
+
+
+.messages{
+    padding:15px;
+}
+
+
+.ai,
+.user{
+    max-width:90%;
+}
+
+}
+
+
+/* Büyük ekran */
+
+@media(min-width:800px){
+
+.app{
+    max-width:450px;
+    margin:auto;
+    box-shadow:0 0 30px rgba(0,0,0,.15);
 }
 
 }
