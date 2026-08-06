@@ -81,7 +81,7 @@ def register_routes(app):
                     )
 
                     file.save(upload_path)
-                    foto = upload_path
+                    foto = "uploads/" + filename
 
             if mesaj or foto:
 
