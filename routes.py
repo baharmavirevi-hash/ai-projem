@@ -9,7 +9,11 @@ from database import (
     save_chat,
     get_chats,
     save_health_record,
-    get_health_records
+    get_health_records,
+    save_period_record,
+    get_period_records,
+    save_diarrhea_record,
+    get_diarrhea_records
 )
 
 
@@ -31,17 +35,7 @@ def ask_mavigpt(message, image_path=None):
                 model="gemini-2.5-flash",
                 contents=[
                     image,
-                    f"""
-Sen MaviGPT'sin.
-
-Kurallar:
-- Türkçe konuş.
-- Samimi ve yardımsever ol.
-- Fotoğrafı ve mesajı birlikte değerlendir.
-
-Kullanıcı:
-{message}
-"""
+                    message
                 ]
             )
 
@@ -49,17 +43,7 @@ Kullanıcı:
 
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
-                contents=f"""
-Sen MaviGPT'sin.
-
-Kurallar:
-- Türkçe konuş.
-- Samimi ve yardımsever ol.
-- Kod, ders ve sohbet konularında yardımcı ol.
-
-Kullanıcı:
-{message}
-"""
+                contents=message
             )
 
 
@@ -68,13 +52,13 @@ Kullanıcı:
 
     except Exception as e:
 
-        return "Bir hata oluştu: " + str(e)
+        return "Hata oluştu: " + str(e)
 
 
 
 
 
-def save_uploaded_photo(app):
+def upload_photo(app):
 
     if "photo" not in request.files:
         return None, None
@@ -105,8 +89,14 @@ def save_uploaded_photo(app):
 
 
 
+
+
 def register_routes(app):
 
+
+    # -----------------------
+    # MaviGPT
+    # -----------------------
 
     @app.route("/", methods=["GET","POST"])
     def home():
@@ -121,10 +111,12 @@ def register_routes(app):
 
         if request.method == "POST":
 
+
             mesaj = request.form.get("mesaj")
 
 
-            foto, filename = save_uploaded_photo(app)
+            foto, filename = upload_photo(app)
+
 
 
             if mesaj or foto:
@@ -143,6 +135,7 @@ def register_routes(app):
                 )
 
 
+
         return render_template(
             "mavigpt.html",
             mesaj=mesaj,
@@ -156,24 +149,30 @@ def register_routes(app):
 
 
 
+
+    # -----------------------
+    # Cebimdeki Doktor
+    # -----------------------
+
     @app.route("/doctor", methods=["GET","POST"])
     def doctor():
 
-        mesaj = None
-        cevap = None
-        kayit_mesaji = None
-        filename = None
+        mesaj=None
+        cevap=None
+        filename=None
+        kayit_mesaji=None
 
 
-        if request.method == "POST":
+
+        if request.method=="POST":
 
 
-            mesaj = request.form.get("mesaj")
+            mesaj=request.form.get("mesaj")
 
 
-            symptom = request.form.get("symptom")
-            medicine = request.form.get("medicine")
-            note = request.form.get("note")
+            symptom=request.form.get("symptom")
+            medicine=request.form.get("medicine")
+            note=request.form.get("note")
 
 
 
@@ -185,25 +184,25 @@ def register_routes(app):
                     note
                 )
 
-                kayit_mesaji = "✅ Sağlık kaydı kaydedildi."
+                kayit_mesaji="✅ Kayıt edildi."
 
 
 
-            foto, filename = save_uploaded_photo(app)
+            foto,filename=upload_photo(app)
 
 
 
             if mesaj or foto:
 
 
-                cevap = ask_mavigpt(
+                cevap=ask_mavigpt(
                     mesaj or "Bu sağlık fotoğrafını incele.",
                     foto
                 )
 
 
 
-        kayitlar = get_health_records()
+        kayitlar=get_health_records()
 
 
 
@@ -214,4 +213,86 @@ def register_routes(app):
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji,
             foto_url=("uploads/"+filename) if filename else None
-    )
+        )
+
+
+
+
+
+
+
+    # -----------------------
+    # Regl Takvimi
+    # -----------------------
+
+    @app.route("/period", methods=["GET","POST"])
+    def period():
+
+
+        if request.method=="POST":
+
+
+            start=request.form.get("start_date")
+            end=request.form.get("end_date")
+            note=request.form.get("note")
+
+
+
+            save_period_record(
+                start,
+                end,
+                note
+            )
+
+
+
+        kayitlar=get_period_records()
+
+
+
+        return render_template(
+            "period.html",
+            kayitlar=kayitlar
+        )
+
+
+
+
+
+
+
+    # -----------------------
+    # İshal Takvimi
+    # -----------------------
+
+    @app.route("/diarrhea", methods=["GET","POST"])
+    def diarrhea():
+
+
+        if request.method=="POST":
+
+
+            date=request.form.get("date")
+            count=request.form.get("count")
+            condition=request.form.get("condition")
+            note=request.form.get("note")
+
+
+
+            save_diarrhea_record(
+                date,
+                count,
+                condition,
+                note
+            )
+
+
+
+        kayitlar=get_diarrhea_records()
+
+
+
+        return render_template(
+            "diarrhea.html",
+            kayitlar=kayitlar
+)
