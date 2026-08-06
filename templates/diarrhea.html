@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block title %}İshal Takvimi{% endblock %}
+
+{% block content %}
+
+
+<div class="app">
+
+
+<main class="chat">
+
+
+<header class="header">
+
+<h2>📅 İshal Takvimi</h2>
+
+<p>MaviGPT sağlık takibin</p>
+
+</header>
+
+
+
+<section class="messages">
+
+
+<div class="ai">
+
+🩺 Günlük durumunu kaydedebilirsin.
+
+</div>
+
+
+
+<form class="input-bar" method="POST">
+
+
+<input
+type="date"
+name="date"
+required>
+
+
+<input
+type="number"
+name="count"
+placeholder="Kaç kez?">
+
+
+<input
+type="text"
+name="condition"
+placeholder="Durum">
+
+
+<input
+type="text"
+name="note"
+placeholder="Not">
+
+
+<button type="submit">
+
+➤
+
+</button>
+
+
+</form>
+
+
+
+
+
+{% for kayit in kayitlar %}
+
+<div class="ai">
+
+🩺
+
+<br>
+
+Tarih:
+{{ kayit.date }}
+
+<br>
+
+Sayı:
+{{ kayit.count }}
+
+<br>
+
+Durum:
+{{ kayit.condition }}
+
+<br>
+
+Not:
+{{ kayit.note }}
+
+</div>
+
+
+{% endfor %}
+
+
+
+</section>
+
+
+
+</main>
+
+
+</div>
+
+
+{% endblock %}
