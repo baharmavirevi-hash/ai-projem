@@ -98,10 +98,11 @@ def register_routes(app):
 
                 sohbetler = get_chats("normal")
 
-        return render_template(
+    return render_template(
     "mavigpt.html",
     mesaj=mesaj,
     cevap=cevap,
     foto=foto,
+    foto_url=("uploads/" + filename) if foto else None,
     sohbetler=sohbetler
-        )
+    )
