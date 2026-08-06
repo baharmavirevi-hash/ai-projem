@@ -1,6 +1,5 @@
 import sqlite3
 
-
 DB_NAME = "mavigpt.db"
 
 
@@ -14,6 +13,7 @@ def init_db():
         chat_type TEXT,
         message TEXT,
         answer TEXT,
+        image TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
@@ -22,14 +22,14 @@ def init_db():
     conn.close()
 
 
-def save_chat(chat_type, message, answer):
+def save_chat(chat_type, message, answer, image=None):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     cursor.execute("""
-    INSERT INTO chats(chat_type, message, answer)
-    VALUES (?, ?, ?)
-    """, (chat_type, message, answer))
+    INSERT INTO chats(chat_type, message, answer, image)
+    VALUES (?, ?, ?, ?)
+    """, (chat_type, message, answer, image))
 
     conn.commit()
     conn.close()
@@ -40,10 +40,10 @@ def get_chats(chat_type):
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT id, message, answer
+    SELECT id, message, answer, image
     FROM chats
-    WHERE chat_type = ?
-    ORDER BY id DESC
+    WHERE chat_type=?
+    ORDER BY id ASC
     """, (chat_type,))
 
     chats = cursor.fetchall()
