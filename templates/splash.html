@@ -1,1 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<title>MaviGPT</title>
+
+<style>
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#eaf5ff;
+font-family:Arial;
+}
+
+.box{
+text-align:center;
+animation:fade 1.2s;
+}
+
+.logo{
+font-size:90px;
+}
+
+h1{
+color:#1786e6;
+margin:10px;
+}
+
+p{
+color:#666;
+font-size:20px;
+}
+
+.loader{
+margin:auto;
+margin-top:30px;
+width:55px;
+height:55px;
+border-radius:50%;
+border:6px solid #dceeff;
+border-top:6px solid #1786e6;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+100%{transform:rotate(360deg);}
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:scale(.9);
+}
+to{
+opacity:1;
+transform:scale(1);
+}
+}
+
+</style>
+
+<script>
+
+setTimeout(function(){
+
+window.location="/";
+
+},2000);
+
+</script>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="logo">🌊</div>
+
+<h1>MaviGPT</h1>
+
+<p>Akıllı Yapay Zeka Asistanın</p>
+
+<div class="loader"></div>
+
+</div>
+
+</body>
+</html>
