@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}Regl Takvimi{% endblock %}
+
+{% block content %}
+
+<div class="app">
+
+<main class="chat">
+
+<header class="header">
+
+<h2>📅 Regl Takvimi</h2>
+
+<p>MaviGPT sağlık takibin</p>
+
+</header>
+
+
+<section class="messages">
+
+
+<div class="ai">
+
+🌸 Regl takvimine hoş geldin.
+
+Başlangıç ve bitiş tarihini kaydedebilirsin.
+
+</div>
+
+
+
+<form class="input-bar" method="POST">
+
+
+<input
+type="date"
+name="start_date"
+required>
+
+
+<input
+type="date"
+name="end_date">
+
+
+<input
+type="text"
+name="note"
+placeholder="Not ekle...">
+
+
+<button type="submit">
+
+➤
+
+</button>
+
+
+</form>
+
+
+
+{% for kayit in kayitlar %}
+
+<div class="ai">
+
+🌸
+
+<br>
+
+Başlangıç:
+{{ kayit.start_date }}
+
+<br>
+
+Bitiş:
+{{ kayit.end_date }}
+
+<br>
+
+Not:
+{{ kayit.note }}
+
+</div>
+
+
+{% endfor %}
+
+
+
+</section>
+
+
+</main>
+
+
+</div>
+
+
+{% endblock %}
