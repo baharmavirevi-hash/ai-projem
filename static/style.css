@@ -1,99 +1,103 @@
-* {
+*{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-html,body {
+body{
     width:100%;
-    height:100%;
-    overflow:hidden;
+    height:100vh;
     font-family:Arial,sans-serif;
     background:#eaf7ff;
+    overflow:hidden;
 }
 
 
-.app {
+.app{
     width:100%;
     height:100vh;
     display:flex;
 }
 
 
+/* MENÜ */
 
-/* PC MENÜ */
-
-.sidebar {
+.sidebar{
 
     width:260px;
-    background:#b7e4ff;
+    background:#bde8ff;
     padding:15px;
 
 }
 
 
-.logo {
+.logo{
 
     font-size:25px;
     font-weight:bold;
-    color:#0077cc;
+    color:#008cff;
     margin-bottom:20px;
 
 }
 
 
-.new-chat {
+.new-chat{
 
     width:100%;
-    padding:15px;
+    padding:14px;
     border:none;
     border-radius:20px;
-
     background:#008cff;
     color:white;
-
     font-size:16px;
 
 }
 
 
-
-.chat-item {
+.chat-item{
 
     background:white;
-    margin-top:12px;
     padding:12px;
     border-radius:15px;
+    margin-top:12px;
 
 }
+
 
 
 
 /* CHAT */
 
-.chat {
+.chat{
 
     flex:1;
-    height:100%;
+    height:100vh;
     display:flex;
     flex-direction:column;
+    position:relative;
 
 }
 
 
-.header {
+
+.menu-btn{
+
+    display:none;
+
+}
+
+
+.header{
 
     background:white;
-    padding:15px;
     text-align:center;
-
-    border-bottom:1px solid #ddd;
+    padding:15px;
 
 }
 
 
 
-.header h2 {
+.header h2{
 
     color:#008cff;
 
@@ -101,7 +105,7 @@ html,body {
 
 
 
-.messages {
+.messages{
 
     flex:1;
     overflow-y:auto;
@@ -111,51 +115,41 @@ html,body {
 
 
 
-/* BALONLAR */
-
 .ai,
-.user {
-
-    padding:14px 16px;
-    margin-bottom:15px;
-
-    border-radius:20px;
+.user{
 
     max-width:85%;
-
-    font-size:16px;
-
+    padding:14px;
+    border-radius:20px;
+    margin-bottom:15px;
     line-height:1.5;
 
 }
 
 
-.ai {
+
+.ai{
 
     background:white;
-
     margin-right:auto;
 
 }
 
 
 
-.user {
+.user{
 
     background:#008cff;
-
     color:white;
-
     margin-left:auto;
 
 }
 
 
 
+.chat-image{
 
-.chat-image {
-
-    max-width:100%;
+    max-width:250px;
     border-radius:15px;
 
 }
@@ -165,35 +159,23 @@ html,body {
 
 /* YAZMA ALANI */
 
-
-.input-bar {
-
-    width:100%;
+.input-bar{
 
     display:flex;
-
     gap:8px;
-
     padding:10px;
-
     background:white;
 
 }
 
 
-
-.input-bar input[type="text"] {
+.input-bar input[type="text"]{
 
     flex:1;
-
     height:45px;
-
     border-radius:25px;
-
     border:1px solid #ccc;
-
     padding:0 18px;
-
     font-size:16px;
 
 }
@@ -201,19 +183,14 @@ html,body {
 
 
 .upload-btn,
-.input-bar button {
+.input-bar button{
 
     width:45px;
     height:45px;
-
     border-radius:50%;
-
     border:none;
-
     background:#008cff;
-
     color:white;
-
     font-size:20px;
 
 }
@@ -226,53 +203,100 @@ html,body {
 @media(max-width:700px){
 
 
-    .app {
+.app{
 
-        display:block;
+    display:block;
 
-    }
-
-
-    .sidebar {
-
-        display:none;
-
-    }
+}
 
 
-    .chat {
 
-        width:100%;
-        height:100vh;
+.sidebar{
 
-    }
+    position:fixed;
+    left:-270px;
+    top:0;
 
+    height:100vh;
 
-    .header {
+    z-index:20;
 
-        height:70px;
+    transition:0.3s;
 
-    }
-
-
-    .messages {
-
-        padding-bottom:80px;
-
-    }
+}
 
 
-    .input-bar {
 
-        position:fixed;
+.sidebar.active{
 
-        bottom:0;
+    left:0;
 
-        left:0;
-
-        right:0;
-
-    }
+}
 
 
-    }
+
+.menu-btn{
+
+    display:block;
+
+    position:absolute;
+
+    top:12px;
+    left:12px;
+
+    width:45px;
+    height:45px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#008cff;
+
+    color:white;
+
+    font-size:25px;
+
+    z-index:10;
+
+}
+
+
+
+.header{
+
+    padding-left:65px;
+
+}
+
+
+
+.chat{
+
+    width:100%;
+
+}
+
+
+
+.input-bar{
+
+    position:fixed;
+
+    bottom:0;
+    left:0;
+    right:0;
+
+}
+
+
+
+.messages{
+
+    padding-bottom:80px;
+
+}
+
+
+
+}
