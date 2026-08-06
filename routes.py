@@ -18,6 +18,7 @@ client = genai.Client(
 )
 
 
+
 def ask_mavigpt(message, image_path=None):
 
     try:
@@ -34,7 +35,7 @@ def ask_mavigpt(message, image_path=None):
 Sen MaviGPT'sin.
 
 Kurallar:
-- Her zaman Türkçe konuş.
+- Türkçe konuş.
 - Samimi ve yardımsever ol.
 - Fotoğrafı ve mesajı birlikte değerlendir.
 
@@ -52,7 +53,7 @@ Kullanıcı:
 Sen MaviGPT'sin.
 
 Kurallar:
-- Her zaman Türkçe konuş.
+- Türkçe konuş.
 - Samimi ve yardımsever ol.
 - Kod, ders ve sohbet konularında yardımcı ol.
 
@@ -67,30 +68,51 @@ Kullanıcı:
 
     except Exception as e:
 
-        hata = str(e)
+        return "Bir hata oluştu: " + str(e)
 
-        if "429" in hata or "RESOURCE_EXHAUSTED" in hata:
 
-            return """
-🤖 MaviGPT şu anda biraz yoğun.
 
-Gemini kullanım kotası dolmuş olabilir.
-Biraz sonra tekrar deneyebilirsin 💙
-"""
 
-        return "Bir hata oluştu: " + hata
+
+def save_uploaded_photo(app):
+
+    if "photo" not in request.files:
+        return None, None
+
+
+    file = request.files["photo"]
+
+
+    if file.filename == "":
+        return None, None
+
+
+    filename = secure_filename(file.filename)
+
+
+    path = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        filename
+    )
+
+
+    file.save(path)
+
+
+    return path, filename
+
+
 
 
 
 def register_routes(app):
 
 
-    @app.route("/", methods=["GET", "POST"])
+    @app.route("/", methods=["GET","POST"])
     def home():
 
         mesaj = None
         cevap = None
-        foto = None
         filename = None
 
 
@@ -102,29 +124,11 @@ def register_routes(app):
             mesaj = request.form.get("mesaj")
 
 
-            if "photo" in request.files:
-
-                file = request.files["photo"]
-
-
-                if file.filename:
-
-                    filename = secure_filename(file.filename)
-
-
-                    upload_path = os.path.join(
-                        app.config["UPLOAD_FOLDER"],
-                        filename
-                    )
-
-
-                    file.save(upload_path)
-
-                    foto = upload_path
-
+            foto, filename = save_uploaded_photo(app)
 
 
             if mesaj or foto:
+
 
                 cevap = ask_mavigpt(
                     mesaj or "Bu fotoğrafı incele.",
@@ -139,27 +143,25 @@ def register_routes(app):
                 )
 
 
-                sohbetler = get_chats("normal")
-
-
-
         return render_template(
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
-            foto_url=("uploads/" + filename) if foto else None,
+            foto_url=("uploads/"+filename) if filename else None,
             sohbetler=sohbetler
         )
 
 
 
-    @app.route("/doctor", methods=["GET", "POST"])
+
+
+
+    @app.route("/doctor", methods=["GET","POST"])
     def doctor():
 
         mesaj = None
         cevap = None
         kayit_mesaji = None
-        foto = None
         filename = None
 
 
@@ -174,6 +176,7 @@ def register_routes(app):
             note = request.form.get("note")
 
 
+
             if symptom or medicine or note:
 
                 save_health_record(
@@ -185,27 +188,23 @@ def register_routes(app):
                 kayit_mesaji = "✅ Sağlık kaydı kaydedildi."
 
 
-            if mesaj:
+
+            foto, filename = save_uploaded_photo(app)
+
+
+
+            if mesaj or foto:
+
 
                 cevap = ask_mavigpt(
-                    f"""
-Sen Cebimdeki Doktor'sun.
-
-Kurallar:
-- Türkçe konuş.
-- Samimi ve anlaşılır cevap ver.
-- Tanı koyma.
-- Genel sağlık bilgisi ver.
-- Gerektiğinde doktora başvurmasını öner.
-
-Kullanıcının şikayeti:
-
-{mesaj}
-"""
+                    mesaj or "Bu sağlık fotoğrafını incele.",
+                    foto
                 )
 
 
+
         kayitlar = get_health_records()
+
 
 
         return render_template(
@@ -213,5 +212,6 @@ Kullanıcının şikayeti:
             mesaj=mesaj,
             cevap=cevap,
             kayitlar=kayitlar,
-            kayit_mesaji=kayit_mesaji
-            )
+            kayit_mesaji=kayit_mesaji,
+            foto_url=("uploads/"+filename) if filename else None
+    )
