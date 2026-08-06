@@ -5,7 +5,12 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from google import genai
 
-from database import save_chat, get_chats
+from database import (
+    save_chat,
+    get_chats,
+    save_health_record,
+    get_health_records
+)
 
 
 client = genai.Client(
@@ -32,7 +37,6 @@ Sen MaviGPT'sin.
 Kurallar:
 - Her zaman Türkçe konuş.
 - Samimi ve yardımsever ol.
-- Fotoğrafı ve mesajı birlikte değerlendir.
 
 Kullanıcı:
 {message}
@@ -91,6 +95,7 @@ def register_routes(app):
         foto = None
         filename = None
 
+
         sohbetler = get_chats("normal")
 
 
@@ -103,14 +108,17 @@ def register_routes(app):
 
                 file = request.files["photo"]
 
+
                 if file.filename != "":
 
                     filename = secure_filename(file.filename)
+
 
                     upload_path = os.path.join(
                         app.config["UPLOAD_FOLDER"],
                         filename
                     )
+
 
                     file.save(upload_path)
 
@@ -145,21 +153,38 @@ def register_routes(app):
             foto_url=("uploads/" + filename) if foto else None,
             sohbetler=sohbetler
         )
-
-
-
-
-
-    @app.route("/doctor", methods=["GET", "POST"])
+                @app.route("/doctor", methods=["GET", "POST"])
     def doctor():
 
         mesaj = None
         cevap = None
 
+        kayit_mesaji = None
+
 
         if request.method == "POST":
 
+
             mesaj = request.form.get("mesaj")
+
+            symptom = request.form.get("symptom")
+
+            medicine = request.form.get("medicine")
+
+            note = request.form.get("note")
+
+
+
+            if symptom or medicine or note:
+
+                save_health_record(
+                    symptom,
+                    medicine,
+                    note
+                )
+
+                kayit_mesaji = "✅ Sağlık kaydı kaydedildi."
+
 
 
             if mesaj:
@@ -173,7 +198,7 @@ Kurallar:
 - Samimi ve anlaşılır cevap ver.
 - Tanı koyma.
 - Genel sağlık bilgisi ver.
-- Gerekirse doktora başvurmasını öner.
+- Gerektiğinde doktora başvurmasını öner.
 
 Kullanıcının şikayeti:
 
@@ -182,8 +207,15 @@ Kullanıcının şikayeti:
                 )
 
 
+
+        kayitlar = get_health_records()
+
+
+
         return render_template(
             "doctor.html",
             mesaj=mesaj,
-            cevap=cevap
-    )
+            cevap=cevap,
+            kayitlar=kayitlar,
+            kayit_mesaji=kayit_mesaji
+        )
