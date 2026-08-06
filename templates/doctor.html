@@ -20,60 +20,35 @@
             🩺 Cebimdeki Doktor
         </div>
 
+        <div class="chat-item" onclick="window.location='/period'">
+            📅 Regl Takvimi
+        </div>
+
+        <div class="chat-item" onclick="window.location='/diarrhea'">
+            📅 İshal Takvimi
+        </div>
+
     </aside>
 
-
     <main class="chat">
-
 
         <button class="menu-btn" onclick="toggleMenu()">
             ☰
         </button>
 
-
         <header class="header">
-
-
-            <button class="menu-three" onclick="openHealthMenu()">
-                ⋮
-            </button>
-
 
             <h2>
                 🩺 Cebimdeki Doktor
             </h2>
 
-
             <p>
                 MaviGPT sağlık yardımcın
             </p>
 
-
-
-            <div class="health-menu" id="healthMenu">
-
-
-                <button onclick="window.location='/period'">
-                    📅 Regl Takvimi
-                </button>
-
-
-                <button onclick="window.location='/diarrhea'">
-                    📅 İshal Takvimi
-                </button>
-
-
-            </div>
-
-
         </header>
 
-
-
-
         <section class="messages">
-
-
 
             <div class="ai">
 
@@ -88,9 +63,6 @@
                 Belirtilerini yazabilir veya fotoğraf gönderebilirsin.
 
             </div>
-
-
-
 
             {% if foto_url %}
 
@@ -108,10 +80,6 @@
 
             {% endif %}
 
-
-
-
-
             {% if mesaj %}
 
             <div class="user">
@@ -121,10 +89,6 @@
             </div>
 
             {% endif %}
-
-
-
-
 
             {% if cevap %}
 
@@ -136,13 +100,7 @@
 
             {% endif %}
 
-
-
         </section>
-
-
-
-
 
         <form
         class="input-bar"
@@ -150,16 +108,10 @@
         method="POST"
         enctype="multipart/form-data">
 
-
-
             <label for="doctor_photo"
             class="upload-btn">
-
                 📎
-
             </label>
-
-
 
             <input
             type="file"
@@ -168,65 +120,28 @@
             accept="image/*"
             hidden>
 
-
-
-
-
             <input
             type="text"
             name="mesaj"
             placeholder="Şikayetini yaz..."
             autocomplete="off">
 
-
-
-
-
             <button type="submit">
-
                 ➤
-
             </button>
-
-
 
         </form>
 
-
-
     </main>
-
 
 </div>
 
-
-
-
-
 <script>
 
-
-function toggleMenu(){
-
-    document
-    .getElementById("sidebar")
-    .classList.toggle("active");
-
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("active");
 }
-
-
-
-function openHealthMenu(){
-
-    document
-    .getElementById("healthMenu")
-    .classList.toggle("show");
-
-}
-
 
 </script>
-
-
 
 {% endblock %}
