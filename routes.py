@@ -13,8 +13,11 @@ client = genai.Client(
 
 
 def ask_mavigpt(message, image_path=None):
+
     try:
+
         if image_path:
+
             image = Image.open(image_path)
 
             response = client.models.generate_content(
@@ -36,6 +39,7 @@ Kullanıcı:
             )
 
         else:
+
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=f"""
@@ -51,13 +55,18 @@ Kullanıcı:
 """
             )
 
+
         return response.text
 
+
     except Exception as e:
+
         return "Hata oluştu: " + str(e)
 
 
+
 def register_routes(app):
+
 
     @app.route("/", methods=["GET", "POST"])
     def home():
@@ -67,33 +76,48 @@ def register_routes(app):
         foto = None
         filename = None
 
+
         sohbetler = get_chats("normal")
+
 
         if request.method == "POST":
 
+
             mesaj = request.form.get("mesaj")
+
 
             if "photo" in request.files:
 
+
                 file = request.files["photo"]
 
+
                 if file.filename != "":
+
+
                     filename = secure_filename(file.filename)
+
 
                     upload_path = os.path.join(
                         app.config["UPLOAD_FOLDER"],
                         filename
                     )
 
+
                     file.save(upload_path)
+
                     foto = upload_path
 
+
+
             if mesaj or foto:
+
 
                 cevap = ask_mavigpt(
                     mesaj or "Bu fotoğrafı incele.",
                     foto
                 )
+
 
                 save_chat(
                     "normal",
@@ -101,7 +125,9 @@ def register_routes(app):
                     cevap
                 )
 
+
                 sohbetler = get_chats("normal")
+
 
 
         return render_template(
@@ -111,4 +137,14 @@ def register_routes(app):
             foto=foto,
             foto_url=("uploads/" + filename) if foto else None,
             sohbetler=sohbetler
-                    )
+        )
+
+
+
+
+    @app.route("/doctor")
+    def doctor():
+
+        return render_template(
+            "doctor.html"
+        )
