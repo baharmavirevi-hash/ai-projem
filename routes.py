@@ -3,7 +3,9 @@ import os
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google import genai
+
 from database import save_chat, get_chats
+
 
 client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
@@ -25,13 +27,14 @@ Sen MaviGPT'sin.
 Kurallar:
 - Her zaman Türkçe konuş.
 - Samimi ve yardımsever ol.
-- Fotoğrafı ve kullanıcının mesajını birlikte değerlendir.
+- Fotoğrafı ve mesajı birlikte değerlendir.
 
-Kullanıcının mesajı:
+Kullanıcı:
 {message}
 """
                 ]
             )
+
         else:
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
@@ -43,7 +46,7 @@ Kurallar:
 - Samimi ve yardımsever ol.
 - Kod, ders ve sohbet konularında yardımcı ol.
 
-Kullanıcının mesajı:
+Kullanıcı:
 {message}
 """
             )
@@ -62,6 +65,7 @@ def register_routes(app):
         mesaj = None
         cevap = None
         foto = None
+        filename = None
 
         sohbetler = get_chats("normal")
 
@@ -70,6 +74,7 @@ def register_routes(app):
             mesaj = request.form.get("mesaj")
 
             if "photo" in request.files:
+
                 file = request.files["photo"]
 
                 if file.filename != "":
@@ -97,11 +102,13 @@ def register_routes(app):
                 )
 
                 sohbetler = get_chats("normal")
-                        return render_template(
+
+
+        return render_template(
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
             foto=foto,
             foto_url=("uploads/" + filename) if foto else None,
             sohbetler=sohbetler
-                        )
+                    )
