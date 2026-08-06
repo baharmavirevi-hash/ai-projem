@@ -159,6 +159,8 @@ def register_routes(app):
         mesaj = None
         cevap = None
         kayit_mesaji = None
+        foto = None
+        filename = None
 
 
         if request.method == "POST":
