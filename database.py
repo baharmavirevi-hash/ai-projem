@@ -103,6 +103,21 @@ def init_db():
     conn.commit()
 
     conn.close()
+    cursor.execute("""
+CREATE TABLE IF NOT EXISTS medicines (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT,
+
+    dose TEXT,
+
+    hour TEXT,
+
+    start_date TEXT
+
+)
+""")
 
 
 
