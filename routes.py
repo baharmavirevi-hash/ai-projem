@@ -153,7 +153,7 @@ def register_routes(app):
             foto_url=("uploads/" + filename) if foto else None,
             sohbetler=sohbetler
         )
-                @app.route("/doctor", methods=["GET", "POST"])
+            @app.route("/doctor", methods=["GET", "POST"])
     def doctor():
 
         mesaj = None
