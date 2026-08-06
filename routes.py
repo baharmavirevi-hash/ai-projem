@@ -18,7 +18,6 @@ client = genai.Client(
 )
 
 
-
 def ask_mavigpt(message, image_path=None):
 
     try:
@@ -37,6 +36,7 @@ Sen MaviGPT'sin.
 Kurallar:
 - Her zaman Türkçe konuş.
 - Samimi ve yardımsever ol.
+- Fotoğrafı ve mesajı birlikte değerlendir.
 
 Kullanıcı:
 {message}
@@ -82,8 +82,6 @@ Biraz sonra tekrar deneyebilirsin 💙
 
 
 
-
-
 def register_routes(app):
 
 
@@ -109,7 +107,7 @@ def register_routes(app):
                 file = request.files["photo"]
 
 
-                if file.filename != "":
+                if file.filename:
 
                     filename = secure_filename(file.filename)
 
@@ -149,16 +147,17 @@ def register_routes(app):
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
-            foto=foto,
             foto_url=("uploads/" + filename) if foto else None,
             sohbetler=sohbetler
         )
-            @app.route("/doctor", methods=["GET", "POST"])
+
+
+
+    @app.route("/doctor", methods=["GET", "POST"])
     def doctor():
 
         mesaj = None
         cevap = None
-
         kayit_mesaji = None
 
 
@@ -167,12 +166,10 @@ def register_routes(app):
 
             mesaj = request.form.get("mesaj")
 
+
             symptom = request.form.get("symptom")
-
             medicine = request.form.get("medicine")
-
             note = request.form.get("note")
-
 
 
             if symptom or medicine or note:
@@ -184,7 +181,6 @@ def register_routes(app):
                 )
 
                 kayit_mesaji = "✅ Sağlık kaydı kaydedildi."
-
 
 
             if mesaj:
@@ -207,9 +203,7 @@ Kullanıcının şikayeti:
                 )
 
 
-
         kayitlar = get_health_records()
-
 
 
         return render_template(
@@ -218,4 +212,4 @@ Kullanıcının şikayeti:
             cevap=cevap,
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji
-        )
+            )
