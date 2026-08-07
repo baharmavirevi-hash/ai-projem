@@ -72,3 +72,122 @@ def init_db():
 
     conn.commit()
     conn.close()
+    def save_chat(chat_type, message, reply):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO messages (chat_type, message, reply)
+    VALUES (?, ?, ?)
+    """, (chat_type, message, reply))
+
+    conn.commit()
+    conn.close()
+
+
+def get_chats(chat_type):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT *
+    FROM messages
+    WHERE chat_type = ?
+    ORDER BY id DESC
+    """, (chat_type,))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+
+def save_health_record(symptom, medicine, note):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO health_records(symptom, medicine, note)
+    VALUES (?, ?, ?)
+    """, (symptom, medicine, note))
+
+    conn.commit()
+    conn.close()
+
+
+def get_health_records():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT *
+    FROM health_records
+    ORDER BY id DESC
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+
+def save_period_record(start_date, end_date, note):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO period_records(start_date, end_date, note)
+    VALUES (?, ?, ?)
+    """, (start_date, end_date, note))
+
+    conn.commit()
+    conn.close()
+
+
+def get_period_records():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT *
+    FROM period_records
+    ORDER BY id DESC
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+
+def save_diarrhea_record(date, count, condition, note):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO diarrhea_records(date, count, condition, note)
+    VALUES (?, ?, ?, ?)
+    """, (date, count, condition, note))
+
+    conn.commit()
+    conn.close()
+
+
+def get_diarrhea_records():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT *
+    FROM diarrhea_records
+    ORDER BY id DESC
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
