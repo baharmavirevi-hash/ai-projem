@@ -1,232 +1,1058 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
 
-{% block title %}Cebimdeki Doktor{% endblock %}
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-{% block content %}
+    <title>Cebimdeki Doktor</title>
 
-<div class="app">
+    <style>
 
-    <aside class="sidebar" id="sidebar">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        <div class="logo">
-            🌊 MaviGPT
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Arial, sans-serif;
+
+            background: #eef8ff;
+            color: #17324d;
+
+            min-height: 100vh;
+        }
+
+        /* =========================
+           ÜST BAR
+        ========================= */
+
+        .topbar {
+            height: 68px;
+
+            background: rgba(255,255,255,0.96);
+
+            border-bottom: 1px solid #dcecf5;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 18px;
+
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            z-index: 1000;
+
+            box-shadow: 0 3px 15px rgba(60,120,160,0.08);
+        }
+
+        .menu-btn {
+            width: 46px;
+            height: 46px;
+
+            border: none;
+            border-radius: 14px;
+
+            background: #e6f7ff;
+
+            color: #168fc2;
+
+            font-size: 25px;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand {
+            margin-left: 14px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 13px;
+
+            background: linear-gradient(
+                135deg,
+                #61d5ff,
+                #168fc2
+            );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+        }
+
+        .brand-text h1 {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: #7b9bad;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+
+            top: 68px;
+            left: 0;
+            bottom: 0;
+
+            width: 280px;
+
+            background: #ffffff;
+
+            border-right: 1px solid #dcecf5;
+
+            padding: 22px 15px;
+
+            z-index: 900;
+
+            transform: translateX(-100%);
+
+            transition: transform 0.25s ease;
+
+            box-shadow: 5px 0 25px rgba(40,100,130,0.08);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-title {
+            font-size: 12px;
+
+            color: #91a8b7;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin: 5px 12px 12px;
+        }
+
+        .menu-item {
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            padding: 14px 13px;
+
+            margin-bottom: 6px;
+
+            border-radius: 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            text-decoration: none;
+
+            color: #36566c;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .menu-item:hover {
+            background: #edf9ff;
+            color: #138dbd;
+        }
+
+        .menu-icon {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 12px;
+
+            background: #f0f9fd;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+        }
+
+        .doctor-menu {
+            background: #e7f8ff;
+
+            color: #138dbd;
+        }
+
+
+        /* =========================
+           ARKA PLAN
+        ========================= */
+
+        .overlay {
+            position: fixed;
+
+            inset: 68px 0 0 0;
+
+            background: rgba(15,40,55,0.25);
+
+            z-index: 800;
+
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+
+        /* =========================
+           ANA ALAN
+        ========================= */
+
+        .main {
+            padding-top: 68px;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+        }
+
+        .content {
+            width: 100%;
+
+            max-width: 850px;
+
+            padding: 35px 20px 120px;
+        }
+
+
+        /* =========================
+           HOŞ GELDİN KARTI
+        ========================= */
+
+        .welcome-card {
+            background: linear-gradient(
+                135deg,
+                #ffffff,
+                #eaf9ff
+            );
+
+            border: 1px solid #d9eff8;
+
+            border-radius: 28px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 12px 35px rgba(40,120,160,0.09);
+
+            margin-bottom: 22px;
+        }
+
+        .welcome-icon {
+            font-size: 42px;
+
+            margin-bottom: 8px;
+        }
+
+        .welcome-card h2 {
+            font-size: 28px;
+
+            color: #183c54;
+
+            margin-bottom: 8px;
+        }
+
+        .welcome-card p {
+            color: #6c8798;
+
+            line-height: 1.6;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           HIZLI MENÜ
+        ========================= */
+
+        .section-title {
+            font-size: 17px;
+
+            margin: 24px 5px 12px;
+
+            color: #294c61;
+        }
+
+        .quick-grid {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+        }
+
+        .quick-card {
+            background: white;
+
+            border: 1px solid #dceef5;
+
+            border-radius: 20px;
+
+            padding: 17px;
+
+            text-decoration: none;
+
+            color: #24485d;
+
+            box-shadow: 0 6px 20px rgba(50,110,140,0.06);
+
+            transition: 0.2s;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 25px rgba(50,110,140,0.12);
+        }
+
+        .quick-card .icon {
+            font-size: 28px;
+
+            margin-bottom: 8px;
+        }
+
+        .quick-card strong {
+            display: block;
+
+            margin-bottom: 4px;
+        }
+
+        .quick-card span {
+            font-size: 12px;
+
+            color: #8aa0ad;
+        }
+
+
+        /* =========================
+           SOHBET KARTI
+        ========================= */
+
+        .chat-card {
+            background: white;
+
+            border: 1px solid #dceef5;
+
+            border-radius: 26px;
+
+            padding: 20px;
+
+            margin-top: 22px;
+
+            box-shadow: 0 8px 25px rgba(50,110,140,0.07);
+        }
+
+        .chat-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+        }
+
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 50%;
+
+            background: #e4f7ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+        }
+
+        .chat-header strong {
+            display: block;
+        }
+
+        .chat-header span {
+            font-size: 12px;
+
+            color: #79a0b3;
+        }
+
+
+        /* =========================
+           MESAJ
+        ========================= */
+
+        .assistant-message {
+            background: #effaff;
+
+            border-radius: 18px;
+
+            padding: 15px;
+
+            color: #34586b;
+
+            line-height: 1.5;
+
+            margin-bottom: 15px;
+        }
+
+        .answer {
+            background: #f7fbfd;
+
+            border-left: 4px solid #48bde9;
+
+            border-radius: 12px;
+
+            padding: 14px;
+
+            margin-top: 15px;
+
+            white-space: pre-wrap;
+
+            line-height: 1.55;
+        }
+
+
+        /* =========================
+           INPUT
+        ========================= */
+
+        .chat-form {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            border: 1px solid #d7eaf2;
+
+            background: #fbfdfe;
+
+            padding: 7px;
+
+            border-radius: 18px;
+        }
+
+        .chat-input {
+            flex: 1;
+
+            border: none;
+
+            outline: none;
+
+            background: transparent;
+
+            padding: 12px;
+
+            font-size: 15px;
+
+            min-width: 0;
+        }
+
+        .photo-label {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 13px;
+
+            background: #eaf8fd;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+
+            cursor: pointer;
+        }
+
+        .photo-input {
+            display: none;
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+
+            border: none;
+
+            border-radius: 14px;
+
+            background: #1ca5d6;
+
+            color: white;
+
+            font-size: 19px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           KAYIT FORMU
+        ========================= */
+
+        .record-card {
+            background: white;
+
+            border-radius: 24px;
+
+            padding: 20px;
+
+            margin-top: 20px;
+
+            border: 1px solid #dceef5;
+        }
+
+        .record-card h3 {
+            margin-bottom: 15px;
+        }
+
+        .record-input {
+            width: 100%;
+
+            border: 1px solid #dceaf1;
+
+            border-radius: 13px;
+
+            padding: 12px;
+
+            margin-bottom: 10px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            background: #fbfdfe;
+        }
+
+        .record-input:focus {
+            border-color: #58c3e8;
+        }
+
+        .record-btn {
+            border: none;
+
+            background: #1ca5d6;
+
+            color: white;
+
+            border-radius: 13px;
+
+            padding: 12px 18px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .success {
+            background: #eaf9ef;
+
+            color: #34814c;
+
+            padding: 12px;
+
+            border-radius: 12px;
+
+            margin-bottom: 12px;
+        }
+
+
+        /* =========================
+           MOBİL
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                height: 62px;
+
+                padding: 0 12px;
+            }
+
+            .sidebar {
+                top: 62px;
+
+                width: 285px;
+            }
+
+            .main {
+                padding-top: 62px;
+            }
+
+            .content {
+                padding: 20px 13px 110px;
+            }
+
+            .welcome-card {
+                padding: 22px;
+
+                border-radius: 23px;
+            }
+
+            .welcome-card h2 {
+                font-size: 24px;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .quick-card {
+                padding: 14px;
+            }
+
+            .brand-text h1 {
+                font-size: 16px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     ÜST BAR
+========================= -->
+
+<header class="topbar">
+
+    <button class="menu-btn" onclick="toggleMenu()">
+        ☰
+    </button>
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🩺
         </div>
 
-        <button class="new-chat" onclick="window.location='/'">
-            ＋ MaviGPT
-        </button>
+        <div class="brand-text">
 
-        <div class="chat-item">
-            🩺 Cebimdeki Doktor
+            <h1>Cebimdeki Doktor</h1>
+
+            <p>MaviGPT sağlık yardımcın</p>
+
         </div>
 
-    </aside>
+    </div>
+
+</header>
 
 
-    <main class="chat">
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside id="sidebar" class="sidebar">
+
+    <div class="sidebar-title">
+        Sağlık
+    </div>
 
 
-        <button class="menu-btn" onclick="toggleMenu()">
-            ☰
-        </button>
+    <a href="/doctor"
+       class="menu-item doctor-menu">
+
+        <div class="menu-icon">
+            🩺
+        </div>
+
+        <span>
+            Cebimdeki Doktor
+        </span>
+
+    </a>
 
 
-        <header class="header">
+    <a href="/health-history"
+       class="menu-item">
+
+        <div class="menu-icon">
+            📋
+        </div>
+
+        <span>
+            Sağlık Geçmişim
+        </span>
+
+    </a>
 
 
-            <button class="menu-three" onclick="openHealthMenu()">
-                ⋮
-            </button>
+    <a href="/period"
+       class="menu-item">
 
+        <div class="menu-icon">
+            🩸
+        </div>
+
+        <span>
+            Regl Takibi
+        </span>
+
+    </a>
+
+
+    <a href="/diarrhea"
+       class="menu-item">
+
+        <div class="menu-icon">
+            💧
+        </div>
+
+        <span>
+            Sindirim Takibi
+        </span>
+
+    </a>
+
+
+    <button class="menu-item">
+
+        <div class="menu-icon">
+            ⚙️
+        </div>
+
+        <span>
+            Ayarlar
+        </span>
+
+    </button>
+
+</aside>
+
+
+<div id="overlay"
+     class="overlay"
+     onclick="toggleMenu()">
+</div>
+
+
+<!-- =========================
+     ANA SAYFA
+========================= -->
+
+<main class="main">
+
+    <div class="content">
+
+
+        <!-- HOŞ GELDİN -->
+
+        <section class="welcome-card">
+
+            <div class="welcome-icon">
+                🩺
+            </div>
 
             <h2>
-                🩺 Cebimdeki Doktor
+                Merhaba Bahar! 👋
             </h2>
 
-
             <p>
-                MaviGPT sağlık yardımcın
-            </p>
-
-
-
-            <div class="health-menu" id="healthMenu">
-
-
-                <button onclick="window.location='/period'">
-                    📅 Regl Takvimi
-                </button>
-
-
-                <button onclick="window.location='/diarrhea'">
-                    📅 İshal Takvimi
-                </button>
-
-
-            </div>
-
-
-        </header>
-
-
-
-
-        <section class="messages">
-
-
-
-            <div class="ai">
-
-                👋 Merhaba Bahar!
-
-                <br><br>
-
                 Ben Cebimdeki Doktor.
-
-                <br><br>
-
-                Belirtilerini yazabilir veya fotoğraf gönderebilirsin.
-
-            </div>
-
-
-
-
-            {% if foto_url %}
-
-            <div class="user">
-
-                📷 Gönderilen fotoğraf:
-
-                <br><br>
-
-                <img
-                src="{{ url_for('static', filename=foto_url) }}"
-                style="max-width:250px;border-radius:15px;">
-
-            </div>
-
-            {% endif %}
-
-
-
-
-
-            {% if mesaj %}
-
-            <div class="user">
-
-                {{ mesaj }}
-
-            </div>
-
-            {% endif %}
-
-
-
-
-
-            {% if cevap %}
-
-            <div class="ai">
-
-                {{ cevap }}
-
-            </div>
-
-            {% endif %}
-
-
+                Belirtilerini yazabilirsin.
+                Sana genel sağlık bilgileri ve
+                öneriler sunabilirim.
+            </p>
 
         </section>
 
 
+        <!-- HIZLI ERİŞİM -->
+
+        <h3 class="section-title">
+            ✨ Hızlı erişim
+        </h3>
 
 
-
-        <form
-        class="input-bar"
-        action="/doctor"
-        method="POST"
-        enctype="multipart/form-data">
+        <div class="quick-grid">
 
 
+            <a href="/period"
+               class="quick-card">
 
-            <label for="doctor_photo"
-            class="upload-btn">
+                <div class="icon">
+                    🩸
+                </div>
 
-                📎
+                <strong>
+                    Regl Takibi
+                </strong>
 
-            </label>
+                <span>
+                    Döngünü ve kayıtlarını takip et
+                </span>
 
-
-
-            <input
-            type="file"
-            id="doctor_photo"
-            name="photo"
-            accept="image/*"
-            hidden>
-
-
+            </a>
 
 
+            <a href="/diarrhea"
+               class="quick-card">
 
-            <input
-            type="text"
-            name="mesaj"
-            placeholder="Şikayetini yaz..."
-            autocomplete="off">
+                <div class="icon">
+                    💧
+                </div>
 
+                <strong>
+                    Sindirim Takibi
+                </strong>
 
+                <span>
+                    Günlük sindirim kayıtlarını tut
+                </span>
 
-
-
-            <button type="submit">
-
-                ➤
-
-            </button>
-
-
-
-        </form>
+            </a>
 
 
-
-    </main>
-
-
-</div>
+        </div>
 
 
+        <!-- SOHBET -->
 
+        <section class="chat-card">
+
+            <div class="chat-header">
+
+                <div class="chat-avatar">
+                    🩺
+                </div>
+
+                <div>
+
+                    <strong>
+                        Cebimdeki Doktor
+                    </strong>
+
+                    <span>
+                        Genel sağlık yardımcısı
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="assistant-message">
+
+                👋 Merhaba! Bugün nasıl yardımcı
+                olabilirim?
+
+            </div>
+
+
+            {% if cevap %}
+
+            <div class="answer">
+                {{ cevap }}
+            </div>
+
+            {% endif %}
+
+
+            {% if foto_url %}
+
+            <div style="margin-top:15px;">
+
+                <img src="{{ url_for('static', filename=foto_url) }}"
+                     style="
+                     max-width:100%;
+                     border-radius:16px;
+                     ">
+
+            </div>
+
+            {% endif %}
+
+
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  class="chat-form">
+
+                <input
+                    type="text"
+                    name="mesaj"
+                    class="chat-input"
+                    placeholder="Belirtilerini yaz..."
+                    autocomplete="off"
+                >
+
+
+                <label class="photo-label">
+
+                    📷
+
+                    <input
+                        type="file"
+                        name="photo"
+                        class="photo-input"
+                        accept="image/*"
+                    >
+
+                </label>
+
+
+                <button type="submit"
+                        class="send-btn">
+
+                    ➤
+
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- SAĞLIK KAYDI -->
+
+        <section class="record-card">
+
+            <h3>
+                📋 Sağlık kaydı ekle
+            </h3>
+
+
+            {% if kayit_mesaji %}
+
+            <div class="success">
+                {{ kayit_mesaji }}
+            </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+
+
+                <input
+                    type="text"
+                    name="symptom"
+                    class="record-input"
+                    placeholder="Belirti / şikayet"
+                >
+
+
+                <input
+                    type="text"
+                    name="medicine"
+                    class="record-input"
+                    placeholder="Kullandığın ilaç (varsa)"
+                >
+
+
+                <textarea
+                    name="note"
+                    class="record-input"
+                    rows="3"
+                    placeholder="Not ekle..."
+                ></textarea>
+
+
+                <button
+                    type="submit"
+                    class="record-btn">
+
+                    + Kaydet
+
+                </button>
+
+            </form>
+
+        </section>
+
+
+    </div>
+
+</main>
 
 
 <script>
 
+function toggleMenu() {
 
-function toggleMenu(){
+    const sidebar =
+        document.getElementById("sidebar");
 
-    document
-    .getElementById("sidebar")
-    .classList.toggle("active");
-
-}
-
+    const overlay =
+        document.getElementById("overlay");
 
 
-function openHealthMenu(){
+    sidebar.classList.toggle("open");
 
-    document
-    .getElementById("healthMenu")
-    .classList.toggle("show");
+    overlay.classList.toggle("show");
 
 }
 
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            document
+                .getElementById("sidebar")
+                .classList.remove("open");
+
+            document
+                .getElementById("overlay")
+                .classList.remove("show");
+
+        }
+
+    }
+);
 
 </script>
 
 
-
-{% endblock %}
+</body>
+    </html>
