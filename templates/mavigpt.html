@@ -1,210 +1,107 @@
-{% extends "layout.html" %}
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cebimdeki Doktor</title>
 
-{% block title %}MaviGPT{% endblock %}
+    <link rel="stylesheet" href="/static/style.css">
+</head>
 
-{% block content %}
+<body>
 
-<div class="app">
+<!-- Menü -->
+<div class="sidebar" id="sidebar">
 
-    <!-- Sol Menü -->
-    <aside class="sidebar" id="sidebar">
+    <div class="profile">
+        🩺
+        <h2>Cebimdeki Doktor</h2>
+        <p>MaviGPT sağlık yardımcın</p>
+    </div>
 
-        <div class="logo">
-            🌊 MaviGPT
+    <button>➕ Yeni Sohbet</button>
+    <button>📋 Sağlık Geçmişim</button>
+    <button>🩸 Regl Takibi</button>
+    <button>💧 Sindirim Takibi</button>
+    <button>⚙️ Ayarlar</button>
+
+</div>
+
+
+<!-- Üst bar -->
+<header>
+
+    <button class="menu-btn" onclick="menuAc()">
+        ☰
+    </button>
+
+    <h1>
+        🩺 Cebimdeki Doktor
+    </h1>
+
+</header>
+
+
+<!-- Ana alan -->
+
+<main>
+
+    <div class="welcome">
+
+        <h2>👋 Merhaba Bahar!</h2>
+
+        <p>
+            Ben Cebimdeki Doktor.
+        </p>
+
+        <p>
+            Belirtilerini yazabilirsin.
+            Sana genel sağlık bilgileri ve öneriler sunabilirim.
+        </p>
+
+    </div>
+
+
+    <div class="chat-box">
+
+        <div class="message doctor">
+            🩺 Merhaba! Bugün nasıl yardımcı olabilirim?
         </div>
 
-        <button class="new-chat" onclick="window.location='/'">
-            ➕ Yeni Sohbet
-        </button>
 
-        <div class="menu-group">
+        <div class="input-area">
 
-    <div class="chat-item">
-    🩺 Sağlık Merkezi
-</div>
+            <input 
+            type="text"
+            placeholder="Belirtilerini yaz...">
 
-<div class="chat-item" onclick="window.location='/doctor'">
-    📋 Cebimdeki Doktor
-</div>
-
-<div class="chat-item" onclick="window.location='/period'">
-    📅 Regl Takvimi
-</div>
-
-<div class="chat-item" onclick="window.location='/diarrhea'">
-    🚽 İshal Takibi
-</div>
-
-<div class="chat-item" onclick="window.location='/medicine'">
-    💊 İlaç Takibi
-</div>
-
-    <div class="submenu" id="doctorMenu">
-
-        <div class="chat-item"
-             onclick="window.location='/period'">
-
-            📅 Regl Takvimi
-
-        </div>
-
-        <div class="chat-item"
-             onclick="window.location='/diarrhea'">
-
-            🚽 İshal Takibi
+            <button>
+                ➤
+            </button>
 
         </div>
 
     </div>
 
-        </div>
-        <div class="history">
 
-            {% if sohbetler %}
+</main>
 
-                {% for chat in sohbetler %}
 
-                <div class="chat-item">
-
-                    💬 {{ chat["user_message"] }}
-
-                </div>
-
-                {% endfor %}
-
-            {% else %}
-
-                <div class="chat-item">
-
-                    Henüz sohbet yok
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
-    </aside>
-        <!-- Sağ Taraf -->
-    <main class="chat">
-
-        <button class="menu-btn" onclick="toggleMenu()">
-            ☰
-        </button>
-
-        <header class="header">
-            <h2>🌊 MaviGPT</h2>
-            <p>Merhaba Bahar 👋</p>
-        </header>
-
-        <section class="messages">
-
-            <div class="ai">
-                👋 Merhaba!<br><br>
-
-                Ben <b>MaviGPT</b>.<br><br>
-
-                Sana kod yazarken, ders çalışırken,
-                günlük hayatta ve sağlık konularında
-                yardımcı olabilirim.
-            </div>
-
-            {% if foto %}
-            <div class="user">
-
-                <img
-                    src="{{ url_for('static', filename=foto_url) }}"
-                    class="chat-image">
-
-                {% if mesaj %}
-                    <br><br>
-                    {{ mesaj }}
-                {% endif %}
-
-            </div>
-            {% endif %}
-
-            {% if not foto and mesaj %}
-            <div class="user">
-                {{ mesaj }}
-            </div>
-            {% endif %}
-
-            {% if cevap %}
-            <div class="ai">
-                {{ cevap }}
-            </div>
-            {% endif %}
-
-        </section>
-
-        <form
-            class="input-bar"
-            action="/"
-            method="POST"
-            enctype="multipart/form-data">
-
-            <label for="photo" class="upload-btn">
-                📎
-            </label>
-
-            <input
-                type="file"
-                id="photo"
-                name="photo"
-                accept="image/*"
-                hidden>
-
-            <input
-                type="text"
-                name="mesaj"
-                placeholder="MaviGPT'ye yaz..."
-                autocomplete="off">
-
-            <button type="submit">
-                ➤
-            </button>
-
-        </form>
-            </main>
-
-</div>
 
 <script>
 
-function toggleMenu() {
-    document.getElementById("sidebar").classList.toggle("active");
-}
+function menuAc(){
 
-const photoInput = document.getElementById("photo");
-
-if (photoInput) {
-
-    photoInput.addEventListener("change", function () {
-
-        if (this.files.length > 0) {
-
-            // Şimdilik dosya seçildiğini gösteriyoruz.
-            // Sonraki sürümde burada fotoğraf önizlemesi olacak.
-            alert("📸 Fotoğraf seçildi: " + this.files[0].name);
-
-        }
-
-    });
+    document
+    .getElementById("sidebar")
+    .classList.toggle("active");
 
 }
 
 </script>
-function toggleDoctorMenu(){
 
-    const menu = document.getElementById("doctorMenu");
 
-    if(menu.style.display==="block"){
-        menu.style.display="none";
-    }else{
-        menu.style.display="block";
-    }
-
-}
-
-{% endblock %}
+</body>
+</html>
+```
