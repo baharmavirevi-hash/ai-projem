@@ -14,30 +14,15 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
-    # Sohbetler
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS messages(
+    CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        chat_type TEXT,
-        user_message TEXT,
-        ai_message TEXT
+        user TEXT,
+        message TEXT,
+        reply TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
-    def save_chat(chat_type, user_message, ai_message):
-
-    conn = get_db()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    INSERT INTO messages
-    (chat_type, user_message, ai_message)
-
-    VALUES (?, ?, ?)
-    """, (
-        chat_type,
-        user_message,
-        ai_message
-    ))
 
     conn.commit()
     conn.close()
