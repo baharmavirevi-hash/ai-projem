@@ -1,550 +1,1208 @@
-from flask import render_template, request
-import os
+<!DOCTYPE html>
 
-from werkzeug.utils import secure_filename
-from PIL import Image
-from google import genai
+<html lang="tr">
 
-from database import (
-    save_chat,
-    get_chats,
-    save_health_record,
-    get_health_records,
-    save_period_record,
-    get_period_records,
-    save_diarrhea_record,
-    get_diarrhea_records
-)
+<head>
 
+```
+<meta charset="UTF-8">
 
-# ============================================================
-# GEMINI
-# ============================================================
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-client = genai.Client(
-    api_key=os.environ.get("GEMINI_API_KEY")
-)
+<title>MaviGPT</title>
 
+<style>
 
-# ============================================================
-# MAVIGPT AI
-# ============================================================
+    * {
+        box-sizing: border-box;
+    }
 
-def ask_mavigpt(message, image_path=None):
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
-    try:
+    body {
+        background: #f5f9fc;
+        color: #17212b;
+        overflow: hidden;
+    }
 
-        if not message:
-            message = "Merhaba!"
+    /* ================================
+       ANA UYGULAMA
+    ================================= */
 
-        if image_path:
+    .app {
+        width: 100%;
+        height: 100vh;
+    }
 
-            image = Image.open(image_path)
+    /* ================================
+       SIDEBAR
+    ================================= */
 
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=[
-                    image,
-                    message
-                ]
-            )
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
 
-        else:
+        width: 285px;
+        height: 100vh;
 
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=message
-            )
+        background: white;
 
-        if response and response.text:
-            return response.text
+        border-right: 1px solid #dfe8ee;
 
-        return "Şu anda cevap oluşturamadım. Lütfen tekrar dene."
+        z-index: 1000;
 
-    except Exception as e:
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
 
-        print("GEMINI HATASI:", repr(e))
+        display: flex;
+        flex-direction: column;
 
-        return (
-            "Şu anda yanıt oluştururken bir sorun oluştu. "
-            "Lütfen biraz sonra tekrar dene."
-        )
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.10);
+    }
 
+    .sidebar.open {
+        transform: translateX(0);
+    }
 
-# ============================================================
-# FOTOĞRAF YÜKLEME
-# ============================================================
+    .sidebar-header {
+        height: 68px;
+        min-height: 68px;
 
-def upload_photo(app):
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-    if "photo" not in request.files:
-        return None, None
+        padding: 0 15px;
 
-    file = request.files["photo"]
+        border-bottom: 1px solid #edf2f5;
+    }
 
-    if not file:
-        return None, None
+    .sidebar-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: #0782a8;
+    }
 
-    if file.filename == "":
-        return None, None
+    .close-sidebar {
+        width: 42px;
+        height: 42px;
 
-    filename = secure_filename(file.filename)
+        border: 0;
+        border-radius: 12px;
 
-    if not filename:
-        return None, None
+        background: transparent;
 
-    upload_folder = app.config.get(
-        "UPLOAD_FOLDER",
-        os.path.join(
-            app.root_path,
-            "static",
-            "uploads"
-        )
-    )
+        color: #687780;
 
-    os.makedirs(
-        upload_folder,
-        exist_ok=True
-    )
+        font-size: 28px;
 
-    path = os.path.join(
-        upload_folder,
-        filename
-    )
+        cursor: pointer;
+    }
 
-    file.save(path)
+    .close-sidebar:active {
+        transform: scale(.94);
+    }
 
-    return path, filename
+    /* ================================
+       YENİ SOHBET
+    ================================= */
 
+    .new-chat {
+        margin: 15px;
 
-# ============================================================
-# ROUTES
-# ============================================================
+        padding: 13px 15px;
 
-def register_routes(app):
+        border-radius: 13px;
 
+        border: 1px solid #d8e8ee;
 
-    # ========================================================
-    # MAVIGPT
-    # ========================================================
+        background: #eefaff;
 
-    @app.route("/", methods=["GET", "POST"])
-    def home():
+        color: #087c9f;
 
-        print("================================")
-        print("MAVIGPT HOME CALISTI")
-        print("METHOD:", request.method)
-        print("================================")
+        font-weight: 600;
+        font-size: 15px;
 
-        mesaj = ""
-        cevap = ""
-        filename = None
+        cursor: pointer;
 
-        # ----------------------------------------------------
-        # SOHBET GEÇMİŞİ
-        # ----------------------------------------------------
+        text-align: left;
+    }
 
-        try:
+    .new-chat:active {
+        transform: scale(.98);
+    }
 
-            sohbetler = get_chats("normal")
+    /* ================================
+       MENÜ
+    ================================= */
 
-        except Exception as e:
+    .menu-section {
+        padding: 4px 10px;
+    }
 
-            print(
-                "SOHBETLER OKUNAMADI:",
-                repr(e)
-            )
+    .menu-title {
+        font-size: 11px;
+        color: #8997a1;
 
-            sohbetler = []
+        padding: 9px 10px 6px;
 
+        text-transform: uppercase;
+    }
 
-        # ----------------------------------------------------
-        # POST
-        # ----------------------------------------------------
+    .menu-item {
+        display: flex;
+        align-items: center;
 
-        if request.method == "POST":
+        gap: 12px;
 
-            mesaj = request.form.get(
-                "mesaj",
-                ""
-            ).strip()
+        padding: 12px 11px;
 
-            print(
-                "GELEN MESAJ:",
-                mesaj
-            )
+        margin: 3px 0;
 
+        border-radius: 12px;
 
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
+        text-decoration: none;
 
-            foto, filename = upload_photo(app)
+        color: #25323b;
 
+        font-size: 14px;
+    }
 
-            print(
-                "FOTOĞRAF:",
-                filename
-            )
+    .menu-item:active {
+        background: #eaf7fb;
+    }
 
+    .menu-icon {
+        width: 28px;
+        text-align: center;
+        font-size: 19px;
+    }
 
-            # ------------------------------------------------
-            # AI
-            # ------------------------------------------------
+    /* ================================
+       GEÇMİŞ
+    ================================= */
 
-            if mesaj or foto:
+    .history {
+        flex: 1;
+        overflow-y: auto;
+        padding: 5px 10px 20px;
+    }
 
-                if mesaj:
+    .history-title {
+        font-size: 12px;
+        color: #8997a1;
+        padding: 10px;
+    }
 
-                    ai_mesaj = mesaj
+    .history-item {
+        padding: 10px;
 
-                else:
+        border-radius: 10px;
 
-                    ai_mesaj = (
-                        "Bu fotoğrafı incele. "
-                        "Gördüğün şey hakkında genel "
-                        "ve anlaşılır bilgi ver."
-                    )
+        font-size: 13px;
 
+        color: #45545e;
 
-                cevap = ask_mavigpt(
-                    ai_mesaj,
-                    foto
-                )
+        overflow: hidden;
 
+        white-space: nowrap;
 
-                print(
-                    "MAVIGPT CEVAP:",
-                    cevap
-                )
+        text-overflow: ellipsis;
+    }
 
+    /* ================================
+       KARARTMA
+    ================================= */
 
-                # --------------------------------------------
-                # SOHBETİ KAYDET
-                # --------------------------------------------
+    .backdrop {
+        position: fixed;
 
-                try:
+        inset: 0;
 
-                    save_chat(
-                        "normal",
-                        mesaj if mesaj else "Fotoğraf",
-                        cevap
-                    )
+        background: rgba(0, 0, 0, .28);
 
-                    print(
-                        "SOHBET KAYDEDILDI"
-                    )
+        z-index: 900;
 
-                except Exception as e:
+        display: none;
+    }
 
-                    print(
-                        "SOHBET KAYIT HATASI:",
-                        repr(e)
-                    )
+    .backdrop.show {
+        display: block;
+    }
 
+    /* ================================
+       ANA ALAN
+    ================================= */
 
-        # ----------------------------------------------------
-        # SAYFA
-        # ----------------------------------------------------
+    .main {
+        width: 100%;
+        height: 100vh;
 
-        return render_template(
-            "mavigpt.html",
+        display: flex;
+        flex-direction: column;
+    }
 
-            mesaj=mesaj,
+    /* ================================
+       HEADER
+    ================================= */
 
-            cevap=cevap,
+    .header {
+        height: 65px;
+        min-height: 65px;
 
-            foto_url=(
-                "/static/uploads/" + filename
-                if filename
-                else None
-            ),
+        background: white;
 
-            sohbetler=sohbetler
-        )
+        border-bottom: 1px solid #dfe8ee;
 
+        display: flex;
+        align-items: center;
 
-    # ========================================================
-    # CEBİMDEKİ DOKTOR
-    # ========================================================
+        padding: 0 12px;
 
-    @app.route(
-        "/doctor",
-        methods=["GET", "POST"]
-    )
-    def doctor():
+        gap: 10px;
 
-        mesaj = None
-        cevap = None
-        filename = None
-        kayit_mesaji = None
+        z-index: 20;
+    }
 
+    .menu-button {
+        width: 43px;
+        height: 43px;
 
-        if request.method == "POST":
+        border: 0;
+        border-radius: 13px;
 
-            mesaj = request.form.get(
-                "mesaj",
-                ""
-            ).strip()
+        background: #f0f8fb;
 
+        color: #14728d;
 
-            symptom = request.form.get(
-                "symptom",
-                ""
-            ).strip()
+        font-size: 24px;
 
+        cursor: pointer;
 
-            medicine = request.form.get(
-                "medicine",
-                ""
-            ).strip()
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
+        touch-action: manipulation;
+    }
 
-            note = request.form.get(
-                "note",
-                ""
-            ).strip()
+    .menu-button:active {
+        transform: scale(.94);
+    }
 
+    .logo {
+        width: 42px;
+        height: 42px;
 
-            # ------------------------------------------------
-            # SAĞLIK KAYDI
-            # ------------------------------------------------
+        border-radius: 14px;
 
-            if (
-                symptom
-                or medicine
-                or note
-            ):
+        background: #d9f5ff;
 
-                try:
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-                    save_health_record(
-                        symptom,
-                        medicine,
-                        note
-                    )
+        font-size: 22px;
+    }
 
-                    kayit_mesaji = (
-                        "✅ Kayıt edildi."
-                    )
+    .header-info {
+        min-width: 0;
+    }
 
-                except Exception as e:
+    .title {
+        font-size: 17px;
+        font-weight: 700;
+    }
 
-                    print(
-                        "SAĞLIK KAYIT HATASI:",
-                        repr(e)
-                    )
+    .status {
+        color: #29a56f;
 
+        font-size: 11px;
 
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
+        margin-top: 3px;
+    }
 
-            foto, filename = upload_photo(app)
+    /* ================================
+       CHAT
+    ================================= */
 
+    .chat {
+        flex: 1;
 
-            # ------------------------------------------------
-            # AI
-            # ------------------------------------------------
+        overflow-y: auto;
 
-            if mesaj or foto:
+        padding: 25px 12px 120px;
 
-                cevap = ask_mavigpt(
-                    mesaj
-                    if mesaj
-                    else "Bu sağlık fotoğrafını genel olarak incele.",
-                    foto
-                )
+        scroll-behavior: smooth;
+    }
 
+    .chat-inner {
+        width: 100%;
+        max-width: 850px;
+        margin: auto;
+    }
 
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
+    /* ================================
+       HOŞ GELDİN
+    ================================= */
 
-        try:
+    .welcome {
+        text-align: center;
 
-            kayitlar = get_health_records()
+        margin: 65px auto 40px;
 
-        except Exception as e:
+        max-width: 500px;
+    }
 
-            print(
-                "SAĞLIK KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
+    .welcome-logo {
+        width: 75px;
+        height: 75px;
 
-            kayitlar = []
+        margin: auto;
 
+        border-radius: 24px;
 
-        return render_template(
-            "doctor.html",
+        background: #d9f5ff;
 
-            mesaj=mesaj,
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-            cevap=cevap,
+        font-size: 42px;
+    }
 
-            kayitlar=kayitlar,
+    .welcome h1 {
+        margin: 18px 0 8px;
+        font-size: 25px;
+    }
 
-            kayit_mesaji=kayit_mesaji,
+    .welcome p {
+        margin: 0;
 
-            foto_url=(
-                "/static/uploads/" + filename
-                if filename
-                else None
-            )
-        )
+        color: #72808a;
 
+        line-height: 1.6;
 
-    # ========================================================
-    # REGL TAKİBİ
-    # ========================================================
+        font-size: 14px;
+    }
 
-    @app.route(
-        "/period",
-        methods=["GET", "POST"]
-    )
-    def period():
+    /* ================================
+       MESAJ
+    ================================= */
 
-        if request.method == "POST":
+    .message {
+        width: 100%;
 
-            start = request.form.get(
-                "start_date",
-                ""
-            ).strip()
+        display: flex;
 
+        gap: 9px;
 
-            end = request.form.get(
-                "end_date",
-                ""
-            ).strip()
+        margin-bottom: 20px;
 
+        align-items: flex-start;
+    }
 
-            note = request.form.get(
-                "note",
-                ""
-            ).strip()
+    .avatar {
+        width: 36px;
+        min-width: 36px;
 
+        height: 36px;
 
-            if start:
+        border-radius: 12px;
 
-                try:
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-                    save_period_record(
-                        start,
-                        end,
-                        note
-                    )
+        font-size: 18px;
+    }
 
-                except Exception as e:
+    .user-avatar {
+        background: #e2eaff;
+    }
 
-                    print(
-                        "REGL KAYIT HATASI:",
-                        repr(e)
-                    )
+    .bot-avatar {
+        background: #d9f5ff;
+    }
 
+    .message-content {
+        max-width: calc(100% - 45px);
+    }
 
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
+    .message-name {
+        font-size: 11px;
 
-        try:
+        color: #84919a;
 
-            kayitlar = get_period_records()
+        margin: 0 0 5px 3px;
+    }
 
-        except Exception as e:
+    .bubble {
+        padding: 12px 15px;
 
-            print(
-                "REGL KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
+        border-radius: 17px;
 
-            kayitlar = []
+        line-height: 1.55;
 
+        font-size: 15px;
 
-        return render_template(
-            "period.html",
-            kayitlar=kayitlar
-        )
+        word-break: break-word;
 
+        white-space: pre-wrap;
+    }
 
-    # ========================================================
-    # SİNDİRİM / İSHAL TAKİBİ
-    # ========================================================
+    .user-bubble {
+        background: #dcecff;
 
-    @app.route(
-        "/diarrhea",
-        methods=["GET", "POST"]
-    )
-    def diarrhea():
+        border-top-left-radius: 5px;
+    }
 
-        if request.method == "POST":
+    .bot-bubble {
+        background: white;
 
-            date = request.form.get(
-                "date",
-                ""
-            ).strip()
+        border: 1px solid #dfe7eb;
 
+        border-top-left-radius: 5px;
+    }
 
-            count = request.form.get(
-                "count",
-                ""
-            ).strip()
+    .photo-preview {
+        margin-top: 8px;
 
+        max-width: 260px;
+        max-height: 300px;
 
-            condition = request.form.get(
-                "condition",
-                ""
-            ).strip()
+        border-radius: 14px;
 
+        display: block;
 
-            note = request.form.get(
-                "note",
-                ""
-            ).strip()
+        border: 1px solid #dbe6eb;
+    }
 
+    /* ================================
+       INPUT ALANI
+    ================================= */
 
-            if (
-                date
-                or count
-                or condition
-                or note
-            ):
+    .input-area {
+        position: fixed;
 
-                try:
+        bottom: 0;
+        left: 0;
+        right: 0;
 
-                    save_diarrhea_record(
-                        date,
-                        count,
-                        condition,
-                        note
-                    )
+        padding: 8px 9px 10px;
 
-                except Exception as e:
+        background:
+            linear-gradient(
+                to top,
+                #f5f9fc 75%,
+                rgba(245,249,252,.85)
+            );
 
-                    print(
-                        "SİNDİRİM KAYIT HATASI:",
-                        repr(e)
-                    )
+        z-index: 30;
+    }
 
+    .input-container {
+        width: 100%;
 
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
+        max-width: 850px;
 
-        try:
+        margin: auto;
+    }
 
-            kayitlar = get_diarrhea_records()
+    .file-name {
+        display: none;
 
-        except Exception as e:
+        font-size: 12px;
 
-            print(
-                "SİNDİRİM KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
+        color: #087c9f;
 
-            kayitlar = []
+        padding: 4px 10px;
+    }
 
+    .file-name.show {
+        display: block;
+    }
 
-        return render_template(
-            "diarrhea.html",
-            kayitlar=kayitlar
-        )
+    .input-box {
+        min-height: 54px;
+
+        width: 100%;
+
+        background: white;
+
+        border: 1px solid #d5e2e8;
+
+        border-radius: 19px;
+
+        display: flex;
+
+        align-items: center;
+
+        padding: 5px 6px;
+
+        box-shadow:
+            0 4px 18px rgba(0,0,0,.06);
+    }
+
+    .plus {
+        width: 42px;
+        min-width: 42px;
+
+        height: 42px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        font-size: 27px;
+
+        color: #60717c;
+
+        cursor: pointer;
+
+        border-radius: 12px;
+
+        touch-action: manipulation;
+    }
+
+    .plus:active {
+        background: #f1f7fa;
+        transform: scale(.94);
+    }
+
+    #mesaj {
+        flex: 1;
+
+        min-width: 0;
+
+        height: 42px;
+
+        border: 0;
+
+        outline: 0;
+
+        font-size: 15px;
+
+        padding: 8px 7px;
+
+        background: transparent;
+
+        color: #17212b;
+    }
+
+    #mesaj::placeholder {
+        color: #9aa7ae;
+    }
+
+    .send {
+        width: 43px;
+        min-width: 43px;
+
+        height: 43px;
+
+        border: 0;
+
+        border-radius: 14px;
+
+        background: #0782a8;
+
+        color: white;
+
+        font-size: 19px;
+
+        cursor: pointer;
+
+        touch-action: manipulation;
+    }
+
+    .send:active {
+        transform: scale(.94);
+    }
+
+    #photoInput {
+        display: none;
+    }
+
+    /* ================================
+       MOBİL
+    ================================= */
+
+    @media (max-width: 600px) {
+
+        .sidebar {
+            width: 285px;
+        }
+
+        .chat {
+            padding:
+                20px
+                9px
+                125px;
+        }
+
+        .welcome {
+            margin-top: 50px;
+        }
+
+        .welcome-logo {
+            width: 68px;
+            height: 68px;
+            font-size: 38px;
+        }
+
+        .welcome h1 {
+            font-size: 22px;
+        }
+
+        .bubble {
+            font-size: 14px;
+            padding: 11px 13px;
+        }
+
+        .avatar {
+            width: 34px;
+            min-width: 34px;
+            height: 34px;
+            font-size: 16px;
+        }
+
+        .message-content {
+            max-width: calc(100% - 43px);
+        }
+
+        .header {
+            height: 62px;
+            min-height: 62px;
+        }
+
+        .title {
+            font-size: 16px;
+        }
+
+        .input-area {
+            padding: 7px 7px 9px;
+        }
+
+        .input-box {
+            min-height: 52px;
+        }
+
+        #mesaj {
+            font-size: 14px;
+        }
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="app">
+
+```
+<!-- ================================
+     SIDEBAR
+================================= -->
+
+<aside
+    class="sidebar"
+    id="sidebar">
+
+    <div class="sidebar-header">
+
+        <div class="sidebar-title">
+            🩵 MaviGPT
+        </div>
+
+        <button
+            class="close-sidebar"
+            type="button"
+            id="closeSidebarButton">
+
+            ×
+
+        </button>
+
+    </div>
+
+
+    <button
+        class="new-chat"
+        type="button"
+        id="newChatButton">
+
+        ＋ Yeni sohbet
+
+    </button>
+
+
+    <div class="menu-section">
+
+        <div class="menu-title">
+            MaviGPT
+        </div>
+
+
+        <a
+            href="/"
+            class="menu-item">
+
+            <span class="menu-icon">💬</span>
+
+            <span>Yeni sohbet</span>
+
+        </a>
+
+
+        <a
+            href="/doctor"
+            class="menu-item">
+
+            <span class="menu-icon">🩺</span>
+
+            <span>Cebimdeki Doktor</span>
+
+        </a>
+
+
+        <a
+            href="/period"
+            class="menu-item">
+
+            <span class="menu-icon">📅</span>
+
+            <span>Regl Takibi</span>
+
+        </a>
+
+
+        <a
+            href="/diarrhea"
+            class="menu-item">
+
+            <span class="menu-icon">📝</span>
+
+            <span>Sindirim Takibi</span>
+
+        </a>
+
+    </div>
+
+
+    <div class="history">
+
+        <div class="history-title">
+            Son sohbetler
+        </div>
+
+
+        {% if sohbetler %}
+
+            {% for sohbet in sohbetler %}
+
+                <div class="history-item">
+
+                    {% if sohbet[1] is defined %}
+
+                        {{ sohbet[1] }}
+
+                    {% else %}
+
+                        Sohbet
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="history-item">
+                Henüz sohbet yok.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</aside>
+
+
+<!-- KARARTMA -->
+
+<div
+    class="backdrop"
+    id="backdrop">
+</div>
+
+
+<!-- ================================
+     ANA
+================================= -->
+
+<main class="main">
+
+
+    <header class="header">
+
+        <button
+            class="menu-button"
+            type="button"
+            id="menuButton"
+            aria-label="Menüyü aç">
+
+            ☰
+
+        </button>
+
+
+        <div class="logo">
+            🩵
+        </div>
+
+
+        <div class="header-info">
+
+            <div class="title">
+                MaviGPT
+            </div>
+
+            <div class="status">
+                ● Çevrimiçi
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================
+         CHAT
+    ================================= -->
+
+    <section
+        class="chat"
+        id="chat">
+
+        <div class="chat-inner">
+
+
+            {% if not mesaj and not cevap %}
+
+                <div class="welcome">
+
+                    <div class="welcome-logo">
+                        🩵
+                    </div>
+
+                    <h1>
+                        Merhaba Bahar! 👋
+                    </h1>
+
+                    <p>
+                        Ben MaviGPT.
+                        <br>
+                        Sana nasıl yardımcı olabilirim?
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if mesaj %}
+
+                <div class="message">
+
+                    <div class="avatar user-avatar">
+                        👤
+                    </div>
+
+                    <div class="message-content">
+
+                        <div class="message-name">
+                            Sen
+                        </div>
+
+                        <div class="bubble user-bubble">
+                            {{ mesaj }}
+                        </div>
+
+
+                        {% if foto_url %}
+
+                            <img
+                                src="{{ foto_url }}"
+                                class="photo-preview"
+                                alt="Gönderilen fotoğraf">
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if cevap %}
+
+                <div class="message">
+
+                    <div class="avatar bot-avatar">
+                        🩵
+                    </div>
+
+                    <div class="message-content">
+
+                        <div class="message-name">
+                            MaviGPT
+                        </div>
+
+                        <div class="bubble bot-bubble">
+                            {{ cevap }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================
+         MESAJ FORMU
+    ================================= -->
+
+    <div class="input-area">
+
+        <div class="input-container">
+
+            <div
+                class="file-name"
+                id="fileName">
+            </div>
+
+
+            <form
+                id="chatForm"
+                action="/"
+                method="POST"
+                enctype="multipart/form-data">
+
+                <div class="input-box">
+
+
+                    <label
+                        class="plus"
+                        for="photoInput"
+                        title="Fotoğraf ekle">
+
+                        ＋
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="photoInput"
+                        name="photo"
+                        accept="image/*">
+
+
+                    <input
+                        type="text"
+                        id="mesaj"
+                        name="mesaj"
+                        autocomplete="off"
+                        placeholder="Mesajını yaz..."
+                        aria-label="Mesajını yaz">
+
+
+                    <button
+                        class="send"
+                        type="submit"
+                        aria-label="Gönder">
+
+                        ➤
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+</main>
+```
+
+</div>
+
+<!-- ================================
+     JAVASCRIPT
+================================= -->
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+        const menuButton =
+            document.getElementById("menuButton");
+
+        const closeButton =
+            document.getElementById("closeSidebarButton");
+
+        const backdrop =
+            document.getElementById("backdrop");
+
+        const newChatButton =
+            document.getElementById("newChatButton");
+
+        const chatForm =
+            document.getElementById("chatForm");
+
+        const messageInput =
+            document.getElementById("mesaj");
+
+        const photoInput =
+            document.getElementById("photoInput");
+
+        const fileName =
+            document.getElementById("fileName");
+
+
+        /* ==========================
+           MENÜ AÇ
+        ========================== */
+
+        function openMenu() {
+
+            sidebar.classList.add("open");
+
+            backdrop.classList.add("show");
+
+        }
+
+
+        /* ==========================
+           MENÜ KAPAT
+        ========================== */
+
+        function closeMenu() {
+
+            sidebar.classList.remove("open");
+
+            backdrop.classList.remove("show");
+
+        }
+
+
+        /* ==========================
+           ÜÇ ÇİZGİ
+        ========================== */
+
+        if (menuButton) {
+
+            menuButton.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                    openMenu();
+
+                }
+            );
+
+        }
+
+
+        /* ==========================
+           X
+        ========================== */
+
+        if (closeButton) {
+
+            closeButton.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                    closeMenu();
+
+                }
+            );
+
+        }
+
+
+        /* ==========================
+           KARARTMAYA BASINCA KAPAT
+        ========================== */
+
+        if (backdrop) {
+
+            backdrop.addEventListener(
+                "click",
+                function () {
+
+                    closeMenu();
+
+                }
+            );
+
+        }
+
+
+        /* ==========================
+           YENİ SOHBET
+        ========================== */
+
+        if (newChatButton) {
+
+            newChatButton.addEventListener(
+                "click",
+                function () {
+
+                    window.location.href = "/";
+
+                }
+            );
+
+        }
+
+
+        /* ==========================
+           FOTOĞRAF
+        ========================== */
+
+        if (photoInput) {
+
+            photo
