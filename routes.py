@@ -17,10 +17,13 @@ from database import (
 )
 
 
+# =========================================================
+# GEMINI
+# =========================================================
+
 client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
 )
-
 
 
 def ask_mavigpt(message, image_path=None):
@@ -46,87 +49,71 @@ def ask_mavigpt(message, image_path=None):
                 contents=message
             )
 
-
         return response.text
-
 
     except Exception as e:
 
         return "Hata oluştu: " + str(e)
 
 
-
-
+# =========================================================
+# FOTOĞRAF YÜKLEME
+# =========================================================
 
 def upload_photo(app):
 
     if "photo" not in request.files:
         return None, None
 
-
     file = request.files["photo"]
-
 
     if file.filename == "":
         return None, None
 
-
     filename = secure_filename(file.filename)
-
 
     path = os.path.join(
         app.config["UPLOAD_FOLDER"],
         filename
     )
 
-
     file.save(path)
-
 
     return path, filename
 
 
-
-
-
-
+# =========================================================
+# ROUTES
+# =========================================================
 
 def register_routes(app):
 
 
-    # -----------------------
-    # MaviGPT
-    # -----------------------
+    # =====================================================
+    # MAVIGPT
+    # =====================================================
 
-    @app.route("/", methods=["GET","POST"])
+    @app.route("/", methods=["GET", "POST"])
     def home():
 
         mesaj = None
         cevap = None
         filename = None
 
-
         sohbetler = get_chats("normal")
-
 
         if request.method == "POST":
 
-
             mesaj = request.form.get("mesaj")
-
 
             foto, filename = upload_photo(app)
 
-
-
             if mesaj or foto:
-
 
                 cevap = ask_mavigpt(
                     mesaj or "Bu fotoğrafı incele.",
                     foto
                 )
-
 
                 save_chat(
                     "normal",
@@ -134,48 +121,50 @@ def register_routes(app):
                     cevap
                 )
 
-
-
         return render_template(
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
-            foto_url=("uploads/"+filename) if filename else None,
+            foto_url=(
+                "uploads/" + filename
+                if filename
+                else None
+            ),
             sohbetler=sohbetler
         )
 
 
+    # =====================================================
+    # MAVIGPT - MENÜDEN AÇILAN ADRES
+    # =====================================================
+
+    @app.route("/mavigpt", methods=["GET", "POST"])
+    def mavigpt():
+
+        return home()
 
 
+    # =====================================================
+    # CEBİMDEKİ DOKTOR
+    # =====================================================
 
-
-
-    # -----------------------
-    # Cebimdeki Doktor
-    # -----------------------
-
-    @app.route("/doctor", methods=["GET","POST"])
+    @app.route("/doctor", methods=["GET", "POST"])
     def doctor():
 
-        mesaj=None
-        cevap=None
-        filename=None
-        kayit_mesaji=None
+        mesaj = None
+        cevap = None
+        filename = None
+        kayit_mesaji = None
 
+        if request.method == "POST":
 
+            mesaj = request.form.get("mesaj")
 
-        if request.method=="POST":
+            symptom = request.form.get("symptom")
+            medicine = request.form.get("medicine")
+            note = request.form.get("note")
 
-
-            mesaj=request.form.get("mesaj")
-
-
-            symptom=request.form.get("symptom")
-            medicine=request.form.get("medicine")
-            note=request.form.get("note")
-
-
-
+            # Sağlık kaydı
             if symptom or medicine or note:
 
                 save_health_record(
@@ -184,27 +173,20 @@ def register_routes(app):
                     note
                 )
 
-                kayit_mesaji="✅ Kayıt edildi."
+                kayit_mesaji = "✅ Kayıt edildi."
 
+            # Fotoğraf
+            foto, filename = upload_photo(app)
 
-
-            foto,filename=upload_photo(app)
-
-
-
+            # AI cevabı
             if mesaj or foto:
 
-
-                cevap=ask_mavigpt(
+                cevap = ask_mavigpt(
                     mesaj or "Bu sağlık fotoğrafını incele.",
                     foto
                 )
 
-
-
-        kayitlar=get_health_records()
-
-
+        kayitlar = get_health_records()
 
         return render_template(
             "doctor.html",
@@ -212,31 +194,26 @@ def register_routes(app):
             cevap=cevap,
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji,
-            foto_url=("uploads/"+filename) if filename else None
+            foto_url=(
+                "uploads/" + filename
+                if filename
+                else None
+            )
         )
 
 
+    # =====================================================
+    # REGL TAKİBİ
+    # =====================================================
 
-
-
-
-
-    # -----------------------
-    # Regl Takvimi
-    # -----------------------
-
-    @app.route("/period", methods=["GET","POST"])
+    @app.route("/period", methods=["GET", "POST"])
     def period():
 
+        if request.method == "POST":
 
-        if request.method=="POST":
-
-
-            start=request.form.get("start_date")
-            end=request.form.get("end_date")
-            note=request.form.get("note")
-
-
+            start = request.form.get("start_date")
+            end = request.form.get("end_date")
+            note = request.form.get("note")
 
             save_period_record(
                 start,
@@ -244,11 +221,7 @@ def register_routes(app):
                 note
             )
 
-
-
-        kayitlar=get_period_records()
-
-
+        kayitlar = get_period_records()
 
         return render_template(
             "period.html",
@@ -256,28 +229,19 @@ def register_routes(app):
         )
 
 
+    # =====================================================
+    # SİNDİRİM / İSHAL TAKİBİ
+    # =====================================================
 
-
-
-
-
-    # -----------------------
-    # İshal Takvimi
-    # -----------------------
-
-    @app.route("/diarrhea", methods=["GET","POST"])
+    @app.route("/diarrhea", methods=["GET", "POST"])
     def diarrhea():
 
+        if request.method == "POST":
 
-        if request.method=="POST":
-
-
-            date=request.form.get("date")
-            count=request.form.get("count")
-            condition=request.form.get("condition")
-            note=request.form.get("note")
-
-
+            date = request.form.get("date")
+            count = request.form.get("count")
+            condition = request.form.get("condition")
+            note = request.form.get("note")
 
             save_diarrhea_record(
                 date,
@@ -286,13 +250,9 @@ def register_routes(app):
                 note
             )
 
-
-
-        kayitlar=get_diarrhea_records()
-
-
+        kayitlar = get_diarrhea_records()
 
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
-)
+        )
