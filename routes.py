@@ -1,10 +1,8 @@
 from flask import render_template, request
 import os
-
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google import genai
-
 from database import (
     save_chat,
     get_chats,
@@ -107,51 +105,59 @@ def register_routes(app):
     # ========================================================
     # MAVIGPT ANA SAYFA
     # ========================================================
-@app.route("/", methods=["GET", "POST"])
-def home():
 
-    mesaj = ""
-    cevap = ""
-    filename = None
+    @app.route("/", methods=["GET", "POST"])
+    def home():
 
-    try:
-        sohbetler = get_chats("normal")
-    except Exception as e:
-        print("SOHBET HATASI:", e)
-        sohbetler = []
+        mesaj = ""
+        cevap = ""
+        filename = None
 
-    if request.method == "POST":
+        try:
+            sohbetler = get_chats("normal")
+        except Exception as e:
+            print("SOHBET HATASI:", e)
+            sohbetler = []
 
-        mesaj = request.form.get("mesaj", "").strip()
+        if request.method == "POST":
 
-        foto, filename = upload_photo(app)
+            mesaj = request.form.get(
+                "mesaj",
+                ""
+            ).strip()
 
-        if mesaj or foto:
+            foto, filename = upload_photo(app)
 
-            cevap = ask_mavigpt(
-                mesaj if mesaj else "Bu fotoğrafı incele.",
-                foto
-            )
+            if mesaj or foto:
 
-            try:
-                save_chat(
-                    "normal",
-                    mesaj if mesaj else "Fotoğraf",
-                    cevap
+                cevap = ask_mavigpt(
+                    mesaj if mesaj else "Bu fotoğrafı incele.",
+                    foto
                 )
-            except Exception as e:
-                print("KAYIT HATASI:", e)
 
-    return render_template(
-        "mavigpt.html",
-        mesaj=mesaj,
-        cevap=cevap,
-        foto_url=(
-            "/static/uploads/" + filename
-            if filename else None
-        ),
-        sohbetler=sohbetler
-    )
+                try:
+
+                    save_chat(
+                        "normal",
+                        mesaj if mesaj else "Fotoğraf",
+                        cevap
+                    )
+
+                except Exception as e:
+
+                    print("KAYIT HATASI:", e)
+
+        return render_template(
+            "mavigpt.html",
+            mesaj=mesaj,
+            cevap=cevap,
+            foto_url=(
+                "/static/uploads/" + filename
+                if filename
+                else None
+            ),
+            sohbetler=sohbetler
+        )
 
 
     # ========================================================
@@ -203,7 +209,10 @@ def home():
 
                 except Exception as e:
 
-                    print("Sağlık kayıt hatası:", e)
+                    print(
+                        "Sağlık kayıt hatası:",
+                        e
+                    )
 
             # Fotoğraf
             foto, filename = upload_photo(app)
@@ -351,4 +360,4 @@ def home():
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
-    )
+                    )
