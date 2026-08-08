@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <meta name="theme-color" content="#75d5f0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>MaviGPT</title>
 
@@ -15,7 +10,6 @@
 
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         html,
@@ -25,269 +19,209 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7fbfd;
         }
 
         body {
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
-
-            background: #f4fbfe;
             color: #17212b;
         }
 
-        button,
-        input {
-            font-family: inherit;
-        }
-
-        /* ==================================================
+        /* =====================================================
            ANA UYGULAMA
-        ================================================== */
+        ===================================================== */
 
         .app {
             width: 100%;
-            height: 100dvh;
+            height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        /* ==================================================
-           SOL MENÜ
-        ================================================== */
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
 
         .sidebar {
-            width: 285px;
+            width: 280px;
             height: 100%;
-
-            background: white;
-            border-right: 1px solid #e2edf1;
-
+            background: #ffffff;
+            border-right: 1px solid #dce8ed;
             display: flex;
             flex-direction: column;
-
-            flex-shrink: 0;
-
-            z-index: 100;
-
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1000;
             transition: transform .25s ease;
         }
 
-        .sidebar-header {
-            padding: 18px 15px 12px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-
-            margin-bottom: 17px;
-        }
-
-        .brand-icon {
-            width: 44px;
-            height: 44px;
-
-            border-radius: 14px;
-
-            background: linear-gradient(
-                135deg,
-                #dff8ff,
-                #b8eafa
-            );
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 23px;
-        }
-
-        .brand-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .brand-subtitle {
-            color: #82929a;
-            font-size: 11px;
-            margin-top: 2px;
+        .sidebar-top {
+            padding: 16px;
         }
 
         .new-chat {
             width: 100%;
-
-            border: 1px solid #d8e9ef;
-            background: #f8fdff;
-
-            color: #21677c;
-
-            border-radius: 13px;
-
-            padding: 12px;
-
-            font-size: 14px;
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-        .new-chat:active {
-            transform: scale(.98);
-        }
-
-        .history-title {
-            padding: 10px 17px 6px;
-
-            color: #8999a1;
-
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .history {
-            flex: 1;
-            overflow-y: auto;
-
-            padding: 4px 10px;
-        }
-
-        .history-item {
-            padding: 11px 12px;
-
-            border-radius: 11px;
-
-            margin-bottom: 3px;
-
-            color: #53636c;
-
-            font-size: 13px;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-item:hover {
-            background: #f2fafc;
-        }
-
-        .empty-history {
-            padding: 14px 10px;
-
-            color: #9ba9af;
-
-            font-size: 12px;
-
-            line-height: 1.5;
-        }
-
-        .sidebar-bottom {
-            border-top: 1px solid #edf2f4;
-
-            padding: 10px;
-        }
-
-        .menu-link {
+            height: 48px;
+            border: 1px solid #d8e7ec;
+            background: #f7fcff;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 0 15px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #167ea0;
+            cursor: pointer;
+        }
 
-            padding: 11px 12px;
+        .new-chat:hover {
+            background: #eaf8fc;
+        }
 
-            border-radius: 11px;
+        .new-chat-icon {
+            font-size: 22px;
+        }
 
+        .sidebar-title {
+            font-size: 12px;
+            color: #8997a1;
+            font-weight: bold;
+            margin: 20px 12px 10px;
+            text-transform: uppercase;
+        }
+
+        .side-menu {
+            padding: 0 10px;
+        }
+
+        .side-link {
+            width: 100%;
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 13px;
+            border-radius: 12px;
             text-decoration: none;
-
-            color: #52636c;
-
-            font-size: 13px;
+            color: #34434d;
+            margin-bottom: 4px;
+            font-size: 14px;
         }
 
-        .menu-link:hover {
-            background: #f3fafc;
+        .side-link:hover {
+            background: #eef9fc;
         }
 
-        /* ==================================================
+        .side-icon {
+            width: 30px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 15px;
+            border-top: 1px solid #e8eef1;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+        }
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #d9f5ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .profile-sub {
+            color: #8997a1;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* =====================================================
+           OVERLAY
+        ===================================================== */
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .25);
+            z-index: 900;
+        }
+
+        /* =====================================================
            ANA ALAN
-        ================================================== */
+        ===================================================== */
 
         .main {
-            flex: 1;
-            min-width: 0;
-
+            width: calc(100% - 280px);
             height: 100%;
-
+            margin-left: 280px;
             display: flex;
             flex-direction: column;
-
             position: relative;
         }
 
-        /* ==================================================
-           ÜST BAR
-        ================================================== */
+        /* =====================================================
+           HEADER
+        ===================================================== */
 
         .header {
-            height: 65px;
-            min-height: 65px;
-
-            background: rgba(255,255,255,.96);
-
-            border-bottom: 1px solid #e2edf1;
-
+            height: 64px;
+            min-height: 64px;
+            background: rgba(255, 255, 255, .96);
+            border-bottom: 1px solid #dce8ed;
             display: flex;
             align-items: center;
-
-            gap: 11px;
-
-            padding: 0 17px;
-
+            padding: 0 18px;
+            gap: 12px;
             z-index: 20;
         }
 
         .menu-button {
-            display: none;
-
             width: 42px;
             height: 42px;
-
             border: 0;
             background: transparent;
-
             border-radius: 12px;
-
-            font-size: 24px;
-
-            color: #425660;
-
+            font-size: 25px;
             cursor: pointer;
-
-            align-items: center;
-            justify-content: center;
+            display: none;
         }
 
-        .menu-button:active {
-            background: #edf8fb;
+        .menu-button:hover {
+            background: #eef8fb;
         }
 
-        .header-logo {
-            width: 41px;
-            height: 41px;
-
+        .logo {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
             border-radius: 13px;
-
-            background: #dff7ff;
-
+            background: #d9f5ff;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 22px;
+            font-size: 23px;
         }
 
         .header-title {
@@ -295,129 +229,96 @@
             font-weight: 700;
         }
 
-        .online {
-            color: #2aa66b;
-
+        .header-status {
+            color: #25a86d;
             font-size: 11px;
-
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
-        /* ==================================================
-           SOHBET
-        ================================================== */
+        /* =====================================================
+           CHAT
+        ===================================================== */
 
         .chat {
             flex: 1;
-
             overflow-y: auto;
-
-            padding: 25px 15px 120px;
-
+            padding: 25px 18px 120px;
             scroll-behavior: smooth;
         }
 
         .chat-inner {
-            width: 100%;
-            max-width: 850px;
-
+            max-width: 900px;
             margin: 0 auto;
         }
 
-        /* ==================================================
-           KARŞILAMA
-        ================================================== */
+        /* =====================================================
+           WELCOME
+        ===================================================== */
 
         .welcome {
             text-align: center;
-
-            padding-top: 7vh;
-            padding-bottom: 35px;
+            margin: 70px auto 40px;
+            max-width: 600px;
         }
 
-        .welcome-icon {
-            width: 72px;
-            height: 72px;
-
-            margin: 0 auto 17px;
-
-            border-radius: 23px;
-
-            background: linear-gradient(
-                135deg,
-                #dff8ff,
-                #b8eafa
-            );
-
+        .welcome-logo {
+            width: 78px;
+            height: 78px;
+            border-radius: 25px;
+            background: #dff7ff;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 38px;
-
-            box-shadow:
-                0 8px 25px rgba(70,160,190,.12);
+            font-size: 42px;
         }
 
         .welcome h1 {
-            margin: 0;
-
-            font-size: 25px;
+            font-size: 28px;
+            margin: 0 0 10px;
         }
 
         .welcome p {
-            margin: 9px 0 0;
-
-            color: #71828b;
-
-            font-size: 14px;
-
+            margin: 0;
+            color: #71808a;
             line-height: 1.6;
+            font-size: 15px;
         }
 
-        .suggestions {
+        /* =====================================================
+           HIZLI BUTONLAR
+        ===================================================== */
+
+        .quick-buttons {
             display: flex;
-
             flex-wrap: wrap;
-
             justify-content: center;
-
             gap: 8px;
-
-            margin-top: 21px;
+            margin-top: 22px;
         }
 
-        .suggestion {
-            border: 1px solid #dcebf0;
-
+        .quick-button {
+            border: 1px solid #d8e8ed;
             background: white;
-
-            color: #526b76;
-
-            padding: 9px 12px;
-
+            color: #277b96;
             border-radius: 20px;
-
-            font-size: 12px;
-
-            cursor: pointer;
+            padding: 9px 13px;
+            text-decoration: none;
+            font-size: 13px;
         }
 
-        .suggestion:active {
-            transform: scale(.97);
+        .quick-button:hover {
+            background: #edfaff;
         }
 
-        /* ==================================================
+        /* =====================================================
            MESAJ
-        ================================================== */
+        ===================================================== */
 
         .message {
             display: flex;
-
             gap: 10px;
-
-            margin-bottom: 20px;
-
+            margin: 0 auto 20px;
             width: 100%;
         }
 
@@ -425,418 +326,430 @@
             justify-content: flex-end;
         }
 
+        .message.bot {
+            justify-content: flex-start;
+        }
+
         .avatar {
-            width: 36px;
-            height: 36px;
-
-            min-width: 36px;
-
-            border-radius: 12px;
-
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 17px;
-        }
-
-        .bot-avatar {
-            background: #dff7ff;
+            font-size: 19px;
         }
 
         .user-avatar {
-            background: #e8edff;
+            background: #dce7ff;
+            order: 2;
+        }
+
+        .bot-avatar {
+            background: #d9f5ff;
         }
 
         .message-content {
-            max-width: min(76%, 650px);
+            max-width: min(78%, 720px);
         }
 
         .bubble {
-            padding: 12px 15px;
-
-            font-size: 14px;
-
+            padding: 13px 16px;
+            border-radius: 18px;
             line-height: 1.55;
-
-            word-break: break-word;
-
+            font-size: 15px;
             white-space: pre-wrap;
-        }
-
-        .bot-bubble {
-            background: white;
-
-            border: 1px solid #dfeaed;
-
-            border-radius:
-                5px
-                17px
-                17px
-                17px;
-
-            box-shadow:
-                0 2px 8px rgba(20,60,70,.03);
+            word-wrap: break-word;
         }
 
         .user-bubble {
-            background: linear-gradient(
-                135deg,
-                #def3ff,
-                #d5edff
-            );
-
-            border-radius:
-                17px
-                5px
-                17px
-                17px;
+            background: #d9edff;
+            border-bottom-right-radius: 5px;
         }
 
-        /* ==================================================
-           FOTOĞRAF
-        ================================================== */
+        .bot-bubble {
+            background: #ffffff;
+            border: 1px solid #dce7ec;
+            border-bottom-left-radius: 5px;
+        }
 
         .photo-preview {
-            display: block;
-
             max-width: 280px;
             max-height: 280px;
-
-            border-radius: 14px;
-
-            object-fit: cover;
+            border-radius: 15px;
+            margin-top: 8px;
+            display: block;
         }
 
-        /* ==================================================
-           MESAJ GİRİŞİ
-        ================================================== */
+        /* =====================================================
+           YAZIYOR
+        ===================================================== */
 
-        .composer-area {
+        .typing {
+            display: none;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 20px;
+        }
+
+        .typing-bubble {
+            background: white;
+            border: 1px solid #dce7ec;
+            border-radius: 17px;
+            padding: 12px 16px;
+        }
+
+        .dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .dots span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #62a8bd;
+            animation: blink 1.2s infinite;
+        }
+
+        .dots span:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .dots span:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes blink {
+            0%, 60%, 100% {
+                opacity: .25;
+            }
+
+            30% {
+                opacity: 1;
+            }
+        }
+
+        /* =====================================================
+           INPUT
+        ===================================================== */
+
+        .input-area {
             position: absolute;
-
             left: 0;
             right: 0;
             bottom: 0;
-
-            padding:
-                9px
-                14px
-                max(10px, env(safe-area-inset-bottom));
-
+            padding: 12px 15px 15px;
             background: linear-gradient(
                 to top,
-                #f4fbfe 70%,
-                rgba(244,251,254,.85)
+                #f7fbfd 75%,
+                rgba(247,251,253,0)
             );
-
             z-index: 30;
         }
 
-        .composer {
-            width: 100%;
-            max-width: 850px;
+        .input-container {
+            max-width: 900px;
+            margin: auto;
+        }
 
-            margin: 0 auto;
-
-            min-height: 57px;
-
+        .input-box {
+            min-height: 58px;
             background: white;
-
-            border: 1px solid #d7e7ec;
-
-            border-radius: 19px;
-
+            border: 1px solid #cfdee4;
+            border-radius: 20px;
             display: flex;
-            align-items: center;
-
-            padding: 6px;
-
-            box-shadow:
-                0 5px 22px rgba(30,80,95,.07);
+            align-items: flex-end;
+            padding: 7px;
+            box-shadow: 0 4px 18px rgba(31, 91, 108, .07);
         }
 
-        .attach {
-            width: 43px;
-            height: 43px;
-
-            border: 0;
-
-            background: transparent;
-
-            border-radius: 13px;
-
-            color: #657981;
-
-            font-size: 26px;
-
+        .plus {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            cursor: pointer;
-
-            flex-shrink: 0;
-        }
-
-        .attach:active {
-            background: #eff9fc;
-        }
-
-        #mesaj {
-            flex: 1;
-
-            min-width: 0;
-
-            border: 0;
-            outline: 0;
-
-            background: transparent;
-
-            padding: 11px 7px;
-
-            font-size: 15px;
-
-            color: #17212b;
-        }
-
-        #mesaj::placeholder {
-            color: #9aaab2;
-        }
-
-        .send {
-            width: 43px;
-            height: 43px;
-
-            border: 0;
-
             border-radius: 14px;
-
-            background: linear-gradient(
-                135deg,
-                #66cdea,
-                #248cad
-            );
-
-            color: white;
-
-            font-size: 19px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
+            font-size: 27px;
+            color: #607883;
             cursor: pointer;
-
-            flex-shrink: 0;
         }
 
-        .send:active {
-            transform: scale(.94);
+        .plus:hover {
+            background: #eef8fb;
         }
 
-        /* ==================================================
-           MOBİL
-        ================================================== */
-
-        .overlay {
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(20,40,50,.32);
-
-            z-index: 90;
-
+        #photo {
             display: none;
         }
 
-        .overlay.show {
-            display: block;
+        .message-input {
+            flex: 1;
+            border: 0;
+            outline: none;
+            resize: none;
+            min-width: 0;
+            max-height: 120px;
+            min-height: 44px;
+            padding: 12px 8px;
+            font-size: 15px;
+            font-family: inherit;
+            background: transparent;
         }
 
-        @media (max-width: 700px) {
+        .message-input::placeholder {
+            color: #9aa8af;
+        }
+
+        .send {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border: 0;
+            border-radius: 14px;
+            background: #087fa5;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .send:hover {
+            background: #056d8d;
+            transform: translateY(-1px);
+        }
+
+        .send:disabled {
+            opacity: .55;
+            cursor: default;
+            transform: none;
+        }
+
+        .selected-file {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto 6px;
+            background: white;
+            border: 1px solid #d7e6eb;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #52717d;
+        }
+
+        /* =====================================================
+           MOBİL
+        ===================================================== */
+
+        @media (max-width: 800px) {
 
             .sidebar {
-                position: fixed;
-
-                left: 0;
-                top: 0;
-                bottom: 0;
-
-                width: 285px;
-
                 transform: translateX(-100%);
-
-                box-shadow:
-                    8px 0 30px rgba(20,50,60,.13);
+                box-shadow: 8px 0 25px rgba(0,0,0,.12);
             }
 
             .sidebar.open {
                 transform: translateX(0);
             }
 
+            .overlay.show {
+                display: block;
+            }
+
+            .main {
+                width: 100%;
+                margin-left: 0;
+            }
+
             .menu-button {
                 display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .header {
+                height: 60px;
+                min-height: 60px;
                 padding: 0 10px;
             }
 
+            .header-title {
+                font-size: 16px;
+            }
+
             .chat {
-                padding:
-                    19px
-                    9px
-                    120px;
+                padding: 18px 9px 110px;
             }
 
             .welcome {
-                padding-top: 6vh;
+                margin-top: 45px;
+            }
+
+            .welcome-logo {
+                width: 68px;
+                height: 68px;
+                font-size: 36px;
             }
 
             .welcome h1 {
-                font-size: 22px;
+                font-size: 23px;
             }
 
-            .welcome-icon {
-                width: 65px;
-                height: 65px;
-
-                font-size: 34px;
+            .welcome p {
+                font-size: 14px;
             }
 
             .message-content {
-                max-width: 82%;
+                max-width: 84%;
             }
 
             .bubble {
                 font-size: 14px;
-
-                padding:
-                    11px
-                    13px;
+                padding: 11px 13px;
             }
 
             .avatar {
-                width: 33px;
-                height: 33px;
-
-                min-width: 33px;
+                width: 34px;
+                height: 34px;
+                min-width: 34px;
+                border-radius: 11px;
             }
 
-            .composer-area {
-                padding:
-                    8px
-                    8px
-                    max(8px, env(safe-area-inset-bottom));
+            .input-area {
+                padding: 7px 8px 9px;
             }
 
-            .composer {
+            .input-box {
                 min-height: 54px;
-
                 border-radius: 18px;
             }
 
-            #mesaj {
-                font-size: 14px;
+            .plus,
+            .send {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
             }
 
-            .suggestions {
-                padding: 0 8px;
+            .message-input {
+                min-height: 40px;
+                font-size: 14px;
             }
         }
 
     </style>
-
 </head>
-
 
 <body>
 
 <div class="app">
 
-
-    <!-- ==================================================
+    <!-- =====================================================
          SIDEBAR
-    ================================================== -->
+    ====================================================== -->
 
     <aside class="sidebar" id="sidebar">
 
-        <div class="sidebar-header">
-
-            <div class="brand">
-
-                <div class="brand-icon">
-                    🩵
-                </div>
-
-                <div>
-
-                    <div class="brand-title">
-                        MaviGPT
-                    </div>
-
-                    <div class="brand-subtitle">
-                        Senin dijital yardımcın
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="sidebar-top">
 
             <button
                 type="button"
                 class="new-chat"
                 onclick="newChat()">
 
-                ＋ Yeni sohbet
+                <span class="new-chat-icon">＋</span>
+                <span>Yeni sohbet</span>
 
             </button>
 
         </div>
 
 
-        <div class="history-title">
-            Sohbet geçmişi
+        <div class="sidebar-title">
+            MaviGPT
         </div>
 
 
-        <div class="history">
+        <nav class="side-menu">
+
+            <a href="/" class="side-link">
+
+                <span class="side-icon">💬</span>
+
+                <span>
+                    MaviGPT
+                </span>
+
+            </a>
+
+
+            <a href="/doctor" class="side-link">
+
+                <span class="side-icon">🩺</span>
+
+                <span>
+                    Cebimdeki Doktor
+                </span>
+
+            </a>
+
+
+            <a href="/period" class="side-link">
+
+                <span class="side-icon">📅</span>
+
+                <span>
+                    Regl Takibi
+                </span>
+
+            </a>
+
+
+            <a href="/diarrhea" class="side-link">
+
+                <span class="side-icon">📝</span>
+
+                <span>
+                    Sindirim Takibi
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-title">
+            Sohbetler
+        </div>
+
+
+        <div class="side-menu">
 
             {% if sohbetler %}
 
-                {% for sohbet in sohbetler %}
+                <div class="side-link">
 
-                    <div class="history-item">
+                    <span class="side-icon">🗨️</span>
 
-                        💬
+                    <span>
+                        Geçmiş sohbetler
+                    </span>
 
-                        {% if sohbet is mapping %}
-
-                            {{ sohbet.get("message", "Sohbet") }}
-
-                        {% else %}
-
-                            {{ sohbet }}
-
-                        {% endif %}
-
-                    </div>
-
-                {% endfor %}
+                </div>
 
             {% else %}
 
-                <div class="empty-history">
+                <div
+                    style="
+                    padding:12px 14px;
+                    color:#9aa8af;
+                    font-size:13px;
+                    ">
 
-                    Henüz sohbet geçmişin yok.
-
-                    <br><br>
-
-                    Yeni bir sohbet başlattığında
-                    burada görünecek. 💙
+                    Henüz sohbet yok.
 
                 </div>
 
@@ -847,31 +760,25 @@
 
         <div class="sidebar-bottom">
 
-            <a
-                href="/doctor"
-                class="menu-link">
+            <div class="profile">
 
-                🩺 Cebimdeki Doktor
+                <div class="profile-avatar">
+                    🩵
+                </div>
 
-            </a>
+                <div>
 
+                    <div class="profile-name">
+                        Bahar
+                    </div>
 
-            <a
-                href="/period"
-                class="menu-link">
+                    <div class="profile-sub">
+                        MaviGPT kullanıcısı
+                    </div>
 
-                🌸 Regl Takibi
+                </div>
 
-            </a>
-
-
-            <a
-                href="/diarrhea"
-                class="menu-link">
-
-                📊 Sindirim Takibi
-
-            </a>
+            </div>
 
         </div>
 
@@ -885,15 +792,15 @@
     </div>
 
 
-    <!-- ==================================================
-         ANA
-    ================================================== -->
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
 
     <main class="main">
 
+        <!-- HEADER -->
 
         <header class="header">
-
 
             <button
                 type="button"
@@ -905,7 +812,7 @@
             </button>
 
 
-            <div class="header-logo">
+            <div class="logo">
                 🩵
             </div>
 
@@ -916,7 +823,7 @@
                     MaviGPT
                 </div>
 
-                <div class="online">
+                <div class="header-status">
                     ● Çevrimiçi
                 </div>
 
@@ -925,9 +832,7 @@
         </header>
 
 
-        <!-- ==================================================
-             CHAT
-        ================================================== -->
+        <!-- CHAT -->
 
         <section
             class="chat"
@@ -936,129 +841,68 @@
             <div class="chat-inner">
 
 
+                <!-- WELCOME -->
+
                 {% if not mesaj and not cevap %}
 
-                <div class="welcome">
+                    <div
+                        class="welcome"
+                        id="welcome">
 
-                    <div class="welcome-icon">
-                        🩵
-                    </div>
+                        <div class="welcome-logo">
+                            🩵
+                        </div>
 
-                    <h1>
-                        Merhaba Bahar! 👋
-                    </h1>
+                        <h1>
+                            Merhaba Bahar! 👋
+                        </h1>
 
-                    <p>
-
-                        Ben MaviGPT.
-
-                        <br>
-
-                        Bugün sana nasıl yardımcı olabilirim?
-
-                    </p>
+                        <p>
+                            Ben MaviGPT.
+                            <br>
+                            Sana nasıl yardımcı olabilirim?
+                        </p>
 
 
-                    <div class="suggestions">
+                        <div class="quick-buttons">
 
-                        <button
-                            type="button"
-                            class="suggestion"
-                            onclick="fillMessage('Biraz sohbet edelim')">
+                            <a
+                                href="/doctor"
+                                class="quick-button">
 
-                            💬 Sohbet edelim
+                                🩺 Sağlık
 
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="suggestion"
-                            onclick="fillMessage('Bana bir şey öğretir misin?')">
-
-                            💡 Bir şey öğret
-
-                        </button>
+                            </a>
 
 
-                        <button
-                            type="button"
-                            class="suggestion"
-                            onclick="fillMessage('Bugün ne yapabilirim?')">
+                            <a
+                                href="/period"
+                                class="quick-button">
 
-                            ✨ Fikir ver
+                                📅 Regl takibi
 
-                        </button>
+                            </a>
+
+
+                            <a
+                                href="/diarrhea"
+                                class="quick-button">
+
+                                📝 Sindirim
+
+                            </a>
+
+                        </div>
 
                     </div>
-
-                </div>
 
                 {% endif %}
 
+
+                <!-- USER MESSAGE -->
 
                 {% if mesaj %}
 
-                <div class="message user">
+                    <div class="message user">
 
-
-                    <div class="message-content">
-
-                        <div class="bubble user-bubble">
-
-                            {{ mesaj }}
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="avatar user-avatar">
-
-                        👤
-
-                    </div>
-
-                </div>
-
-                {% endif %}
-
-
-                {% if cevap %}
-
-                <div class="message">
-
-
-                    <div class="avatar bot-avatar">
-
-                        🩵
-
-                    </div>
-
-
-                    <div class="message-content">
-
-                        <div class="bubble bot-bubble">
-
-                            {{ cevap }}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {% endif %}
-
-
-                {% if foto_url %}
-
-                <div class="message user">
-
-
-                    <div class="message-content">
-
-                        <div class="bubble user-bubble">
-
-                            <img
-                 
+    
