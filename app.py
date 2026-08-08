@@ -1,4 +1,3 @@
-```python
 from flask import Flask
 from routes import register_routes
 from database import init_db
@@ -26,4 +25,3 @@ if __name__ == "__main__":
         port=5000,
         debug=True
     )
-```
