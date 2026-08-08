@@ -2,744 +2,201 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>MaviGPT</title>
 
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
-
-            background: #f5faff;
-            color: #17212b;
-
-            min-height: 100vh;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            height: 70px;
-
-            display: flex;
-            align-items: center;
-
-            padding: 0 16px;
-
-            background: rgba(255,255,255,.92);
-
-            border-bottom: 1px solid #e6eef5;
-
-            position: sticky;
-            top: 0;
-
-            z-index: 10;
-
-            backdrop-filter: blur(15px);
-        }
-
-        .menu-button {
-            width: 46px;
-            height: 46px;
-
-            border: none;
-            border-radius: 14px;
-
-            background: #eef7ff;
-
-            font-size: 24px;
-
-            cursor: pointer;
-        }
-
-        .logo {
-            margin-left: 12px;
-
-            display: flex;
-            align-items: center;
-
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 42px;
-            height: 42px;
-
-            border-radius: 13px;
-
-            background: #dff2ff;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 24px;
-        }
-
-        .logo-text strong {
-            display: block;
-            font-size: 17px;
-        }
-
-        .logo-text span {
-            display: block;
-
-            font-size: 12px;
-
-            color: #8a9aaa;
-        }
-
-        /* =========================
-           SIDEBAR
-        ========================= */
-
-        .overlay {
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0,0,0,.35);
-
-            opacity: 0;
-
-            visibility: hidden;
-
-            transition: .25s;
-
-            z-index: 20;
-        }
-
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .sidebar {
-            position: fixed;
-
-            top: 0;
-            left: 0;
-
-            width: 290px;
-            max-width: 82vw;
-
-            height: 100vh;
-
-            background: white;
-
-            transform: translateX(-105%);
-
-            transition: .28s ease;
-
-            z-index: 30;
-
-            padding: 25px 16px;
-
-            box-shadow:
-                10px 0 35px rgba(0,0,0,.15);
-        }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
-        .sidebar-title {
-            padding: 10px;
-
-            margin-bottom: 20px;
-
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .menu-link {
-            display: flex;
-
-            align-items: center;
-
-            gap: 13px;
-
-            width: 100%;
-
-            padding: 15px;
-
-            margin-bottom: 7px;
-
-            border-radius: 15px;
-
-            text-decoration: none;
-
-            color: #243342;
-
-            font-weight: 600;
-
-            transition: .2s;
-        }
-
-        .menu-link:hover {
-            background: #eef8ff;
-        }
-
-        .menu-icon {
-            font-size: 22px;
-
-            width: 28px;
-
-            text-align: center;
-        }
-
-        /* =========================
-           ANA ALAN
-        ========================= */
-
-        main {
-            width: 100%;
-
-            max-width: 850px;
-
-            margin: auto;
-
-            padding: 45px 16px 110px;
-        }
-
-        .hero {
-            text-align: center;
-
-            margin-bottom: 30px;
-        }
-
-        .hero-icon {
-            font-size: 58px;
-
-            margin-bottom: 10px;
-        }
-
-        .hero h1 {
-            font-size: clamp(32px, 8vw, 48px);
-
-            letter-spacing: -1.5px;
-
-            color: #19354a;
-        }
-
-        .hero p {
-            margin-top: 9px;
-
-            color: #718293;
-
-            font-size: 15px;
-        }
-
-        /* =========================
-           CHAT
-        ========================= */
-
-        .chat-container {
-            background: white;
-
-            border: 1px solid #e4edf4;
-
-            border-radius: 25px;
-
-            padding: 16px;
-
-            box-shadow:
-                0 15px 45px rgba(45,100,140,.10);
-        }
-
-        .message {
-            padding: 16px;
-
-            border-radius: 19px;
-
-            line-height: 1.6;
-
-            margin-bottom: 12px;
-
-            white-space: pre-wrap;
-        }
-
-        .welcome {
-            background: #edf8ff;
-        }
-
-        .assistant {
-            background: #f7faff;
-        }
-
-        /* =========================
-           FORM
-        ========================= */
-
-        .input-area {
-            display: flex;
-
-            gap: 8px;
-
-            margin-top: 15px;
-        }
-
-        .message-input {
-            flex: 1;
-
-            min-width: 0;
-
-            height: 54px;
-
-            border: 2px solid #e1eaf1;
-
-            border-radius: 17px;
-
-            padding: 0 16px;
-
-            font-size: 16px;
-
-            outline: none;
-        }
-
-        .message-input:focus {
-            border-color: #62b6eb;
-        }
-
-        .send-button {
-            width: 54px;
-            height: 54px;
-
-            border: none;
-
-            border-radius: 17px;
-
-            background: #55afe9;
-
-            color: white;
-
-            font-size: 23px;
-
-            cursor: pointer;
-        }
-
-        .send-button:active {
-            transform: scale(.95);
-        }
-
-        /* =========================
-           FOTOĞRAF
-        ========================= */
-
-        .photo-button {
-            width: 54px;
-            height: 54px;
-
-            border: none;
-
-            border-radius: 17px;
-
-            background: #eef7ff;
-
-            font-size: 22px;
-
-            cursor: pointer;
-        }
-
-        #photo {
-            display: none;
-        }
-
-        /* =========================
-           MOBİL
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            header {
-                height: 64px;
-            }
-
-            main {
-                padding:
-                    30px 12px 100px;
-            }
-
-            .hero h1 {
-                font-size: 34px;
-            }
-
-            .hero-icon {
-                font-size: 50px;
-            }
-
-            .chat-container {
-                border-radius: 21px;
-
-                padding: 12px;
-            }
-
-            .input-area {
-                gap: 6px;
-            }
-
-            .message-input {
-                height: 50px;
-
-                font-size: 15px;
-
-                padding: 0 13px;
-            }
-
-            .send-button,
-            .photo-button {
-                width: 50px;
-                height: 50px;
-            }
-
-        }
-
-    </style>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
+<div class="app">
 
-<!-- =========================
-     KARARTMA
-========================= -->
+    <!-- ================= SIDEBAR ================= -->
 
-<div
-    class="overlay"
-    id="overlay">
-</div>
+    <aside class="sidebar" id="sidebar">
 
+        <div class="sidebar-top">
 
-<!-- =========================
-     SIDEBAR
-========================= -->
-
-<aside
-    class="sidebar"
-    id="sidebar">
-
-    <div class="sidebar-title">
-        💙 MaviGPT
-    </div>
-
-
-    <a
-        href="/"
-        class="menu-link">
-
-        <span class="menu-icon">
-            🤖
-        </span>
-
-        <span>
-            MaviGPT
-        </span>
-
-    </a>
-
-
-    <a
-        href="/doctor"
-        class="menu-link">
-
-        <span class="menu-icon">
-            🩺
-        </span>
-
-        <span>
-            Cebimdeki Doktor
-        </span>
-
-    </a>
-
-
-    <a
-        href="/period"
-        class="menu-link">
-
-        <span class="menu-icon">
-            🩸
-        </span>
-
-        <span>
-            Regl Takibi
-        </span>
-
-    </a>
-
-
-    <a
-        href="/diarrhea"
-        class="menu-link">
-
-        <span class="menu-icon">
-            💧
-        </span>
-
-        <span>
-            Sindirim Takibi
-        </span>
-
-    </a>
-
-</aside>
-
-
-<!-- =========================
-     HEADER
-========================= -->
-
-<header>
-
-    <button
-        class="menu-button"
-        id="menuButton"
-        type="button">
-
-        ☰
-
-    </button>
-
-
-    <div class="logo">
-
-        <div class="logo-icon">
-            🤖
-        </div>
-
-        <div class="logo-text">
-
-            <strong>
-                MaviGPT
-            </strong>
-
-            <span>
-                Senin yapay zekâ yardımcın
-            </span>
-
-        </div>
-
-    </div>
-
-</header>
-
-
-<!-- =========================
-     MAIN
-========================= -->
-
-<main>
-
-
-    <section class="hero">
-
-        <div class="hero-icon">
-            🤖
-        </div>
-
-        <h1>
-            MaviGPT
-        </h1>
-
-        <p>
-            Merhaba Bahar! Sana nasıl yardımcı olabilirim?
-        </p>
-
-    </section>
-
-
-    <section class="chat-container">
-
-
-        <div class="message welcome">
-
-            👋 <strong>Merhaba Bahar!</strong>
-
-            <br><br>
-
-            Ben MaviGPT.
-
-            Aklındaki şeyi yazabilir,
-            soru sorabilir veya benimle sohbet edebilirsin. 💙
-
-        </div>
-
-
-        {% if cevap %}
-
-        <div class="message assistant">
-
-            🤖 {{ cevap }}
-
-        </div>
-
-        {% else %}
-
-        <div class="message assistant">
-
-            🤖 Hazırım! Bana bir şeyler yazabilirsin. ✨
-
-        </div>
-
-        {% endif %}
-
-
-        <form
-            method="POST"
-            enctype="multipart/form-data"
-            class="input-area">
-
-
-            <label
-                for="photo"
-                class="photo-button">
-
-                📎
-
-            </label>
-
-
-            <input
-                id="photo"
-                type="file"
-                name="photo"
-                accept="image/*">
-
-
-            <input
-                class="message-input"
-                type="text"
-                name="mesaj"
-                placeholder="MaviGPT'ye bir şey sor..."
-                autocomplete="off">
-
-
-            <button
-                class="send-button"
-                type="submit">
-
-                ➤
-
+            <button class="close-menu" onclick="toggleMenu()">
+                ✕
             </button>
 
+            <div class="brand">
+                <div class="brand-icon">🩵</div>
 
-        </form>
+                <div>
+                    <div class="brand-name">MaviGPT</div>
+                    <div class="brand-subtitle">Senin yapay zekân</div>
+                </div>
+            </div>
 
+            <button class="new-chat" onclick="newChat()">
+                <span>＋</span>
+                <span>Yeni sohbet</span>
+            </button>
 
-    </section>
-
-
-</main>
-
-
-<!-- =========================
-     JAVASCRIPT
-========================= -->
-
-<script>
-
-const menuButton =
-    document.getElementById("menuButton");
-
-const sidebar =
-    document.getElementById("sidebar");
-
-const overlay =
-    document.getElementById("overlay");
+        </div>
 
 
-function openMenu() {
+        <div class="chat-history">
 
-    sidebar.classList.add("active");
+            <div class="history-title">
+                SOHBETLER
+            </div>
 
-    overlay.classList.add("active");
+            {% if sohbetler %}
 
-}
+                {% for sohbet in sohbetler %}
 
+                <button class="history-item">
 
-function closeMenu() {
+                    <span class="history-icon">💬</span>
 
-    sidebar.classList.remove("active");
+                    <span class="history-text">
+                        {{ sohbet.mesaj if sohbet.mesaj else "Yeni sohbet" }}
+                    </span>
 
-    overlay.classList.remove("active");
+                </button>
 
-}
+                {% endfor %}
 
+            {% else %}
 
-menuButton.addEventListener(
-    "click",
-    function(event) {
+                <div class="empty-history">
+                    Henüz sohbet yok.
+                </div>
 
-        event.stopPropagation();
+            {% endif %}
 
-        if (
-            sidebar.classList.contains("active")
-        ) {
-
-            closeMenu();
-
-        } else {
-
-            openMenu();
-
-        }
-
-    }
-);
+        </div>
 
 
-overlay.addEventListener(
-    "click",
-    closeMenu
-);
+        <div class="sidebar-bottom">
+
+            <a href="/doctor" class="menu-link">
+                🩺
+                <span>Cebimdeki Doktor</span>
+            </a>
+
+            <a href="/period" class="menu-link">
+                🌸
+                <span>Regl Takibi</span>
+            </a>
+
+            <a href="/diarrhea" class="menu-link">
+                📊
+                <span>Sindirim Takibi</span>
+            </a>
+
+        </div>
+
+    </aside>
 
 
-document.addEventListener(
-    "keydown",
-    function(event) {
+    <!-- ================= OVERLAY ================= -->
 
-        if (event.key === "Escape") {
-
-            closeMenu();
-
-        }
-
-    }
-);
+    <div class="overlay"
+         id="overlay"
+         onclick="toggleMenu()">
+    </div>
 
 
-document
-    .querySelectorAll(".menu-link")
-    .forEach(function(link) {
+    <!-- ================= MAIN ================= -->
 
-        link.addEventListener(
-            "click",
-            closeMenu
-        );
+    <main class="main">
 
-    });
+        <!-- HEADER -->
+
+        <header class="header">
+
+            <button class="menu-button"
+                    onclick="toggleMenu()">
+                ☰
+            </button>
+
+            <div class="header-brand">
+
+                <div class="header-logo">
+                    🩵
+                </div>
+
+                <div>
+                    <div class="header-title">
+                        MaviGPT
+                    </div>
+
+                    <div class="online">
+                        <span></span>
+                        Çevrimiçi
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="more-button">
+                ⋮
+            </button>
+
+        </header>
 
 
-</script>
+        <!-- ================= CHAT ================= -->
 
-</body>
-            </html>
+        <section class="chat-area"
+                 id="chatArea">
+
+            {% if not cevap %}
+
+            <div class="welcome">
+
+                <div class="welcome-logo">
+                    🩵
+                </div>
+
+                <h1>
+                    Merhaba Bahar! 👋
+                </h1>
+
+                <p>
+                    Ben MaviGPT.
+                    <br>
+                    Bugün sana nasıl yardımcı olabilirim?
+                </p>
+
+
+                <div class="suggestions">
+
+                    <button onclick="fillMessage('Bugün neler yapabilirim?')">
+                        💡 Bir fikir ver
+                    </button>
+
+                    <button onclick="fillMessage('Bana bir şey öğret')">
+                        📚 Bir şey öğret
+                    </button>
+
+                    <button onclick="fillMessage('Benimle biraz sohbet et')">
+                        💬 Sohbet edelim
+                    </button>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            {% if mesaj %}
+
+            <div class="message user-message">
+
+                <div class="message-avatar user-avatar">
+                    B
+                </div>
+
+                <div class="message-content">
+
+                    <div class="        
