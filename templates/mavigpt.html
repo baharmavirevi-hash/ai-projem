@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0782a8">
 
     <title>MaviGPT</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -27,13 +28,8 @@
             overflow: hidden;
         }
 
-        button,
-        input {
-            font-family: inherit;
-        }
-
         /* =========================
-           ANA UYGULAMA
+           APP
         ========================= */
 
         .app {
@@ -41,6 +37,7 @@
             height: 100vh;
             position: relative;
         }
+
 
         /* =========================
            SIDEBAR
@@ -50,11 +47,14 @@
             position: fixed;
             top: 0;
             left: 0;
+
             width: 285px;
             height: 100vh;
-            height: 100dvh;
+
             background: #ffffff;
-            border-right: 1px solid #dce7ec;
+
+            border-right: 1px solid #dfe8ee;
+
             z-index: 1000;
 
             transform: translateX(-100%);
@@ -70,13 +70,19 @@
             transform: translateX(0);
         }
 
+
+        /* SIDEBAR HEADER */
+
         .sidebar-header {
-            height: 65px;
-            min-height: 65px;
+            height: 68px;
+            min-height: 68px;
+
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 14px;
+
+            padding: 0 15px;
+
             border-bottom: 1px solid #edf2f5;
         }
 
@@ -89,11 +95,15 @@
         .close-sidebar {
             width: 42px;
             height: 42px;
+
             border: 0;
             border-radius: 12px;
+
             background: transparent;
-            color: #65747e;
+
+            color: #687780;
             font-size: 28px;
+
             cursor: pointer;
         }
 
@@ -101,91 +111,113 @@
             background: #f1f7fa;
         }
 
+
+        /* NEW CHAT */
+
         .new-chat {
-            margin: 14px;
+            margin: 15px;
+
             padding: 13px 15px;
-            border: 1px solid #d7e8ee;
+
             border-radius: 13px;
+
+            border: 1px solid #d8e8ee;
+
             background: #eefaff;
+
             color: #087c9f;
-            font-size: 15px;
+
             font-weight: 600;
-            text-align: left;
+            font-size: 15px;
+
             cursor: pointer;
+
+            text-align: left;
         }
 
-        .new-chat:active {
-            transform: scale(0.98);
+        .new-chat:hover {
+            background: #dff6ff;
         }
+
+
+        /* MENU */
 
         .menu-section {
-            padding: 3px 10px 10px;
+            padding: 4px 10px;
         }
 
-        .menu-title,
-        .history-title {
-            padding: 9px 10px 6px;
-            color: #8997a1;
+        .menu-title {
             font-size: 11px;
-            font-weight: 600;
+            color: #8997a1;
+
+            padding: 9px 10px 6px;
+
             text-transform: uppercase;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
+
             gap: 12px;
 
-            width: 100%;
             padding: 12px 11px;
+
             margin: 3px 0;
 
             border-radius: 12px;
 
-            color: #25323b;
             text-decoration: none;
-            font-size: 14px;
 
-            cursor: pointer;
+            color: #25323b;
+
+            font-size: 14px;
         }
 
         .menu-item:hover {
             background: #f0f8fb;
         }
 
-        .menu-item.active {
-            background: #eaf8fc;
-            color: #087c9f;
-            font-weight: 600;
-        }
-
         .menu-icon {
-            width: 27px;
-            min-width: 27px;
+            width: 28px;
+
             text-align: center;
+
             font-size: 19px;
         }
 
-        /* =========================
-           SOHBET GEÇMİŞİ
-        ========================= */
+
+        /* HISTORY */
 
         .history {
             flex: 1;
+
             overflow-y: auto;
-            padding: 3px 10px 20px;
+
+            padding: 5px 10px 20px;
+        }
+
+        .history-title {
+            font-size: 12px;
+
+            color: #8997a1;
+
+            padding: 10px;
         }
 
         .history-item {
             padding: 10px;
-            margin: 2px 0;
+
             border-radius: 10px;
 
-            color: #45545e;
             font-size: 13px;
 
+            color: #45545e;
+
             overflow: hidden;
+
             white-space: nowrap;
+
             text-overflow: ellipsis;
         }
 
@@ -193,103 +225,117 @@
             background: #f3f8fa;
         }
 
+
         /* =========================
-           KARARTMA
+           BACKDROP
         ========================= */
 
         .backdrop {
             position: fixed;
+
             inset: 0;
+
+            background: rgba(0, 0, 0, 0.25);
+
             z-index: 900;
 
             display: none;
-
-            background: rgba(0, 0, 0, 0.28);
         }
 
         .backdrop.show {
             display: block;
         }
 
+
         /* =========================
-           ANA ALAN
+           MAIN
         ========================= */
 
         .main {
             width: 100%;
             height: 100vh;
-            height: 100dvh;
 
             display: flex;
             flex-direction: column;
         }
+
 
         /* =========================
            HEADER
         ========================= */
 
         .header {
-            width: 100%;
-            height: 64px;
-            min-height: 64px;
+            height: 65px;
+            min-height: 65px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #dfe8ee;
 
             display: flex;
             align-items: center;
 
-            gap: 10px;
             padding: 0 12px;
 
-            background: #ffffff;
-            border-bottom: 1px solid #dfe8ee;
+            gap: 10px;
 
-            z-index: 50;
+            z-index: 20;
         }
+
+
+        /* THREE LINE BUTTON */
 
         .menu-button {
             width: 43px;
-            min-width: 43px;
             height: 43px;
+
+            border: 0;
+
+            border-radius: 13px;
+
+            background: #f0f8fb;
+
+            color: #14728d;
+
+            font-size: 24px;
+
+            cursor: pointer;
 
             display: flex;
             align-items: center;
             justify-content: center;
-
-            border: 0;
-            border-radius: 13px;
-
-            background: #f0f8fb;
-            color: #14728d;
-
-            font-size: 24px;
-            line-height: 1;
-
-            cursor: pointer;
 
             -webkit-tap-highlight-color: transparent;
         }
 
         .menu-button:hover {
-            background: #e5f4f8;
+            background: #e3f4f9;
         }
 
         .menu-button:active {
-            transform: scale(0.94);
+            transform: scale(0.95);
         }
+
+
+        /* LOGO */
 
         .logo {
             width: 42px;
-            min-width: 42px;
             height: 42px;
+
+            border-radius: 14px;
+
+            background: #d9f5ff;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            border-radius: 14px;
-            background: #d9f5ff;
-
             font-size: 22px;
         }
+
+
+        /* HEADER INFO */
 
         .header-info {
             min-width: 0;
@@ -301,10 +347,13 @@
         }
 
         .status {
-            margin-top: 3px;
             color: #29a56f;
+
             font-size: 11px;
+
+            margin-top: 3px;
         }
+
 
         /* =========================
            CHAT
@@ -312,49 +361,58 @@
 
         .chat {
             flex: 1;
+
             overflow-y: auto;
 
             padding: 25px 12px 125px;
 
             scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
         }
 
         .chat-inner {
             width: 100%;
+
             max-width: 850px;
-            margin: 0 auto;
+
+            margin: auto;
         }
 
+
         /* =========================
-           HOŞ GELDİN
+           WELCOME
         ========================= */
 
         .welcome {
-            max-width: 500px;
-            margin: 65px auto 40px;
             text-align: center;
+
+            margin: 65px auto 40px;
+
+            max-width: 500px;
         }
 
         .welcome-logo {
-            width: 76px;
-            height: 76px;
+            width: 75px;
+            height: 75px;
+
             margin: auto;
+
+            border-radius: 24px;
+
+            background: #d9f5ff;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            border-radius: 24px;
-            background: #d9f5ff;
+            font-size: 42px;
 
-            font-size: 43px;
-
-            box-shadow: 0 8px 25px rgba(0, 130, 170, 0.10);
+            box-shadow:
+                0 8px 25px rgba(0, 130, 170, 0.10);
         }
 
         .welcome h1 {
             margin: 18px 0 8px;
+
             font-size: 25px;
         }
 
@@ -362,34 +420,40 @@
             margin: 0;
 
             color: #72808a;
-            font-size: 14px;
+
             line-height: 1.6;
+
+            font-size: 14px;
         }
 
+
         /* =========================
-           MESAJLAR
+           MESSAGES
         ========================= */
 
         .message {
             width: 100%;
 
             display: flex;
-            align-items: flex-start;
+
             gap: 9px;
 
             margin-bottom: 20px;
+
+            align-items: flex-start;
         }
 
         .avatar {
             width: 36px;
             min-width: 36px;
+
             height: 36px;
+
+            border-radius: 12px;
 
             display: flex;
             align-items: center;
             justify-content: center;
-
-            border-radius: 12px;
 
             font-size: 18px;
         }
@@ -407,10 +471,11 @@
         }
 
         .message-name {
-            margin: 0 0 5px 3px;
+            font-size: 11px;
 
             color: #84919a;
-            font-size: 11px;
+
+            margin: 0 0 5px 3px;
         }
 
         .bubble {
@@ -418,37 +483,46 @@
 
             border-radius: 17px;
 
-            font-size: 15px;
             line-height: 1.55;
 
+            font-size: 15px;
+
             word-break: break-word;
+
             white-space: pre-wrap;
         }
 
         .user-bubble {
             background: #dcecff;
+
             border-top-left-radius: 5px;
         }
 
         .bot-bubble {
             background: #ffffff;
+
             border: 1px solid #dfe7eb;
+
             border-top-left-radius: 5px;
 
-            box-shadow: 0 2px 7px rgba(0, 0, 0, 0.025);
+            box-shadow:
+                0 2px 7px rgba(0, 0, 0, 0.025);
         }
 
         .photo-preview {
-            display: block;
-
-            max-width: 260px;
-            max-height: 300px;
-
             margin-top: 8px;
 
-            border: 1px solid #dbe6eb;
+            max-width: 260px;
+
+            max-height: 300px;
+
             border-radius: 14px;
+
+            display: block;
+
+            border: 1px solid #dbe6eb;
         }
+
 
         /* =========================
            INPUT
@@ -457,115 +531,133 @@
         .input-area {
             position: fixed;
 
-            left: 0;
-            right: 0;
             bottom: 0;
 
-            z-index: 100;
+            left: 0;
+            right: 0;
 
-            padding: 8px 10px 11px;
+            padding: 9px 10px 12px;
 
-            background: linear-gradient(
-                to top,
-                #f5f9fc 72%,
-                rgba(245, 249, 252, 0.88)
-            );
+            background:
+                linear-gradient(
+                    to top,
+                    #f5f9fc 70%,
+                    rgba(245, 249, 252, 0.85)
+                );
+
+            z-index: 30;
         }
 
         .input-container {
             width: 100%;
+
             max-width: 850px;
+
             margin: auto;
         }
 
         .file-name {
             display: none;
 
-            padding: 5px 10px;
+            font-size: 12px;
 
             color: #087c9f;
-            font-size: 12px;
+
+            padding: 5px 10px;
         }
 
         .input-box {
             min-height: 54px;
 
+            background: #ffffff;
+
+            border: 1px solid #d5e2e8;
+
+            border-radius: 19px;
+
             display: flex;
+
             align-items: center;
 
             padding: 5px 6px;
 
-            background: #ffffff;
-            border: 1px solid #d5e2e8;
-            border-radius: 19px;
-
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.06);
         }
+
+
+        /* PLUS */
 
         .plus {
             width: 42px;
             min-width: 42px;
+
             height: 42px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            border-radius: 12px;
+            font-size: 27px;
 
             color: #60717c;
-            font-size: 27px;
 
             cursor: pointer;
 
-            -webkit-tap-highlight-color: transparent;
+            border-radius: 12px;
         }
 
         .plus:hover {
             background: #f1f7fa;
         }
 
+
+        /* MESSAGE INPUT */
+
         #mesaj {
             flex: 1;
+
             min-width: 0;
 
             height: 42px;
 
-            padding: 8px 7px;
-
             border: 0;
+
             outline: 0;
+
+            font-size: 15px;
+
+            padding: 8px 7px;
 
             background: transparent;
 
             color: #17212b;
-            font-size: 15px;
         }
 
         #mesaj::placeholder {
             color: #9aa7ae;
         }
 
+
+        /* SEND */
+
         .send {
             width: 43px;
             min-width: 43px;
+
             height: 43px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
             border: 0;
+
             border-radius: 14px;
 
             background: #0782a8;
+
             color: #ffffff;
 
             font-size: 19px;
 
             cursor: pointer;
-
-            -webkit-tap-highlight-color: transparent;
         }
 
         .send:hover {
@@ -576,37 +668,31 @@
             transform: scale(0.95);
         }
 
+
         /* =========================
-           MOBİL
+           MOBILE
         ========================= */
 
         @media (max-width: 600px) {
 
             .sidebar {
-                width: min(285px, 86vw);
-            }
-
-            .header {
-                height: 62px;
-                min-height: 62px;
-            }
-
-            .title {
-                font-size: 16px;
+                width: 285px;
             }
 
             .chat {
-                padding: 20px 9px 118px;
+                padding: 20px 9px 115px;
             }
 
             .welcome {
                 margin-top: 50px;
+
                 margin-bottom: 35px;
             }
 
             .welcome-logo {
                 width: 68px;
                 height: 68px;
+
                 font-size: 38px;
             }
 
@@ -615,8 +701,9 @@
             }
 
             .bubble {
-                padding: 11px 13px;
                 font-size: 14px;
+
+                padding: 11px 13px;
             }
 
             .message {
@@ -626,12 +713,24 @@
             .avatar {
                 width: 34px;
                 min-width: 34px;
+
                 height: 34px;
+
                 font-size: 16px;
             }
 
             .message-content {
                 max-width: calc(100% - 43px);
+            }
+
+            .header {
+                height: 62px;
+
+                min-height: 62px;
+            }
+
+            .title {
+                font-size: 16px;
             }
 
             .input-area {
@@ -645,20 +744,27 @@
             #mesaj {
                 font-size: 14px;
             }
+
         }
 
     </style>
 </head>
 
+
 <body>
+
 
 <div class="app">
 
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
 
-    <aside class="sidebar" id="sidebar">
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar">
+
 
         <div class="sidebar-header">
 
@@ -666,25 +772,32 @@
                 🩵 MaviGPT
             </div>
 
+
             <button
-                type="button"
                 class="close-sidebar"
+                type="button"
                 id="closeSidebarButton">
+
                 ×
+
             </button>
 
         </div>
 
 
+        <!-- YENİ SOHBET -->
+
         <button
-            type="button"
             class="new-chat"
+            type="button"
             id="newChatButton">
 
             ＋ Yeni sohbet
 
         </button>
 
+
+        <!-- MENÜ -->
 
         <div class="menu-section">
 
@@ -695,10 +808,15 @@
 
             <a
                 href="/"
-                class="menu-item active">
+                class="menu-item">
 
-                <span class="menu-icon">💬</span>
-                <span>Yeni sohbet</span>
+                <span class="menu-icon">
+                    💬
+                </span>
+
+                <span>
+                    Yeni sohbet
+                </span>
 
             </a>
 
@@ -707,8 +825,13 @@
                 href="/doctor"
                 class="menu-item">
 
-                <span class="menu-icon">🩺</span>
-                <span>Cebimdeki Doktor</span>
+                <span class="menu-icon">
+                    🩺
+                </span>
+
+                <span>
+                    Cebimdeki Doktor
+                </span>
 
             </a>
 
@@ -717,8 +840,13 @@
                 href="/period"
                 class="menu-item">
 
-                <span class="menu-icon">📅</span>
-                <span>Regl Takibi</span>
+                <span class="menu-icon">
+                    📅
+                </span>
+
+                <span>
+                    Regl Takibi
+                </span>
 
             </a>
 
@@ -727,19 +855,27 @@
                 href="/diarrhea"
                 class="menu-item">
 
-                <span class="menu-icon">📝</span>
-                <span>Sindirim Takibi</span>
+                <span class="menu-icon">
+                    📝
+                </span>
+
+                <span>
+                    Sindirim Takibi
+                </span>
 
             </a>
 
         </div>
 
 
+        <!-- SOHBET GEÇMİŞİ -->
+
         <div class="history">
 
             <div class="history-title">
                 Son sohbetler
             </div>
+
 
             {% if sohbetler %}
 
@@ -774,9 +910,9 @@
     </aside>
 
 
-    <!-- =========================
+    <!-- =====================================================
          BACKDROP
-    ========================== -->
+    ====================================================== -->
 
     <div
         class="backdrop"
@@ -784,19 +920,25 @@
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          MAIN
-    ========================== -->
+    ====================================================== -->
 
     <main class="main">
 
-        <!-- HEADER -->
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
         <header class="header">
 
+
+            <!-- ÜÇ ÇİZGİ -->
+
             <button
-                type="button"
                 class="menu-button"
+                type="button"
                 id="menuButton"
                 aria-label="Menüyü aç">
 
@@ -822,16 +964,23 @@
 
             </div>
 
+
         </header>
 
 
-        <!-- CHAT -->
+        <!-- =================================================
+             CHAT
+        ================================================== -->
 
         <section
             class="chat"
             id="chat">
 
+
             <div class="chat-inner">
+
+
+                <!-- HOŞ GELDİN -->
 
                 {% if not mesaj and not cevap %}
 
@@ -841,14 +990,20 @@
                             🩵
                         </div>
 
+
                         <h1>
                             Merhaba Bahar! 👋
                         </h1>
 
+
                         <p>
+
                             Ben MaviGPT.
+
                             <br>
+
                             Sana nasıl yardımcı olabilirim?
+
                         </p>
 
                     </div>
@@ -856,23 +1011,32 @@
                 {% endif %}
 
 
+                <!-- KULLANICI MESAJI -->
+
                 {% if mesaj %}
 
                     <div class="message">
+
 
                         <div class="avatar user-avatar">
                             👤
                         </div>
 
+
                         <div class="message-content">
+
 
                             <div class="message-name">
                                 Sen
                             </div>
 
+
                             <div class="bubble user-bubble">
+
                                 {{ mesaj }}
+
                             </div>
+
 
                             {% if foto_url %}
 
@@ -883,52 +1047,66 @@
 
                             {% endif %}
 
+
                         </div>
 
                     </div>
 
                 {% endif %}
 
+
+                <!-- MAVIGPT CEVABI -->
 
                 {% if cevap %}
 
                     <div class="message">
 
+
                         <div class="avatar bot-avatar">
                             🩵
                         </div>
 
+
                         <div class="message-content">
+
 
                             <div class="message-name">
                                 MaviGPT
                             </div>
 
+
                             <div class="bubble bot-bubble">
+
                                 {{ cevap }}
+
                             </div>
+
 
                         </div>
 
                     </div>
 
                 {% endif %}
+
 
             </div>
 
         </section>
 
 
-        <!-- INPUT -->
+        <!-- =================================================
+             INPUT
+        ================================================== -->
 
         <form
             method="POST"
             action="/"
             enctype="multipart/form-data"
-            class="input-area"
-            id="messageForm">
+            class="input-area">
+
 
             <div class="input-container">
+
 
                 <div
                     class="file-name"
@@ -937,6 +1115,9 @@
 
 
                 <div class="input-box">
+
+
+                    <!-- FOTOĞRAF -->
 
                     <label
                         for="photo"
@@ -951,40 +1132,4 @@
                     <input
                         type="file"
                         id="photo"
-                        name="photo"
-                        accept="image/*"
-                        hidden>
-
-
-                    <input
-                        type="text"
-                        id="mesaj"
-                        name="mesaj"
-                        placeholder="MaviGPT'ye mesaj gönder..."
-                        autocomplete="off">
-
-
-                    <button
-                        type="submit"
-                        class="send"
-                        id="sendButton">
-
-                        ➤
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </form>
-
-    </main>
-
-</div>
-
-
-<script>
-
-    /* =====================================================
-       MAVI
+                
