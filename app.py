@@ -16,6 +16,7 @@ os.makedirs(
 )
 
 init_db()
+
 register_routes(app)
 
 
