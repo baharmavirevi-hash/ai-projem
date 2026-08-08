@@ -94,8 +94,7 @@ def register_routes(app):
     # =====================================================
 
     @app.route("/", methods=["GET", "POST"])
-    def home():
-
+def home():
         mesaj = None
         cevap = None
         filename = None
