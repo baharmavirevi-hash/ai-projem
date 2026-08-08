@@ -2,8 +2,12 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          content="width=device-width,
+                   initial-scale=1.0,
+                   maximum-scale=1.0,
+                   user-scalable=no">
 
     <title>MaviGPT</title>
 
@@ -19,42 +23,61 @@
 
     <aside class="sidebar" id="sidebar">
 
-        <div class="sidebar-top">
+        <div class="sidebar-header">
 
-            <button class="close-menu" onclick="toggleMenu()">
-                ✕
-            </button>
-
-            <div class="brand">
-                <div class="brand-icon">🩵</div>
+            <div class="sidebar-brand">
+                <div class="brand-logo">🩵</div>
 
                 <div>
-                    <div class="brand-name">MaviGPT</div>
-                    <div class="brand-subtitle">Senin yapay zekân</div>
+                    <div class="brand-title">
+                        MaviGPT
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Senin yapay zekân
+                    </div>
                 </div>
             </div>
 
-            <button class="new-chat" onclick="newChat()">
-                <span>＋</span>
-                <span>Yeni sohbet</span>
+            <button
+                class="close-button"
+                type="button"
+                onclick="closeSidebar()">
+                ✕
             </button>
 
         </div>
 
 
-        <div class="chat-history">
+        <button
+            class="new-chat"
+            type="button"
+            onclick="newChat()">
 
-            <div class="history-title">
-                SOHBETLER
-            </div>
+            <span class="new-chat-icon">＋</span>
+            <span>Yeni sohbet</span>
+
+        </button>
+
+
+        <div class="sidebar-section-title">
+            SOHBETLER
+        </div>
+
+
+        <div class="history">
 
             {% if sohbetler %}
 
                 {% for sohbet in sohbetler %}
 
-                <button class="history-item">
+                <button
+                    class="history-item"
+                    type="button">
 
-                    <span class="history-icon">💬</span>
+                    <span class="history-icon">
+                        💬
+                    </span>
 
                     <span class="history-text">
                         {{ sohbet.mesaj if sohbet.mesaj else "Yeni sohbet" }}
@@ -77,18 +100,18 @@
 
         <div class="sidebar-bottom">
 
-            <a href="/doctor" class="menu-link">
-                🩺
+            <a href="/doctor" class="side-link">
+                <span>🩺</span>
                 <span>Cebimdeki Doktor</span>
             </a>
 
-            <a href="/period" class="menu-link">
-                🌸
+            <a href="/period" class="side-link">
+                <span>🌸</span>
                 <span>Regl Takibi</span>
             </a>
 
-            <a href="/diarrhea" class="menu-link">
-                📊
+            <a href="/diarrhea" class="side-link">
+                <span>📊</span>
                 <span>Sindirim Takibi</span>
             </a>
 
@@ -99,9 +122,10 @@
 
     <!-- ================= OVERLAY ================= -->
 
-    <div class="overlay"
-         id="overlay"
-         onclick="toggleMenu()">
+    <div
+        class="overlay"
+        id="overlay"
+        onclick="closeSidebar()">
     </div>
 
 
@@ -113,31 +137,39 @@
 
         <header class="header">
 
-            <button class="menu-button"
-                    onclick="toggleMenu()">
+            <button
+                class="menu-button"
+                type="button"
+                onclick="openSidebar()">
                 ☰
             </button>
 
-            <div class="header-brand">
+
+            <div class="header-info">
 
                 <div class="header-logo">
                     🩵
                 </div>
 
                 <div>
+
                     <div class="header-title">
                         MaviGPT
                     </div>
 
-                    <div class="online">
+                    <div class="online-status">
                         <span></span>
                         Çevrimiçi
                     </div>
+
                 </div>
 
             </div>
 
-            <button class="more-button">
+
+            <button
+                class="more-button"
+                type="button">
                 ⋮
             </button>
 
@@ -146,57 +178,15 @@
 
         <!-- ================= CHAT ================= -->
 
-        <section class="chat-area"
-                 id="chatArea">
+        <section
+            class="chat-area"
+            id="chatArea">
 
-            {% if not cevap %}
+
+            <!-- WELCOME -->
+
+            {% if not mesaj and not cevap %}
 
             <div class="welcome">
 
-                <div class="welcome-logo">
-                    🩵
-                </div>
-
-                <h1>
-                    Merhaba Bahar! 👋
-                </h1>
-
-                <p>
-                    Ben MaviGPT.
-                    <br>
-                    Bugün sana nasıl yardımcı olabilirim?
-                </p>
-
-
-                <div class="suggestions">
-
-                    <button onclick="fillMessage('Bugün neler yapabilirim?')">
-                        💡 Bir fikir ver
-                    </button>
-
-                    <button onclick="fillMessage('Bana bir şey öğret')">
-                        📚 Bir şey öğret
-                    </button>
-
-                    <button onclick="fillMessage('Benimle biraz sohbet et')">
-                        💬 Sohbet edelim
-                    </button>
-
-                </div>
-
-            </div>
-
-            {% endif %}
-
-
-            {% if mesaj %}
-
-            <div class="message user-message">
-
-                <div class="message-avatar user-avatar">
-                    B
-                </div>
-
-                <div class="message-content">
-
-                    <div class="
+                <div class="
