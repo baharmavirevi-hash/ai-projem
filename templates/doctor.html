@@ -2,7 +2,8 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Cebimdeki Doktor</title>
 
@@ -14,356 +15,680 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #eef8ff;
-            color: #18384d;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eaf6ff 0%,
+                    #f7fbff 45%,
+                    #eef7ff 100%
+                );
+
+            color: #172033;
             min-height: 100vh;
         }
 
-        /* ÜST BAR */
+        /* =========================
+           ÜST BAR
+        ========================= */
 
         .topbar {
-            height: 68px;
-            background: white;
-            border-bottom: 1px solid #dcecf5;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
             position: sticky;
             top: 0;
             z-index: 100;
-        }
 
-        .menu-btn {
-            width: 45px;
-            height: 45px;
-            border: none;
-            border-radius: 14px;
-            background: #e5f5ff;
-            color: #167db8;
-            font-size: 25px;
-            cursor: pointer;
-        }
+            height: 72px;
 
-        .top-title {
-            margin-left: 12px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* MENÜ */
-
-        .sidebar {
-            position: fixed;
-            left: -300px;
-            top: 0;
-            width: 285px;
-            height: 100vh;
-            background: white;
-            z-index: 300;
-            padding: 20px 15px;
-            box-shadow: 5px 0 25px rgba(0,0,0,.15);
-            transition: .3s;
-        }
-
-        .sidebar.open {
-            left: 0;
-        }
-
-        .sidebar-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .sidebar-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #147bb7;
-        }
-
-        .close-btn {
-            border: none;
-            background: #edf7fc;
-            border-radius: 12px;
-            width: 40px;
-            height: 40px;
-            font-size: 23px;
-        }
-
-        .menu-item {
-            width: 100%;
-            border: none;
-            background: transparent;
-            padding: 14px;
-            margin-bottom: 7px;
-            border-radius: 14px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: bold;
-            color: #294b60;
-            cursor: pointer;
-            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 12px;
+
+            padding: 0 18px;
+
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid rgba(120,160,190,0.18);
+
+            box-shadow:
+                0 4px 20px rgba(40,90,120,0.08);
         }
 
-        .menu-item:hover,
-        .menu-item.active {
-            background: #e6f6ff;
-            color: #0877b9;
-        }
+        .menu-button {
+            width: 48px;
+            height: 48px;
 
-        .menu-icon {
-            font-size: 21px;
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.3);
-            z-index: 200;
-        }
-
-        .overlay.open {
-            display: block;
-        }
-
-        /* ANA ALAN */
-
-        .container {
-            max-width: 850px;
-            margin: auto;
-            padding: 20px 14px 120px;
-        }
-
-        .welcome {
-            background: linear-gradient(135deg, #dff4ff, #f8fcff);
-            border: 1px solid #d3ebf8;
-            border-radius: 24px;
-            padding: 22px;
-            margin-bottom: 18px;
-            box-shadow: 0 7px 25px rgba(40,100,130,.08);
-        }
-
-        .doctor-title {
-            font-size: 27px;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .doctor-title span {
-            font-size: 35px;
-        }
-
-        .welcome p {
-            color: #587183;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-
-        /* CHAT */
-
-        .chat {
-            background: white;
-            border-radius: 23px;
-            padding: 17px;
-            min-height: 300px;
-            border: 1px solid #dcecf5;
-            box-shadow: 0 7px 25px rgba(40,100,130,.07);
-        }
-
-        .message {
-            display: flex;
-            margin-bottom: 15px;
-        }
-
-        .bot {
-            justify-content: flex-start;
-        }
-
-        .user {
-            justify-content: flex-end;
-        }
-
-        .bubble {
-            max-width: 88%;
-            padding: 13px 15px;
-            border-radius: 18px;
-            line-height: 1.55;
-            font-size: 15px;
-        }
-
-        .bot .bubble {
-            background: #edf8ff;
-            border-bottom-left-radius: 5px;
-        }
-
-        .user .bubble {
-            background: #1685c5;
-            color: white;
-            border-bottom-right-radius: 5px;
-        }
-
-        .answer {
-            white-space: pre-wrap;
-        }
-
-        .photo {
-            max-width: 100%;
-            max-height: 300px;
-            margin-top: 10px;
+            border: none;
             border-radius: 15px;
-        }
 
-        /* SAĞLIK KAYDI */
+            background: #dff2ff;
 
-        .record {
-            background: white;
-            border-radius: 20px;
-            padding: 18px;
-            margin-top: 18px;
-            border: 1px solid #dcecf5;
-        }
+            color: #147bb5;
 
-        .record h3 {
-            margin-bottom: 13px;
-        }
+            font-size: 25px;
 
-        .record input,
-        .record textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d5e7ef;
-            border-radius: 12px;
-            margin-bottom: 9px;
-            font-family: inherit;
-            outline: none;
-        }
-
-        .record textarea {
-            min-height: 80px;
-        }
-
-        .record button {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 12px;
-            background: #1685c5;
-            color: white;
-            font-weight: bold;
-            font-size: 15px;
-        }
-
-        .success {
-            background: #e8f8ed;
-            color: #237344;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-        }
-
-        /* ALT MESAJ KUTUSU */
-
-        .input-area {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,.96);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid #dcecf5;
-            padding: 10px 12px;
-            z-index: 150;
-        }
-
-        .input-form {
-            max-width: 850px;
-            margin: auto;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .photo-button {
-            width: 47px;
-            height: 47px;
-            background: #e7f6ff;
-            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 21px;
+
             cursor: pointer;
-            flex-shrink: 0;
+
+            transition: 0.2s;
         }
 
-        .photo-input {
-            display: none;
+        .menu-button:active {
+            transform: scale(0.92);
+        }
+
+        .top-title {
+            margin-left: 13px;
+
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 21px;
+            font-weight: 750;
+        }
+
+        .top-title span {
+            font-size: 26px;
+        }
+
+        /* =========================
+           MENÜ
+        ========================= */
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0,0,0,0.35);
+
+            z-index: 150;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: 0.25s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: min(310px, 82vw);
+            height: 100vh;
+
+            background: #ffffff;
+
+            z-index: 200;
+
+            padding: 22px 18px;
+
+            transform: translateX(-105%);
+
+            transition:
+                transform 0.28s cubic-bezier(.4,0,.2,1);
+
+            box-shadow:
+                10px 0 35px rgba(0,0,0,0.12);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 8px 5px 22px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .sidebar-logo-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 14px;
+
+            background: #e4f5ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+        }
+
+        .close-button {
+            width: 40px;
+            height: 40px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: #f1f4f7;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+        .menu-section-title {
+            color: #8a97a5;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin: 14px 8px 9px;
+        }
+
+        .menu-link {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 14px 13px;
+
+            margin-bottom: 7px;
+
+            border-radius: 15px;
+
+            text-decoration: none;
+
+            color: #263241;
+
+            font-size: 15px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .menu-link:hover {
+            background: #eef8ff;
+        }
+
+        .menu-link.active {
+            background: #e2f4ff;
+            color: #0879b8;
+        }
+
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #f3f7fa;
+
+            font-size: 19px;
+        }
+
+        .menu-link.active .menu-icon {
+            background: #ffffff;
+        }
+
+        /* =========================
+           ANA İÇERİK
+        ========================= */
+
+        .page {
+            width: 100%;
+            max-width: 760px;
+
+            margin: 0 auto;
+
+            padding: 25px 16px 45px;
+        }
+
+        .hero {
+            position: relative;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dff4ff,
+                    #f4fbff
+                );
+
+            border-radius: 27px;
+
+            padding: 25px 21px;
+
+            margin-bottom: 18px;
+
+            overflow: hidden;
+
+            border: 1px solid rgba(100,180,220,0.16);
+
+            box-shadow:
+                0 10px 30px rgba(50,120,160,0.08);
+        }
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 150px;
+            height: 150px;
+
+            right: -55px;
+            top: -55px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.45);
+        }
+
+        .hero-icon {
+            font-size: 43px;
+            margin-bottom: 9px;
+        }
+
+        .hero h1 {
+            font-size: clamp(27px, 7vw, 38px);
+            line-height: 1.1;
+
+            margin-bottom: 12px;
+
+            letter-spacing: -0.8px;
+        }
+
+        .hero p {
+            font-size: 15px;
+
+            color: #536779;
+
+            line-height: 1.6;
+
+            max-width: 560px;
+        }
+
+        /* =========================
+           SELAMLAMA
+        ========================= */
+
+        .hello {
+            font-size: 18px;
+            font-weight: 750;
+
+            margin: 18px 3px 13px;
+        }
+
+        /* =========================
+           CHAT KARTI
+        ========================= */
+
+        .chat-card {
+            background: rgba(255,255,255,0.9);
+
+            border-radius: 23px;
+
+            padding: 17px;
+
+            border: 1px solid rgba(120,160,190,0.15);
+
+            box-shadow:
+                0 8px 25px rgba(30,80,110,0.07);
+        }
+
+        .assistant-message {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin-bottom: 16px;
+        }
+
+        .assistant-avatar {
+            flex-shrink: 0;
+
+            width: 39px;
+            height: 39px;
+
+            border-radius: 13px;
+
+            background: #e2f5ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+        .assistant-bubble {
+            background: #f2f8fc;
+
+            padding: 12px 14px;
+
+            border-radius: 5px 17px 17px 17px;
+
+            color: #293746;
+
+            line-height: 1.5;
+
+            font-size: 15px;
+
+            max-width: 88%;
+        }
+
+        /* =========================
+           KULLANICI MESAJI
+        ========================= */
+
+        .user-message {
+            display: flex;
+            justify-content: flex-end;
+
+            margin: 14px 0;
+        }
+
+        .user-bubble {
+            background: #1689c9;
+
+            color: white;
+
+            padding: 12px 15px;
+
+            border-radius: 17px 17px 5px 17px;
+
+            max-width: 88%;
+
+            line-height: 1.5;
+        }
+
+        /* =========================
+           AI CEVABI
+        ========================= */
+
+        .answer {
+            margin-top: 14px;
+
+            background: #f7fbfd;
+
+            border: 1px solid #e3edf2;
+
+            border-radius: 18px;
+
+            padding: 15px;
+
+            line-height: 1.65;
+
+            font-size: 15px;
+        }
+
+        .answer-title {
+            font-weight: 750;
+
+            margin-bottom: 8px;
+
+            color: #117db5;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .chat-form {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-top: 14px;
         }
 
         .message-input {
             flex: 1;
+
             min-width: 0;
-            height: 47px;
-            border: 1px solid #d2e5ee;
-            border-radius: 14px;
-            padding: 0 14px;
-            font-size: 15px;
+
+            height: 52px;
+
+            border: 1.5px solid #d8e4eb;
+
+            background: #ffffff;
+
+            border-radius: 17px;
+
+            padding: 0 15px;
+
             outline: none;
-            background: #f8fcff;
+
+            font-size: 15px;
+
+            color: #172033;
+
+            transition: 0.2s;
         }
 
-        .send {
-            width: 48px;
-            height: 47px;
-            border: none;
-            border-radius: 14px;
-            background: #1685c5;
-            color: white;
-            font-size: 21px;
-            cursor: pointer;
+        .message-input:focus {
+            border-color: #3aa5d8;
+
+            box-shadow:
+                0 0 0 4px rgba(58,165,216,0.11);
+        }
+
+        .send-button {
+            width: 52px;
+            height: 52px;
+
             flex-shrink: 0;
+
+            border: none;
+
+            border-radius: 17px;
+
+            background: #1689c9;
+
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 18px rgba(22,137,201,0.25);
+
+            transition: 0.2s;
         }
 
-        @media (max-width: 600px) {
+        .send-button:active {
+            transform: scale(0.92);
+        }
+
+        .photo-button {
+            width: 52px;
+            height: 52px;
+
+            flex-shrink: 0;
+
+            border: none;
+
+            border-radius: 17px;
+
+            background: #edf7fc;
+
+            color: #1785ba;
+
+            font-size: 21px;
+
+            cursor: pointer;
+        }
+
+        #photo {
+            display: none;
+        }
+
+        .photo-preview {
+            margin-top: 12px;
+
+            display: none;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            max-height: 250px;
+
+            object-fit: cover;
+
+            border-radius: 17px;
+        }
+
+        /* =========================
+           KAYIT KARTI
+        ========================= */
+
+        .records-title {
+            margin: 25px 3px 12px;
+
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .record-card {
+            background: white;
+
+            border-radius: 19px;
+
+            padding: 16px;
+
+            margin-bottom: 10px;
+
+            border: 1px solid #e5edf2;
+
+            box-shadow:
+                0 5px 18px rgba(40,80,100,0.05);
+        }
+
+        .record-row {
+            margin-bottom: 7px;
+
+            font-size: 14px;
+        }
+
+        .record-label {
+            color: #71808e;
+
+            font-size: 12px;
+
+            margin-right: 4px;
+        }
+
+        .success {
+            background: #eafaf2;
+
+            color: #16804e;
+
+            padding: 12px 14px;
+
+            border-radius: 14px;
+
+            margin-bottom: 14px;
+
+            font-size: 14px;
+
+            font-weight: 650;
+        }
+
+        /* =========================
+           MOBİL
+        ========================= */
+
+        @media (max-width: 500px) {
 
             .topbar {
-                height: 62px;
+                height: 66px;
+                padding: 0 13px;
+            }
+
+            .menu-button {
+                width: 45px;
+                height: 45px;
             }
 
             .top-title {
                 font-size: 18px;
             }
 
-            .container {
-                padding: 15px 11px 110px;
+            .page {
+                padding: 18px 12px 35px;
             }
 
-            .welcome {
-                padding: 19px;
-                border-radius: 20px;
+            .hero {
+                padding: 22px 18px;
+                border-radius: 23px;
             }
 
-            .doctor-title {
-                font-size: 24px;
+            .hero-icon {
+                font-size: 37px;
             }
 
-            .doctor-title span {
-                font-size: 30px;
-            }
-
-            .chat {
-                border-radius: 20px;
+            .chat-card {
                 padding: 13px;
+                border-radius: 20px;
             }
 
-            .bubble {
-                font-size: 14px;
+            .assistant-bubble,
+            .user-bubble {
+                max-width: 92%;
+            }
+
+            .photo-button {
+                width: 48px;
+                height: 48px;
+                border-radius: 15px;
+            }
+
+            .send-button {
+                width: 48px;
+                height: 48px;
+                border-radius: 15px;
+            }
+
+            .message-input {
+                height: 48px;
+                border-radius: 15px;
             }
         }
     </style>
@@ -371,297 +696,443 @@
 
 <body>
 
-    <!-- ÜST BAR -->
+<!-- =========================
+     MENÜ DIŞI KARARTMA
+========================= -->
 
-    <header class="topbar">
-
-        <button class="menu-btn" onclick="openMenu()">
-            ☰
-        </button>
-
-        <div class="top-title">
-            🩺 Cebimdeki Doktor
-        </div>
-
-    </header>
+<div class="overlay" id="overlay"></div>
 
 
-    <!-- MENÜ -->
+<!-- =========================
+     HAMBURGER MENÜ
+========================= -->
 
-    <aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar">
 
-        <div class="sidebar-head">
+    <div class="sidebar-header">
 
-            <div class="sidebar-title">
-                🩺 Cebimdeki Doktor
+        <div class="sidebar-logo">
+
+            <div class="sidebar-logo-icon">
+                🩺
             </div>
 
-            <button class="close-btn" onclick="closeMenu()">
-                ×
-            </button>
+            Cebimdeki Doktor
 
         </div>
 
+        <button
+            class="close-button"
+            id="closeMenu"
+            type="button">
 
-        <a href="/doctor" class="menu-item active">
-            <span class="menu-icon">💬</span>
-            Doktorla Sohbet
-        </a>
+            ✕
 
-
-        <a href="/period" class="menu-item">
-            <span class="menu-icon">🩸</span>
-            Regl Takibi
-        </a>
-
-
-        <a href="/diarrhea" class="menu-item">
-            <span class="menu-icon">💧</span>
-            Sindirim Takibi
-        </a>
-
-
-        <button class="menu-item" onclick="goRecords()">
-            <span class="menu-icon">📋</span>
-            Sağlık Geçmişim
         </button>
 
-
-        <button class="menu-item" onclick="settings()">
-            <span class="menu-icon">⚙️</span>
-            Ayarlar
-        </button>
-
-    </aside>
+    </div>
 
 
-    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+    <div class="menu-section-title">
+        Takip
+    </div>
 
 
-    <!-- ANA SAYFA -->
+    <a
+        href="/doctor"
+        class="menu-link active">
 
-    <main class="container">
+        <div class="menu-icon">
+            🩺
+        </div>
 
-        <section class="welcome">
+        Cebimdeki Doktor
 
-            <div class="doctor-title">
-                <span>🩺</span>
-                Cebimdeki Doktor
+    </a>
+
+
+    <a
+        href="/period"
+        class="menu-link">
+
+        <div class="menu-icon">
+            🩸
+        </div>
+
+        Regl Takibi
+
+    </a>
+
+
+    <a
+        href="/diarrhea"
+        class="menu-link">
+
+        <div class="menu-icon">
+            💧
+        </div>
+
+        Sindirim Takibi
+
+    </a>
+
+
+    <div class="menu-section-title">
+        Diğer
+    </div>
+
+
+    <a
+        href="#records"
+        class="menu-link"
+        onclick="closeSidebar()">
+
+        <div class="menu-icon">
+            📋
+        </div>
+
+        Sağlık Geçmişim
+
+    </a>
+
+
+    <a
+        href="#"
+        class="menu-link">
+
+        <div class="menu-icon">
+            ⚙️
+        </div>
+
+        Ayarlar
+
+    </a>
+
+</aside>
+
+
+<!-- =========================
+     ÜST BAR
+========================= -->
+
+<header class="topbar">
+
+    <button
+        class="menu-button"
+        id="openMenu"
+        type="button"
+        aria-label="Menüyü aç">
+
+        ☰
+
+    </button>
+
+
+    <div class="top-title">
+
+        <span>🩺</span>
+
+        Cebimdeki Doktor
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     ANA SAYFA
+========================= -->
+
+<main class="page">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-icon">
+            🩺
+        </div>
+
+        <h1>
+            Cebimdeki Doktor
+        </h1>
+
+        <p>
+            Belirtilerini anlatabilir, genel sağlık
+            bilgileri hakkında yardım alabilir ve
+            sağlık kayıtlarını takip edebilirsin.
+        </p>
+
+    </section>
+
+
+    <div class="hello">
+        👋 Merhaba Bahar!
+    </div>
+
+
+    <!-- CHAT -->
+
+    <section class="chat-card">
+
+
+        <div class="assistant-message">
+
+            <div class="assistant-avatar">
+                🩺
             </div>
 
-            <p>
-                👋 <strong>Merhaba Bahar!</strong>
-            </p>
-
-            <br>
-
-            <p>
-                Belirtilerini veya merak ettiğin sağlık konularını
-                yazabilirsin. Sana genel sağlık bilgileri ve öneriler
-                sunabilirim.
-            </p>
-
-        </section>
-
-
-        <!-- SOHBET -->
-
-        <section class="chat">
-
-            <div class="message bot">
-
-                <div class="bubble">
-                    🩺 Merhaba! Bugün nasıl yardımcı olabilirim?
-                </div>
-
+            <div class="assistant-bubble">
+                Merhaba! Bugün nasıl yardımcı olabilirim?
             </div>
 
+        </div>
 
-            {% if mesaj %}
 
-            <div class="message user">
+        {% if mesaj %}
 
-                <div class="bubble">
-                    {{ mesaj }}
-                </div>
+        <div class="user-message">
 
+            <div class="user-bubble">
+                {{ mesaj }}
             </div>
 
-            {% endif %}
-
-
-            {% if cevap %}
-
-            <div class="message bot">
-
-                <div class="bubble answer">
-
-                    🩺 {{ cevap }}
-
-                    {% if foto_url %}
-
-                    <img
-                        class="photo"
-                        src="{{ url_for('static', filename=foto_url) }}"
-                        alt="Yüklenen fotoğraf"
-                    >
-
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-            {% endif %}
-
-        </section>
-
-
-        <!-- KAYIT MESAJI -->
-
-        {% if kayit_mesaji %}
-
-        <section class="record">
-
-            <div class="success">
-                {{ kayit_mesaji }}
-            </div>
-
-        </section>
+        </div>
 
         {% endif %}
 
 
-        <!-- SAĞLIK KAYDI -->
+        {% if cevap %}
 
-        <section class="record" id="records">
+        <div class="answer">
 
-            <h3>
-                📝 Sağlık Notu
-            </h3>
+            <div class="answer-title">
+                🩺 Cebimdeki Doktor
+            </div>
 
-            <form method="POST">
+            {{ cevap }}
 
-                <input
-                    type="text"
-                    name="symptom"
-                    placeholder="Belirti / şikayet"
-                >
+        </div>
 
-                <input
-                    type="text"
-                    name="medicine"
-                    placeholder="Kullandığın ilaç"
-                >
-
-                <textarea
-                    name="note"
-                    placeholder="Not ekle..."
-                ></textarea>
-
-                <button type="submit">
-                    💾 Kaydet
-                </button>
-
-            </form>
-
-        </section>
-
-    </main>
+        {% endif %}
 
 
-    <!-- MESAJ KUTUSU -->
+        {% if kayit_mesaji %}
 
-    <div class="input-area">
+        <div class="success">
+            {{ kayit_mesaji }}
+        </div>
+
+        {% endif %}
+
+
+        {% if foto_url %}
+
+        <div class="photo-preview"
+             style="display:block;">
+
+            <img
+                src="{{ url_for('static', filename=foto_url.replace('uploads/', 'uploads/')) }}"
+                alt="Yüklenen fotoğraf">
+
+        </div>
+
+        {% endif %}
+
 
         <form
+            class="chat-form"
             method="POST"
-            enctype="multipart/form-data"
-            class="input-form"
-        >
+            enctype="multipart/form-data">
 
-            <label class="photo-button">
+
+            <label
+                class="photo-button"
+                for="photo"
+                title="Fotoğraf ekle">
 
                 📷
-
-                <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    class="photo-input"
-                >
 
             </label>
 
 
             <input
+                type="file"
+                id="photo"
+                name="photo"
+                accept="image/*">
+
+
+            <input
+                class="message-input"
                 type="text"
                 name="mesaj"
-                class="message-input"
                 placeholder="Belirtilerini yaz..."
-                autocomplete="off"
-            >
+                autocomplete="off">
 
 
-            <button class="send" type="submit">
+            <button
+                class="send-button"
+                type="submit"
+                aria-label="Gönder">
+
                 ➤
+
             </button>
 
         </form>
 
-    </div>
+
+        <div
+            class="photo-preview"
+            id="photoPreview">
+
+            <img id="previewImage" alt="Fotoğraf önizlemesi">
+
+        </div>
 
 
-    <script>
-
-        function openMenu() {
-
-            document
-                .getElementById("sidebar")
-                .classList.add("open");
-
-            document
-                .getElementById("overlay")
-                .classList.add("open");
-
-        }
+    </section>
 
 
-        function closeMenu() {
+    <!-- SAĞLIK KAYITLARI -->
 
-            document
-                .getElementById("sidebar")
-                .classList.remove("open");
+    <section id="records">
 
-            document
-                .getElementById("overlay")
-                .classList.remove("open");
-
-        }
+        <div class="records-title">
+            📋 Sağlık Geçmişim
+        </div>
 
 
-        function goRecords() {
+        {% if kayitlar %}
 
-            closeMenu();
+            {% for kayit in kayitlar %}
 
-            document
-                .getElementById("records")
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
+            <div class="record-card">
 
-        }
+                {% if kayit["symptom"] %}
+
+                <div class="record-row">
+
+                    <span class="record-label">
+                        Belirti:
+                    </span>
+
+                    {{ kayit["symptom"] }}
+
+                </div>
+
+                {% endif %}
 
 
-        function settings() {
+                {% if kayit["medicine"] %}
 
-            closeMenu();
+                <div class="record-row">
 
-            alert("⚙️ Ayarlar bölümü yakında geliyor!");
+                    <span class="record-label">
+                        İlaç:
+                    </span>
 
-        }
+                    {{ kayit["medicine"] }}
 
-    </script>
+                </div>
 
-</body>
-            </html>
+                {% endif %}
+
+
+                {% if kayit["note"] %}
+
+                <div class="record-row">
+
+                    <span class="record-label">
+                        Not:
+                    </span>
+
+                    {{ kayit["note"] }}
+
+                </div>
+
+                {% endif %}
+
+
+                {% if kayit["created_at"] %}
+
+                <div class="record-row">
+
+                    <span class="record-label">
+                        Tarih:
+                    </span>
+
+                    {{ kayit["created_at"] }}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="record-card">
+
+                Henüz kayıt bulunmuyor. 🌿
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+</main>
+
+
+<script>
+
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    const openMenuButton =
+        document.getElementById("openMenu");
+
+    const closeMenuButton =
+        document.getElementById("closeMenu");
+
+
+    function openSidebar() {
+
+        sidebar.classList.add("active");
+
+        overlay.classList.add("active");
+
+        document.body.style.overflow = "hidden";
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove("active");
+
+        overlay.classList.remove("active");
+
+        document.body.style.overflow = "";
+    }
+
+
+    openMenuButton.addEventListener(
+        "click",
+        openSidebar
+    );
+
+
+    closeMenuButton.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    /*
+       MENÜNÜN DIŞINA TIKLAYIN  
