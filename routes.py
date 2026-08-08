@@ -356,6 +356,7 @@ def register_routes(app):
         except Exception:
 
             kayitlar = []
+                    print("MAVIGPT HOME CALISTI")
 
         return render_template(
             "diarrhea.html",
