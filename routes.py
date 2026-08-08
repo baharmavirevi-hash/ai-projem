@@ -1,8 +1,10 @@
 from flask import render_template, request
 import os
+
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google import genai
+
 from database import (
     save_chat,
     get_chats,
@@ -25,7 +27,7 @@ client = genai.Client(
 
 
 # ============================================================
-# MAVIGPT
+# MAVIGPT AI
 # ============================================================
 
 def ask_mavigpt(message, image_path=None):
@@ -109,15 +111,26 @@ def register_routes(app):
     @app.route("/", methods=["GET", "POST"])
     def home():
 
+        print("MAVIGPT HOME CALISTI")
+
         mesaj = ""
         cevap = ""
         filename = None
 
+        # Sohbet geçmişi
         try:
+
             sohbetler = get_chats("normal")
+
         except Exception as e:
+
             print("SOHBET HATASI:", e)
+
             sohbetler = []
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
 
         if request.method == "POST":
 
@@ -126,8 +139,12 @@ def register_routes(app):
                 ""
             ).strip()
 
+            print("GELEN MESAJ:", mesaj)
+
+            # Fotoğraf
             foto, filename = upload_photo(app)
 
+            # Mesaj veya fotoğraf varsa AI'ya gönder
             if mesaj or foto:
 
                 cevap = ask_mavigpt(
@@ -135,6 +152,9 @@ def register_routes(app):
                     foto
                 )
 
+                print("MAVIGPT CEVAP VERDI")
+
+                # Sohbeti kaydet
                 try:
 
                     save_chat(
@@ -146,6 +166,10 @@ def register_routes(app):
                 except Exception as e:
 
                     print("KAYIT HATASI:", e)
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
 
         return render_template(
             "mavigpt.html",
@@ -229,7 +253,12 @@ def register_routes(app):
 
             kayitlar = get_health_records()
 
-        except Exception:
+        except Exception as e:
+
+            print(
+                "Sağlık kayıtları okunamadı:",
+                e
+            )
 
             kayitlar = []
 
@@ -292,7 +321,12 @@ def register_routes(app):
 
             kayitlar = get_period_records()
 
-        except Exception:
+        except Exception as e:
+
+            print(
+                "Regl kayıtları okunamadı:",
+                e
+            )
 
             kayitlar = []
 
@@ -353,12 +387,16 @@ def register_routes(app):
 
             kayitlar = get_diarrhea_records()
 
-        except Exception:
+        except Exception as e:
+
+            print(
+                "Sindirim kayıtları okunamadı:",
+                e
+            )
 
             kayitlar = []
-                    print("MAVIGPT HOME CALISTI")
 
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
-                    )
+    )
