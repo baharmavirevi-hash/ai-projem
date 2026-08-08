@@ -5,7 +5,7 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        content="width=device-width, initial-scale=1.0"
     >
 
     <title>MaviGPT</title>
@@ -18,59 +18,114 @@
             padding: 0;
         }
 
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-        }
-
         body {
             font-family:
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
                 Roboto,
-                Helvetica,
                 Arial,
                 sans-serif;
 
-            background: #f7f9fc;
-            color: #17202a;
+            background: #f5faff;
+            color: #17212b;
 
-            overflow: hidden;
+            min-height: 100vh;
         }
 
+        /* =========================
+           HEADER
+        ========================= */
 
-        /* =========================================
-           UYGULAMA
-        ========================================= */
+        header {
+            height: 70px;
 
-        .app {
-            width: 100%;
-            height: 100dvh;
             display: flex;
-            position: relative;
+            align-items: center;
+
+            padding: 0 16px;
+
+            background: rgba(255,255,255,.92);
+
+            border-bottom: 1px solid #e6eef5;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 10;
+
+            backdrop-filter: blur(15px);
         }
 
+        .menu-button {
+            width: 46px;
+            height: 46px;
 
-        /* =========================================
-           KARARTMA
-        ========================================= */
+            border: none;
+            border-radius: 14px;
+
+            background: #eef7ff;
+
+            font-size: 24px;
+
+            cursor: pointer;
+        }
+
+        .logo {
+            margin-left: 12px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 13px;
+
+            background: #dff2ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 24px;
+        }
+
+        .logo-text strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .logo-text span {
+            display: block;
+
+            font-size: 12px;
+
+            color: #8a9aaa;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
 
         .overlay {
             position: fixed;
+
             inset: 0;
 
-            background: rgba(0, 0, 0, 0.42);
+            background: rgba(0,0,0,.35);
 
             opacity: 0;
+
             visibility: hidden;
 
-            transition:
-                opacity 0.25s ease,
-                visibility 0.25s ease;
+            transition: .25s;
 
-            z-index: 90;
+            z-index: 20;
         }
 
         .overlay.active {
@@ -78,752 +133,613 @@
             visibility: visible;
         }
 
-
-        /* =========================================
-           SIDEBAR
-        ========================================= */
-
         .sidebar {
-            width: 285px;
-            height: 100dvh;
-
-            background: #ffffff;
-
-            border-right: 1px solid #e7ebf0;
-
-            display: flex;
-            flex-direction: column;
-
-            padding: 18px;
-
             position: fixed;
+
             top: 0;
             left: 0;
 
+            width: 290px;
+            max-width: 82vw;
+
+            height: 100vh;
+
+            background: white;
+
             transform: translateX(-105%);
 
-            transition: transform 0.28s ease;
+            transition: .28s ease;
 
-            z-index: 100;
+            z-index: 30;
+
+            padding: 25px 16px;
 
             box-shadow:
-                8px 0 30px rgba(20, 40, 70, 0.08);
+                10px 0 35px rgba(0,0,0,.15);
         }
 
         .sidebar.active {
             transform: translateX(0);
         }
 
+        .sidebar-title {
+            padding: 10px;
 
-        /* =========================================
-           SIDEBAR LOGO
-        ========================================= */
+            margin-bottom: 20px;
 
-        .sidebar-top {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-
-            padding: 8px 8px 22px;
-        }
-
-        .logo-circle {
-            width: 45px;
-            height: 45px;
-
-            border-radius: 15px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #e8f5ff;
-
-            font-size: 25px;
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-text strong {
-            font-size: 19px;
-            color: #172b3a;
-        }
-
-        .logo-text span {
-            font-size: 12px;
-            color: #8492a0;
-            margin-top: 2px;
-        }
-
-
-        /* =========================================
-           YENİ SOHBET
-        ========================================= */
-
-        .new-chat {
-            width: 100%;
-
-            border: 1px solid #dbe8f2;
-
-            background: #f5fbff;
-
-            color: #1886d7;
-
-            border-radius: 15px;
-
-            padding: 13px 15px;
-
-            font-size: 15px;
-            font-weight: 700;
-
-            cursor: pointer;
-
-            text-align: left;
-
-            transition: 0.2s;
-        }
-
-        .new-chat:hover {
-            background: #e9f6ff;
-        }
-
-        .new-chat:active {
-            transform: scale(0.98);
-        }
-
-
-        /* =========================================
-           MENÜ BAŞLIĞI
-        ========================================= */
-
-        .menu-title {
-            font-size: 11px;
+            font-size: 20px;
             font-weight: 800;
-
-            color: #9aa7b4;
-
-            letter-spacing: 1px;
-
-            margin:
-                28px 10px 10px;
         }
-
-
-        /* =========================================
-           MENÜ LİNKLERİ
-        ========================================= */
 
         .menu-link {
-            width: 100%;
-
             display: flex;
+
             align-items: center;
 
             gap: 13px;
 
-            padding: 13px 14px;
+            width: 100%;
 
-            margin-bottom: 5px;
+            padding: 15px;
 
-            border-radius: 14px;
+            margin-bottom: 7px;
+
+            border-radius: 15px;
 
             text-decoration: none;
 
-            color: #344452;
+            color: #243342;
 
-            font-size: 15px;
             font-weight: 600;
 
-            transition: 0.2s;
+            transition: .2s;
         }
 
         .menu-link:hover {
-            background: #f1f7fb;
-        }
-
-        .menu-link:active {
-            transform: scale(0.98);
+            background: #eef8ff;
         }
 
         .menu-icon {
+            font-size: 22px;
+
             width: 28px;
 
-            display: flex;
-            justify-content: center;
-
-            font-size: 20px;
-        }
-
-
-        /* =========================================
-           SOHBET GEÇMİŞİ
-        ========================================= */
-
-        .history-title {
-            font-size: 11px;
-            font-weight: 800;
-
-            color: #9aa7b4;
-
-            letter-spacing: 1px;
-
-            margin:
-                25px 10px 10px;
-        }
-
-        .history {
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .history-item {
-            padding: 12px;
-
-            border-radius: 12px;
-
-            margin-bottom: 4px;
-
-            color: #536270;
-
-            font-size: 14px;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-item:hover {
-            background: #f4f7fa;
-        }
-
-
-        /* =========================================
-           ALT BİLGİ
-        ========================================= */
-
-        .sidebar-bottom {
-            border-top: 1px solid #edf0f3;
-
-            padding-top: 15px;
-
-            color: #8b98a5;
-
-            font-size: 12px;
-
             text-align: center;
         }
 
-
-        /* =========================================
-           ANA CHAT
-        ========================================= */
-
-        .chat {
-            width: 100%;
-            height: 100dvh;
-
-            display: flex;
-            flex-direction: column;
-
-            background:
-                radial-gradient(
-                    circle at top,
-                    #eef8ff 0%,
-                    #f7f9fc 38%,
-                    #f7f9fc 100%
-                );
-        }
-
-
-        /* =========================================
-           HEADER
-        ========================================= */
-
-        .header {
-            height: 70px;
-
-            display: flex;
-            align-items: center;
-
-            padding:
-                0 18px;
-
-            border-bottom:
-                1px solid rgba(220, 228, 235, 0.8);
-
-            background:
-                rgba(255,255,255,0.78);
-
-            backdrop-filter: blur(16px);
-
-            position: relative;
-            z-index: 20;
-        }
-
-
-        /* =========================================
-           HAMBURGER
-        ========================================= */
-
-        .menu-button {
-            width: 44px;
-            height: 44px;
-
-            border: none;
-
-            border-radius: 14px;
-
-            background: #ffffff;
-
-            box-shadow:
-                0 5px 18px rgba(30, 70, 100, 0.10);
-
-            font-size: 23px;
-
-            cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            margin-right: 12px;
-
-            color: #263746;
-
-            transition: 0.2s;
-        }
-
-        .menu-button:active {
-            transform: scale(0.92);
-        }
-
-
-        /* =========================================
-           HEADER YAZISI
-        ========================================= */
-
-        .header-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-info h1 {
-            font-size: 18px;
-
-            font-weight: 800;
-
-            color: #182b3a;
-        }
-
-        .header-info span {
-            font-size: 12px;
-
-            color: #81909e;
-
-            margin-top: 2px;
-        }
-
-
-        /* =========================================
-           MESAJ ALANI
-        ========================================= */
-
-        .messages {
-            flex: 1;
-
-            overflow-y: auto;
-
-            padding:
-                28px 18px 130px;
-
-            width: 100%;
-            max-width: 850px;
-
-            margin: 0 auto;
-
-            scroll-behavior: smooth;
-        }
-
-
-        /* =========================================
-           KARŞILAMA
-        ========================================= */
-
-        .welcome-screen {
-            min-height: 100%;
-
-            display: flex;
-            flex-direction: column;
-
-            justify-content: center;
-            align-items: center;
-
-            text-align: center;
-
-            padding: 30px 10px;
-        }
-
-        .welcome-icon {
-            width: 75px;
-            height: 75px;
-
-            border-radius: 24px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #dff3ff,
-                    #eef9ff
-                );
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 40px;
-
-            box-shadow:
-                0 12px 35px rgba(40, 150, 220, 0.12);
-
-            margin-bottom: 20px;
-        }
-
-        .welcome-screen h2 {
-            font-size: 29px;
-
-            font-weight: 800;
-
-            color: #172c3d;
-
-            margin-bottom: 10px;
-        }
-
-        .welcome-screen p {
-            max-width: 500px;
-
-            font-size: 15px;
-
-            line-height: 1.6;
-
-            color: #778693;
-        }
-
-
-        /* =========================================
-           MESAJLAR
-        ========================================= */
-
-        .message {
+        /* =========================
+           ANA ALAN
+        ========================= */
+
+        main {
             width: 100%;
 
-            display: flex;
-
-            margin-bottom: 18px;
-        }
-
-        .message.ai {
-            justify-content: flex-start;
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-
-        .message-content {
-            max-width: 78%;
-
-            padding: 13px 16px;
-
-            border-radius: 20px;
-
-            font-size: 15px;
-
-            line-height: 1.6;
-
-            white-space: pre-wrap;
-
-            word-wrap: break-word;
-        }
-
-        .message.ai .message-content {
-            background: #ffffff;
-
-            border:
-                1px solid #e6edf2;
-
-            border-top-left-radius: 6px;
-
-            color: #293b48;
-
-            box-shadow:
-                0 5px 18px rgba(30, 60, 80, 0.06);
-        }
-
-        .message.user .message-content {
-            background:
-                linear-gradient(
-                    135deg,
-                    #54afe9,
-                    #3d9bd9
-                );
-
-            color: white;
-
-            border-top-right-radius: 6px;
-
-            box-shadow:
-                0 7px 20px rgba(40, 145, 210, 0.20);
-        }
-
-
-        /* =========================================
-           FOTOĞRAF
-        ========================================= */
-
-        .uploaded-image {
-            max-width: 240px;
-
-            width: 100%;
-
-            border-radius: 16px;
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            border: 2px solid rgba(255,255,255,0.8);
-        }
-
-
-        /* =========================================
-           ALT INPUT ALANI
-        ========================================= */
-
-        .input-wrapper {
-            position: fixed;
-
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            padding:
-                12px 15px
-                calc(12px + env(safe-area-inset-bottom));
-
-            background:
-                linear-gradient(
-                    to top,
-                    #f7f9fc 65%,
-                    rgba(247,249,252,0.85)
-                );
-
-            z-index: 30;
-        }
-
-        .input-container {
-            width: 100%;
             max-width: 850px;
 
             margin: auto;
 
-            background: #ffffff;
+            padding: 45px 16px 110px;
+        }
 
-            border:
-                1px solid #dce6ed;
+        .hero {
+            text-align: center;
 
-            border-radius: 22px;
+            margin-bottom: 30px;
+        }
 
-            display: flex;
-            align-items: center;
+        .hero-icon {
+            font-size: 58px;
 
-            padding: 6px;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 8vw, 48px);
+
+            letter-spacing: -1.5px;
+
+            color: #19354a;
+        }
+
+        .hero p {
+            margin-top: 9px;
+
+            color: #718293;
+
+            font-size: 15px;
+        }
+
+        /* =========================
+           CHAT
+        ========================= */
+
+        .chat-container {
+            background: white;
+
+            border: 1px solid #e4edf4;
+
+            border-radius: 25px;
+
+            padding: 16px;
 
             box-shadow:
-                0 10px 35px rgba(30, 60, 90, 0.12);
+                0 15px 45px rgba(45,100,140,.10);
         }
 
+        .message {
+            padding: 16px;
 
-        /* =========================================
-           FOTOĞRAF BUTONU
-        ========================================= */
+            border-radius: 19px;
 
-        .upload-button {
-            width: 42px;
-            height: 42px;
+            line-height: 1.6;
 
-            flex-shrink: 0;
+            margin-bottom: 12px;
 
-            border: none;
+            white-space: pre-wrap;
+        }
 
-            background: transparent;
+        .welcome {
+            background: #edf8ff;
+        }
 
-            border-radius: 14px;
+        .assistant {
+            background: #f7faff;
+        }
 
-            font-size: 20px;
+        /* =========================
+           FORM
+        ========================= */
 
-            cursor: pointer;
-
+        .input-area {
             display: flex;
-            align-items: center;
-            justify-content: center;
 
-            transition: 0.2s;
+            gap: 8px;
+
+            margin-top: 15px;
         }
-
-        .upload-button:hover {
-            background: #f0f6fa;
-        }
-
-        .upload-button:active {
-            transform: scale(0.9);
-        }
-
-
-        /* =========================================
-           INPUT
-        ========================================= */
 
         .message-input {
             flex: 1;
 
             min-width: 0;
 
-            border: none;
+            height: 54px;
+
+            border: 2px solid #e1eaf1;
+
+            border-radius: 17px;
+
+            padding: 0 16px;
+
+            font-size: 16px;
+
             outline: none;
-
-            background: transparent;
-
-            padding:
-                11px 8px;
-
-            font-size: 15px;
-
-            color: #253643;
         }
 
-        .message-input::placeholder {
-            color: #9ba8b3;
+        .message-input:focus {
+            border-color: #62b6eb;
         }
-
-
-        /* =========================================
-           GÖNDER
-        ========================================= */
 
         .send-button {
-            width: 44px;
-            height: 44px;
-
-            flex-shrink: 0;
+            width: 54px;
+            height: 54px;
 
             border: none;
 
-            border-radius: 15px;
+            border-radius: 17px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #58b5ed,
-                    #3d9cdb
-                );
+            background: #55afe9;
 
             color: white;
 
-            font-size: 21px;
+            font-size: 23px;
 
             cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            box-shadow:
-                0 6px 16px rgba(45, 145, 210, 0.22);
-
-            transition: 0.2s;
         }
 
         .send-button:active {
-            transform: scale(0.9);
+            transform: scale(.95);
         }
 
+        /* =========================
+           FOTOĞRAF
+        ========================= */
 
-        /* =========================================
-           YAZIYOR ANİMASYONU
-        ========================================= */
+        .photo-button {
+            width: 54px;
+            height: 54px;
 
-        .typing {
-            display: inline-flex;
-            gap: 4px;
-            align-items: center;
+            border: none;
+
+            border-radius: 17px;
+
+            background: #eef7ff;
+
+            font-size: 22px;
+
+            cursor: pointer;
         }
 
-        .typing span {
-            width: 6px;
-            height: 6px;
-
-            background: #8ca0af;
-
-            border-radius: 50%;
-
-            animation:
-                typing 1.2s infinite ease-in-out;
+        #photo {
+            display: none;
         }
 
-        .typing span:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        .typing span:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        @keyframes typing {
-
-            0%, 60%, 100% {
-                transform: translateY(0);
-                opacity: 0.5;
-            }
-
-            30% {
-                transform: translateY(-4px);
-                opacity: 1;
-            }
-        }
-
-
-        /* =========================================
+        /* =========================
            MOBİL
-        ========================================= */
+        ========================= */
 
         @media (max-width: 600px) {
 
-            .sidebar {
-                width: min(310px, 84vw);
-            }
-
-            .header {
+            header {
                 height: 64px;
-                padding: 0 12px;
             }
 
-            .menu-button {
-                width: 42px;
-                height: 42px;
-
-                font-size: 21px;
-
-                margin-right: 10px;
-            }
-
-            .header-info h1 {
-                font-size: 17px;
-            }
-
-            .messages {
+            main {
                 padding:
-                    20px 
+                    30px 12px 100px;
+            }
+
+            .hero h1 {
+                font-size: 34px;
+            }
+
+            .hero-icon {
+                font-size: 50px;
+            }
+
+            .chat-container {
+                border-radius: 21px;
+
+                padding: 12px;
+            }
+
+            .input-area {
+                gap: 6px;
+            }
+
+            .message-input {
+                height: 50px;
+
+                font-size: 15px;
+
+                padding: 0 13px;
+            }
+
+            .send-button,
+            .photo-button {
+                width: 50px;
+                height: 50px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<!-- =========================
+     KARARTMA
+========================= -->
+
+<div
+    class="overlay"
+    id="overlay">
+</div>
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside
+    class="sidebar"
+    id="sidebar">
+
+    <div class="sidebar-title">
+        💙 MaviGPT
+    </div>
+
+
+    <a
+        href="/"
+        class="menu-link">
+
+        <span class="menu-icon">
+            🤖
+        </span>
+
+        <span>
+            MaviGPT
+        </span>
+
+    </a>
+
+
+    <a
+        href="/doctor"
+        class="menu-link">
+
+        <span class="menu-icon">
+            🩺
+        </span>
+
+        <span>
+            Cebimdeki Doktor
+        </span>
+
+    </a>
+
+
+    <a
+        href="/period"
+        class="menu-link">
+
+        <span class="menu-icon">
+            🩸
+        </span>
+
+        <span>
+            Regl Takibi
+        </span>
+
+    </a>
+
+
+    <a
+        href="/diarrhea"
+        class="menu-link">
+
+        <span class="menu-icon">
+            💧
+        </span>
+
+        <span>
+            Sindirim Takibi
+        </span>
+
+    </a>
+
+</aside>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <button
+        class="menu-button"
+        id="menuButton"
+        type="button">
+
+        ☰
+
+    </button>
+
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            🤖
+        </div>
+
+        <div class="logo-text">
+
+            <strong>
+                MaviGPT
+            </strong>
+
+            <span>
+                Senin yapay zekâ yardımcın
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main>
+
+
+    <section class="hero">
+
+        <div class="hero-icon">
+            🤖
+        </div>
+
+        <h1>
+            MaviGPT
+        </h1>
+
+        <p>
+            Merhaba Bahar! Sana nasıl yardımcı olabilirim?
+        </p>
+
+    </section>
+
+
+    <section class="chat-container">
+
+
+        <div class="message welcome">
+
+            👋 <strong>Merhaba Bahar!</strong>
+
+            <br><br>
+
+            Ben MaviGPT.
+
+            Aklındaki şeyi yazabilir,
+            soru sorabilir veya benimle sohbet edebilirsin. 💙
+
+        </div>
+
+
+        {% if cevap %}
+
+        <div class="message assistant">
+
+            🤖 {{ cevap }}
+
+        </div>
+
+        {% else %}
+
+        <div class="message assistant">
+
+            🤖 Hazırım! Bana bir şeyler yazabilirsin. ✨
+
+        </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="input-area">
+
+
+            <label
+                for="photo"
+                class="photo-button">
+
+                📎
+
+            </label>
+
+
+            <input
+                id="photo"
+                type="file"
+                name="photo"
+                accept="image/*">
+
+
+            <input
+                class="message-input"
+                type="text"
+                name="mesaj"
+                placeholder="MaviGPT'ye bir şey sor..."
+                autocomplete="off">
+
+
+            <button
+                class="send-button"
+                type="submit">
+
+                ➤
+
+            </button>
+
+
+        </form>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+const menuButton =
+    document.getElementById("menuButton");
+
+const sidebar =
+    document.getElementById("sidebar");
+
+const overlay =
+    document.getElementById("overlay");
+
+
+function openMenu() {
+
+    sidebar.classList.add("active");
+
+    overlay.classList.add("active");
+
+}
+
+
+function closeMenu() {
+
+    sidebar.classList.remove("active");
+
+    overlay.classList.remove("active");
+
+}
+
+
+menuButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        if (
+            sidebar.classList.contains("active")
+        ) {
+
+            closeMenu();
+
+        } else {
+
+            openMenu();
+
+        }
+
+    }
+);
+
+
+overlay.addEventListener(
+    "click",
+    closeMenu
+);
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeMenu();
+
+        }
+
+    }
+);
+
+
+document
+    .querySelectorAll(".menu-link")
+    .forEach(function(link) {
+
+        link.addEventListener(
+            "click",
+            closeMenu
+        );
+
+    });
+
+
+</script>
+
+</body>
+            </html>
