@@ -970,6 +970,116 @@
 </div>
 
 <script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("backdrop");
+    const menuButton = document.querySelector(".menu-button");
+    const closeButton = document.querySelector(".close-sidebar");
+
+    function openSidebar() {
+        if (!sidebar) return;
+
+        sidebar.classList.add("open");
+
+        if (backdrop) {
+            backdrop.classList.add("show");
+        }
+    }
+
+    function closeSidebar() {
+        if (!sidebar) return;
+
+        sidebar.classList.remove("open");
+
+        if (backdrop) {
+            backdrop.classList.remove("show");
+        }
+    }
+
+    /* ☰ ÜÇ ÇİZGİ */
+    if (menuButton) {
+        menuButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            openSidebar();
+        });
+    }
+
+    /* X */
+    if (closeButton) {
+        closeButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            closeSidebar();
+        });
+    }
+
+    /* Arka plana basınca kapat */
+    if (backdrop) {
+        backdrop.addEventListener("click", function () {
+            closeSidebar();
+        });
+    }
+
+    /* ESC ile kapat */
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeSidebar();
+        }
+    });
+
+    /* Fotoğraf */
+    const photoInput = document.getElementById("photo");
+    const fileName = document.getElementById("fileName");
+
+    if (photoInput && fileName) {
+        photoInput.addEventListener("change", function () {
+
+            if (this.files && this.files.length > 0) {
+                fileName.textContent =
+                    "📷 " + this.files[0].name;
+
+                fileName.style.display = "block";
+            } else {
+                fileName.textContent = "";
+                fileName.style.display = "none";
+            }
+        });
+    }
+
+    /* Enter ile mesaj gönder */
+    const form = document.querySelector(".input-area");
+    const messageInput = document.getElementById("mesaj");
+
+    if (messageInput && form) {
+        messageInput.addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+
+                if (typeof form.requestSubmit === "function") {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
+            }
+
+        });
+    }
+
+    /* Sayfa açılınca sohbetin altına git */
+    const chat = document.getElementById("chat");
+
+    if (chat) {
+        setTimeout(function () {
+            chat.scrollTop = chat.scrollHeight;
+        }, 100);
+    }
+
+});
+</script>
 
     /* =========================
        SIDEBAR
