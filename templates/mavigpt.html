@@ -2,8 +2,12 @@
 <html lang="tr">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>MaviGPT</title>
 
@@ -71,8 +75,6 @@
         }
 
 
-        /* SIDEBAR HEADER */
-
         .sidebar-header {
             height: 68px;
             min-height: 68px;
@@ -86,11 +88,13 @@
             border-bottom: 1px solid #edf2f5;
         }
 
+
         .sidebar-title {
             font-size: 19px;
             font-weight: 700;
             color: #0782a8;
         }
+
 
         .close-sidebar {
             width: 42px;
@@ -106,6 +110,7 @@
 
             cursor: pointer;
         }
+
 
         .close-sidebar:hover {
             background: #f1f7fa;
@@ -137,6 +142,7 @@
             text-align: left;
         }
 
+
         .new-chat:hover {
             background: #dff6ff;
         }
@@ -150,6 +156,7 @@
             padding: 4px 10px;
         }
 
+
         .menu-title {
             font-size: 11px;
             color: #8997a1;
@@ -158,6 +165,7 @@
 
             text-transform: uppercase;
         }
+
 
         .menu-item {
             display: flex;
@@ -178,9 +186,11 @@
             font-size: 14px;
         }
 
+
         .menu-item:hover {
             background: #f0f8fb;
         }
+
 
         .menu-icon {
             width: 28px;
@@ -203,6 +213,7 @@
             padding: 5px 10px 20px;
         }
 
+
         .history-title {
             font-size: 12px;
 
@@ -210,6 +221,7 @@
 
             padding: 10px;
         }
+
 
         .history-item {
             padding: 10px;
@@ -226,6 +238,7 @@
 
             text-overflow: ellipsis;
         }
+
 
         .history-item:hover {
             background: #f3f8fa;
@@ -247,6 +260,7 @@
 
             display: none;
         }
+
 
         .backdrop.show {
             display: block;
@@ -289,8 +303,6 @@
         }
 
 
-        /* THREE LINE BUTTON */
-
         .menu-button {
             width: 43px;
             height: 43px;
@@ -316,9 +328,11 @@
             touch-action: manipulation;
         }
 
+
         .menu-button:hover {
             background: #e3f4f9;
         }
+
 
         .menu-button:active {
             transform: scale(0.95);
@@ -345,18 +359,16 @@
         }
 
 
-        /* =========================================
-           HEADER INFO
-        ========================================= */
-
         .header-info {
             min-width: 0;
         }
+
 
         .title {
             font-size: 17px;
             font-weight: 700;
         }
+
 
         .status {
             color: #29a56f;
@@ -381,6 +393,7 @@
             scroll-behavior: smooth;
         }
 
+
         .chat-inner {
             width: 100%;
 
@@ -402,6 +415,7 @@
             max-width: 500px;
         }
 
+
         .welcome-logo {
             width: 75px;
             height: 75px;
@@ -422,11 +436,13 @@
                 0 8px 25px rgba(0, 130, 170, 0.10);
         }
 
+
         .welcome h1 {
             margin: 18px 0 8px;
 
             font-size: 25px;
         }
+
 
         .welcome p {
             margin: 0;
@@ -455,6 +471,7 @@
             align-items: flex-start;
         }
 
+
         .avatar {
             width: 36px;
             min-width: 36px;
@@ -470,17 +487,21 @@
             font-size: 18px;
         }
 
+
         .user-avatar {
             background: #e2eaff;
         }
+
 
         .bot-avatar {
             background: #d9f5ff;
         }
 
+
         .message-content {
             max-width: calc(100% - 45px);
         }
+
 
         .message-name {
             font-size: 11px;
@@ -489,6 +510,7 @@
 
             margin: 0 0 5px 3px;
         }
+
 
         .bubble {
             padding: 12px 15px;
@@ -504,11 +526,13 @@
             white-space: pre-wrap;
         }
 
+
         .user-bubble {
             background: #dcecff;
 
             border-top-left-radius: 5px;
         }
+
 
         .bot-bubble {
             background: #ffffff;
@@ -520,6 +544,7 @@
             box-shadow:
                 0 2px 7px rgba(0, 0, 0, 0.025);
         }
+
 
         .photo-preview {
             margin-top: 8px;
@@ -537,7 +562,7 @@
 
 
         /* =========================================
-           INPUT AREA
+           INPUT
         ========================================= */
 
         .input-area {
@@ -560,6 +585,7 @@
             z-index: 30;
         }
 
+
         .input-container {
             width: 100%;
 
@@ -567,6 +593,7 @@
 
             margin: auto;
         }
+
 
         .file-name {
             display: none;
@@ -577,6 +604,12 @@
 
             padding: 5px 10px;
         }
+
+
+        .file-name.show {
+            display: block;
+        }
+
 
         .input-box {
             min-height: 54px;
@@ -623,6 +656,7 @@
             touch-action: manipulation;
         }
 
+
         .plus:hover {
             background: #f1f7fa;
         }
@@ -651,6 +685,7 @@
 
             color: #17212b;
         }
+
 
         #mesaj::placeholder {
             color: #9aa7ae;
@@ -682,9 +717,11 @@
             touch-action: manipulation;
         }
 
+
         .send:hover {
             background: #056f91;
         }
+
 
         .send:active {
             transform: scale(0.95);
@@ -707,7 +744,6 @@
 
             .welcome {
                 margin-top: 50px;
-
                 margin-bottom: 35px;
             }
 
@@ -747,7 +783,6 @@
 
             .header {
                 height: 62px;
-
                 min-height: 62px;
             }
 
@@ -770,10 +805,12 @@
         }
 
     </style>
+
 </head>
 
 
 <body>
+
 
 <div class="app">
 
@@ -786,11 +823,13 @@
         class="sidebar"
         id="sidebar">
 
+
         <div class="sidebar-header">
 
             <div class="sidebar-title">
                 🩵 MaviGPT
             </div>
+
 
             <button
                 class="close-sidebar"
@@ -926,12 +965,11 @@
 
         </div>
 
+
     </aside>
 
 
-    <!-- =========================================
-         BACKDROP
-    ========================================== -->
+    <!-- BACKDROP -->
 
     <div
         class="backdrop"
@@ -946,14 +984,10 @@
     <main class="main">
 
 
-        <!-- =========================================
-             HEADER
-        ========================================== -->
+        <!-- HEADER -->
 
         <header class="header">
 
-
-            <!-- ÜÇ ÇİZGİ -->
 
             <button
                 class="menu-button"
@@ -983,6 +1017,7 @@
 
             </div>
 
+
         </header>
 
 
@@ -993,6 +1028,7 @@
         <section
             class="chat"
             id="chat">
+
 
             <div class="chat-inner">
 
@@ -1007,9 +1043,11 @@
                             🩵
                         </div>
 
+
                         <h1>
                             Merhaba Bahar! 👋
                         </h1>
+
 
                         <p>
                             Ben MaviGPT.
@@ -1028,15 +1066,19 @@
 
                     <div class="message">
 
+
                         <div class="avatar user-avatar">
                             👤
                         </div>
 
+
                         <div class="message-content">
+
 
                             <div class="message-name">
                                 Sen
                             </div>
+
 
                             <div class="bubble user-bubble">
                                 {{ mesaj }}
@@ -1052,7 +1094,9 @@
 
                             {% endif %}
 
+
                         </div>
+
 
                     </div>
 
@@ -1065,12 +1109,29 @@
 
                     <div class="message">
 
+
                         <div class="avatar bot-avatar">
                             🩵
                         </div>
 
+
                         <div class="message-content">
+
 
                             <div class="message-name">
                                 MaviGPT
-               
+                            </div>
+
+
+                            <div class="bubble bot-bubble">
+                                {{ cevap }}
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                {% endif %}
+                
