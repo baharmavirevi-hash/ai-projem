@@ -399,4 +399,4 @@ def register_routes(app):
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
-    )
+            )
