@@ -1,391 +1,682 @@
-*{
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-html,body{
-    margin:0;
-    padding:0;
-    height:100%;
-    font-family:"Arial",sans-serif;
-    background:#eaf4ff;
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
 }
 
-
-/* Ana uygulama */
-
-.app{
-    height:100vh;
-    width:100%;
-    display:flex;
-    overflow:hidden;
-    background:white;
-}
-
-
-/* Sol menü */
-
-.sidebar{
-    width:270px;
-    height:100%;
-    background:#f7fbff;
-    border-right:1px solid #dbe8f5;
-    padding:20px;
-    transition:.3s;
-    z-index:10;
+body {
+    background: #f7f9fc;
+    color: #172033;
 }
 
 
-.logo{
-    font-size:24px;
-    font-weight:bold;
-    color:#1683e8;
-    margin-bottom:25px;
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    overflow: hidden;
 }
 
 
-.new-chat{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:18px;
-    background:#d9edff;
-    color:#1672c4;
-    font-size:16px;
-    cursor:pointer;
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    width: 285px;
+    height: 100%;
+    background: #ffffff;
+    border-right: 1px solid #e7ebf2;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    flex-shrink: 0;
+}
+
+.sidebar-top {
+    padding: 18px;
+}
+
+.close-menu {
+    display: none;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #e9f8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.brand-name {
+    font-size: 18px;
+    font-weight: 750;
+}
+
+.brand-subtitle {
+    font-size: 12px;
+    color: #8b95a7;
+    margin-top: 2px;
+}
+
+.new-chat {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 15px;
+    background: #e8f7ff;
+    color: #087fa8;
+    font-size: 14px;
+    font-weight: 650;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+}
+
+.new-chat:hover {
+    background: #d9f1fc;
 }
 
 
-.chat-item{
-    margin-top:15px;
-    padding:12px;
-    border-radius:15px;
-    background:#ffffff;
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+}
+
+.history-title {
+    font-size: 11px;
+    font-weight: 750;
+    color: #9ba4b2;
+    padding: 10px 8px;
+    letter-spacing: .7px;
+}
+
+.history-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 11px 10px;
+    border-radius: 11px;
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    text-align: left;
+    cursor: pointer;
+    color: #414b5c;
+}
+
+.history-item:hover {
+    background: #f3f7fa;
+}
+
+.history-icon {
+    font-size: 15px;
+}
+
+.history-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+}
+
+.empty-history {
+    color: #a4adba;
+    font-size: 13px;
+    padding: 10px;
 }
 
 
-/* Sohbet ekranı */
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
 
-.chat{
-    flex:1;
-    height:100%;
-    display:flex;
-    flex-direction:column;
+.sidebar-bottom {
+    padding: 12px;
+    border-top: 1px solid #edf0f4;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px;
+    margin-bottom: 3px;
+    border-radius: 11px;
+    text-decoration: none;
+    color: #455063;
+    font-size: 13px;
+}
+
+.menu-link:hover {
+    background: #f3f7fa;
 }
 
 
-/* Menü butonu */
+/* =========================================================
+   MAIN
+========================================================= */
 
-.menu-btn{
-    position:absolute;
-    top:15px;
-    left:15px;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:none;
-    background:#e1f1ff;
-    font-size:22px;
-    cursor:pointer;
-    z-index:5;
+.main {
+    min-width: 0;
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
 }
 
 
-/* Başlık */
+/* =========================================================
+   HEADER
+========================================================= */
 
-.header{
-    text-align:center;
-    padding:20px;
-    padding-top:65px;
-    background:white;
-    border-bottom:1px solid #eee;
+.header {
+    height: 66px;
+    flex-shrink: 0;
+    border-bottom: 1px solid #edf0f4;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 13px;
+    background: rgba(255,255,255,.96);
+}
+
+.menu-button,
+.more-button {
+    border: none;
+    background: transparent;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.menu-button:hover,
+.more-button:hover {
+    background: #f2f5f8;
+}
+
+.menu-button {
+    display: none;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-logo {
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    background: #eaf8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+}
+
+.header-title {
+    font-size: 15px;
+    font-weight: 750;
+}
+
+.online {
+    font-size: 11px;
+    color: #8c97a6;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.online span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #45c477;
+}
+
+.more-button {
+    margin-left: auto;
 }
 
 
-.header h2{
-    margin:0;
-    color:#147bd1;
+/* =========================================================
+   CHAT AREA
+========================================================= */
+
+.chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px 20px 35px;
+    scroll-behavior: smooth;
+}
+
+.chat-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-area::-webkit-scrollbar-thumb {
+    background: #d9e0e8;
+    border-radius: 10px;
 }
 
 
-.header p{
-    margin:7px 0 0;
-    color:#777;
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+}
+
+.welcome-logo {
+    width: 74px;
+    height: 74px;
+    border-radius: 24px;
+    background: #eaf8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 39px;
+    margin-bottom: 20px;
+}
+
+.welcome h1 {
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.welcome p {
+    color: #7e8998;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 27px;
+}
+
+.suggestions button {
+    border: 1px solid #e2e8ee;
+    background: white;
+    border-radius: 15px;
+    padding: 11px 14px;
+    color: #526071;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.suggestions button:hover {
+    background: #f5faff;
 }
 
 
-/* Mesaj alanı */
+/* =========================================================
+   MESSAGES
+========================================================= */
 
-.messages{
-    flex:1;
-    overflow-y:auto;
-    padding:20px;
-    background:#ffffff;
+.message {
+    width: min(850px, 100%);
+    margin: 0 auto 25px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.message-avatar {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-avatar {
+    background: #e8edf3;
+    color: #526071;
+}
+
+.bot-avatar {
+    background: #eaf8ff;
+    font-size: 18px;
+}
+
+.message-content {
+    min-width: 0;
+    max-width: calc(100% - 46px);
+}
+
+.message-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8a95a4;
+    margin: 3px 0 6px;
+}
+
+.bubble {
+    padding: 12px 15px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.user-bubble {
+    background: #eaf7ff;
+    border-top-left-radius: 5px;
+}
+
+.bot-bubble {
+    background: #f4f6f8;
+    border-top-left-radius: 5px;
 }
 
 
-/* Yapay zeka mesajı */
+/* =========================================================
+   IMAGE
+========================================================= */
 
-.ai{
-    max-width:80%;
-    background:#f0f5fb;
-    padding:14px 17px;
-    border-radius:20px;
-    border-bottom-left-radius:5px;
-    margin:10px 0;
-    color:#333;
-    line-height:1.5;
+.uploaded-image {
+    display: block;
+    max-width: min(350px, 100%);
+    max-height: 350px;
+    margin-top: 10px;
+    border-radius: 15px;
+    object-fit: cover;
 }
 
 
-/* Kullanıcı mesajı */
+/* =========================================================
+   INPUT
+========================================================= */
 
-.user{
-    max-width:80%;
-    background:#bfe3ff;
-    padding:14px 17px;
-    border-radius:20px;
-    border-bottom-right-radius:5px;
-    margin:10px 0 10px auto;
-    color:#003b6f;
-    line-height:1.5;
+.input-area {
+    width: min(850px, 100%);
+    margin: 0 auto;
+    padding: 8px 20px 14px;
+    flex-shrink: 0;
+}
+
+.input-box {
+    min-height: 52px;
+    border: 1px solid #dfe5ec;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    padding: 5px 6px 5px 7px;
+    background: #ffffff;
+    box-shadow: 0 3px 16px rgba(31, 52, 72, .06);
+}
+
+.input-box:focus-within {
+    border-color: #9bdcf2;
+}
+
+.attach-button {
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 23px;
+    color: #6e7b8b;
+}
+
+.attach-button:hover {
+    background: #f0f6fa;
+}
+
+#messageInput {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    border: none;
+    outline: none;
+    padding: 0 7px;
+    font-size: 14px;
+    background: transparent;
+    color: #202b3a;
+}
+
+#messageInput::placeholder {
+    color: #a1aab7;
+}
+
+.send-button {
+    width: 41px;
+    height: 41px;
+    border: none;
+    border-radius: 13px;
+    background: #a9e4f7;
+    color: #176b88;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+.send-button:hover {
+    background: #91d9f0;
+}
+
+.input-hint {
+    text-align: center;
+    color: #a5adb8;
+    font-size: 9px;
+    padding-top: 7px;
 }
 
 
-/* Yazı yazma alanı */
+/* =========================================================
+   OVERLAY
+========================================================= */
 
-.input-bar{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px;
-    background:white;
-    border-top:1px solid #ddd;
+.overlay {
+    display: none;
 }
 
 
-.input-bar input{
-    flex:1;
-    height:48px;
-    border-radius:25px;
-    border:1px solid #ccdcec;
-    padding:0 18px;
-    font-size:16px;
-    outline:none;
-}
+/* =========================================================
+   MOBILE
+========================================================= */
 
+@media (max-width: 700px) {
 
-.input-bar input:focus{
-    border-color:#1683e8;
-}
-
-
-.input-bar button{
-    width:48px;
-    height:48px;
-    border-radius:50%;
-    border:none;
-    background:#1683e8;
-    color:white;
-    font-size:22px;
-    cursor:pointer;
-}
-
-
-/* Fotoğraf butonu varsa */
-
-input[type="file"]{
-    max-width:120px;
-}
-
-
-/* Sağlık kayıt kartları */
-
-.health-card{
-    background:#f3f8ff;
-    padding:15px;
-    margin:10px;
-    border-radius:18px;
-}
-
-
-/* Animasyon */
-
-.ai,
-.user{
-    animation:slide .25s ease;
-}
-
-
-@keyframes slide{
-
-from{
-    opacity:0;
-    transform:translateY(10px);
-}
-
-to{
-    opacity:1;
-    transform:translateY(0);
-}
-
-}
-
-
-/* Telefon görünümü */
-
-@media(max-width:700px){
-
-.sidebar{
-    position:absolute;
-    left:-280px;
-}
-
-
-.sidebar.active{
-    left:0;
-}
-
-
-.app{
-    width:100%;
-    height:100vh;
-}
-
-
-.messages{
-    padding:15px;
-}
-
-
-.ai,
-.user{
-    max-width:90%;
-}
-
-/* Büyük ekran */
-
-@media (min-width:800px){
-
-    .app{
-        max-width:1200px;
-        margin:auto;
-        box-shadow:0 0 30px rgba(0,0,0,.15);
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: min(300px, 86vw);
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 8px 0 30px rgba(0,0,0,.12);
     }
 
-    .sidebar{
-        position:relative;
-        left:0;
+    .sidebar.open {
+        transform: translateX(0);
     }
 
-}
+    .close-menu {
+        display: block;
+        margin-left: auto;
+        margin-bottom: 10px;
+        border: none;
+        background: transparent;
+        font-size: 19px;
+        color: #7c8795;
+        cursor: pointer;
+    }
 
-/* Doktor Sayfaları */
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 31, 45, .35);
+        z-index: 90;
+    }
 
-.back-btn,
-.save-btn{
-    border:none;
-    border-radius:20px;
-    padding:15px;
-    font-size:18px;
-    cursor:pointer;
-}
+    .overlay.show {
+        display: block;
+    }
 
-.back-btn{
-    background:#e5f3ff;
-}
+    .menu-button {
+        display: block;
+    }
 
-.calendar-card{
-    background:#f4f9ff;
-    padding:20px;
-    border-radius:25px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
+    .header {
+        height: 62px;
+        padding: 0 10px;
+    }
 
-.calendar-card input{
-    height:55px;
-    border-radius:18px;
-    border:1px solid #ccdcec;
-    padding:0 15px;
-    font-size:17px;
-}
+    .more-button {
+        width: 38px;
+    }
 
-.save-btn{
-    background:#1683e8;
-    color:white;
-}
+    .chat-area {
+        padding: 20px 12px 25px;
+    }
 
-.record-card{
-    background:#ffffff;
-    padding:20px;
-    margin-top:15px;
-    border-radius:25px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-    font-size:17px;
-}
-.submenu{
-    display:none;
-    margin-left:18px;
-    margin-top:8px;
-}
+    .welcome {
+        padding: 15px;
+    }
 
-.menu-group .chat-item:first-child{
-    font-weight:bold;
-}
-/* Splash Screen */
+    .welcome-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 21px;
+        font-size: 33px;
+    }
 
-#splash-screen{
-    position:fixed;
-    inset:0;
-    background:linear-gradient(180deg,#dff2ff,#ffffff);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-    transition:opacity .6s;
-}
+    .welcome h1 {
+        font-size: 23px;
+    }
 
-.splash-content{
-    text-align:center;
-}
+    .welcome p {
+        font-size: 13px;
+    }
 
-.logo-big{
-    font-size:70px;
-    animation:float 2s infinite;
-}
+    .suggestions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 290px;
+    }
 
-.splash-content h1{
-    margin:15px 0 5px;
-    color:#1683e8;
-}
+    .suggestions button {
+        width: 100%;
+    }
 
-.splash-content p{
-    color:#666;
-    margin-bottom:25px;
-}
+    .message {
+        margin-bottom: 20px;
+        gap: 8px;
+    }
 
-.loader{
-    width:45px;
-    height:45px;
-    border:5px solid #cfe8ff;
-    border-top:5px solid #1683e8;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
-    margin:auto;
-}
+    .message-avatar {
+        width: 31px;
+        height: 31px;
+        border-radius: 10px;
+    }
 
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
+    .message-content {
+        max-width: calc(100% - 39px);
+    }
+
+    .bubble {
+        font-size: 14px;
+        padding: 10px 13px;
+    }
+
+    .input-area {
+        padding: 5px 9px 9px;
+    }
+
+    .input-box {
+        border-radius: 17px;
+        min-height: 50px;
+    }
+
+    #messageInput {
+        font-size: 14px;
+    }
+
+    .input-hint {
+        font-size: 8px;
     }
 }
 
-@keyframes float{
-    0%,100%{
-        transform:translateY(0);
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .header-title {
+        font-size: 14px;
     }
-    50%{
-        transform:translateY(-10px);
+
+    .welcome h1 {
+        font-size: 21px;
     }
-}
+
+    .suggestions {
+        margin-top: 20px;
+    }
+
+    .message-name {
+        font-size: 10px;
+    }
+
+    }
