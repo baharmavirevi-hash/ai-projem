@@ -17,9 +17,9 @@ from database import (
 )
 
 
-# =========================================================
+# =========================
 # GEMINI
-# =========================================================
+# =========================
 
 client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
@@ -56,9 +56,9 @@ def ask_mavigpt(message, image_path=None):
         return "Hata oluştu: " + str(e)
 
 
-# =========================================================
+# =========================
 # FOTOĞRAF YÜKLEME
-# =========================================================
+# =========================
 
 def upload_photo(app):
 
@@ -82,19 +82,19 @@ def upload_photo(app):
     return path, filename
 
 
-# =========================================================
+# =========================
 # ROUTES
-# =========================================================
+# =========================
 
 def register_routes(app):
 
-
-    # =====================================================
+    # =========================
     # MAVIGPT
-    # =====================================================
+    # =========================
 
     @app.route("/", methods=["GET", "POST"])
-def home():
+    def home():
+
         mesaj = None
         cevap = None
         filename = None
@@ -133,19 +133,9 @@ def home():
         )
 
 
-    # =====================================================
-    # MAVIGPT - MENÜDEN AÇILAN ADRES
-    # =====================================================
-
-    @app.route("/mavigpt", methods=["GET", "POST"])
-    def mavigpt():
-
-        return home()
-
-
-    # =====================================================
+    # =========================
     # CEBİMDEKİ DOKTOR
-    # =====================================================
+    # =========================
 
     @app.route("/doctor", methods=["GET", "POST"])
     def doctor():
@@ -163,7 +153,6 @@ def home():
             medicine = request.form.get("medicine")
             note = request.form.get("note")
 
-            # Sağlık kaydı
             if symptom or medicine or note:
 
                 save_health_record(
@@ -174,10 +163,8 @@ def home():
 
                 kayit_mesaji = "✅ Kayıt edildi."
 
-            # Fotoğraf
             foto, filename = upload_photo(app)
 
-            # AI cevabı
             if mesaj or foto:
 
                 cevap = ask_mavigpt(
@@ -201,9 +188,9 @@ def home():
         )
 
 
-    # =====================================================
+    # =========================
     # REGL TAKİBİ
-    # =====================================================
+    # =========================
 
     @app.route("/period", methods=["GET", "POST"])
     def period():
@@ -228,9 +215,9 @@ def home():
         )
 
 
-    # =====================================================
-    # SİNDİRİM / İSHAL TAKİBİ
-    # =====================================================
+    # =========================
+    # SİNDİRİM TAKİBİ
+    # =========================
 
     @app.route("/diarrhea", methods=["GET", "POST"])
     def diarrhea():
@@ -254,4 +241,28 @@ def home():
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
+        )
+
+
+    # =========================
+    # İLAÇLARIM
+    # =========================
+
+    @app.route("/medicine")
+    def medicine():
+
+        return render_template(
+            "medicine.html"
+        )
+
+
+    # =========================
+    # AYARLAR
+    # =========================
+
+    @app.route("/settings")
+    def settings():
+
+        return render_template(
+            "settings.html"
         )
