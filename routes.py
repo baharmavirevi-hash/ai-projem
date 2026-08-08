@@ -107,55 +107,51 @@ def register_routes(app):
     # ========================================================
     # MAVIGPT ANA SAYFA
     # ========================================================
+@app.route("/", methods=["GET", "POST"])
+def home():
 
-    @app.route("/", methods=["GET", "POST"])
-    def home():
+    mesaj = ""
+    cevap = ""
+    filename = None
 
-        mesaj = None
-        cevap = None
-        filename = None
+    try:
+        sohbetler = get_chats("normal")
+    except Exception as e:
+        print("SOHBET HATASI:", e)
+        sohbetler = []
 
-        try:
-            sohbetler = get_chats("normal")
-        except Exception:
-            sohbetler = []
+    if request.method == "POST":
 
-        if request.method == "POST":
+        mesaj = request.form.get("mesaj", "").strip()
 
-            mesaj = request.form.get("mesaj", "").strip()
+        foto, filename = upload_photo(app)
 
-            foto, filename = upload_photo(app)
+        if mesaj or foto:
 
-            if mesaj or foto:
+            cevap = ask_mavigpt(
+                mesaj if mesaj else "Bu fotoğrafı incele.",
+                foto
+            )
 
-                cevap = ask_mavigpt(
-                    mesaj or "Bu fotoğrafı incele.",
-                    foto
+            try:
+                save_chat(
+                    "normal",
+                    mesaj if mesaj else "Fotoğraf",
+                    cevap
                 )
+            except Exception as e:
+                print("KAYIT HATASI:", e)
 
-                try:
-
-                    save_chat(
-                        "normal",
-                        mesaj or "Fotoğraf",
-                        cevap
-                    )
-
-                except Exception as e:
-
-                    print("Chat kayıt hatası:", e)
-
-        return render_template(
-            "mavigpt.html",
-            mesaj=mesaj,
-            cevap=cevap,
-            foto_url=(
-                "/static/uploads/" + filename
-                if filename
-                else None
-            ),
-            sohbetler=sohbetler
-        )
+    return render_template(
+        "mavigpt.html",
+        mesaj=mesaj,
+        cevap=cevap,
+        foto_url=(
+            "/static/uploads/" + filename
+            if filename else None
+        ),
+        sohbetler=sohbetler
+    )
 
 
     # ========================================================
