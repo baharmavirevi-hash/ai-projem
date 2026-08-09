@@ -1,10 +1,7 @@
-import os
-
 from flask import Flask
-
-from database import init_db
 from routes import register_routes
-
+from database import init_db
+import os
 
 app = Flask(__name__)
 
@@ -31,4 +28,3 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
-
