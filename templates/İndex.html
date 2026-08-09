@@ -207,7 +207,8 @@ Sana genel sağlık bilgileri ve öneriler sunabilirim.
 
 </div>
 
-<script>
+
+ <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const sidebar = document.getElementById("sidebar");
@@ -216,44 +217,70 @@ document.addEventListener("DOMContentLoaded", function () {
     const backdrop = document.getElementById("backdrop");
     const newChatButton = document.getElementById("newChatButton");
 
-    function openSidebar() {
-        sidebar.classList.add("open");
-        backdrop.classList.add("show");
-        document.body.style.overflow = "hidden";
-    }
+    /* MENÜ AÇ / KAPAT */
 
-    function closeSidebar() {
+    menuButton.onclick = function () {
+
+        sidebar.classList.toggle("open");
+        backdrop.classList.toggle("show");
+
+    };
+
+
+    /* X BUTONU */
+
+    closeButton.onclick = function () {
+
         sidebar.classList.remove("open");
         backdrop.classList.remove("show");
-        document.body.style.overflow = "";
-    }
 
-    menuButton.addEventListener("click", function () {
-        openSidebar();
-    });
+    };
 
-    closeButton.addEventListener("click", function () {
-        closeSidebar();
-    });
 
-    backdrop.addEventListener("click", function () {
-        closeSidebar();
-    });
+    /* DIŞARIYA BASINCA KAPAT */
 
-    newChatButton.addEventListener("click", function () {
+    backdrop.onclick = function () {
+
+        sidebar.classList.remove("open");
+        backdrop.classList.remove("show");
+
+    };
+
+
+    /* YENİ SOHBET */
+
+    newChatButton.onclick = function () {
+
         window.location.href = "/";
-    });
+
+    };
+
+
+    /* MENÜDEN BİR YERE GİDİNCE KAPAT */
 
     document.querySelectorAll(".menu-item").forEach(function (item) {
-        item.addEventListener("click", function () {
-            closeSidebar();
-        });
+
+        item.onclick = function () {
+
+            sidebar.classList.remove("open");
+            backdrop.classList.remove("show");
+
+        };
+
     });
 
+
+    /* ESC */
+
     document.addEventListener("keydown", function (event) {
+
         if (event.key === "Escape") {
-            closeSidebar();
+
+            sidebar.classList.remove("open");
+            backdrop.classList.remove("show");
+
         }
+
     });
 
 });
