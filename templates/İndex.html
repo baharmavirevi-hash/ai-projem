@@ -208,156 +208,19 @@ Sana genel sağlık bilgileri ve öneriler sunabilirim.
 </div>
 
 
- <script>
+<script>
 
+function menuAc() {
 
-document.addEventListener("DOMContentLoaded", function () {
+    const menu = document.getElementById("side-menu");
+    const overlay = document.getElementById("overlay");
 
-    const sidebar = document.getElementById("sidebar");
-    const menuButton = document.getElementById("menuButton");
-    const closeButton = document.getElementById("closeSidebarButton");
-    const backdrop = document.getElementById("backdrop");
-    const newChatButton = document.getElementById("newChatButton");
+    menu.classList.toggle("active");
+    overlay.classList.toggle("active");
 
-    /* =========================
-       MENÜYÜ AÇ
-    ========================= */
-
-    function openSidebar() {
-
-        sidebar.classList.add("open");
-        backdrop.classList.add("show");
-
-        document.body.style.overflow = "hidden";
-    }
-
-
-    /* =========================
-       MENÜYÜ KAPAT
-    ========================= */
-
-    function closeSidebar() {
-
-        sidebar.classList.remove("open");
-        backdrop.classList.remove("show");
-
-        document.body.style.overflow = "";
-    }
-
-
-    /* =========================
-       ☰ HAMBURGER BUTONU
-    ========================= */
-
-    if (menuButton) {
-
-        menuButton.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (sidebar.classList.contains("open")) {
-
-                closeSidebar();
-
-            } else {
-
-                openSidebar();
-
-            }
-
-        });
-
-    }
-
-
-    /* =========================
-       × KAPAT BUTONU
-    ========================= */
-
-    if (closeButton) {
-
-        closeButton.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            closeSidebar();
-
-        });
-
-    }
-
-
-    /* =========================
-       ARKA PLANA BASINCA KAPAT
-    ========================= */
-
-    if (backdrop) {
-
-        backdrop.addEventListener("click", function () {
-
-            closeSidebar();
-
-        });
-
-    }
-
-
-    /* =========================
-       YENİ SOHBET
-    ========================= */
-
-    if (newChatButton) {
-
-        newChatButton.addEventListener("click", function () {
-
-            closeSidebar();
-
-            window.location.href = "/";
-
-        });
-
-    }
-
-
-    /* =========================
-       MENÜ LİNKLERİ
-    ========================= */
-
-    const menuItems =
-        document.querySelectorAll(".menu-item");
-
-    menuItems.forEach(function (item) {
-
-        item.addEventListener("click", function () {
-
-            closeSidebar();
-
-        });
-
-    });
-
-
-    /* =========================
-       ESC İLE KAPAT
-    ========================= */
-
-    document.addEventListener("keydown", function (event) {
-
-        if (event.key === "Escape") {
-
-            closeSidebar();
-
-        }
-
-    });
-
-});
-
+}
 
 </script>
-
 
 
 
