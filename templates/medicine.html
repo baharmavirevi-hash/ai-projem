@@ -1,1021 +1,765 @@
-<!DOCTYPE html>
-<html lang="tr">
-
-<head>
-
+<!DOCTYPE html><html lang="tr"><head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>İlaçlarım | Cebimdeki Doktor</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-    <title>İlaçlarım | Cebimdeki Doktor</title>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, Arial, sans-serif;
+        background: linear-gradient(180deg, #eaf8ff 0%, #ffffff 100%);
+        color: #23404d;
+        min-height: 100vh;
+    }
 
-    <style>
+    /* =========================
+       MENÜ
+    ========================= */
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    #menuButton {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        width: 52px;
+        height: 52px;
+        border: none;
+        border-radius: 16px;
+        background: white;
+        color: #287b98;
+        font-size: 27px;
+        box-shadow: 0 8px 25px rgba(30, 90, 120, .15);
+        z-index: 9999;
+        cursor: pointer;
+    }
 
-        body {
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
+    #overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .35);
+        display: none;
+        z-index: 5000;
+    }
 
-            background:
-                linear-gradient(
-                    180deg,
-                    #eaf8ff 0%,
-                    #ffffff 100%
-                );
+    #overlay.open {
+        display: block;
+    }
 
-            color: #23404d;
-            min-height: 100vh;
-        }
+    #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 290px;
+        max-width: 85vw;
+        height: 100vh;
+        background: white;
+        padding: 20px 15px;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 8px 0 30px rgba(0, 0, 0, .15);
+        z-index: 9000;
+        overflow-y: auto;
+    }
 
+    #sidebar.open {
+        transform: translateX(0);
+    }
 
-        /* =========================
-           MENÜ
-        ========================= */
+    .sidebar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+    }
 
-        #menuButton {
-            position: fixed;
-            top: 15px;
-            left: 15px;
+    .sidebar-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #287b98;
+    }
 
-            width: 52px;
-            height: 52px;
+    #closeButton {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 13px;
+        background: #edf8fc;
+        color: #287b98;
+        font-size: 25px;
+        cursor: pointer;
+    }
 
-            border: none;
-            border-radius: 16px;
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 8px;
+        border-radius: 16px;
+        text-decoration: none;
+        color: #345562;
+        font-size: 15px;
+        font-weight: 700;
+    }
 
-            background: white;
-            color: #287b98;
+    .menu-item:hover {
+        background: #edf9fd;
+    }
 
-            font-size: 27px;
+    .menu-item.active {
+        background: #dff4fa;
+        color: #287b98;
+    }
 
-            box-shadow:
-                0 8px 25px
-                rgba(30,90,120,.15);
+    .menu-icon {
+        width: 30px;
+        text-align: center;
+        font-size: 22px;
+    }
 
-            z-index: 9999;
-            cursor: pointer;
-        }
+    /* =========================
+       SAYFA
+    ========================= */
 
+    .page {
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+        padding: 90px 15px 40px;
+    }
 
-        #overlay {
-            position: fixed;
-            inset: 0;
+    .hero {
+        text-align: center;
+        margin-bottom: 25px;
+    }
 
-            background: rgba(0,0,0,.35);
+    .medicine-icon {
+        width: 75px;
+        height: 75px;
+        margin: auto auto 12px;
+        border-radius: 24px;
+        background: #def4fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+    }
 
-            display: none;
+    h1 {
+        font-size: 38px;
+        color: #20596f;
+    }
 
-            z-index: 5000;
-        }
+    .subtitle {
+        margin-top: 8px;
+        color: #728994;
+        font-size: 14px;
+    }
 
-        #overlay.open {
-            display: block;
-        }
+    /* =========================
+       BİLDİRİM
+    ========================= */
 
+    .notification-card {
+        background: white;
+        border: 1px solid #e3f0f5;
+        border-radius: 22px;
+        padding: 16px;
+        margin-bottom: 15px;
+        box-shadow: 0 10px 30px rgba(30, 90, 120, .08);
+    }
 
-        #sidebar {
-            position: fixed;
+    .notification-title {
+        font-weight: 800;
+        color: #285f72;
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
 
-            top: 0;
-            left: 0;
+    .notification-text {
+        color: #718893;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
 
-            width: 290px;
-            max-width: 85vw;
-            height: 100vh;
+    #notificationButton {
+        width: 100%;
+        height: 48px;
+        border: none;
+        border-radius: 15px;
+        background: #4faeca;
+        color: white;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+    }
 
-            background: white;
+    #notificationButton.enabled {
+        background: #56b987;
+    }
 
-            padding: 20px 15px;
+    #notificationButton.denied {
+        background: #d86b6b;
+    }
 
-            transform: translateX(-100%);
+    /* =========================
+       MESAJ
+    ========================= */
 
-            transition:
-                transform .25s ease;
+    .status-message {
+        display: none;
+        background: #edf9f4;
+        color: #29785b;
+        border-radius: 15px;
+        padding: 13px;
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+    }
 
-            box-shadow:
-                8px 0 30px
-                rgba(0,0,0,.15);
+    .status-message.show {
+        display: block;
+    }
 
-            z-index: 9000;
+    /* =========================
+       EKLE
+    ========================= */
 
-            overflow-y: auto;
-        }
+    .add-card {
+        background: white;
+        border: 1px solid #e3f0f5;
+        border-radius: 25px;
+        padding: 17px;
+        box-shadow: 0 15px 45px rgba(30, 90, 120, .10);
+        margin-bottom: 25px;
+    }
 
-        #sidebar.open {
-            transform: translateX(0);
-        }
+    .card-title {
+        font-size: 19px;
+        font-weight: 800;
+        color: #315e6d;
+        margin-bottom: 15px;
+    }
 
+    .field {
+        margin-bottom: 13px;
+    }
 
-        .sidebar-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+    .field label {
+        display: block;
+        margin-bottom: 6px;
+        color: #54707b;
+        font-size: 13px;
+        font-weight: 700;
+    }
 
-            margin-bottom: 25px;
-        }
+    .field input {
+        width: 100%;
+        height: 50px;
+        border: 1.5px solid #dcecf2;
+        border-radius: 15px;
+        padding: 0 14px;
+        background: #fbfeff;
+        color: #294653;
+        font-size: 15px;
+        outline: none;
+    }
 
+    .field input:focus {
+        border-color: #6bbbd5;
+        box-shadow: 0 0 0 4px rgba(107, 187, 213, .10);
+    }
 
-        .sidebar-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: #287b98;
-        }
+    .save-button {
+        width: 100%;
+        height: 52px;
+        border: none;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #58b9d8, #287d9c);
+        color: white;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+    }
 
+    /* =========================
+       KAYITLI İLAÇLAR
+    ========================= */
 
-        #closeButton {
-            width: 40px;
-            height: 40px;
+    .section-title {
+        margin: 0 3px 12px;
+        font-size: 19px;
+        font-weight: 800;
+        color: #426371;
+    }
 
-            border: none;
-            border-radius: 13px;
+    .medicine-card {
+        background: white;
+        border: 1px solid #e3f0f5;
+        border-radius: 20px;
+        padding: 16px;
+        margin-bottom: 10px;
+        box-shadow: 0 7px 22px rgba(30, 90, 120, .07);
+    }
 
-            background: #edf8fc;
-            color: #287b98;
+    .medicine-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
 
-            font-size: 25px;
-            cursor: pointer;
-        }
+    .medicine-name {
+        color: #285f72;
+        font-size: 17px;
+        font-weight: 800;
+    }
 
+    .medicine-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 12px;
+        background: #e8f7fb;
+        color: #287b98;
+        font-size: 13px;
+        font-weight: 800;
+    }
 
-        .menu-item {
-            display: flex;
-            align-items: center;
+    .medicine-info {
+        margin-top: 10px;
+        color: #718893;
+        font-size: 13px;
+        line-height: 1.7;
+    }
 
-            gap: 13px;
+    .delete-button {
+        margin-top: 12px;
+        width: 100%;
+        height: 42px;
+        border: none;
+        border-radius: 13px;
+        background: #fff0f0;
+        color: #d65d5d;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+    }
 
-            width: 100%;
+    .empty {
+        background: white;
+        border: 1px dashed #cfe3ea;
+        border-radius: 20px;
+        padding: 25px 15px;
+        text-align: center;
+        color: #7b929d;
+        font-size: 14px;
+    }
 
-            padding: 15px;
-            margin-bottom: 8px;
+    /* =========================
+       MOBİL
+    ========================= */
 
-            border-radius: 16px;
-
-            text-decoration: none;
-
-            color: #345562;
-
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-
-        .menu-item:hover {
-            background: #edf9fd;
-        }
-
-
-        .menu-item.active {
-            background: #dff4fa;
-            color: #287b98;
-        }
-
-
-        .menu-icon {
-            width: 30px;
-            text-align: center;
-            font-size: 22px;
-        }
-
-
-        /* =========================
-           SAYFA
-        ========================= */
+    @media (max-width: 600px) {
 
         .page {
-            width: 100%;
-            max-width: 800px;
-
-            margin: auto;
-
-            padding:
-                90px 15px 40px;
+            padding: 82px 11px 30px;
         }
-
-
-        .hero {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-
-        .medicine-icon {
-            width: 75px;
-            height: 75px;
-
-            margin:
-                auto auto 12px;
-
-            border-radius: 24px;
-
-            background: #def4fa;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 40px;
-        }
-
 
         h1 {
-            font-size: 38px;
-            color: #20596f;
+            font-size: 31px;
         }
-
-
-        .subtitle {
-            margin-top: 8px;
-
-            color: #728994;
-
-            font-size: 14px;
-        }
-
-
-        /* =========================
-           BİLDİRİM KARTI
-        ========================= */
-
-        .notification-card {
-            background: white;
-
-            border:
-                1px solid #e3f0f5;
-
-            border-radius: 22px;
-
-            padding: 16px;
-
-            margin-bottom: 15px;
-
-            box-shadow:
-                0 10px 30px
-                rgba(30,90,120,.08);
-        }
-
-
-        .notification-title {
-            font-weight: 800;
-
-            color: #285f72;
-
-            font-size: 16px;
-
-            margin-bottom: 6px;
-        }
-
-
-        .notification-text {
-            color: #718893;
-
-            font-size: 13px;
-
-            line-height: 1.5;
-
-            margin-bottom: 12px;
-        }
-
-
-        #notificationStatus {
-            display: none;
-
-            margin-bottom: 10px;
-
-            padding: 10px 12px;
-
-            border-radius: 12px;
-
-            font-size: 13px;
-
-            line-height: 1.4;
-        }
-
-
-        #notificationStatus.show {
-            display: block;
-        }
-
-
-        #notificationStatus.success {
-            background: #e8f8ef;
-            color: #28764b;
-        }
-
-
-        #notificationStatus.error {
-            background: #fff0f0;
-            color: #bd4e4e;
-        }
-
-
-        #notificationButton {
-            width: 100%;
-
-            height: 48px;
-
-            border: none;
-
-            border-radius: 15px;
-
-            background: #4faeca;
-
-            color: white;
-
-            font-size: 14px;
-
-            font-weight: 800;
-
-            cursor: pointer;
-        }
-
-
-        #notificationButton.enabled {
-            background: #56b987;
-        }
-
-
-        #notificationButton:active {
-            transform: scale(.98);
-        }
-
-
-        /* =========================
-           EKLEME
-        ========================= */
-
-        .add-card {
-            background: white;
-
-            border:
-                1px solid #e3f0f5;
-
-            border-radius: 25px;
-
-            padding: 17px;
-
-            box-shadow:
-                0 15px 45px
-                rgba(30,90,120,.10);
-
-            margin-bottom: 25px;
-        }
-
-
-        .card-title {
-            font-size: 19px;
-
-            font-weight: 800;
-
-            color: #315e6d;
-
-            margin-bottom: 15px;
-        }
-
-
-        .field {
-            margin-bottom: 13px;
-        }
-
-
-        .field label {
-            display: block;
-
-            margin-bottom: 6px;
-
-            color: #54707b;
-
-            font-size: 13px;
-
-            font-weight: 700;
-        }
-
-
-        .field input {
-            width: 100%;
-
-            height: 50px;
-
-            border:
-                1.5px solid #dcecf2;
-
-            border-radius: 15px;
-
-            padding: 0 14px;
-
-            background: #fbfeff;
-
-            color: #294653;
-
-            font-size: 15px;
-
-            outline: none;
-        }
-
-
-        .field input:focus {
-            border-color: #6bbbd5;
-
-            box-shadow:
-                0 0 0 4px
-                rgba(107,187,213,.10);
-        }
-
-
-        .save-button {
-            width: 100%;
-
-            height: 52px;
-
-            border: none;
-
-            border-radius: 16px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #58b9d8,
-                    #287d9c
-                );
-
-            color: white;
-
-            font-size: 15px;
-
-            font-weight: 800;
-
-            cursor: pointer;
-        }
-
-
-        /* =========================
-           İLAÇLAR
-        ========================= */
-
-        .section-title {
-            margin:
-                0 3px 12px;
-
-            font-size: 19px;
-
-            font-weight: 800;
-
-            color: #426371;
-        }
-
-
-        .medicine-card {
-            background: white;
-
-            border:
-                1px solid #e3f0f5;
-
-            border-radius: 20px;
-
-            padding: 16px;
-
-            margin-bottom: 10px;
-
-            box-shadow:
-                0 7px 22px
-                rgba(30,90,120,.07);
-        }
-
 
         .medicine-top {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 10px;
+            align-items: flex-start;
+            flex-direction: column;
         }
-
-
-        .medicine-name {
-            color: #285f72;
-
-            font-size: 17px;
-
-            font-weight: 800;
-        }
-
 
         .medicine-time {
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 5px;
-
-            padding: 6px 10px;
-
-            border-radius: 12px;
-
-            background: #e8f7fb;
-
-            color: #287b98;
-
-            font-size: 13px;
-
-            font-weight: 800;
+            margin-top: 3px;
         }
+    }
+</style>
 
+</head><body><div id="overlay"></div>
 
-        .medicine-info {
-            margin-top: 10px;
+<button id="menuButton" type="button">
+    ☰
+</button>
 
-            color: #718893;
+<aside id="sidebar">
 
-            font-size: 13px;
+    <div class="sidebar-top">
 
-            line-height: 1.7;
-        }
+        <div class="sidebar-title">
+            💊 İlaçlarım
+        </div>
 
+        <button id="closeButton" type="button">
+            ×
+        </button>
 
-        .delete-button {
-            margin-top: 12px;
+    </div>
 
-            width: 100%;
+    <a href="/doctor" class="menu-item">
+        <span class="menu-icon">🩺</span>
+        <span>Cebimdeki Doktor</span>
+    </a>
 
-            height: 42px;
+    <a href="/period" class="menu-item">
+        <span class="menu-icon">📅</span>
+        <span>Regl Takibi</span>
+    </a>
 
-            border: none;
+    <a href="/diarrhea" class="menu-item">
+        <span class="menu-icon">📝</span>
+        <span>Sindirim Takibi</span>
+    </a>
 
-            border-radius: 13px;
+    <a href="/medicine" class="menu-item active">
+        <span class="menu-icon">💊</span>
+        <span>İlaçlarım</span>
+    </a>
 
-            background: #fff0f0;
+    <a href="/settings" class="menu-item">
+        <span class="menu-icon">⚙️</span>
+        <span>Ayarlar</span>
+    </a>
 
-            color: #d65d5d;
+    <a href="/" class="menu-item">
+        <span class="menu-icon">🤖</span>
+        <span>MaviGPT</span>
+    </a>
 
-            font-size: 13px;
+</aside>
 
-            font-weight: 800;
+<main class="page">
 
-            cursor: pointer;
-        }
+    <section class="hero">
 
+        <div class="medicine-icon">
+            💊
+        </div>
 
-        .empty {
-            background: white;
+        <h1>İlaçlarım</h1>
 
-            border:
-                1px dashed #cfe3ea;
+        <div class="subtitle">
+            İlaçlarını ve kullanım saatlerini takip et.
+        </div>
 
-            border-radius: 20px;
+    </section>
 
-            padding: 25px 15px;
+    {% if kayit_mesaji %}
 
-            text-align: center;
+    <div
+        class="status-message show"
+        id="serverMessage">
 
-            color: #7b929d;
+        {{ kayit_mesaji }}
 
-            font-size: 14px;
-        }
+    </div>
 
+    {% endif %}
 
-        @media (max-width:600px) {
+    <section class="notification-card">
 
-            .page {
-                padding:
-                    82px 11px 30px;
-            }
+        <div class="notification-title">
+            🔔 İlaç bildirimleri
+        </div>
 
-            h1 {
-                font-size: 31px;
-            }
+        <div class="notification-text">
+            İlaç saatlerinde bildirim almak için
+            önce bildirim iznini aç.
+        </div>
 
-            .medicine-top {
-                align-items: flex-start;
+        <button
+            id="notificationButton"
+            type="button">
 
-                flex-direction: column;
-            }
+            🔔 Bildirimleri Aç
 
-            .medicine-time {
-                margin-top: 3px;
-            }
-        }
+        </button>
 
-    </style>
+    </section>
 
-</head>
+    <div
+        id="statusMessage"
+        class="status-message">
+    </div>
 
+    <section class="add-card">
 
-<body>
+        <div class="card-title">
+            ➕ Yeni İlaç Ekle
+        </div>
 
+        <form
+            method="POST"
+            action="/medicine"
+            id="medicineForm">
 
-    <div id="overlay"></div>
+            <div class="field">
 
+                <label>İlaç adı</label>
 
-    <button
-        id="menuButton"
-        type="button">
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Örn. Vitamin"
+                    required>
 
-        ☰
+            </div>
 
-    </button>
+            <div class="field">
 
+                <label>Doz</label>
 
-    <aside id="sidebar">
+                <input
+                    type="text"
+                    name="dose"
+                    placeholder="Örn. 1 tablet">
 
-        <div class="sidebar-top">
+            </div>
 
-            <div class="sidebar-title">
-                💊 İlaçlarım
+            <div class="field">
+
+                <label>⏰ Kullanım saati</label>
+
+                <input
+                    type="time"
+                    name="hour"
+                    id="medicineHour"
+                    required>
+
+            </div>
+
+            <div class="field">
+
+                <label>Başlangıç tarihi</label>
+
+                <input
+                    type="date"
+                    name="start_date">
+
             </div>
 
             <button
-                id="closeButton"
-                type="button">
+                class="save-button"
+                type="submit">
 
-                ×
+                💊 İlacı Kaydet
 
             </button>
+
+        </form>
+
+    </section>
+
+    <section>
+
+        <div class="section-title">
+            💊 Kayıtlı İlaçlar
+        </div>
+
+        <div id="medicineList">
+
+            {% for ilac in kayitlar %}
+
+            <div
+                class="medicine-card"
+                data-hour="{{ ilac['hour'] }}"
+                data-name="{{ ilac['name'] }}"
+                data-dose="{{ ilac['dose'] }}">
+
+                <div class="medicine-top">
+
+                    <div class="medicine-name">
+                        💊 {{ ilac["name"] }}
+                    </div>
+
+                    <div class="medicine-time">
+                        ⏰ {{ ilac["hour"] }}
+                    </div>
+
+                </div>
+
+                <div class="medicine-info">
+
+                    {% if ilac["dose"] %}
+
+                    💊 Doz:
+                    {{ ilac["dose"] }}
+
+                    <br>
+
+                    {% endif %}
+
+                    {% if ilac["start_date"] %}
+
+                    📅 Başlangıç:
+                    {{ ilac["start_date"] }}
+
+                    {% endif %}
+
+                </div>
+
+                <form
+                    method="POST"
+                    action="/medicine/delete/{{ ilac['id'] }}">
+
+                    <button
+                        class="delete-button"
+                        type="submit"
+                        onclick="return confirm('Bu ilacı silmek istediğine emin misin?');">
+
+                        🗑️ İlacı Sil
+
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty">
+
+                💊 Henüz kayıtlı bir ilacın yok.
+
+                <br><br>
+
+                Yukarıdaki formdan ilk ilacını ekleyebilirsin.
+
+            </div>
+
+            {% endfor %}
 
         </div>
 
+    </section>
 
-        <a href="/doctor" class="menu-item">
+</main>
 
-            <span class="menu-icon">🩺</span>
+<script>
 
-            <span>Cebimdeki Doktor</span>
+    /* =====================================================
+       MENÜ
+    ===================================================== */
 
-        </a>
+    const menuButton =
+        document.getElementById("menuButton");
 
+    const closeButton =
+        document.getElementById("closeButton");
 
-        <a href="/period" class="menu-item">
+    const sidebar =
+        document.getElementById("sidebar");
 
-            <span class="menu-icon">📅</span>
+    const overlay =
+        document.getElementById("overlay");
 
-            <span>Regl Takibi</span>
 
-        </a>
+    function openMenu() {
 
+        sidebar.classList.add("open");
 
-        <a href="/diarrhea" class="menu-item">
+        overlay.classList.add("open");
 
-            <span class="menu-icon">📝</span>
+    }
 
-            <span>Sindirim Takibi</span>
 
-        </a>
+    function closeMenu() {
 
+        sidebar.classList.remove("open");
 
-        <a href="/medicine" class="menu-item active">
+        overlay.classList.remove("open");
 
-            <span class="menu-icon">💊</span>
+    }
 
-            <span>İlaçlarım</span>
 
-        </a>
+    menuButton.addEventListener(
+        "click",
+        openMenu
+    );
 
 
-        <a href="/settings" class="menu-item">
+    closeButton.addEventListener(
+        "click",
+        closeMenu
+    );
 
-            <span class="menu-icon">⚙️</span>
 
-            <span>Ayarlar</span>
+    overlay.addEventListener(
+        "click",
+        closeMenu
+    );
 
-        </a>
 
+    /* =====================================================
+       BİLDİRİM
+    ===================================================== */
 
-        <a href="/" class="menu-item">
-
-            <span class="menu-icon">🤖</span>
-
-            <span>MaviGPT</span>
-
-        </a>
-
-    </aside>
-
-
-    <main class="page">
-
-
-        <section class="hero">
-
-            <div class="medicine-icon">
-                💊
-            </div>
-
-            <h1>
-                İlaçlarım
-            </h1>
-
-            <div class="subtitle">
-                İlaçlarını ve kullanım saatlerini takip et.
-            </div>
-
-        </section>
-
-
-        <section class="notification-card">
-
-            <div class="notification-title">
-                🔔 İlaç bildirimleri
-            </div>
-
-            <div class="notification-text">
-                İlaç saatlerinde bildirim almak için
-                bildirim iznini aç.
-            </div>
-
-
-            <div
-                id="notificationStatus">
-            </div>
-
-
-            <button
-                id="notificationButton"
-                type="button">
-
-                🔔 Bildirimleri Aç
-
-            </button>
-
-        </section>
-
-
-        <section class="add-card">
-
-            <div class="card-title">
-                ➕ Yeni İlaç Ekle
-            </div>
-
-
-            <form
-                method="POST"
-                action="/medicine">
-
-
-                <div class="field">
-
-                    <label>
-                        İlaç adı
-                    </label>
-
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Örn. Vitamin"
-                        required>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Doz
-                    </label>
-
-                    <input
-                        type="text"
-                        name="dose"
-                        placeholder="Örn. 1 tablet">
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        ⏰ Kullanım saati
-                    </label>
-
-                    <input
-                        type="time"
-                        name="hour"
-                        id="medicineHour"
-                        required>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Başlangıç tarihi
-                    </label>
-
-                    <input
-                        type="date"
-                        name="start_date">
-
-                </div>
-
-
-                <button
-                    class="save-button"
-                    type="submit">
-
-                    💊 İlacı Kaydet
-
-                </button>
-
-
-            </form>
-
-        </section>
-
-
-        <section>
-
-            <div class="section-title">
-                💊 Kayıtlı İlaçlar
-            </div>
-
-
-            <div id="medicineList">
-
-                {% for ilac in kayitlar %}
-
-                <div
-                    class="medicine-card"
-                    data-hour="{{ ilac['hour'] }}"
-                    data-name="{{ ilac['name'] }}"
-                    data-dose="{{ ilac['dose'] }}">
-
-
-                    <div class="medicine-top">
-
-                        <div class="medicine-name">
-                            💊 {{ ilac["name"] }}
-                        </div>
-
-
-                        <div class="medicine-time">
-                            ⏰ {{ ilac["hour"] }}
-                        </div>
-
-                    </div>
-
-
-                    <div class="medicine-info">
-
-                        {% if ilac["dose"] %}
-
-                            💊 Doz:
-                            {{ ilac["dose"] }}
-
-                            <br>
-
-                        {% endif %}
-
-
-                        {% if ilac["start_date"] %}
-
-                            📅 Başlangıç:
-                            {{ ilac["start_date"] }}
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <form
-                        method="POST"
-                        action="/medicine/delete/{{ ilac['id'] }}">
-
-                        <button
-                            class="delete-button"
-                            type="submit"
-                            onclick="return confirm('Bu ilacı silmek istediğine emin misin?');">
-
-                            🗑️ İlacı Sil
-
-                        </button>
-
-                    </form>
-
-
-                </div>
-
-
-                {% else %}
-
-
-                <div class="empty">
-
-                    💊 Henüz kayıtlı bir ilacın yok.
-
-                    <br><br>
-
-                    Yukarıdaki formdan ilk ilacını ekleyebilirsin.
-
-                </div>
-
-
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-
-    </main>
-
-
-    <script>
-
-        /* =====================================================
-           MENÜ
-        ===================================================== */
-
-        const menuButton =
-            document.getElementById("menuButton");
-
-        const closeButton =
-            document.getElementById("closeButton");
-
-        const sidebar =
-            document.getElementById("sidebar");
-
-        const overlay =
-            document.getElementById("overlay");
-
-
-        menuButton.addEventListener(
-            "click",
-            function () {
-
-                sidebar.classList.add("open");
-
-                overlay.classList.add("open");
-
-            }
+    const notificationButton =
+        document.getElementById(
+            "notificationButton"
         );
 
 
-        closeButton.addEventListener(
-            "click",
-            function () {
-
-                sidebar.classList.remove("open");
-
-                overlay.classList.remove("open");
-
-            }
+    const statusMessage =
+        document.getElementById(
+            "statusMessage"
         );
 
 
-        overlay.addEventListener(
-            "click",
-            function () {
+    function showStatus(message) {
 
-                sidebar.classList.remove("open");
+        statusMessage.textContent =
+            message;
 
-                overlay.classList.remove("open");
-
-            }
+        statusMessage.classList.add(
+            "show"
         );
 
+        setTimeout(function () {
 
-        /* =====================================================
-           BİLDİRİM
-        ===================================================== */
-
-        const notificationButton =
-            document.getElementById(
-                "notificationButton"
+            statusMessage.classList.remove(
+                "show"
             );
 
+        }, 5000);
 
-        const notificationStatus =
-            document.getElementById(
-                "notificationStatus"
-            );
+    }
 
 
-        function showStatus(
-            message,
-            type
+    function updateNotificationButton() {
+
+        if (
+            !("Notification" in window)
         ) {
 
-            notificationStatus.textContent =
-                message;
+            notificationButton.textContent =
+                "❌ Bildirim desteklenmiyor";
 
-            notificationStatus.className =
-                "show " + type;
+            notificationButton.disabled =
+                true;
+
+            return;
 
         }
 
 
-        function setNotificationEnabled() {
+        if (
+            Notification.permission ===
+            "granted"
+        ) {
 
             notificationButton.textContent =
                 "✅ Bildirimler Açık";
@@ -1024,14 +768,45 @@
                 "enabled"
             );
 
+            return;
+
         }
 
 
-        function checkNotificationPermission() {
+        if (
+            Notification.permission ===
+            "denied"
+        ) {
+
+            notificationButton.textContent =
+                "⚠️ Bildirim izni engellendi";
+
+            notificationButton.classList.add(
+                "denied"
+            );
+
+            return;
+
+        }
+
+
+        notificationButton.textContent =
+            "🔔 Bildirimleri Aç";
+
+    }
+
+
+    notificationButton.addEventListener(
+        "click",
+        async function () {
 
             if (
                 !("Notification" in window)
             ) {
+
+                showStatus(
+                    "Bu tarayıcı bildirimleri desteklemiyor."
+                );
 
                 return;
 
@@ -1043,75 +818,199 @@
                 "granted"
             ) {
 
-                setNotificationEnabled();
+                showStatus(
+                    "✅ Bildirimler zaten açık."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Notification.permission ===
+                "denied"
+            ) {
+
+                showStatus(
+                    "⚠️ Bildirim izni daha önce engellenmiş. Tarayıcı ayarlarından bu site için bildirimleri açman gerekiyor."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const permission =
+                    await Notification.requestPermission();
+
+
+                if (
+                    permission ===
+                    "granted"
+                {
+
+                    updateNotificationButton();
+
+                    showStatus(
+                        "✅ Bildirimler açıldı! Şimdi ilaç saatlerinde bildirim gönderebiliriz."
+                    );
+
+
+                    new Notification(
+                        "💊 Cebimdeki Doktor",
+                        {
+                            body:
+                                "Bildirimler başarıyla açıldı!"
+                        }
+                    );
+
+                }
+
+                else if (
+                    permission ===
+                    "denied"
+                ) {
+
+                    updateNotificationButton();
+
+                    showStatus(
+                        "⚠️ Bildirim izni reddedildi."
+                    );
+
+                }
+
+                else {
+
+                    showStatus(
+                        "Bildirim izni verilmedi."
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Bildirim hatası:",
+                    error
+                );
+
+                showStatus(
+                    "❌ Bildirim izni açılırken bir hata oluştu."
+                );
 
             }
 
         }
+    );
 
 
-        notificationButton.addEventListener(
-            "click",
-            async function () {
+    updateNotificationButton();
+
+
+    /* =====================================================
+       İLAÇ ALARMI
+    ===================================================== */
+
+    let notifiedMedicines = {};
+
+
+    function checkMedicineTimes() {
+
+        if (
+            !("Notification" in window)
+        ) {
+            return;
+        }
+
+
+        if (
+            Notification.permission !==
+            "granted"
+        ) {
+            return;
+        }
+
+
+        const now =
+            new Date();
+
+
+        const currentHour =
+            String(
+                now.getHours()
+            ).padStart(2, "0");
+
+
+        const currentMinute =
+            String(
+                now.getMinutes()
+            ).padStart(2, "0");
+
+
+        const currentTime =
+            currentHour +
+            ":" +
+            currentMinute;
+
+
+        const today =
+            now.toISOString()
+                .slice(0, 10);
+
+
+        const medicineCards =
+            document.querySelectorAll(
+                ".medicine-card"
+            );
+
+
+        medicineCards.forEach(
+            function (card) {
+
+                const medicineHour =
+                    card.dataset.hour;
+
+
+                const medicineName =
+                    card.dataset.name ||
+                    "İlacın";
+
+
+                const medicineDose =
+                    card.dataset.dose ||
+                    "";
+
 
                 if (
-                    !("Notification" in window)
+                    !medicineHour
                 ) {
-
-                    showStatus(
-                        "Bu tarayıcı bildirimleri desteklemiyor.",
-                        "error"
-                    );
-
                     return;
                 }
 
 
-                /*
-                 * Bildirim izni daha önce reddedildiyse
-                 * tarayıcı tekrar pencere açmayabilir.
-                 */
-
                 if (
-                    Notification.permission ===
-                    "denied"
+                    medicineHour !==
+                    currentTime
                 ) {
-
-                    showStatus(
-                        "Bildirim izni daha önce kapatılmış. Tarayıcı ayarlarından bu site için bildirimleri açmalısın.",
-                        "error"
-                    );
-
                     return;
                 }
 
 
-                try {
-
-                    const permission =
-                        await Notification.requestPermission();
-
-
-                    if (
-                        permission ===
-                        "granted"
-                    {
-
-                        setNotificationEnabled();
+                const notificationKey =
+                    today +
+                    "_" +
+                    medicineName +
+                    "_" +
+                    medicineHour;
 
 
-                        showStatus(
-                            "Bildirimler açıldı! 🔔",
-                            "success"
-                        );
-
-
-                        /*
-                         * Test bildirimi
-                         */
-
-                        new Notification(
-                            "💊 Cebimdeki Doktor",
-                            {
-                                body:
-                                     
+                if (
+                    notifiedMedicines[
+                        notificationKey
+                    ]
+            
