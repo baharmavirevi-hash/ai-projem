@@ -2,10 +2,12 @@
 <html lang="tr">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>MaviGPT</title>
 
@@ -30,9 +32,22 @@
             overflow: hidden;
         }
 
-        /* ==============================
+        button,
+        input,
+        textarea {
+            font-family: inherit;
+        }
+
+        button,
+        label,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        /* =========================
            APP
-        ============================== */
+        ========================= */
 
         .app {
             width: 100%;
@@ -40,12 +55,14 @@
             position: relative;
         }
 
-        /* ==============================
+
+        /* =========================
            SIDEBAR
-        ============================== */
+        ========================= */
 
         .sidebar {
             position: fixed;
+
             top: 0;
             left: 0;
 
@@ -56,25 +73,28 @@
 
             border-right: 1px solid #dfe8ee;
 
-            z-index: 2000;
+            z-index: 1000;
 
-            transform: translateX(-100%);
+            transform: translateX(-105%);
 
-            transition: transform 0.25s ease;
+            transition:
+                transform 0.25s ease;
 
             display: flex;
             flex-direction: column;
 
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.12);
+            box-shadow:
+                5px 0 25px rgba(0, 0, 0, 0.08);
         }
 
         .sidebar.open {
             transform: translateX(0);
         }
 
-        /* ==============================
+
+        /* =========================
            SIDEBAR HEADER
-        ============================== */
+        ========================= */
 
         .sidebar-header {
             height: 68px;
@@ -95,46 +115,38 @@
             color: #0782a8;
         }
 
+
         .close-sidebar {
             width: 44px;
             height: 44px;
 
-            border: none;
-            outline: none;
-
+            border: 0;
             border-radius: 12px;
 
             background: #f3f8fa;
 
-            color: #52636c;
+            color: #53636d;
 
             font-size: 28px;
-
-            cursor: pointer;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
+            cursor: pointer;
+
             position: relative;
-            z-index: 2100;
-
-            touch-action: manipulation;
-
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .close-sidebar:hover {
-            background: #eaf4f7;
+            z-index: 1100;
         }
 
         .close-sidebar:active {
-            transform: scale(0.92);
+            transform: scale(0.94);
         }
 
-        /* ==============================
+
+        /* =========================
            NEW CHAT
-        ============================== */
+        ========================= */
 
         .new-chat {
             margin: 15px;
@@ -150,22 +162,22 @@
             color: #087c9f;
 
             font-weight: 600;
+
             font-size: 15px;
 
             cursor: pointer;
 
             text-align: left;
-
-            touch-action: manipulation;
         }
 
         .new-chat:active {
             transform: scale(0.98);
         }
 
-        /* ==============================
+
+        /* =========================
            MENU
-        ============================== */
+        ========================= */
 
         .menu-section {
             padding: 4px 10px;
@@ -173,7 +185,6 @@
 
         .menu-title {
             font-size: 11px;
-
             color: #8997a1;
 
             padding: 9px 10px 6px;
@@ -183,7 +194,6 @@
 
         .menu-item {
             display: flex;
-
             align-items: center;
 
             gap: 12px;
@@ -199,16 +209,10 @@
             color: #25323b;
 
             font-size: 14px;
-
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .menu-item:hover {
-            background: #f4fafc;
         }
 
         .menu-item:active {
-            background: #eaf6fa;
+            background: #f0f8fb;
         }
 
         .menu-icon {
@@ -219,9 +223,10 @@
             font-size: 19px;
         }
 
-        /* ==============================
+
+        /* =========================
            HISTORY
-        ============================== */
+        ========================= */
 
         .history {
             flex: 1;
@@ -255,34 +260,31 @@
             text-overflow: ellipsis;
         }
 
-        /* ==============================
+
+        /* =========================
            BACKDROP
-        ============================== */
+        ========================= */
 
         .backdrop {
             position: fixed;
 
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
 
-            background: rgba(0, 0, 0, 0.28);
+            background: rgba(0, 0, 0, 0.25);
 
-            z-index: 1500;
+            z-index: 950;
 
             display: none;
-
-            cursor: pointer;
         }
 
         .backdrop.show {
             display: block;
         }
 
-        /* ==============================
+
+        /* =========================
            MAIN
-        ============================== */
+        ========================= */
 
         .main {
             width: 100%;
@@ -290,15 +292,12 @@
 
             display: flex;
             flex-direction: column;
-
-            position: relative;
-
-            z-index: 1;
         }
 
-        /* ==============================
+
+        /* =========================
            HEADER
-        ============================== */
+        ========================= */
 
         .header {
             height: 65px;
@@ -309,24 +308,21 @@
             border-bottom: 1px solid #dfe8ee;
 
             display: flex;
-
             align-items: center;
 
             padding: 0 12px;
 
             gap: 10px;
 
-            position: relative;
-
             z-index: 100;
         }
+
 
         .menu-button {
             width: 43px;
             height: 43px;
 
-            border: none;
-            outline: none;
+            border: 0;
 
             border-radius: 13px;
 
@@ -339,23 +335,18 @@
             cursor: pointer;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
-            touch-action: manipulation;
+            position: relative;
 
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .menu-button:hover {
-            background: #e7f4f8;
+            z-index: 200;
         }
 
         .menu-button:active {
-            transform: scale(0.94);
+            transform: scale(0.95);
         }
+
 
         .logo {
             width: 42px;
@@ -366,13 +357,12 @@
             background: #d9f5ff;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
             font-size: 22px;
         }
+
 
         .header-info {
             min-width: 0;
@@ -380,7 +370,6 @@
 
         .title {
             font-size: 17px;
-
             font-weight: 700;
         }
 
@@ -392,9 +381,10 @@
             margin-top: 3px;
         }
 
-        /* ==============================
+
+        /* =========================
            CHAT
-        ============================== */
+        ========================= */
 
         .chat {
             flex: 1;
@@ -414,9 +404,10 @@
             margin: auto;
         }
 
-        /* ==============================
+
+        /* =========================
            WELCOME
-        ============================== */
+        ========================= */
 
         .welcome {
             text-align: center;
@@ -437,15 +428,10 @@
             background: #d9f5ff;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
             font-size: 42px;
-
-            box-shadow:
-                0 8px 25px rgba(0, 130, 170, 0.10);
         }
 
         .welcome h1 {
@@ -464,9 +450,10 @@
             font-size: 14px;
         }
 
-        /* ==============================
+
+        /* =========================
            MESSAGES
-        ============================== */
+        ========================= */
 
         .message {
             width: 100%;
@@ -482,6 +469,7 @@
 
         .avatar {
             width: 36px;
+
             min-width: 36px;
 
             height: 36px;
@@ -491,7 +479,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 18px;
@@ -543,16 +530,12 @@
             border: 1px solid #dfe7eb;
 
             border-top-left-radius: 5px;
-
-            box-shadow:
-                0 2px 7px rgba(0, 0, 0, 0.025);
         }
 
         .photo-preview {
             margin-top: 8px;
 
             max-width: 260px;
-
             max-height: 300px;
 
             border-radius: 14px;
@@ -562,9 +545,10 @@
             border: 1px solid #dbe6eb;
         }
 
-        /* ==============================
-           INPUT AREA
-        ============================== */
+
+        /* =========================
+           INPUT
+        ========================= */
 
         .input-area {
             position: fixed;
@@ -572,7 +556,6 @@
             bottom: 0;
 
             left: 0;
-
             right: 0;
 
             padding: 9px 10px 12px;
@@ -584,7 +567,7 @@
                     rgba(245, 249, 252, 0.85)
                 );
 
-            z-index: 300;
+            z-index: 100;
         }
 
         .input-container {
@@ -594,6 +577,7 @@
 
             margin: auto;
         }
+
 
         .file-name {
             display: none;
@@ -608,6 +592,7 @@
         .file-name.show {
             display: block;
         }
+
 
         .input-box {
             min-height: 54px;
@@ -628,9 +613,10 @@
                 0 4px 18px rgba(0, 0, 0, 0.06);
         }
 
-        /* ==============================
+
+        /* =========================
            PLUS
-        ============================== */
+        ========================= */
 
         .plus {
             width: 42px;
@@ -642,7 +628,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 27px;
@@ -666,9 +651,10 @@
             display: none;
         }
 
-        /* ==============================
+
+        /* =========================
            MESSAGE INPUT
-        ============================== */
+        ========================= */
 
         #mesaj {
             flex: 1;
@@ -694,9 +680,10 @@
             color: #9aa7ae;
         }
 
-        /* ==============================
+
+        /* =========================
            SEND
-        ============================== */
+        ========================= */
 
         .send {
             width: 43px;
@@ -724,9 +711,10 @@
             transform: scale(0.95);
         }
 
-        /* ==============================
+
+        /* =========================
            MOBILE
-        ============================== */
+        ========================= */
 
         @media (max-width: 600px) {
 
@@ -746,7 +734,6 @@
 
             .welcome-logo {
                 width: 68px;
-
                 height: 68px;
 
                 font-size: 38px;
@@ -782,7 +769,6 @@
 
             .header {
                 height: 62px;
-
                 min-height: 62px;
             }
 
@@ -813,14 +799,13 @@
 <div class="app">
 
 
-    <!-- ==============================
+    <!-- ==================================================
          SIDEBAR
-    ============================== -->
+    ================================================== -->
 
     <aside
         class="sidebar"
         id="sidebar">
-
 
         <div class="sidebar-header">
 
@@ -828,12 +813,10 @@
                 🩵 MaviGPT
             </div>
 
-
             <button
                 class="close-sidebar"
                 type="button"
-                id="closeSidebarButton"
-                aria-label="Menüyü kapat">
+                id="closeSidebarButton">
 
                 ×
 
@@ -855,7 +838,7 @@
         <div class="menu-section">
 
             <div class="menu-title">
-                MaviGPT
+                MAVİGPT
             </div>
 
 
@@ -921,9 +904,9 @@
         </div>
 
 
-        <!-- ==============================
+        <!-- ==================================================
              HISTORY
-        ============================== -->
+        ================================================== -->
 
         <div class="history">
 
@@ -938,19 +921,7 @@
 
                     <div class="history-item">
 
-                        {% if sohbet["message"] is defined %}
-
-                            {{ sohbet["message"] }}
-
-                        {% elif sohbet[2] is defined %}
-
-                            {{ sohbet[2] }}
-
-                        {% else %}
-
-                            Sohbet
-
-                        {% endif %}
+                        {{ sohbet["message"] }}
 
                     </div>
 
@@ -966,13 +937,12 @@
 
         </div>
 
-
     </aside>
 
 
-    <!-- ==============================
+    <!-- ==================================================
          BACKDROP
-    ============================== -->
+    ================================================== -->
 
     <div
         class="backdrop"
@@ -980,9 +950,9 @@
     </div>
 
 
-    <!-- ==============================
+    <!-- ==================================================
          MAIN
-    ============================== -->
+    ================================================== -->
 
     <main class="main">
 
@@ -990,7 +960,6 @@
         <!-- HEADER -->
 
         <header class="header">
-
 
             <button
                 class="menu-button"
@@ -1020,23 +989,21 @@
 
             </div>
 
-
         </header>
 
 
-        <!-- ==============================
+        <!-- ==================================================
              CHAT
-        ============================== -->
+        ================================================== -->
 
         <section
             class="chat"
             id="chat">
 
-
             <div class="chat-inner">
 
 
-                {% if not mesaj and not cevap %}
+                {% if not mesaj and not cevap and not foto_url %}
 
                     <div class="welcome">
 
@@ -1044,11 +1011,9 @@
                             🩵
                         </div>
 
-
                         <h1>
                             Merhaba Bahar! 👋
                         </h1>
-
 
                         <p>
                             Ben MaviGPT.
@@ -1063,7 +1028,7 @@
 
                 <!-- USER MESSAGE -->
 
-                {% if mesaj %}
+                {% if mesaj or foto_url %}
 
                     <div class="message">
 
@@ -1079,9 +1044,13 @@
                             </div>
 
 
-                            <div class="bubble user-bubble">
-                                {{ mesaj }}
-                            </div>
+                            {% if mesaj %}
+
+                                <div class="bubble user-bubble">
+                                    {{ mesaj }}
+                                </div>
+
+                            {% endif %}
 
 
                             {% if foto_url %}
@@ -1097,13 +1066,51 @@
 
                     </div>
 
-                {% elif foto_url %}
+                {% endif %}
+
+
+                <!-- BOT MESSAGE -->
+
+                {% if cevap %}
 
                     <div class="message">
 
-                        <div class="avatar user-avatar">
-                            👤
+                        <div class="avatar bot-avatar">
+                            🩵
                         </div>
 
 
-                        <div class="message">
+                        <div class="message-content">
+
+                            <div class="message-name">
+                                MaviGPT
+                            </div>
+
+
+                            <div class="bubble bot-bubble">
+                                {{ cevap }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             INPUT AREA
+        ================================================== -->
+
+        <div class="input-area">
+
+            <div class="input-container">
+
+
+                <div
+                    class="file-name"
+        
