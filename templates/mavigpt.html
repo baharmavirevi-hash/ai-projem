@@ -5,9 +5,8 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>MaviGPT</title>
 
@@ -32,22 +31,9 @@
             overflow: hidden;
         }
 
-        button,
-        input,
-        textarea {
-            font-family: inherit;
-        }
-
-        button,
-        label,
-        a {
-            -webkit-tap-highlight-color: transparent;
-        }
-
-
-        /* =========================
+        /* ================================
            APP
-        ========================= */
+        ================================= */
 
         .app {
             width: 100%;
@@ -55,10 +41,9 @@
             position: relative;
         }
 
-
-        /* =========================
+        /* ================================
            SIDEBAR
-        ========================= */
+        ================================= */
 
         .sidebar {
             position: fixed;
@@ -75,26 +60,25 @@
 
             z-index: 1000;
 
-            transform: translateX(-105%);
+            transform: translateX(-100%);
 
-            transition:
-                transform 0.25s ease;
+            transition: transform 0.25s ease;
 
             display: flex;
             flex-direction: column;
 
-            box-shadow:
-                5px 0 25px rgba(0, 0, 0, 0.08);
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.08);
+
+            overflow: hidden;
         }
 
         .sidebar.open {
             transform: translateX(0);
         }
 
-
-        /* =========================
+        /* ================================
            SIDEBAR HEADER
-        ========================= */
+        ================================= */
 
         .sidebar-header {
             height: 68px;
@@ -115,38 +99,43 @@
             color: #0782a8;
         }
 
-
         .close-sidebar {
             width: 44px;
             height: 44px;
 
             border: 0;
+
             border-radius: 12px;
 
             background: #f3f8fa;
 
-            color: #53636d;
+            color: #52636c;
 
             font-size: 28px;
+            line-height: 1;
+
+            cursor: pointer;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            cursor: pointer;
-
             position: relative;
             z-index: 1100;
+
+            touch-action: manipulation;
+
+            -webkit-tap-highlight-color: transparent;
         }
 
         .close-sidebar:active {
-            transform: scale(0.94);
+            transform: scale(0.92);
+            background: #e9f3f7;
         }
 
-
-        /* =========================
+        /* ================================
            NEW CHAT
-        ========================= */
+        ================================= */
 
         .new-chat {
             margin: 15px;
@@ -168,16 +157,17 @@
             cursor: pointer;
 
             text-align: left;
+
+            touch-action: manipulation;
         }
 
         .new-chat:active {
             transform: scale(0.98);
         }
 
-
-        /* =========================
+        /* ================================
            MENU
-        ========================= */
+        ================================= */
 
         .menu-section {
             padding: 4px 10px;
@@ -185,6 +175,7 @@
 
         .menu-title {
             font-size: 11px;
+
             color: #8997a1;
 
             padding: 9px 10px 6px;
@@ -194,6 +185,7 @@
 
         .menu-item {
             display: flex;
+
             align-items: center;
 
             gap: 12px;
@@ -209,24 +201,35 @@
             color: #25323b;
 
             font-size: 14px;
+
+            cursor: pointer;
+
+            touch-action: manipulation;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .menu-item:hover {
+            background: #f5fafc;
         }
 
         .menu-item:active {
-            background: #f0f8fb;
+            background: #edf7fa;
         }
 
         .menu-icon {
             width: 28px;
+
+            min-width: 28px;
 
             text-align: center;
 
             font-size: 19px;
         }
 
-
-        /* =========================
+        /* ================================
            HISTORY
-        ========================= */
+        ================================= */
 
         .history {
             flex: 1;
@@ -260,10 +263,9 @@
             text-overflow: ellipsis;
         }
 
-
-        /* =========================
+        /* ================================
            BACKDROP
-        ========================= */
+        ================================= */
 
         .backdrop {
             position: fixed;
@@ -272,35 +274,38 @@
 
             background: rgba(0, 0, 0, 0.25);
 
-            z-index: 950;
+            z-index: 900;
 
             display: none;
+
+            cursor: pointer;
         }
 
         .backdrop.show {
             display: block;
         }
 
-
-        /* =========================
+        /* ================================
            MAIN
-        ========================= */
+        ================================= */
 
         .main {
             width: 100%;
+
             height: 100vh;
 
             display: flex;
+
             flex-direction: column;
         }
 
-
-        /* =========================
+        /* ================================
            HEADER
-        ========================= */
+        ================================= */
 
         .header {
             height: 65px;
+
             min-height: 65px;
 
             background: #ffffff;
@@ -308,18 +313,23 @@
             border-bottom: 1px solid #dfe8ee;
 
             display: flex;
+
             align-items: center;
 
             padding: 0 12px;
 
             gap: 10px;
 
-            z-index: 100;
-        }
+            position: relative;
 
+            z-index: 20;
+        }
 
         .menu-button {
             width: 43px;
+
+            min-width: 43px;
+
             height: 43px;
 
             border: 0;
@@ -335,21 +345,29 @@
             cursor: pointer;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             position: relative;
 
-            z-index: 200;
+            z-index: 25;
+
+            touch-action: manipulation;
+
+            -webkit-tap-highlight-color: transparent;
         }
 
         .menu-button:active {
             transform: scale(0.95);
         }
 
-
         .logo {
             width: 42px;
+
+            min-width: 42px;
+
             height: 42px;
 
             border-radius: 14px;
@@ -357,12 +375,13 @@
             background: #d9f5ff;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 22px;
         }
-
 
         .header-info {
             min-width: 0;
@@ -370,6 +389,7 @@
 
         .title {
             font-size: 17px;
+
             font-weight: 700;
         }
 
@@ -381,10 +401,9 @@
             margin-top: 3px;
         }
 
-
-        /* =========================
+        /* ================================
            CHAT
-        ========================= */
+        ================================= */
 
         .chat {
             flex: 1;
@@ -394,6 +413,8 @@
             padding: 25px 12px 125px;
 
             scroll-behavior: smooth;
+
+            -webkit-overflow-scrolling: touch;
         }
 
         .chat-inner {
@@ -404,10 +425,9 @@
             margin: auto;
         }
 
-
-        /* =========================
+        /* ================================
            WELCOME
-        ========================= */
+        ================================= */
 
         .welcome {
             text-align: center;
@@ -419,6 +439,7 @@
 
         .welcome-logo {
             width: 75px;
+
             height: 75px;
 
             margin: auto;
@@ -428,10 +449,15 @@
             background: #d9f5ff;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 42px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 130, 170, 0.10);
         }
 
         .welcome h1 {
@@ -450,10 +476,9 @@
             font-size: 14px;
         }
 
-
-        /* =========================
+        /* ================================
            MESSAGES
-        ========================= */
+        ================================= */
 
         .message {
             width: 100%;
@@ -479,6 +504,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 18px;
@@ -494,6 +520,8 @@
 
         .message-content {
             max-width: calc(100% - 45px);
+
+            min-width: 0;
         }
 
         .message-name {
@@ -530,12 +558,18 @@
             border: 1px solid #dfe7eb;
 
             border-top-left-radius: 5px;
+
+            box-shadow:
+                0 2px 7px rgba(0, 0, 0, 0.025);
         }
 
         .photo-preview {
             margin-top: 8px;
 
+            width: auto;
+
             max-width: 260px;
+
             max-height: 300px;
 
             border-radius: 14px;
@@ -545,10 +579,9 @@
             border: 1px solid #dbe6eb;
         }
 
-
-        /* =========================
-           INPUT
-        ========================= */
+        /* ================================
+           INPUT AREA
+        ================================= */
 
         .input-area {
             position: fixed;
@@ -556,6 +589,7 @@
             bottom: 0;
 
             left: 0;
+
             right: 0;
 
             padding: 9px 10px 12px;
@@ -567,7 +601,7 @@
                     rgba(245, 249, 252, 0.85)
                 );
 
-            z-index: 100;
+            z-index: 30;
         }
 
         .input-container {
@@ -577,7 +611,6 @@
 
             margin: auto;
         }
-
 
         .file-name {
             display: none;
@@ -592,7 +625,6 @@
         .file-name.show {
             display: block;
         }
-
 
         .input-box {
             min-height: 54px;
@@ -613,10 +645,9 @@
                 0 4px 18px rgba(0, 0, 0, 0.06);
         }
 
-
-        /* =========================
-           PLUS
-        ========================= */
+        /* ================================
+           PHOTO BUTTON
+        ================================= */
 
         .plus {
             width: 42px;
@@ -628,6 +659,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 27px;
@@ -639,6 +671,8 @@
             border-radius: 12px;
 
             touch-action: manipulation;
+
+            -webkit-tap-highlight-color: transparent;
         }
 
         .plus:active {
@@ -651,10 +685,9 @@
             display: none;
         }
 
-
-        /* =========================
+        /* ================================
            MESSAGE INPUT
-        ========================= */
+        ================================= */
 
         #mesaj {
             flex: 1;
@@ -680,10 +713,9 @@
             color: #9aa7ae;
         }
 
-
-        /* =========================
+        /* ================================
            SEND
-        ========================= */
+        ================================= */
 
         .send {
             width: 43px;
@@ -705,21 +737,22 @@
             cursor: pointer;
 
             touch-action: manipulation;
+
+            -webkit-tap-highlight-color: transparent;
         }
 
         .send:active {
             transform: scale(0.95);
         }
 
-
-        /* =========================
+        /* ================================
            MOBILE
-        ========================= */
+        ================================= */
 
         @media (max-width: 600px) {
 
             .sidebar {
-                width: 285px;
+                width: min(285px, 82vw);
             }
 
             .chat {
@@ -734,6 +767,7 @@
 
             .welcome-logo {
                 width: 68px;
+
                 height: 68px;
 
                 font-size: 38px;
@@ -769,6 +803,7 @@
 
             .header {
                 height: 62px;
+
                 min-height: 62px;
             }
 
@@ -787,6 +822,10 @@
             #mesaj {
                 font-size: 14px;
             }
+
+            .photo-preview {
+                max-width: 220px;
+            }
         }
 
     </style>
@@ -796,31 +835,38 @@
 
 <body>
 
+
 <div class="app">
 
 
-    <!-- ==================================================
+    <!-- =====================================
          SIDEBAR
-    ================================================== -->
+    ====================================== -->
 
     <aside
         class="sidebar"
-        id="sidebar">
+        id="sidebar"
+        aria-hidden="true">
+
 
         <div class="sidebar-header">
+
 
             <div class="sidebar-title">
                 🩵 MaviGPT
             </div>
 
+
             <button
                 class="close-sidebar"
                 type="button"
-                id="closeSidebarButton">
+                id="closeSidebarButton"
+                aria-label="Menüyü kapat">
 
                 ×
 
             </button>
+
 
         </div>
 
@@ -837,8 +883,9 @@
 
         <div class="menu-section">
 
+
             <div class="menu-title">
-                MAVİGPT
+                MaviGPT
             </div>
 
 
@@ -901,14 +948,16 @@
 
             </a>
 
+
         </div>
 
 
-        <!-- ==================================================
+        <!-- =====================================
              HISTORY
-        ================================================== -->
+        ====================================== -->
 
         <div class="history">
+
 
             <div class="history-title">
                 Son sohbetler
@@ -917,55 +966,86 @@
 
             {% if sohbetler %}
 
+
                 {% for sohbet in sohbetler %}
+
 
                     <div class="history-item">
 
-                        {{ sohbet["message"] }}
+
+                        {% if sohbet["message"] is defined %}
+
+                            {{ sohbet["message"] }}
+
+                        {% else %}
+
+                            {% if sohbet[2] is defined %}
+
+                                {{ sohbet[2] }}
+
+                            {% else %}
+
+                                Sohbet
+
+                            {% endif %}
+
+                        {% endif %}
+
 
                     </div>
 
+
                 {% endfor %}
 
+
             {% else %}
+
 
                 <div class="history-item">
                     Henüz sohbet yok.
                 </div>
 
+
             {% endif %}
 
+
         </div>
+
 
     </aside>
 
 
-    <!-- ==================================================
+    <!-- =====================================
          BACKDROP
-    ================================================== -->
+    ====================================== -->
 
     <div
         class="backdrop"
-        id="backdrop">
+        id="backdrop"
+        aria-hidden="true">
     </div>
 
 
-    <!-- ==================================================
+    <!-- =====================================
          MAIN
-    ================================================== -->
+    ====================================== -->
 
     <main class="main">
 
 
-        <!-- HEADER -->
+        <!-- =====================================
+             HEADER
+        ====================================== -->
 
         <header class="header">
+
 
             <button
                 class="menu-button"
                 type="button"
                 id="menuButton"
-                aria-label="Menüyü aç">
+                aria-label="Menüyü aç"
+                aria-expanded="false">
 
                 ☰
 
@@ -979,41 +1059,50 @@
 
             <div class="header-info">
 
+
                 <div class="title">
                     MaviGPT
                 </div>
+
 
                 <div class="status">
                     ● Çevrimiçi
                 </div>
 
+
             </div>
+
 
         </header>
 
 
-        <!-- ==================================================
+        <!-- =====================================
              CHAT
-        ================================================== -->
+        ====================================== -->
 
         <section
             class="chat"
             id="chat">
+
 
             <div class="chat-inner">
 
 
                 {% if not mesaj and not cevap and not foto_url %}
 
+
                     <div class="welcome">
+
 
                         <div class="welcome-logo">
                             🩵
                         </div>
 
+
                         <h1>
                             Merhaba Bahar! 👋
                         </h1>
+
 
                         <p>
                             Ben MaviGPT.
@@ -1021,16 +1110,22 @@
                             Sana nasıl yardımcı olabilirim?
                         </p>
 
+
                     </div>
+
 
                 {% endif %}
 
 
-                <!-- USER MESSAGE -->
+                <!-- =================================
+                     USER MESSAGE
+                ================================== -->
 
                 {% if mesaj or foto_url %}
 
+
                     <div class="message">
+
 
                         <div class="avatar user-avatar">
                             👤
@@ -1039,6 +1134,7 @@
 
                         <div class="message-content">
 
+
                             <div class="message-name">
                                 Sen
                             </div>
@@ -1046,34 +1142,45 @@
 
                             {% if mesaj %}
 
+
                                 <div class="bubble user-bubble">
                                     {{ mesaj }}
                                 </div>
+
 
                             {% endif %}
 
 
                             {% if foto_url %}
 
+
                                 <img
                                     src="{{ foto_url }}"
                                     class="photo-preview"
                                     alt="Gönderilen fotoğraf">
 
+
                             {% endif %}
+
 
                         </div>
 
+
                     </div>
+
 
                 {% endif %}
 
 
-                <!-- BOT MESSAGE -->
+                <!-- =================================
+                     BOT MESSAGE
+                ================================== -->
 
                 {% if cevap %}
 
+
                     <div class="message">
+
 
                         <div class="avatar bot-avatar">
                             🩵
@@ -1081,6 +1188,7 @@
 
 
                         <div class="message-content">
+
 
                             <div class="message-name">
                                 MaviGPT
@@ -1091,26 +1199,330 @@
                                 {{ cevap }}
                             </div>
 
+
                         </div>
+
 
                     </div>
 
+
                 {% endif %}
 
+
             </div>
+
 
         </section>
 
 
-        <!-- ==================================================
+        <!-- =====================================
              INPUT AREA
-        ================================================== -->
+        ====================================== -->
 
         <div class="input-area">
+
 
             <div class="input-container">
 
 
+                <!-- DOSYA ADI -->
+
                 <div
                     class="file-name"
-        
+                    id="fileName">
+                </div>
+
+
+                <!-- FORM -->
+
+                <form
+                    class="input-box"
+                    action="/"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="chatForm">
+
+
+                    <!-- FOTOĞRAF -->
+
+                    <label
+                        class="plus"
+                        for="foto"
+                        title="Fotoğraf ekle"
+                        aria-label="Fotoğraf ekle">
+
+                        ＋
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="foto"
+                        name="photo"
+                        accept="image/*">
+
+
+                    <!-- MESAJ -->
+
+                    <input
+                        type="text"
+                        id="mesaj"
+                        name="mesaj"
+                        placeholder="Mesajını yaz..."
+                        autocomplete="off">
+
+
+                    <!-- GÖNDER -->
+
+                    <button
+                        class="send"
+                        type="submit"
+                        aria-label="Gönder">
+
+                        ➤
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sidebar = document.getElementById("sidebar");
+
+    const menuButton = document.getElementById("menuButton");
+
+    const closeSidebarButton =
+        document.getElementById("closeSidebarButton");
+
+    const backdrop =
+        document.getElementById("backdrop");
+
+    const newChatButton =
+        document.getElementById("newChatButton");
+
+    const chatForm =
+        document.getElementById("chatForm");
+
+    const foto =
+        document.getElementById("foto");
+
+    const fileName =
+        document.getElementById("fileName");
+
+
+    /* =========================================
+       MENÜYÜ AÇ
+    ========================================== */
+
+    function openSidebar() {
+
+        sidebar.classList.add("open");
+
+        backdrop.classList.add("show");
+
+        sidebar.setAttribute("aria-hidden", "false");
+
+        backdrop.setAttribute("aria-hidden", "false");
+
+        menuButton.setAttribute("aria-expanded", "true");
+
+        document.body.style.overflow = "hidden";
+    }
+
+
+    /* =========================================
+       MENÜYÜ KAPAT
+    ========================================== */
+
+    function closeSidebar() {
+
+        sidebar.classList.remove("open");
+
+        backdrop.classList.remove("show");
+
+        sidebar.setAttribute("aria-hidden", "true");
+
+        backdrop.setAttribute("aria-hidden", "true");
+
+        menuButton.setAttribute("aria-expanded", "false");
+
+        document.body.style.overflow = "";
+    }
+
+
+    /* =========================================
+       HAMBURGER
+    ========================================== */
+
+    menuButton.addEventListener("click", function (event) {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        if (sidebar.classList.contains("open")) {
+
+            closeSidebar();
+
+        } else {
+
+            openSidebar();
+
+        }
+
+    });
+
+
+    /* =========================================
+       ÇARPI
+    ========================================== */
+
+    closeSidebarButton.addEventListener("click", function (event) {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        closeSidebar();
+
+    });
+
+
+    /* =========================================
+       BACKDROP
+    ========================================== */
+
+    backdrop.addEventListener("click", function () {
+
+        closeSidebar();
+
+    });
+
+
+    /* =========================================
+       YENİ SOHBET
+    ========================================== */
+
+    newChatButton.addEventListener("click", function () {
+
+        closeSidebar();
+
+        window.location.href = "/";
+
+    });
+
+
+    /* =========================================
+       MENÜ LİNKLERİ
+    ========================================== */
+
+    const menuItems =
+        document.querySelectorAll(".menu-item");
+
+    menuItems.forEach(function (item) {
+
+        item.addEventListener("click", function () {
+
+            closeSidebar();
+
+        });
+
+    });
+
+
+    /* =========================================
+       FOTOĞRAF SEÇİLDİ
+    ========================================== */
+
+    foto.addEventListener("change", function () {
+
+        if (foto.files && foto.files.length > 0) {
+
+            const selectedFile = foto.files[0];
+
+            fileName.textContent =
+                "📷 " + selectedFile.name;
+
+            fileName.classList.add("show");
+
+        } else {
+
+            fileName.textContent = "";
+
+            fileName.classList.remove("show");
+
+        }
+
+    });
+
+
+    /* =========================================
+       FORM GÖNDERİMİ
+    ========================================== */
+
+    chatForm.addEventListener("submit", function (event) {
+
+        const message =
+            document.getElementById("mesaj").value.trim();
+
+        const hasPhoto =
+            foto.files && foto.files.length > 0;
+
+
+        if (!message && !hasPhoto) {
+
+            event.preventDefault();
+
+            document.getElementById("mesaj").focus();
+
+            return;
+
+        }
+
+    });
+
+
+    /* =========================================
+       ESC İLE MENÜ KAPAT
+    ========================================== */
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+
+            closeSidebar();
+
+        }
+
+    });
+
+
+});
+
+</script>
+
+
+</body>
+
+</html>
