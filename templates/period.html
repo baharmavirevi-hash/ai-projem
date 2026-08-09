@@ -1,150 +1,440 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
 
-{% block title %}Regl Takvimi{% endblock %}
+<html lang="tr">
 
+<head>
+    <meta charset="UTF-8">
 
-{% block content %}
+```
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<div class="app">
+<title>Regl Takibi • MaviGPT</title>
 
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
-<main class="chat">
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
+    body {
+        background: #f5f9fc;
+        color: #17212b;
+    }
 
+    .page {
+        min-height: 100vh;
+        padding-bottom: 35px;
+    }
+
+    .header {
+        height: 66px;
+        background: #fff;
+        border-bottom: 1px solid #dfe8ee;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 0 13px;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    .back {
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 13px;
+        background: #eef8fb;
+        color: #087c9f;
+        font-size: 23px;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #ffe3f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .header-title {
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .header-subtitle {
+        font-size: 11px;
+        color: #84919a;
+        margin-top: 3px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 850px;
+        margin: auto;
+        padding: 22px 13px;
+    }
+
+    .hero {
+        background: linear-gradient(135deg, #fff0f7, #ffffff);
+        border: 1px solid #f3dce8;
+        border-radius: 22px;
+        padding: 22px;
+        margin-bottom: 16px;
+    }
+
+    .hero-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 19px;
+        background: #ffe0ed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 31px;
+        margin-bottom: 14px;
+    }
+
+    .hero h1 {
+        margin: 0 0 7px;
+        font-size: 24px;
+    }
+
+    .hero p {
+        margin: 0;
+        color: #75838c;
+        line-height: 1.55;
+        font-size: 14px;
+    }
+
+    .card {
+        background: #fff;
+        border: 1px solid #dfe8ee;
+        border-radius: 20px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.035);
+    }
+
+    .card-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+
+    .field {
+        margin-bottom: 14px;
+    }
+
+    .field:last-child {
+        margin-bottom: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 12px;
+        color: #687780;
+        margin-bottom: 7px;
+        font-weight: 600;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        border: 1px solid #d5e2e8;
+        border-radius: 13px;
+        padding: 12px;
+        font-size: 15px;
+        outline: none;
+        background: #fbfdfe;
+        color: #17212b;
+    }
+
+    input:focus,
+    textarea:focus {
+        border-color: #e9a9c5;
+        background: #fff;
+    }
+
+    textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .save-button {
+        width: 100%;
+        border: 0;
+        border-radius: 14px;
+        padding: 14px;
+        background: #e56f9e;
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 4px;
+    }
+
+    .save-button:active {
+        transform: scale(0.98);
+    }
+
+    .empty {
+        text-align: center;
+        padding: 24px 10px;
+        color: #8997a1;
+        font-size: 14px;
+    }
+
+    .record {
+        border: 1px solid #edf0f2;
+        border-radius: 15px;
+        padding: 14px;
+        margin-bottom: 10px;
+        background: #fcfdfe;
+    }
+
+    .record:last-child {
+        margin-bottom: 0;
+    }
+
+    .record-date {
+        font-weight: 700;
+        color: #d55d8c;
+        margin-bottom: 7px;
+    }
+
+    .record-line {
+        font-size: 13px;
+        color: #53616a;
+        margin-top: 5px;
+        line-height: 1.5;
+    }
+
+    .record-note {
+        margin-top: 9px;
+        padding: 9px;
+        border-radius: 10px;
+        background: #fff5f9;
+        color: #687780;
+        font-size: 13px;
+    }
+
+    .back-home {
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        color: #087c9f;
+        font-size: 13px;
+        margin-top: 18px;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 17px 10px;
+        }
+
+        .hero {
+            padding: 19px;
+            border-radius: 19px;
+        }
+
+        .hero h1 {
+            font-size: 22px;
+        }
+
+        .card {
+            padding: 16px;
+            border-radius: 18px;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="page">
+
+```
 <header class="header">
 
-<button class="back-btn" onclick="window.location='/doctor'">
-←
-</button>
+    <a href="/" class="back" aria-label="Ana sayfaya dön">
+        ‹
+    </a>
 
+    <div class="logo">
+        🌸
+    </div>
 
-<h2>🌸 Regl Takvimi</h2>
+    <div>
+        <div class="header-title">
+            Regl Takibi
+        </div>
 
-<p>Döngünü takip et</p>
-
+        <div class="header-subtitle">
+            MaviGPT kişisel takip alanı
+        </div>
+    </div>
 
 </header>
 
 
+<main class="container">
+
+    <section class="hero">
+
+        <div class="hero-icon">
+            🌸
+        </div>
+
+        <h1>
+            Regl Takibin
+        </h1>
+
+        <p>
+            Regl başlangıç ve bitiş tarihlerini,
+            notlarını kolayca kaydedebilirsin.
+        </p>
+
+    </section>
 
 
+    <section class="card">
 
-<section class="messages">
+        <div class="card-title">
+            📅 Yeni kayıt
+        </div>
 
+        <form action="/period" method="POST">
 
+            <div class="field">
 
-<div class="ai">
+                <label for="start_date">
+                    Başlangıç tarihi
+                </label>
 
-🌸 Regl takibine hoş geldin.
+                <input
+                    type="date"
+                    id="start_date"
+                    name="start_date"
+                    required>
 
-Başlangıç ve bitiş tarihlerini kaydedebilirsin.
-
-</div>
-
-
-
-
-
-
-<form class="calendar-card" method="POST">
-
-
-<label>
-Başlangıç tarihi
-</label>
-
-<input 
-type="date"
-name="start_date"
-required>
+            </div>
 
 
+            <div class="field">
+
+                <label for="end_date">
+                    Bitiş tarihi
+                </label>
+
+                <input
+                    type="date"
+                    id="end_date"
+                    name="end_date">
+
+            </div>
 
 
-<label>
-Bitiş tarihi
-</label>
+            <div class="field">
 
-<input 
-type="date"
-name="end_date">
+                <label for="note">
+                    Not
+                </label>
 
+                <textarea
+                    id="note"
+                    name="note"
+                    placeholder="Nasıl hissettiğini veya eklemek istediğin bir şeyi yazabilirsin..."></textarea>
 
-
-
-<label>
-Not
-</label>
-
-<input
-type="text"
-name="note"
-placeholder="Örnek: Ağrı, yoğunluk..."
-
->
+            </div>
 
 
+            <button
+                type="submit"
+                class="save-button">
+
+                💾 Kaydı kaydet
+
+            </button>
+
+        </form>
+
+    </section>
 
 
-<button class="save-btn">
+    <section class="card">
 
-💾 Kaydet
+        <div class="card-title">
+            🗂️ Geçmiş kayıtlar
+        </div>
 
-</button>
+        {% if kayitlar %}
 
+            {% for kayit in kayitlar %}
 
-</form>
+                <div class="record">
 
+                    <div class="record-date">
 
+                        🌸
+                        {{ kayit["start_date"] }}
 
+                        {% if kayit["end_date"] %}
+                            → {{ kayit["end_date"] }}
+                        {% endif %}
 
+                    </div>
 
+                    {% if kayit["note"] %}
 
-{% for kayit in kayitlar %}
+                        <div class="record-note">
+                            📝 {{ kayit["note"] }}
+                        </div>
 
+                    {% endif %}
 
-<div class="record-card">
+                </div>
 
+            {% endfor %}
 
-<h3>
-🌸 Regl Kaydı
-</h3>
+        {% else %}
 
+            <div class="empty">
+                Henüz kayıt bulunmuyor. 🌷
+            </div>
 
-<p>
-Başlangıç:
-{{ kayit.start_date }}
-</p>
+        {% endif %}
 
-
-<p>
-Bitiş:
-{{ kayit.end_date }}
-</p>
-
-
-<p>
-Not:
-{{ kayit.note }}
-</p>
-
-
-</div>
-
-
-
-{% endfor %}
+    </section>
 
 
-
-
-</section>
-
+    <a href="/" class="back-home">
+        ← MaviGPT'ye dön
+    </a>
 
 </main>
-
+```
 
 </div>
 
-
-{% endblock %}
+</body>
+</html>
