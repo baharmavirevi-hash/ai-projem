@@ -2,7 +2,6 @@
 <html lang="tr">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -31,26 +30,14 @@
             overflow: hidden;
         }
 
-        button,
-        input {
-            font-family: inherit;
-        }
-
-
-        /* =========================================
-           APP
-        ========================================= */
-
         .app {
             width: 100%;
             height: 100vh;
-            position: relative;
         }
 
-
-        /* =========================================
+        /* =========================
            SIDEBAR
-        ========================================= */
+        ========================= */
 
         .sidebar {
             position: fixed;
@@ -60,7 +47,7 @@
             width: 285px;
             height: 100vh;
 
-            background: #ffffff;
+            background: white;
 
             border-right: 1px solid #dfe8ee;
 
@@ -72,13 +59,12 @@
             display: flex;
             flex-direction: column;
 
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.08);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.08);
         }
 
         .sidebar.open {
             transform: translateX(0);
         }
-
 
         .sidebar-header {
             height: 68px;
@@ -93,13 +79,11 @@
             border-bottom: 1px solid #edf2f5;
         }
 
-
         .sidebar-title {
             font-size: 19px;
             font-weight: 700;
             color: #0782a8;
         }
-
 
         .close-sidebar {
             width: 42px;
@@ -114,20 +98,15 @@
             font-size: 28px;
 
             cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .close-sidebar:active {
-            transform: scale(0.95);
+            transform: scale(.95);
         }
 
-
-        /* =========================================
+        /* =========================
            NEW CHAT
-        ========================================= */
+        ========================= */
 
         .new-chat {
             margin: 15px;
@@ -150,19 +129,13 @@
             text-align: left;
         }
 
-        .new-chat:active {
-            transform: scale(0.98);
-        }
-
-
-        /* =========================================
+        /* =========================
            MENU
-        ========================================= */
+        ========================= */
 
         .menu-section {
             padding: 4px 10px;
         }
-
 
         .menu-title {
             font-size: 11px;
@@ -172,7 +145,6 @@
 
             text-transform: uppercase;
         }
-
 
         .menu-item {
             display: flex;
@@ -193,24 +165,19 @@
             font-size: 14px;
         }
 
-        .menu-item:active,
-        .menu-item:hover {
+        .menu-item:active {
             background: #f0f8fb;
         }
 
-
         .menu-icon {
             width: 28px;
-
             text-align: center;
-
             font-size: 19px;
         }
 
-
-        /* =========================================
+        /* =========================
            HISTORY
-        ========================================= */
+        ========================= */
 
         .history {
             flex: 1;
@@ -220,7 +187,6 @@
             padding: 5px 10px 20px;
         }
 
-
         .history-title {
             font-size: 12px;
 
@@ -228,7 +194,6 @@
 
             padding: 10px;
         }
-
 
         .history-item {
             padding: 10px;
@@ -246,37 +211,28 @@
             text-overflow: ellipsis;
         }
 
-
-        .history-item:hover {
-            background: #f3f8fa;
-        }
-
-
-        /* =========================================
+        /* =========================
            BACKDROP
-        ========================================= */
+        ========================= */
 
         .backdrop {
             position: fixed;
-
             inset: 0;
 
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0,0,0,.25);
 
             z-index: 900;
 
             display: none;
         }
 
-
         .backdrop.show {
             display: block;
         }
 
-
-        /* =========================================
+        /* =========================
            MAIN
-        ========================================= */
+        ========================= */
 
         .main {
             width: 100%;
@@ -286,16 +242,15 @@
             flex-direction: column;
         }
 
-
-        /* =========================================
+        /* =========================
            HEADER
-        ========================================= */
+        ========================= */
 
         .header {
             height: 65px;
             min-height: 65px;
 
-            background: #ffffff;
+            background: white;
 
             border-bottom: 1px solid #dfe8ee;
 
@@ -308,7 +263,6 @@
 
             z-index: 20;
         }
-
 
         .menu-button {
             width: 43px;
@@ -329,16 +283,12 @@
             align-items: center;
             justify-content: center;
 
-            -webkit-tap-highlight-color: transparent;
-
             touch-action: manipulation;
         }
 
-
         .menu-button:active {
-            transform: scale(0.95);
+            transform: scale(.95);
         }
-
 
         .logo {
             width: 42px;
@@ -355,17 +305,14 @@
             font-size: 22px;
         }
 
-
         .header-info {
             min-width: 0;
         }
-
 
         .title {
             font-size: 17px;
             font-weight: 700;
         }
-
 
         .status {
             color: #29a56f;
@@ -375,10 +322,9 @@
             margin-top: 3px;
         }
 
-
-        /* =========================================
+        /* =========================
            CHAT
-        ========================================= */
+        ========================= */
 
         .chat {
             flex: 1;
@@ -390,19 +336,16 @@
             scroll-behavior: smooth;
         }
 
-
         .chat-inner {
             width: 100%;
-
             max-width: 850px;
 
             margin: auto;
         }
 
-
-        /* =========================================
+        /* =========================
            WELCOME
-        ========================================= */
+        ========================= */
 
         .welcome {
             text-align: center;
@@ -411,7 +354,6 @@
 
             max-width: 500px;
         }
-
 
         .welcome-logo {
             width: 75px;
@@ -430,16 +372,13 @@
             font-size: 42px;
 
             box-shadow:
-                0 8px 25px rgba(0, 130, 170, 0.10);
+                0 8px 25px rgba(0,130,170,.10);
         }
-
 
         .welcome h1 {
             margin: 18px 0 8px;
-
             font-size: 25px;
         }
-
 
         .welcome p {
             margin: 0;
@@ -451,10 +390,9 @@
             font-size: 14px;
         }
 
-
-        /* =========================================
+        /* =========================
            MESSAGES
-        ========================================= */
+        ========================= */
 
         .message {
             width: 100%;
@@ -467,7 +405,6 @@
 
             align-items: flex-start;
         }
-
 
         .avatar {
             width: 36px;
@@ -484,23 +421,17 @@
             font-size: 18px;
         }
 
-
         .user-avatar {
             background: #e2eaff;
         }
-
 
         .bot-avatar {
             background: #d9f5ff;
         }
 
-
         .message-content {
             max-width: calc(100% - 45px);
-
-            min-width: 0;
         }
-
 
         .message-name {
             font-size: 11px;
@@ -509,7 +440,6 @@
 
             margin: 0 0 5px 3px;
         }
-
 
         .bubble {
             padding: 12px 15px;
@@ -525,25 +455,22 @@
             white-space: pre-wrap;
         }
 
-
         .user-bubble {
             background: #dcecff;
 
             border-top-left-radius: 5px;
         }
 
-
         .bot-bubble {
-            background: #ffffff;
+            background: white;
 
             border: 1px solid #dfe7eb;
 
             border-top-left-radius: 5px;
 
             box-shadow:
-                0 2px 7px rgba(0, 0, 0, 0.025);
+                0 2px 7px rgba(0,0,0,.025);
         }
-
 
         .photo-preview {
             margin-top: 8px;
@@ -558,15 +485,15 @@
             border: 1px solid #dbe6eb;
         }
 
-
-        /* =========================================
-           INPUT AREA
-        ========================================= */
+        /* =========================
+           INPUT
+        ========================= */
 
         .input-area {
             position: fixed;
 
             bottom: 0;
+
             left: 0;
             right: 0;
 
@@ -576,12 +503,11 @@
                 linear-gradient(
                     to top,
                     #f5f9fc 70%,
-                    rgba(245, 249, 252, 0.85)
+                    rgba(245,249,252,.85)
                 );
 
             z-index: 30;
         }
-
 
         .input-container {
             width: 100%;
@@ -590,7 +516,6 @@
 
             margin: auto;
         }
-
 
         .file-name {
             display: none;
@@ -602,16 +527,14 @@
             padding: 5px 10px;
         }
 
-
         .file-name.show {
             display: block;
         }
 
-
         .input-box {
             min-height: 54px;
 
-            background: #ffffff;
+            background: white;
 
             border: 1px solid #d5e2e8;
 
@@ -624,13 +547,8 @@
             padding: 5px 6px;
 
             box-shadow:
-                0 4px 18px rgba(0, 0, 0, 0.06);
+                0 4px 18px rgba(0,0,0,.06);
         }
-
-
-        /* =========================================
-           PLUS
-        ========================================= */
 
         .plus {
             width: 42px;
@@ -653,22 +571,13 @@
             touch-action: manipulation;
         }
 
-
         .plus:active {
             background: #f1f7fa;
-
-            transform: scale(0.95);
         }
-
 
         #foto {
             display: none;
         }
-
-
-        /* =========================================
-           MESSAGE INPUT
-        ========================================= */
 
         #mesaj {
             flex: 1;
@@ -678,7 +587,6 @@
             height: 42px;
 
             border: 0;
-
             outline: 0;
 
             font-size: 15px;
@@ -690,15 +598,9 @@
             color: #17212b;
         }
 
-
         #mesaj::placeholder {
             color: #9aa7ae;
         }
-
-
-        /* =========================================
-           SEND
-        ========================================= */
 
         .send {
             width: 43px;
@@ -712,7 +614,7 @@
 
             background: #0782a8;
 
-            color: #ffffff;
+            color: white;
 
             font-size: 19px;
 
@@ -721,15 +623,13 @@
             touch-action: manipulation;
         }
 
-
         .send:active {
-            transform: scale(0.95);
+            transform: scale(.95);
         }
 
-
-        /* =========================================
+        /* =========================
            MOBILE
-        ========================================= */
+        ========================= */
 
         @media (max-width: 600px) {
 
@@ -737,42 +637,33 @@
                 width: 285px;
             }
 
-
             .chat {
                 padding: 20px 9px 115px;
             }
-
 
             .welcome {
                 margin-top: 50px;
                 margin-bottom: 35px;
             }
 
-
             .welcome-logo {
                 width: 68px;
                 height: 68px;
-
                 font-size: 38px;
             }
-
 
             .welcome h1 {
                 font-size: 22px;
             }
 
-
             .bubble {
                 font-size: 14px;
-
                 padding: 11px 13px;
             }
-
 
             .message {
                 margin-bottom: 17px;
             }
-
 
             .avatar {
                 width: 34px;
@@ -783,56 +674,47 @@
                 font-size: 16px;
             }
 
-
             .message-content {
                 max-width: calc(100% - 43px);
             }
-
 
             .header {
                 height: 62px;
                 min-height: 62px;
             }
 
-
             .title {
                 font-size: 16px;
             }
-
 
             .input-area {
                 padding: 7px 7px 9px;
             }
 
-
             .input-box {
                 min-height: 52px;
             }
 
-
             #mesaj {
                 font-size: 14px;
             }
-
         }
 
     </style>
-
 </head>
 
 
 <body>
 
-
 <div class="app">
 
-
-    <!-- =========================================
+    <!-- =========================
          SIDEBAR
-    ========================================== -->
+    ========================= -->
 
-    <aside class="sidebar" id="sidebar">
-
+    <aside
+        class="sidebar"
+        id="sidebar">
 
         <div class="sidebar-header">
 
@@ -840,12 +722,10 @@
                 🩵 MaviGPT
             </div>
 
-
             <button
                 class="close-sidebar"
                 type="button"
-                id="closeSidebarButton"
-                aria-label="Menüyü kapat">
+                id="closeSidebarButton">
 
                 ×
 
@@ -853,8 +733,6 @@
 
         </div>
 
-
-        <!-- YENİ SOHBET -->
 
         <button
             class="new-chat"
@@ -866,8 +744,6 @@
         </button>
 
 
-        <!-- MENÜ -->
-
         <div class="menu-section">
 
             <div class="menu-title">
@@ -875,7 +751,9 @@
             </div>
 
 
-            <a href="/" class="menu-item">
+            <a
+                href="/"
+                class="menu-item">
 
                 <span class="menu-icon">
                     💬
@@ -888,7 +766,9 @@
             </a>
 
 
-            <a href="/doctor" class="menu-item">
+            <a
+                href="/doctor"
+                class="menu-item">
 
                 <span class="menu-icon">
                     🩺
@@ -901,7 +781,9 @@
             </a>
 
 
-            <a href="/period" class="menu-item">
+            <a
+                href="/period"
+                class="menu-item">
 
                 <span class="menu-icon">
                     📅
@@ -914,7 +796,9 @@
             </a>
 
 
-            <a href="/diarrhea" class="menu-item">
+            <a
+                href="/diarrhea"
+                class="menu-item">
 
                 <span class="menu-icon">
                     📝
@@ -929,8 +813,6 @@
         </div>
 
 
-        <!-- SOHBET GEÇMİŞİ -->
-
         <div class="history">
 
             <div class="history-title">
@@ -944,9 +826,9 @@
 
                     <div class="history-item">
 
-                        {% if sohbet[1] is defined %}
+                        {% if sohbet["message"] is defined %}
 
-                            {{ sohbet[1] }}
+                            {{ sohbet["message"] }}
 
                         {% else %}
 
@@ -968,11 +850,12 @@
 
         </div>
 
-
     </aside>
 
 
-    <!-- BACKDROP -->
+    <!-- =========================
+         BACKDROP
+    ========================= -->
 
     <div
         class="backdrop"
@@ -980,17 +863,13 @@
     </div>
 
 
-    <!-- =========================================
+    <!-- =========================
          MAIN
-    ========================================== -->
+    ========================= -->
 
     <main class="main">
 
-
-        <!-- HEADER -->
-
         <header class="header">
-
 
             <button
                 class="menu-button"
@@ -1020,21 +899,18 @@
 
             </div>
 
-
         </header>
 
 
-        <!-- =========================================
+        <!-- =========================
              CHAT
-        ========================================== -->
+        ========================= -->
 
-        <section class="chat" id="chat">
-
+        <section
+            class="chat"
+            id="chat">
 
             <div class="chat-inner">
-
-
-                <!-- HOŞ GELDİN -->
 
                 {% if not mesaj and not cevap %}
 
@@ -1044,11 +920,9 @@
                             🩵
                         </div>
 
-
                         <h1>
                             Merhaba Bahar! 👋
                         </h1>
-
 
                         <p>
                             Ben MaviGPT.
@@ -1061,33 +935,23 @@
                 {% endif %}
 
 
-                <!-- KULLANICI MESAJI -->
-
                 {% if mesaj %}
 
                     <div class="message">
-
 
                         <div class="avatar user-avatar">
                             👤
                         </div>
 
-
                         <div class="message-content">
-
 
                             <div class="message-name">
                                 Sen
                             </div>
 
-
-                            {% if mesaj %}
-
-                                <div class="bubble user-bubble">
-                                    {{ mesaj }}
-                                </div>
-
-                            {% endif %}
+                            <div class="bubble user-bubble">
+                                {{ mesaj }}
+                            </div>
 
 
                             {% if foto_url %}
@@ -1099,37 +963,115 @@
 
                             {% endif %}
 
-
                         </div>
 
                     </div>
 
-                {% elif foto_url %}
+                {% endif %}
+
+
+                {% if cevap %}
 
                     <div class="message">
 
-
-                        <div class="avatar user-avatar">
-                            👤
+                        <div class="avatar bot-avatar">
+                            🩵
                         </div>
-
 
                         <div class="message-content">
 
-
                             <div class="message-name">
-                                Sen
+                                MaviGPT
                             </div>
 
-
-                            <img
-                                src="{{ foto_url }}"
-                                class="photo-preview"
-                                alt="Gönderilen fotoğraf">
-
+                            <div class="bubble bot-bubble">
+                                {{ cevap }}
+                            </div>
 
                         </div>
 
                     </div>
 
-   
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             INPUT
+        ========================= -->
+
+        <div class="input-area">
+
+            <div class="input-container">
+
+                <div
+                    class="file-name"
+                    id="fileName">
+                </div>
+
+
+                <form
+                    class="input-box"
+                    method="POST"
+                    action="/"
+                    enctype="multipart/form-data">
+
+
+                    <label
+                        class="plus"
+                        for="foto"
+                        aria-label="Fotoğraf seç">
+
+                        ＋
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="foto"
+                        name="photo"
+                        accept="image/*">
+
+
+                    <input
+                        type="text"
+                        id="mesaj"
+                        name="mesaj"
+                        placeholder="Mesajını yaz..."
+                        autocomplete="off">
+
+
+                    <button
+                        class="send"
+                        type="submit"
+                        aria-label="Gönder">
+
+                        ➤
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =====================================================
+       MAVIGPT HAMBURGER MENÜ
+    ===================================================== */
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const sidebar =
+            document.getE
