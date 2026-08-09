@@ -1,7 +1,9 @@
 import sqlite3
+import os
 
 
-DB_NAME = "chat.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_NAME = os.path.join(BASE_DIR, "chat.db")
 
 
 def get_db():
@@ -11,8 +13,13 @@ def get_db():
 
 
 def init_db():
+
     conn = get_db()
     cursor = conn.cursor()
+
+    # =========================
+    # SOHBETLER
+    # =========================
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
@@ -25,6 +32,10 @@ def init_db():
         )
     """)
 
+    # =========================
+    # SAĞLIK
+    # =========================
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS health_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +45,10 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # =========================
+    # REGL
+    # =========================
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS period_records (
@@ -45,6 +60,10 @@ def init_db():
         )
     """)
 
+    # =========================
+    # SİNDİRİM
+    # =========================
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS diarrhea_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,6 +74,10 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # =========================
+    # İLAÇ
+    # =========================
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicines (
@@ -70,20 +93,31 @@ def init_db():
     conn.close()
 
 
+# ============================================================
+# SOHBET
+# ============================================================
+
 def save_chat(chat_type, message, reply):
+
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO messages (chat_type, message, reply)
+        INSERT INTO messages
+        (chat_type, message, reply)
         VALUES (?, ?, ?)
-    """, (chat_type, message, reply))
+    """, (
+        chat_type,
+        message,
+        reply
+    ))
 
     conn.commit()
     conn.close()
 
 
-def get_chats(chat_type):
+def get_chats(chat_type="normal"):
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -92,6 +126,7 @@ def get_chats(chat_type):
         FROM messages
         WHERE chat_type = ?
         ORDER BY id DESC
+        LIMIT 50
     """, (chat_type,))
 
     data = cursor.fetchall()
@@ -101,7 +136,12 @@ def get_chats(chat_type):
     return data
 
 
+# ============================================================
+# SAĞLIK
+# ============================================================
+
 def save_health_record(symptom, medicine, note):
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -109,13 +149,18 @@ def save_health_record(symptom, medicine, note):
         INSERT INTO health_records
         (symptom, medicine, note)
         VALUES (?, ?, ?)
-    """, (symptom, medicine, note))
+    """, (
+        symptom,
+        medicine,
+        note
+    ))
 
     conn.commit()
     conn.close()
 
 
 def get_health_records():
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -132,7 +177,12 @@ def get_health_records():
     return data
 
 
+# ============================================================
+# REGL
+# ============================================================
+
 def save_period_record(start_date, end_date, note):
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -140,13 +190,18 @@ def save_period_record(start_date, end_date, note):
         INSERT INTO period_records
         (start_date, end_date, note)
         VALUES (?, ?, ?)
-    """, (start_date, end_date, note))
+    """, (
+        start_date,
+        end_date,
+        note
+    ))
 
     conn.commit()
     conn.close()
 
 
 def get_period_records():
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -163,9 +218,11 @@ def get_period_records():
     return data
 
 
+# ============================================================
+# SİNDİRİM
+# ============================================================
+
 def save_diarrhea_record(date, count, condition, note):
-    conn = get_db()
-    cursor = conn.cursor()
 
     conn = get_db()
     cursor = conn.cursor()
@@ -174,13 +231,19 @@ def save_diarrhea_record(date, count, condition, note):
         INSERT INTO diarrhea_records
         (date, count, condition, note)
         VALUES (?, ?, ?, ?)
-    """, (date, count, condition, note))
+    """, (
+        date,
+        count,
+        condition,
+        note
+    ))
 
     conn.commit()
     conn.close()
 
 
 def get_diarrhea_records():
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -197,7 +260,12 @@ def get_diarrhea_records():
     return data
 
 
+# ============================================================
+# İLAÇ
+# ============================================================
+
 def save_medicine(name, dose, hour, start_date):
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -205,13 +273,19 @@ def save_medicine(name, dose, hour, start_date):
         INSERT INTO medicines
         (name, dose, hour, start_date)
         VALUES (?, ?, ?, ?)
-    """, (name, dose, hour, start_date))
+    """, (
+        name,
+        dose,
+        hour,
+        start_date
+    ))
 
     conn.commit()
     conn.close()
 
 
 def get_medicines():
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -226,5 +300,3 @@ def get_medicines():
     conn.close()
 
     return data
-
-    
