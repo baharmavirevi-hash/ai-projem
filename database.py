@@ -1,10 +1,4 @@
 import sqlite3
-import os
-
-
-# ============================================================
-# DATABASE
-# ============================================================
 
 DB_NAME = "chat.db"
 
@@ -57,7 +51,7 @@ def init_db():
     """)
 
     # --------------------------------------------------------
-    # REGL KAYITLARI
+    # REGL
     # --------------------------------------------------------
 
     cursor.execute("""
@@ -71,7 +65,7 @@ def init_db():
     """)
 
     # --------------------------------------------------------
-    # SİNDİRİM KAYITLARI
+    # SİNDİRİM
     # --------------------------------------------------------
 
     cursor.execute("""
@@ -152,7 +146,7 @@ def get_chats(chat_type="normal"):
 # TEK SOHBET GETİR
 # ============================================================
 
-def get_chat_by_id(chat_id):
+def get_chat(chat_id):
 
     conn = get_db()
 
@@ -170,13 +164,12 @@ def get_chat_by_id(chat_id):
     return row
 
 
-# ============================================================
-# ROUTES.PY İÇİN GET_CHAT
-# ============================================================
+# Eski isim de çalışmaya devam etsin
+# Böylece başka bir dosyada get_chat_by_id kullanılıyorsa
+# o da bozulmaz.
 
-def get_chat(chat_id):
-
-    return get_chat_by_id(chat_id)
+def get_chat_by_id(chat_id):
+    return get_chat(chat_id)
 
 
 # ============================================================
