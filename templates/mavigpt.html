@@ -730,16 +730,15 @@
                 🩵 MaviGPT
             </div>
 
-            <button
-                class="close-sidebar"
-                type="button"
-                id="closeSidebarButton"
-                aria-label="Menüyü kapat">
-
-                ×
-
-            </button>
-
+    <button
+          class="menu-button"
+          type="button"
+          id="menuButton"
+        aria-label="Menüyü aç">
+        ☰  
+    </button>
+            
+            
         </div>
 
         <button
@@ -1027,3 +1026,53 @@
 
 
         <!-- 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("backdrop");
+    const menuButton = document.getElementById("menuButton");
+    const closeButton = document.getElementById("closeSidebarButton");
+    const newChatButton = document.getElementById("newChatButton");
+
+    function openMenu() {
+        sidebar.classList.add("open");
+        backdrop.classList.add("show");
+    }
+
+    function closeMenu() {
+        sidebar.classList.remove("open");
+        backdrop.classList.remove("show");
+    }
+
+    menuButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        openMenu();
+    });
+
+    closeButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        closeMenu();
+    });
+
+    backdrop.addEventListener("click", function () {
+        closeMenu();
+    });
+
+    newChatButton.addEventListener("click", function () {
+        closeMenu();
+        window.location.href = "/";
+    });
+
+    document.querySelectorAll(".menu-item").forEach(function (item) {
+        item.addEventListener("click", function () {
+            closeMenu();
+        });
+    });
+
+});
+</script>
+
+</body>
+    </html>
+    
