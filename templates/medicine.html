@@ -9,6 +9,11 @@
         padding: 0;
     }
 
+    html,
+    body {
+        min-height: 100%;
+    }
+
     body {
         font-family:
             -apple-system,
@@ -18,11 +23,12 @@
             Arial,
             sans-serif;
 
-        background: linear-gradient(
-            180deg,
-            #eaf8ff 0%,
-            #ffffff 100%
-        );
+        background:
+            linear-gradient(
+                180deg,
+                #eaf8ff 0%,
+                #ffffff 100%
+            );
 
         color: #23404d;
         min-height: 100vh;
@@ -49,10 +55,12 @@
         font-size: 27px;
 
         box-shadow:
-            0 8px 25px rgba(30,90,120,.15);
+            0 8px 25px rgba(30, 90, 120, .15);
 
         z-index: 9999;
         cursor: pointer;
+
+        -webkit-tap-highlight-color: transparent;
     }
 
     #menuButton:active {
@@ -67,15 +75,21 @@
         position: fixed;
         inset: 0;
 
-        background: rgba(0,0,0,.35);
+        background: rgba(0, 0, 0, .35);
 
-        display: none;
+        opacity: 0;
+        visibility: hidden;
+
+        transition:
+            opacity .25s ease,
+            visibility .25s ease;
 
         z-index: 5000;
     }
 
     #overlay.open {
-        display: block;
+        opacity: 1;
+        visibility: visible;
     }
 
     /* =========================
@@ -91,16 +105,17 @@
         max-width: 85vw;
         height: 100vh;
 
-        background: white;
+        background: rgba(255, 255, 255, .98);
 
         padding: 20px 15px;
 
-        transform: translateX(-100%);
+        transform: translateX(-105%);
 
-        transition: transform .25s ease;
+        transition:
+            transform .28s ease;
 
         box-shadow:
-            8px 0 30px rgba(0,0,0,.15);
+            8px 0 30px rgba(0, 0, 0, .15);
 
         z-index: 9000;
 
@@ -157,9 +172,12 @@
 
         font-size: 15px;
         font-weight: 700;
+
+        transition: background .2s ease;
     }
 
-    .menu-item:hover {
+    .menu-item:hover,
+    .menu-item:active {
         background: #edf9fd;
     }
 
@@ -242,7 +260,7 @@
         margin-bottom: 15px;
 
         box-shadow:
-            0 10px 30px rgba(30,90,120,.08);
+            0 10px 30px rgba(30, 90, 120, .08);
     }
 
     .notification-title {
@@ -286,7 +304,7 @@
     #notificationButton {
         width: 100%;
 
-        height: 48px;
+        min-height: 48px;
 
         border: none;
 
@@ -301,6 +319,8 @@
         font-weight: 800;
 
         cursor: pointer;
+
+        -webkit-tap-highlight-color: transparent;
     }
 
     #notificationButton:active {
@@ -329,7 +349,7 @@
         padding: 17px;
 
         box-shadow:
-            0 15px 45px rgba(30,90,120,.10);
+            0 15px 45px rgba(30, 90, 120, .10);
 
         margin-bottom: 25px;
     }
@@ -383,7 +403,7 @@
         border-color: #6bbbd5;
 
         box-shadow:
-            0 0 0 4px rgba(107,187,213,.10);
+            0 0 0 4px rgba(107, 187, 213, .10);
     }
 
     .save-button {
@@ -440,7 +460,7 @@
         margin-bottom: 10px;
 
         box-shadow:
-            0 7px 22px rgba(30,90,120,.07);
+            0 7px 22px rgba(30, 90, 120, .07);
     }
 
     .medicine-top {
@@ -529,10 +549,32 @@
     }
 
     /* =========================
+       ALARM DURUMU
+    ========================= */
+
+    .alarm-note {
+        margin-top: 12px;
+
+        padding: 11px;
+
+        border-radius: 13px;
+
+        background: #f4fbfd;
+
+        color: #6d858e;
+
+        font-size: 12px;
+
+        line-height: 1.5;
+
+        text-align: center;
+    }
+
+    /* =========================
        MOBİL
     ========================= */
 
-    @media (max-width:600px) {
+    @media (max-width: 600px) {
 
         .page {
             padding: 82px 11px 30px;
@@ -544,28 +586,46 @@
 
         .medicine-top {
             align-items: flex-start;
-
             flex-direction: column;
         }
 
         .medicine-time {
             margin-top: 3px;
         }
+
+        .notification-card,
+        .add-card,
+        .medicine-card {
+            border-radius: 20px;
+        }
     }
 </style>
 
-</head><body><!-- OVERLAY -->
+</head><body><!-- =========================
+     OVERLAY
+========================= -->
+
 <div id="overlay"></div>
 
-<!-- MENÜ -->
+
+<!-- =========================
+     MENÜ BUTONU
+========================= -->
+
 <button
     id="menuButton"
     type="button"
     aria-label="Menüyü aç">
+
     ☰
+
 </button>
 
-<!-- SIDEBAR -->
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
 <aside id="sidebar">
 
     <div class="sidebar-top">
@@ -576,45 +636,112 @@
 
         <button
             id="closeButton"
-            type="button">
+            type="button"
+            aria-label="Menüyü kapat">
+
             ×
+
         </button>
 
     </div>
 
-    <a href="/doctor" class="menu-item">
-        <span class="menu-icon">🩺</span>
-        <span>Cebimdeki Doktor</span>
+
+    <a
+        href="/doctor"
+        class="menu-item">
+
+        <span class="menu-icon">
+            🩺
+        </span>
+
+        <span>
+            Cebimdeki Doktor
+        </span>
+
     </a>
 
-    <a href="/period" class="menu-item">
-        <span class="menu-icon">📅</span>
-        <span>Regl Takibi</span>
+
+    <a
+        href="/period"
+        class="menu-item">
+
+        <span class="menu-icon">
+            📅
+        </span>
+
+        <span>
+            Regl Takibi
+        </span>
+
     </a>
 
-    <a href="/diarrhea" class="menu-item">
-        <span class="menu-icon">📝</span>
-        <span>Sindirim Takibi</span>
+
+    <a
+        href="/diarrhea"
+        class="menu-item">
+
+        <span class="menu-icon">
+            📝
+        </span>
+
+        <span>
+            Sindirim Takibi
+        </span>
+
     </a>
 
-    <a href="/medicine" class="menu-item active">
-        <span class="menu-icon">💊</span>
-        <span>İlaçlarım</span>
+
+    <a
+        href="/medicine"
+        class="menu-item active">
+
+        <span class="menu-icon">
+            💊
+        </span>
+
+        <span>
+            İlaçlarım
+        </span>
+
     </a>
 
-    <a href="/settings" class="menu-item">
-        <span class="menu-icon">⚙️</span>
-        <span>Ayarlar</span>
+
+    <a
+        href="/settings"
+        class="menu-item">
+
+        <span class="menu-icon">
+            ⚙️
+        </span>
+
+        <span>
+            Ayarlar
+        </span>
+
     </a>
 
-    <a href="/" class="menu-item">
-        <span class="menu-icon">🤖</span>
-        <span>MaviGPT</span>
+
+    <a
+        href="/"
+        class="menu-item">
+
+        <span class="menu-icon">
+            🤖
+        </span>
+
+        <span>
+            MaviGPT
+        </span>
+
     </a>
 
 </aside>
 
-<!-- SAYFA -->
+
+<!-- =========================
+     ANA SAYFA
+========================= -->
+
 <main class="page">
 
     <section class="hero">
@@ -633,7 +760,11 @@
 
     </section>
 
-    <!-- BİLDİRİMLER -->
+
+    <!-- =========================
+         BİLDİRİMLER
+    ========================= -->
+
     <section class="notification-card">
 
         <div class="notification-title">
@@ -652,91 +783,122 @@
         <button
             id="notificationButton"
             type="button">
+
             🔔 Bildirimleri Aç
+
         </button>
+
+        <div class="alarm-note">
+            💡 Bildirim izni açık olduğunda bu sayfa
+            açıkken ilaç saatlerini kontrol edip
+            hatırlatma gösterebilir.
+        </div>
 
     </section>
 
-    <!-- YENİ İLAÇ -->
+
+    <!-- =========================
+         YENİ İLAÇ
+    ========================= -->
+
     <section class="add-card">
 
         <div class="card-title">
             ➕ Yeni İlaç Ekle
         </div>
 
+
         <form
             method="POST"
-            action="/medicine">
+            action="/medicine"
+            id="medicineForm">
+
 
             <div class="field">
 
-                <label>
+                <label for="medicineName">
                     İlaç adı
                 </label>
 
                 <input
+                    id="medicineName"
                     type="text"
                     name="name"
                     placeholder="Örn. Vitamin"
+                    autocomplete="off"
                     required>
 
             </div>
 
+
             <div class="field">
 
-                <label>
+                <label for="medicineDose">
                     Doz
                 </label>
 
                 <input
+                    id="medicineDose"
                     type="text"
                     name="dose"
-                    placeholder="Örn. 1 tablet">
+                    placeholder="Örn. 1 tablet"
+                    autocomplete="off">
 
             </div>
 
+
             <div class="field">
 
-                <label>
+                <label for="medicineHour">
                     ⏰ Kullanım saati
                 </label>
 
                 <input
+                    id="medicineHour"
                     type="time"
                     name="hour"
-                    id="medicineHour"
                     required>
 
             </div>
 
+
             <div class="field">
 
-                <label>
+                <label for="medicineDate">
                     Başlangıç tarihi
                 </label>
 
                 <input
+                    id="medicineDate"
                     type="date"
                     name="start_date">
 
             </div>
 
+
             <button
                 class="save-button"
                 type="submit">
+
                 💊 İlacı Kaydet
+
             </button>
 
         </form>
 
     </section>
 
-    <!-- KAYITLI İLAÇLAR -->
+
+    <!-- =========================
+         KAYITLI İLAÇLAR
+    ========================= -->
+
     <section>
 
         <div class="section-title">
             💊 Kayıtlı İlaçlar
         </div>
+
 
         <div id="medicineList">
 
@@ -744,9 +906,10 @@
 
             <div
                 class="medicine-card"
+                data-id="{{ ilac['id'] }}"
                 data-hour="{{ ilac['hour'] }}"
                 data-name="{{ ilac['name'] }}"
-                data-dose="{{ ilac['dose'] }}">
+                data-dose="{{ ilac['dose'] or '' }}">
 
                 <div class="medicine-top">
 
@@ -760,20 +923,28 @@
 
                 </div>
 
+
                 <div class="medicine-info">
 
                     {% if ilac["dose"] %}
+
                         💊 Doz:
                         {{ ilac["dose"] }}
+
                         <br>
+
                     {% endif %}
 
+
                     {% if ilac["start_date"] %}
+
                         📅 Başlangıç:
                         {{ ilac["start_date"] }}
+
                     {% endif %}
 
                 </div>
+
 
                 <form
                     method="POST"
@@ -792,6 +963,7 @@
 
             </div>
 
+
             {% else %}
 
             <div class="empty">
@@ -800,7 +972,8 @@
 
                 <br><br>
 
-                Yukarıdaki formdan ilk ilacını ekleyebilirsin.
+                Yukarıdaki formdan ilk ilacını
+                ekleyebilirsin.
 
             </div>
 
@@ -811,6 +984,7 @@
     </section>
 
 </main>
+
 
 <script>
 
@@ -834,6 +1008,7 @@
     function openMenu() {
 
         sidebar.classList.add("open");
+
         overlay.classList.add("open");
 
     }
@@ -842,6 +1017,7 @@
     function closeMenu() {
 
         sidebar.classList.remove("open");
+
         overlay.classList.remove("open");
 
     }
@@ -865,8 +1041,34 @@
     );
 
 
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                closeMenu();
+
+            }
+
+        }
+    );
+
+
+    document.querySelectorAll(
+        ".menu-item"
+    ).forEach(function(item) {
+
+        item.addEventListener(
+            "click",
+            closeMenu
+        );
+
+    });
+
+
     /* =====================================================
-       BİLDİRİM
+       BİLDİRİM SİSTEMİ
     ===================================================== */
 
     const notificationButton =
@@ -880,17 +1082,27 @@
         );
 
 
-    function setStatus(
-        text,
+    function setNotificationStatus(
+        message,
         enabled = false
     ) {
 
-        notificationStatus.innerText =
-            text;
+        notificationStatus.textContent =
+            message;
+
+
+        notificationButton.classList.remove(
+            "enabled"
+        );
+
+        notificationButton.classList.remove(
+            "disabled"
+        );
+
 
         if (enabled) {
 
-            notificationButton.innerText =
+            notificationButton.textContent =
                 "✅ Bildirimler Açık";
 
             notificationButton.classList.add(
@@ -899,12 +1111,8 @@
 
         } else {
 
-            notificationButton.innerText =
+            notificationButton.textContent =
                 "🔔 Bildirimleri Aç";
-
-            notificationButton.classList.remove(
-                "enabled"
-            );
 
         }
 
@@ -913,14 +1121,10 @@
 
     function checkNotificationStatus() {
 
-        /*
-         * Android / tarayıcı Notification API
-         */
-
         if (!("Notification" in window)) {
 
-            setStatus(
-                "📱 Bu tarayıcı doğrudan bildirim desteği vermiyor."
+            setNotificationStatus(
+                "📱 Bu tarayıcı web bildirimlerini desteklemiyor."
             );
 
             notificationButton.classList.add(
@@ -938,8 +1142,8 @@
 
         if (permission === "granted") {
 
-            setStatus(
-                "✅ Bildirim izni açık. İlaç saatlerinde bildirim gönderebiliriz.",
+            setNotificationStatus(
+                "✅ Bildirim izni açık. İlaç hatırlatmaları kullanılabilir.",
                 true
             );
 
@@ -950,8 +1154,8 @@
 
         if (permission === "denied") {
 
-            setStatus(
-                "⚠️ Bildirim izni engellenmiş. Tarayıcı ayarlarından bu site için bildirimleri açman gerekiyor."
+            setNotificationStatus(
+                "⚠️ Bildirimler engellenmiş. Chrome ayarlarından bu site için bildirimleri açmalısın."
             );
 
             return;
@@ -959,7 +1163,7 @@
         }
 
 
-        setStatus(
+        setNotificationStatus(
             "🔔 Bildirim izni henüz verilmedi."
         );
 
@@ -970,178 +1174,23 @@
 
         if (!("Notification" in window)) {
 
-            alert(
-                "Bu tarayıcı web bildirimlerini desteklemiyor."
+            setNotificationStatus(
+                "📱 Bu tarayıcı bildirimleri desteklemiyor."
             );
 
             return;
 
         }
 
-
-        /*
-         * Zaten açıksa
-         */
 
         if (
             Notification.permission ===
             "granted"
         ) {
 
-            checkNotificationStatus();
-
-            return;
-
-        }
-
-
-        /*
-         * Daha önce engellendiyse
-         */
-
-        if (
-            Notification.permission ===
-            "denied"
-        ) {
-
-            setStatus(
-                "⚠️ Bildirimler engellenmiş. Android tarayıcı ayarlarından bu siteye bildirim izni vermelisin."
+            setNotificationStatus(
+                "✅ Bildirimler zaten açık.",
+                true
             );
 
-            return;
-
-        }
-
-
-        try {
-
-            notificationStatus.innerText =
-                "🔔 Bildirim izni isteniyor...";
-
-
-            const permission =
-                await Notification.requestPermission();
-
-
-            if (
-                permission ===
-                "granted"
-            ) {
-
-                setStatus(
-                    "✅ Bildirimler Açık!",
-                    true
-                );
-
-
-                /*
-                 * Test bildirimi
-                 */
-
-                try {
-
-                    new Notification(
-                        "💊 Cebimdeki Doktor",
-                        {
-                            body:
-                                "Bildirimler başarıyla açıldı!"
-                        }
-                    );
-
-                } catch (error) {
-
-                    console.log(
-                        "Test bildirimi oluşturulamadı:",
-                        error
-                    );
-
-                }
-
-            }
-
-            else if (
-                permission ===
-                "denied"
-            ) {
-
-                setStatus(
-                    "❌ Bildirim izni reddedildi. Android tarayıcı ayarlarından site bildirimlerini açmalısın."
-                );
-
-            }
-
-            else {
-
-                setStatus(
-                    "ℹ️ Bildirim izni verilmedi."
-                );
-
-            }
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Bildirim hatası:",
-                error
-            );
-
-            setStatus(
-                "❌ Bildirim izni istenirken bir hata oluştu."
-            );
-
-        }
-
-    }
-
-
-    notificationButton.addEventListener(
-        "click",
-        enableNotifications
-    );
-
-
-    /*
-     * Sayfa açılır açılmaz kontrol
-     */
-
-    checkNotificationStatus();
-
-
-    /* =====================================================
-       İLAÇ ALARMI
-    ===================================================== */
-
-    let notifiedMedicines = {};
-
-
-    function checkMedicineTimes() {
-
-        if (
-            !("Notification" in window)
-        ) {
-            return;
-        }
-
-
-        if (
-            Notification.permission !==
-            "granted"
-        ) {
-            return;
-        }
-
-
-        const now = new Date();
-
-
-        const currentHour =
-            String(
-                now.getHours()
-            ).padStart(2, "0");
-
-
-        const currentMinute =
-            String(
-            
+            s
