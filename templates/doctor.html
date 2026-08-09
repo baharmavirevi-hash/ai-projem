@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Cebimdeki Doktor</title>
 
     <style>
@@ -13,24 +13,16 @@
             padding: 0;
         }
 
-        html,
         body {
-            min-height: 100%;
-            width: 100%;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                Roboto, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(180deg, #eaf8ff, #ffffff);
-            color: #203b4a;
+            color: #23404d;
+            min-height: 100vh;
         }
 
-        /* =========================
-           MENÜ BUTONU
-        ========================= */
+        /* MENU BUTTON */
 
-        .menu-button {
+        #menuButton {
             position: fixed;
             top: 15px;
             left: 15px;
@@ -38,696 +30,438 @@
             width: 52px;
             height: 52px;
 
-            border: 0;
+            border: none;
             border-radius: 16px;
 
-            background: #ffffff;
-            color: #287b98;
+            background: white;
 
             font-size: 27px;
+            color: #287b98;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 8px 25px rgba(30,90,120,.15);
 
-            box-shadow: 0 8px 25px rgba(30, 100, 130, 0.16);
-
-            cursor: pointer;
-            z-index: 3000;
-
-            -webkit-tap-highlight-color: transparent;
+            z-index: 9999;
         }
 
-        .menu-button:active {
-            transform: scale(.94);
-        }
+        /* OVERLAY */
 
-        /* =========================
-           KARARTMA
-        ========================= */
-
-        .overlay {
+        #overlay {
             position: fixed;
             inset: 0;
 
-            background: rgba(15, 40, 55, .42);
+            background: rgba(0,0,0,.35);
 
-            opacity: 0;
-            visibility: hidden;
+            display: none;
 
-            transition: .25s ease;
-
-            z-index: 2000;
+            z-index: 5000;
         }
 
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
+        #overlay.open {
+            display: block;
         }
 
-        /* =========================
-           SIDEBAR
-        ========================= */
+        /* SIDEBAR */
 
-        .sidebar {
+        #sidebar {
             position: fixed;
 
             top: 0;
             left: 0;
 
             width: 290px;
-            max-width: 84vw;
+            max-width: 85vw;
             height: 100vh;
 
-            background: #ffffff;
+            background: white;
 
-            padding: 22px 15px;
+            padding: 20px 15px;
 
-            transform: translateX(-110%);
-            transition: transform .28s ease;
+            transform: translateX(-100%);
 
-            box-shadow: 8px 0 35px rgba(20, 70, 95, .18);
+            transition: transform .25s ease;
 
-            z-index: 2500;
+            box-shadow: 8px 0 30px rgba(0,0,0,.15);
 
-            overflow-y: auto;
+            z-index: 9000;
         }
 
-        .sidebar.active {
+        #sidebar.open {
             transform: translateX(0);
         }
 
-        .sidebar-header {
+        .sidebar-top {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
 
-            padding: 4px 5px 22px;
-        }
-
-        .sidebar-brand {
-            color: #28758e;
-            font-size: 18px;
-            font-weight: 800;
-        }
-
-        .close-button {
-            width: 40px;
-            height: 40px;
-
-            border: 0;
-            border-radius: 13px;
-
-            background: #edf8fc;
-            color: #28758e;
-
-            font-size: 25px;
-
-            cursor: pointer;
+            margin-bottom: 25px;
         }
 
         .sidebar-title {
-            margin: 5px 10px 10px;
-
-            color: #99aab3;
-
-            font-size: 11px;
-            font-weight: 800;
-
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-size: 18px;
+            font-weight: bold;
+            color: #287b98;
         }
 
-        .menu-link {
+        #closeButton {
+            width: 40px;
+            height: 40px;
+
+            border: none;
+            border-radius: 13px;
+
+            background: #edf8fc;
+
+            color: #287b98;
+
+            font-size: 25px;
+        }
+
+        .menu-item {
             display: flex;
             align-items: center;
 
             gap: 13px;
 
-            min-height: 54px;
+            width: 100%;
 
-            padding: 13px 14px;
-            margin-bottom: 7px;
+            padding: 15px;
+
+            margin-bottom: 8px;
 
             border-radius: 16px;
 
             text-decoration: none;
 
-            color: #385664;
+            color: #345562;
 
             font-size: 15px;
-            font-weight: 700;
-
-            transition: .15s;
+            font-weight: bold;
         }
 
-        .menu-link:hover {
-            background: #eef9fd;
+        .menu-item:hover {
+            background: #edf9fd;
         }
 
-        .menu-link:active {
-            transform: scale(.98);
-        }
-
-        .menu-link.active {
-            background: #ddf3fa;
+        .menu-item.active {
+            background: #dff4fa;
             color: #287b98;
         }
 
         .menu-icon {
-            width: 31px;
-
+            width: 30px;
             text-align: center;
-
             font-size: 22px;
         }
 
-        /* =========================
-           SAYFA
-        ========================= */
+        /* PAGE */
 
         .page {
             width: 100%;
-            max-width: 820px;
+            max-width: 800px;
 
             margin: auto;
 
-            padding: 88px 15px 40px;
+            padding: 90px 15px 40px;
         }
 
-        /* =========================
-           BAŞLIK
-        ========================= */
+        /* HERO */
 
         .hero {
             text-align: center;
-            margin-bottom: 23px;
+            margin-bottom: 25px;
         }
 
         .doctor-icon {
-            width: 72px;
-            height: 72px;
+            width: 75px;
+            height: 75px;
 
-            margin: auto;
-            margin-bottom: 12px;
+            margin: auto auto 12px;
 
-            border-radius: 23px;
+            border-radius: 24px;
 
-            background: #e0f5fb;
+            background: #def4fa;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            font-size: 37px;
-
-            box-shadow: 0 10px 28px rgba(40, 120, 150, .12);
+            font-size: 40px;
         }
 
-        .hero h1 {
-            color: #20566c;
-
-            font-size: clamp(31px, 8vw, 46px);
-
-            font-weight: 850;
-
-            letter-spacing: -1.4px;
+        h1 {
+            font-size: 38px;
+            color: #20596f;
         }
 
-        .hero p {
+        .subtitle {
             margin-top: 8px;
-
-            color: #748b96;
-
+            color: #728994;
             font-size: 14px;
-            line-height: 1.5;
         }
 
-        /* =========================
-           ANA KART
-        ========================= */
+        /* CARD */
 
-        .doctor-card {
-            background: #ffffff;
+        .card {
+            background: white;
 
-            border: 1px solid #e2f0f5;
-
-            border-radius: 27px;
+            border-radius: 25px;
 
             padding: 16px;
 
-            box-shadow: 0 15px 45px rgba(35, 95, 120, .10);
+            box-shadow: 0 15px 45px rgba(30,90,120,.10);
+
+            border: 1px solid #e3f0f5;
         }
 
         .welcome {
-            display: flex;
-            align-items: center;
-
-            gap: 12px;
-
-            padding: 15px;
-
-            border-radius: 19px;
-
             background: #eaf8fc;
+
+            padding: 16px;
+
+            border-radius: 18px;
 
             margin-bottom: 14px;
         }
 
-        .welcome-icon {
-            width: 48px;
-            height: 48px;
-
-            flex-shrink: 0;
-
-            border-radius: 15px;
-
-            background: #ffffff;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 25px;
-        }
-
-        .welcome strong {
-            display: block;
-
-            color: #255e72;
-
+        .welcome-title {
+            font-weight: bold;
+            color: #285f72;
             font-size: 16px;
-            margin-bottom: 3px;
         }
 
-        .welcome span {
+        .welcome-text {
+            margin-top: 5px;
             color: #718893;
-
             font-size: 13px;
         }
-
-        /* =========================
-           CEVAP
-        ========================= */
 
         .answer {
             background: #f7fcfe;
 
             border: 1px solid #e4f1f5;
 
-            border-radius: 19px;
+            border-radius: 18px;
 
             padding: 16px;
 
+            line-height: 1.6;
+
+            color: #49636e;
+
             margin-bottom: 14px;
-
-            color: #38525f;
-
-            font-size: 15px;
-            line-height: 1.65;
-
-            white-space: pre-wrap;
         }
 
         .answer-title {
-            display: block;
-
-            color: #287891;
-
-            font-size: 14px;
-            font-weight: 800;
-
+            color: #287b98;
+            font-weight: bold;
             margin-bottom: 7px;
         }
 
-        /* =========================
-           FORM
-        ========================= */
+        /* FORM */
 
-        .message-form {
+        form {
             display: flex;
-            align-items: center;
             gap: 7px;
         }
 
-        .message-input {
+        input {
             flex: 1;
+
             min-width: 0;
 
-            height: 51px;
+            height: 52px;
 
             border: 1.5px solid #dcecf2;
+
             border-radius: 17px;
 
-            background: #ffffff;
-
             padding: 0 15px;
-
-            color: #294653;
 
             font-size: 15px;
 
             outline: none;
         }
 
-        .message-input:focus {
-            border-color: #73bad2;
-            box-shadow: 0 0 0 4px rgba(115, 186, 210, .12);
+        input:focus {
+            border-color: #6bbbd5;
         }
 
-        .send-button {
-            width: 51px;
-            height: 51px;
+        .send {
+            width: 52px;
+            height: 52px;
 
-            flex-shrink: 0;
-
-            border: 0;
+            border: none;
             border-radius: 17px;
 
-            background: linear-gradient(135deg, #57b7d6, #287d9c);
+            background: #4faeca;
 
             color: white;
 
-            font-size: 21px;
-
-            cursor: pointer;
+            font-size: 22px;
         }
 
-        .send-button:active {
-            transform: scale(.94);
-        }
+        /* QUICK */
 
-        /* =========================
-           HIZLI ERİŞİM
-        ========================= */
-
-        .section-title {
-            margin: 25px 3px 11px;
-
-            color: #456572;
+        .quick-title {
+            margin: 25px 3px 12px;
 
             font-size: 18px;
-            font-weight: 800;
+            font-weight: bold;
+
+            color: #426371;
         }
 
-        .quick-grid {
+        .quick {
             display: grid;
 
             grid-template-columns: repeat(3, 1fr);
 
-            gap: 9px;
+            gap: 8px;
         }
 
-        .quick-card {
+        .quick a {
             min-height: 105px;
 
-            border-radius: 19px;
+            background: white;
 
-            background: #ffffff;
+            border-radius: 18px;
 
             border: 1px solid #e4f1f5;
-
-            text-decoration: none;
 
             display: flex;
 
             flex-direction: column;
 
             align-items: center;
+
             justify-content: center;
 
-            text-align: center;
+            text-decoration: none;
 
-            box-shadow: 0 7px 22px rgba(40, 100, 125, .06);
-        }
+            color: #315d6d;
 
-        .quick-card:active {
-            transform: scale(.96);
+            box-shadow: 0 7px 20px rgba(30,90,120,.06);
         }
 
         .quick-icon {
-            font-size: 29px;
+            font-size: 28px;
             margin-bottom: 7px;
         }
 
         .quick-name {
-            color: #315d6d;
-
             font-size: 12px;
-            font-weight: 800;
+            font-weight: bold;
         }
 
-        /* =========================
-           KAYITLAR
-        ========================= */
+        /* MOBILE */
 
-        .records {
-            margin-top: 25px;
-        }
-
-        .record {
-            background: #ffffff;
-
-            border: 1px solid #e4f1f5;
-
-            border-radius: 18px;
-
-            padding: 14px 15px;
-
-            margin-bottom: 9px;
-
-            color: #506b78;
-
-            font-size: 13px;
-            line-height: 1.7;
-
-            box-shadow: 0 6px 20px rgba(40, 100, 125, .05);
-        }
-
-        .record strong {
-            color: #28758c;
-        }
-
-        /* =========================
-           MOBİL
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            .menu-button {
-                top: 13px;
-                left: 13px;
-
-                width: 49px;
-                height: 49px;
-            }
+        @media (max-width:600px) {
 
             .page {
-                padding: 80px 11px 30px;
+                padding: 82px 11px 30px;
             }
 
-            .hero h1 {
+            h1 {
                 font-size: 31px;
             }
 
-            .hero p {
-                padding: 0 15px;
-                font-size: 13px;
+            .quick {
+                gap: 6px;
             }
 
-            .doctor-card {
-                padding: 13px;
-                border-radius: 23px;
-            }
-
-            .welcome {
-                padding: 13px;
-            }
-
-            .message-input {
-                height: 48px;
-                font-size: 14px;
-            }
-
-            .send-button {
-                width: 48px;
-                height: 48px;
-            }
-
-            .quick-grid {
-                gap: 7px;
-            }
-
-            .quick-card {
-                min-height: 94px;
-            }
-
-            .quick-icon {
-                font-size: 25px;
+            .quick a {
+                min-height: 95px;
             }
 
             .quick-name {
-                font-size: 10.5px;
+                font-size: 10px;
             }
         }
     </style>
 </head>
 
-
 <body>
 
-    <!-- KARARTMA -->
-    <div
-        class="overlay"
-        id="overlay">
-    </div>
+    <div id="overlay"></div>
 
-
-    <!-- HAMBURGER -->
-    <button
-        class="menu-button"
-        id="menuButton"
-        type="button">
-
+    <button id="menuButton">
         ☰
-
     </button>
 
 
-    <!-- SIDEBAR -->
-    <aside
-        class="sidebar"
-        id="sidebar">
+    <aside id="sidebar">
 
+        <div class="sidebar-top">
 
-        <div class="sidebar-header">
-
-            <div class="sidebar-brand">
+            <div class="sidebar-title">
                 🩺 Cebimdeki Doktor
             </div>
 
-            <button
-                class="close-button"
-                id="closeButton"
-                type="button">
-
+            <button id="closeButton">
                 ×
-
             </button>
 
         </div>
 
 
-        <div class="sidebar-title">
-            Sağlık
-        </div>
+        <a href="/doctor" class="menu-item active">
 
+            <span class="menu-icon">🩺</span>
 
-        <a
-            href="/doctor"
-            class="menu-link active">
-
-            <span class="menu-icon">
-                🩺
-            </span>
-
-            <span>
-                Cebimdeki Doktor
-            </span>
+            <span>Cebimdeki Doktor</span>
 
         </a>
 
 
-        <a
-            href="/period"
-            class="menu-link">
+        <a href="/period" class="menu-item">
 
-            <span class="menu-icon">
-                📅
-            </span>
+            <span class="menu-icon">📅</span>
 
-            <span>
-                Regl Takibi
-            </span>
+            <span>Regl Takibi</span>
 
         </a>
 
 
-        <a
-            href="/diarrhea"
-            class="menu-link">
+        <a href="/diarrhea" class="menu-item">
 
-            <span class="menu-icon">
-                📝
-            </span>
+            <span class="menu-icon">📝</span>
 
-            <span>
-                Sindirim Takibi
-            </span>
+            <span>Sindirim Takibi</span>
 
         </a>
 
 
-        <a
-            href="/medicine"
-            class="menu-link">
+        <a href="/medicine" class="menu-item">
 
-            <span class="menu-icon">
-                💊
-            </span>
+            <span class="menu-icon">💊</span>
 
-            <span>
-                İlaçlarım
-            </span>
+            <span>İlaçlarım</span>
 
         </a>
 
 
-        <div
-            class="sidebar-title"
-            style="margin-top:20px;">
+        <a href="/settings" class="menu-item">
 
-            Diğer
+            <span class="menu-icon">⚙️</span>
 
-        </div>
-
-
-        <a
-            href="/settings"
-            class="menu-link">
-
-            <span class="menu-icon">
-                ⚙️
-            </span>
-
-            <span>
-                Ayarlar
-            </span>
+            <span>Ayarlar</span>
 
         </a>
 
 
-        <a
-            href="/"
-            class="menu-link">
+        <a href="/" class="menu-item">
 
-            <span class="menu-icon">
-                🤖
-            </span>
+            <span class="menu-icon">🤖</span>
 
-            <span>
-                MaviGPT
-            </span>
+            <span>MaviGPT</span>
 
         </a>
 
     </aside>
 
 
-    <!-- ANA SAYFA -->
-
     <main class="page">
-
 
         <section class="hero">
 
@@ -739,32 +473,23 @@
                 Cebimdeki Doktor
             </h1>
 
-            <p>
+            <div class="subtitle">
                 Sağlığını takip et, merak ettiklerini sor.
-            </p>
+            </div>
 
         </section>
 
 
-        <section class="doctor-card">
-
+        <section class="card">
 
             <div class="welcome">
 
-                <div class="welcome-icon">
-                    🩺
+                <div class="welcome-title">
+                    👋 Merhaba Bahar!
                 </div>
 
-                <div>
-
-                    <strong>
-                        Merhaba Bahar! 👋
-                    </strong>
-
-                    <span>
-                        Bugün sana nasıl yardımcı olabilirim?
-                    </span>
-
+                <div class="welcome-text">
+                    Bugün sana nasıl yardımcı olabilirim?
                 </div>
 
             </div>
@@ -772,55 +497,45 @@
 
             <div class="answer">
 
-                <span class="answer-title">
+                <div class="answer-title">
                     🩺 Cebimdeki Doktor
-                </span>
+                </div>
 
-                {{ cevap|default("Merhaba! Belirtilerini veya merak ettiğin sağlık konusunu aşağıya yazabilirsin.") }}
+                Merhaba! Belirtilerini veya merak ettiğin
+                sağlık konusunu aşağıya yazabilirsin.
 
             </div>
 
 
-            <form
-                class="message-form"
-                method="POST"
-                action="/doctor">
-
+            <form method="POST" action="/doctor">
 
                 <input
-                    class="message-input"
                     type="text"
                     name="mesaj"
                     placeholder="Belirtilerini veya sorunu yaz..."
                     autocomplete="off">
 
-
                 <button
-                    class="send-button"
+                    class="send"
                     type="submit">
 
                     ➤
 
                 </button>
 
-
             </form>
-
 
         </section>
 
 
-        <div class="section-title">
+        <div class="quick-title">
             ✨ Hızlı Erişim
         </div>
 
 
-        <section class="quick-grid">
+        <section class="quick">
 
-
-            <a
-                href="/medicine"
-                class="quick-card">
+            <a href="/medicine">
 
                 <div class="quick-icon">
                     💊
@@ -833,9 +548,7 @@
             </a>
 
 
-            <a
-                href="/period"
-                class="quick-card">
+            <a href="/period">
 
                 <div class="quick-icon">
                     📅
@@ -848,9 +561,7 @@
             </a>
 
 
-            <a
-                href="/diarrhea"
-                class="quick-card">
+            <a href="/diarrhea">
 
                 <div class="quick-icon">
                     📝
@@ -862,162 +573,53 @@
 
             </a>
 
-
         </section>
-
-
-        <section class="records">
-
-            <div class="section-title">
-                📋 Sağlık Kayıtların
-            </div>
-
-
-            {% for kayit in kayitlar|default([]) %}
-
-                <div class="record">
-
-                    {% if kayit["symptom"] %}
-                        <strong>Belirti:</strong>
-                        {{ kayit["symptom"] }}
-                        <br>
-                    {% endif %}
-
-                    {% if kayit["medicine"] %}
-                        <strong>İlaç:</strong>
-                        {{ kayit["medicine"] }}
-                        <br>
-                    {% endif %}
-
-                    {% if kayit["note"] %}
-                        <strong>Not:</strong>
-                        {{ kayit["note"] }}
-                    {% endif %}
-
-                </div>
-
-            {% endfor %}
-
-        </section>
-
 
     </main>
 
 
     <script>
 
-        document.addEventListener("DOMContentLoaded", function () {
+        const menuButton =
+            document.getElementById("menuButton");
 
-            const menuButton =
-                document.getElementById("menuButton");
+        const closeButton =
+            document.getElementById("closeButton");
 
-            const closeButton =
-                document.getElementById("closeButton");
+        const sidebar =
+            document.getElementById("sidebar");
 
-            const sidebar =
-                document.getElementById("sidebar");
-
-            const overlay =
-                document.getElementById("overlay");
+        const overlay =
+            document.getElementById("overlay");
 
 
-            function openMenu() {
+        menuButton.onclick = function () {
 
-                sidebar.classList.add("active");
+            sidebar.classList.add("open");
 
-                overlay.classList.add("active");
+            overlay.classList.add("open");
 
-                document.body.style.overflow = "hidden";
-
-            }
+        };
 
 
-            function closeMenu() {
+        closeButton.onclick = function () {
 
-                sidebar.classList.remove("active");
+            sidebar.classList.remove("open");
 
-                overlay.classList.remove("active");
+            overlay.classList.remove("open");
 
-                document.body.style.overflow = "";
-
-            }
+        };
 
 
-            menuButton.addEventListener(
-                "click",
-                function () {
+        overlay.onclick = function () {
 
-                    if (
-                        sidebar.classList.contains("active")
-                    ) {
+            sidebar.classList.remove("open");
 
-                        closeMenu();
+            overlay.classList.remove("open");
 
-                    } else {
-
-                        openMenu();
-
-                    }
-
-                }
-            );
-
-
-            closeButton.addEventListener(
-                "click",
-                function () {
-
-                    closeMenu();
-
-                }
-            );
-
-
-            overlay.addEventListener(
-                "click",
-                function () {
-
-                    closeMenu();
-
-                }
-            );
-
-
-            document.addEventListener(
-                "keydown",
-                function (event) {
-
-                    if (event.key === "Escape") {
-
-                        closeMenu();
-
-                    }
-
-                }
-            );
-
-
-            const links =
-                document.querySelectorAll(".menu-link");
-
-
-            links.forEach(function (link) {
-
-                link.addEventListener(
-                    "click",
-                    function () {
-
-                        closeMenu();
-
-                    }
-                );
-
-            });
-
-        });
+        };
 
     </script>
 
 </body>
-
 </html>
