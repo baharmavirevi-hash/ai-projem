@@ -19,10 +19,10 @@
 
         html,
         body {
-            margin: 0;
-            padding: 0;
             width: 100%;
             height: 100%;
+            margin: 0;
+            padding: 0;
             font-family: Arial, Helvetica, sans-serif;
         }
 
@@ -32,13 +32,21 @@
             overflow: hidden;
         }
 
+
+        /* =====================================================
+           ANA UYGULAMA
+        ===================================================== */
+
         .app {
             width: 100%;
             height: 100vh;
             position: relative;
         }
 
-        /* ================= SIDEBAR ================= */
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
 
         .sidebar {
             position: fixed;
@@ -49,20 +57,20 @@
             max-width: 82vw;
             height: 100vh;
 
-            background: white;
+            background: #ffffff;
 
             border-right: 1px solid #dfe8ee;
 
             z-index: 2000;
 
-            transform: translateX(-105%);
+            transform: translateX(-110%);
 
-            transition: transform .28s ease;
+            transition: transform 0.28s ease;
 
             display: flex;
             flex-direction: column;
 
-            box-shadow: 8px 0 30px rgba(0,0,0,.12);
+            box-shadow: 8px 0 30px rgba(0, 0, 0, 0.12);
 
             overflow: hidden;
         }
@@ -71,7 +79,10 @@
             transform: translateX(0);
         }
 
-        /* ================= SIDEBAR HEADER ================= */
+
+        /* =====================================================
+           SIDEBAR HEADER
+        ===================================================== */
 
         .sidebar-header {
             height: 68px;
@@ -111,7 +122,14 @@
             justify-content: center;
         }
 
-        /* ================= NEW CHAT ================= */
+        .close-sidebar:active {
+            transform: scale(0.94);
+        }
+
+
+        /* =====================================================
+           YENİ SOHBET
+        ===================================================== */
 
         .new-chat {
             margin: 15px;
@@ -135,7 +153,14 @@
             cursor: pointer;
         }
 
-        /* ================= MENU ================= */
+        .new-chat:active {
+            transform: scale(0.98);
+        }
+
+
+        /* =====================================================
+           MENÜ
+        ===================================================== */
 
         .menu-section {
             padding: 2px 10px;
@@ -177,6 +202,10 @@
             cursor: pointer;
         }
 
+        .menu-item:hover {
+            background: #f2f9fc;
+        }
+
         .menu-item:active {
             background: #e5f4f8;
         }
@@ -190,7 +219,10 @@
             font-size: 19px;
         }
 
-        /* ================= HISTORY ================= */
+
+        /* =====================================================
+           SOHBET GEÇMİŞİ
+        ===================================================== */
 
         .history {
             flex: 1;
@@ -234,8 +266,9 @@
             text-overflow: ellipsis;
         }
 
-        .history-item:active {
+        .history-item:hover {
             background: #eef8fb;
+            color: #087c9f;
         }
 
         .history-empty {
@@ -246,14 +279,17 @@
             font-size: 13px;
         }
 
-        /* ================= BACKDROP ================= */
+
+        /* =====================================================
+           KARARTMA
+        ===================================================== */
 
         .backdrop {
             position: fixed;
 
             inset: 0;
 
-            background: rgba(0,0,0,.30);
+            background: rgba(0, 0, 0, 0.30);
 
             z-index: 1500;
 
@@ -262,8 +298,8 @@
             visibility: hidden;
 
             transition:
-                opacity .25s ease,
-                visibility .25s ease;
+                opacity 0.25s ease,
+                visibility 0.25s ease;
         }
 
         .backdrop.show {
@@ -271,7 +307,10 @@
             visibility: visible;
         }
 
-        /* ================= MAIN ================= */
+
+        /* =====================================================
+           ANA ALAN
+        ===================================================== */
 
         .main {
             width: 100%;
@@ -281,7 +320,10 @@
             flex-direction: column;
         }
 
-        /* ================= HEADER ================= */
+
+        /* =====================================================
+           ÜST BAR
+        ===================================================== */
 
         .header {
             width: 100%;
@@ -289,7 +331,7 @@
             height: 65px;
             min-height: 65px;
 
-            background: white;
+            background: #ffffff;
 
             border-bottom: 1px solid #dfe8ee;
 
@@ -306,7 +348,10 @@
             z-index: 100;
         }
 
-        /* ================= HAMBURGER ================= */
+
+        /* =====================================================
+           HAMBURGER
+        ===================================================== */
 
         .menu-button {
             width: 45px;
@@ -333,17 +378,18 @@
             align-items: center;
 
             justify-content: center;
-
-            position: relative;
-
-            z-index: 3000;
         }
 
         .menu-button:active {
-            transform: scale(.93);
+            transform: scale(0.93);
+
+            background: #dff1f6;
         }
 
-        /* ================= LOGO ================= */
+
+        /* =====================================================
+           LOGO
+        ===================================================== */
 
         .logo {
             width: 43px;
@@ -379,7 +425,10 @@
             margin-top: 3px;
         }
 
-        /* ================= CHAT ================= */
+
+        /* =====================================================
+           CHAT
+        ===================================================== */
 
         .chat {
             flex: 1;
@@ -399,7 +448,10 @@
             margin: auto;
         }
 
-        /* ================= WELCOME ================= */
+
+        /* =====================================================
+           HOŞ GELDİN
+        ===================================================== */
 
         .welcome {
             text-align: center;
@@ -422,7 +474,6 @@
             background: #d9f5ff;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
 
@@ -445,7 +496,10 @@
             font-size: 14px;
         }
 
-        /* ================= MESSAGE ================= */
+
+        /* =====================================================
+           MESAJ
+        ===================================================== */
 
         .message {
             width: 100%;
@@ -470,6 +524,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 18px;
@@ -485,6 +540,7 @@
 
         .message-content {
             max-width: calc(100% - 45px);
+
             min-width: 0;
         }
 
@@ -517,21 +573,25 @@
         }
 
         .bot-bubble {
-            background: white;
+            background: #ffffff;
 
             border: 1px solid #dfe7eb;
 
             border-top-left-radius: 5px;
 
-            box-shadow: 0 2px 7px rgba(0,0,0,.025);
+            box-shadow: 0 2px 7px rgba(0, 0, 0, 0.025);
         }
 
-        /* ================= PHOTO ================= */
+
+        /* =====================================================
+           FOTOĞRAF
+        ===================================================== */
 
         .photo-preview {
             margin-top: 8px;
 
             max-width: 260px;
+
             max-height: 300px;
 
             border-radius: 14px;
@@ -541,7 +601,10 @@
             border: 1px solid #dbe6eb;
         }
 
-        /* ================= INPUT ================= */
+
+        /* =====================================================
+           YAZMA ALANI
+        ===================================================== */
 
         .input-area {
             position: fixed;
@@ -556,7 +619,7 @@
                 linear-gradient(
                     to top,
                     #f4f9fc 70%,
-                    rgba(244,249,252,.85)
+                    rgba(244, 249, 252, 0.85)
                 );
 
             z-index: 120;
@@ -587,7 +650,7 @@
         .input-box {
             min-height: 54px;
 
-            background: white;
+            background: #ffffff;
 
             border: 1px solid #d5e2e8;
 
@@ -599,7 +662,7 @@
 
             padding: 5px 6px;
 
-            box-shadow: 0 4px 18px rgba(0,0,0,.06);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
         }
 
         .plus {
@@ -611,6 +674,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 27px;
@@ -620,6 +684,10 @@
             cursor: pointer;
 
             border-radius: 12px;
+        }
+
+        .plus:active {
+            background: #f1f7fa;
         }
 
         #foto {
@@ -662,16 +730,23 @@
 
             background: #0782a8;
 
-            color: white;
+            color: #ffffff;
 
             font-size: 19px;
 
             cursor: pointer;
         }
 
-        /* ================= MOBILE ================= */
+        .send:active {
+            transform: scale(0.94);
+        }
 
-        @media (max-width:600px) {
+
+        /* =====================================================
+           MOBİL
+        ===================================================== */
+
+        @media (max-width: 600px) {
 
             .sidebar {
                 width: 285px;
@@ -686,12 +761,14 @@
             .menu-button {
                 width: 44px;
                 min-width: 44px;
+
                 height: 44px;
             }
 
             .logo {
                 width: 42px;
                 min-width: 42px;
+
                 height: 42px;
             }
 
@@ -700,4 +777,326 @@
             }
 
             .chat {
-               
+                padding: 20px 9px 115px;
+            }
+
+            .welcome {
+                margin-top: 50px;
+            }
+
+            .welcome-logo {
+                width: 68px;
+                height: 68px;
+
+                font-size: 38px;
+            }
+
+            .welcome h1 {
+                font-size: 22px;
+            }
+
+            .bubble {
+                font-size: 14px;
+
+                padding: 11px 13px;
+            }
+
+            .avatar {
+                width: 34px;
+                min-width: 34px;
+
+                height: 34px;
+
+                font-size: 16px;
+            }
+
+            .message-content {
+                max-width: calc(100% - 43px);
+            }
+
+            .input-area {
+                padding: 7px 7px 9px;
+            }
+
+            .input-box {
+                min-height: 52px;
+            }
+
+            #mesaj {
+                font-size: 14px;
+            }
+
+            .photo-preview {
+                max-width: 220px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar">
+
+
+        <div class="sidebar-header">
+
+            <div class="sidebar-title">
+                🩵 MaviGPT
+            </div>
+
+
+            <button
+                type="button"
+                class="close-sidebar"
+                id="closeSidebarButton"
+                aria-label="Menüyü kapat">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="new-chat"
+            id="newChatButton">
+
+            ＋ Yeni sohbet
+
+        </button>
+
+
+        <div class="menu-section">
+
+
+            <div class="menu-title">
+                MAVİGPT
+            </div>
+
+
+            <a
+                href="/"
+                class="menu-item">
+
+                <span class="menu-icon">
+                    💬
+                </span>
+
+                <span>
+                    Yeni sohbet
+                </span>
+
+            </a>
+
+
+            <a
+                href="/doctor"
+                class="menu-item">
+
+                <span class="menu-icon">
+                    🩺
+                </span>
+
+                <span>
+                    Cebimdeki Doktor
+                </span>
+
+            </a>
+
+
+            <a
+                href="/period"
+                class="menu-item">
+
+                <span class="menu-icon">
+                    📅
+                </span>
+
+                <span>
+                    Regl Takibi
+                </span>
+
+            </a>
+
+
+            <a
+                href="/diarrhea"
+                class="menu-item">
+
+                <span class="menu-icon">
+                    📝
+                </span>
+
+                <span>
+                    Sindirim Takibi
+                </span>
+
+            </a>
+
+
+            <a
+                href="/medicine"
+                class="menu-item">
+
+                <span class="menu-icon">
+                    💊
+                </span>
+
+                <span>
+                    İlaçlarım
+                </span>
+
+            </a>
+
+
+            <a
+                href="/settings"
+                class="menu-item">
+
+                <span class="menu-icon">
+                    ⚙️
+                </span>
+
+                <span>
+                    Ayarlar
+                </span>
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             SOHBET GEÇMİŞİ
+        ================================================== -->
+
+        <div class="history">
+
+
+            <div class="history-title">
+                Son sohbetler
+            </div>
+
+
+            {% if sohbetler %}
+
+
+                {% for sohbet in sohbetler %}
+
+
+                    <a
+                        class="history-item"
+                        href="/chat/{{ sohbet[0] }}">
+
+                        💬 {{ sohbet[2] }}
+
+                    </a>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <div class="history-empty">
+
+                    Henüz sohbet yok.
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+         KARARTMA
+    ====================================================== -->
+
+    <div
+        class="backdrop"
+        id="backdrop">
+    </div>
+
+
+    <!-- =====================================================
+         ANA ALAN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="header">
+
+
+            <button
+                type="button"
+                class="menu-button"
+                id="menuButton"
+                aria-label="Menüyü aç">
+
+                ☰
+
+            </button>
+
+
+            <div class="logo">
+
+                🩵
+
+            </div>
+
+
+            <div class="header-info">
+
+
+                <div class="title">
+
+                    MaviGPT
+
+                </div>
+
+
+                <div class="status">
+
+                    ● Çevrimiçi
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+        <!-- =================================================
+             CHAT
+        ==============================================
