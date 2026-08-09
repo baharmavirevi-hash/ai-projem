@@ -209,6 +209,8 @@ Sana genel sağlık bilgileri ve öneriler sunabilirim.
 
 
  <script>
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const sidebar = document.getElementById("sidebar");
@@ -217,73 +219,143 @@ document.addEventListener("DOMContentLoaded", function () {
     const backdrop = document.getElementById("backdrop");
     const newChatButton = document.getElementById("newChatButton");
 
-    /* MENÜ AÇ / KAPAT */
+    /* =========================
+       MENÜYÜ AÇ
+    ========================= */
 
-    menuButton.onclick = function () {
+    function openSidebar() {
 
-        sidebar.classList.toggle("open");
-        backdrop.classList.toggle("show");
+        sidebar.classList.add("open");
+        backdrop.classList.add("show");
 
-    };
-
-
-    /* X BUTONU */
-
-    closeButton.onclick = function () {
-
-        sidebar.classList.remove("open");
-        backdrop.classList.remove("show");
-
-    };
+        document.body.style.overflow = "hidden";
+    }
 
 
-    /* DIŞARIYA BASINCA KAPAT */
+    /* =========================
+       MENÜYÜ KAPAT
+    ========================= */
 
-    backdrop.onclick = function () {
+    function closeSidebar() {
 
         sidebar.classList.remove("open");
         backdrop.classList.remove("show");
 
-    };
+        document.body.style.overflow = "";
+    }
 
 
-    /* YENİ SOHBET */
+    /* =========================
+       ☰ HAMBURGER BUTONU
+    ========================= */
 
-    newChatButton.onclick = function () {
+    if (menuButton) {
 
-        window.location.href = "/";
+        menuButton.addEventListener("click", function (event) {
 
-    };
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (sidebar.classList.contains("open")) {
+
+                closeSidebar();
+
+            } else {
+
+                openSidebar();
+
+            }
+
+        });
+
+    }
 
 
-    /* MENÜDEN BİR YERE GİDİNCE KAPAT */
+    /* =========================
+       × KAPAT BUTONU
+    ========================= */
 
-    document.querySelectorAll(".menu-item").forEach(function (item) {
+    if (closeButton) {
 
-        item.onclick = function () {
+        closeButton.addEventListener("click", function (event) {
 
-            sidebar.classList.remove("open");
-            backdrop.classList.remove("show");
+            event.preventDefault();
+            event.stopPropagation();
 
-        };
+            closeSidebar();
+
+        });
+
+    }
+
+
+    /* =========================
+       ARKA PLANA BASINCA KAPAT
+    ========================= */
+
+    if (backdrop) {
+
+        backdrop.addEventListener("click", function () {
+
+            closeSidebar();
+
+        });
+
+    }
+
+
+    /* =========================
+       YENİ SOHBET
+    ========================= */
+
+    if (newChatButton) {
+
+        newChatButton.addEventListener("click", function () {
+
+            closeSidebar();
+
+            window.location.href = "/";
+
+        });
+
+    }
+
+
+    /* =========================
+       MENÜ LİNKLERİ
+    ========================= */
+
+    const menuItems =
+        document.querySelectorAll(".menu-item");
+
+    menuItems.forEach(function (item) {
+
+        item.addEventListener("click", function () {
+
+            closeSidebar();
+
+        });
 
     });
 
 
-    /* ESC */
+    /* =========================
+       ESC İLE KAPAT
+    ========================= */
 
     document.addEventListener("keydown", function (event) {
 
         if (event.key === "Escape") {
 
-            sidebar.classList.remove("open");
-            backdrop.classList.remove("show");
+            closeSidebar();
 
         }
 
     });
 
 });
+
+
 </script>
 
 
