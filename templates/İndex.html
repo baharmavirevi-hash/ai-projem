@@ -207,25 +207,60 @@ Sana genel sağlık bilgileri ve öneriler sunabilirim.
 
 </div>
 
-
-
-
 <script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const sidebar = document.getElementById("sidebar");
+    const menuButton = document.getElementById("menuButton");
+    const closeButton = document.getElementById("closeSidebarButton");
+    const backdrop = document.getElementById("backdrop");
+    const newChatButton = document.getElementById("newChatButton");
 
-function menuAc(){
+    function openSidebar() {
+        sidebar.classList.add("open");
+        backdrop.classList.add("show");
+        document.body.style.overflow = "hidden";
+    }
 
-document.getElementById("side-menu")
-.classList.toggle("active");
+    function closeSidebar() {
+        sidebar.classList.remove("open");
+        backdrop.classList.remove("show");
+        document.body.style.overflow = "";
+    }
 
+    menuButton.addEventListener("click", function () {
+        openSidebar();
+    });
 
-document.getElementById("overlay")
-.classList.toggle("active");
+    closeButton.addEventListener("click", function () {
+        closeSidebar();
+    });
 
-}
+    backdrop.addEventListener("click", function () {
+        closeSidebar();
+    });
 
+    newChatButton.addEventListener("click", function () {
+        window.location.href = "/";
+    });
 
+    document.querySelectorAll(".menu-item").forEach(function (item) {
+        item.addEventListener("click", function () {
+            closeSidebar();
+        });
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeSidebar();
+        }
+    });
+
+});
 </script>
+
+
+
 
 
 </body>
