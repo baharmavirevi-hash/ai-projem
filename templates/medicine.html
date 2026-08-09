@@ -2,10 +2,12 @@
 <html lang="tr">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>İlaçlarım | Cebimdeki Doktor</title>
 
@@ -15,6 +17,12 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
         }
 
         body {
@@ -30,16 +38,16 @@
                 linear-gradient(
                     180deg,
                     #eef8ff 0%,
-                    #f8fbff 100%
+                    #f8fcff 100%
                 );
 
             color: #17212b;
-            min-height: 100vh;
         }
 
-        /* =========================================
+
+        /* =====================================================
            HAMBURGER
-        ========================================= */
+        ===================================================== */
 
         .menu-button {
 
@@ -48,35 +56,38 @@
             top: 16px;
             left: 16px;
 
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
 
             border: none;
-            border-radius: 17px;
+            border-radius: 16px;
 
             background: rgba(255,255,255,0.95);
 
-            box-shadow:
-                0 8px 25px rgba(40,90,130,0.15);
+            color: #176f99;
 
-            font-size: 27px;
+            font-size: 26px;
+
+            box-shadow:
+                0 8px 25px rgba(40,90,130,0.14);
 
             cursor: pointer;
 
             z-index: 1001;
 
-            color: #247da8;
-
             -webkit-tap-highlight-color: transparent;
+
+            transition: 0.2s;
         }
 
         .menu-button:active {
             transform: scale(0.94);
         }
 
-        /* =========================================
+
+        /* =====================================================
            OVERLAY
-        ========================================= */
+        ===================================================== */
 
         .overlay {
 
@@ -85,13 +96,15 @@
             inset: 0;
 
             background:
-                rgba(0,0,0,0.35);
+                rgba(0,0,0,0.32);
 
             opacity: 0;
 
             visibility: hidden;
 
-            transition: 0.25s ease;
+            transition:
+                opacity 0.25s ease,
+                visibility 0.25s ease;
 
             z-index: 999;
         }
@@ -103,9 +116,10 @@
             visibility: visible;
         }
 
-        /* =========================================
+
+        /* =====================================================
            SIDEBAR
-        ========================================= */
+        ===================================================== */
 
         .sidebar {
 
@@ -115,6 +129,7 @@
             left: 0;
 
             width: 290px;
+
             height: 100vh;
 
             background:
@@ -134,7 +149,7 @@
             z-index: 1000;
 
             padding:
-                88px 18px 25px;
+                82px 16px 25px;
 
             overflow-y: auto;
         }
@@ -145,11 +160,12 @@
                 translateX(0);
         }
 
+
         .sidebar-title {
 
             font-size: 14px;
 
-            font-weight: 700;
+            font-weight: 800;
 
             color: #8b9aaa;
 
@@ -158,8 +174,9 @@
             letter-spacing: 1px;
 
             margin:
-                0 10px 13px;
+                0 10px 14px;
         }
+
 
         .menu-link {
 
@@ -178,23 +195,26 @@
 
             border-radius: 16px;
 
-            margin-bottom: 8px;
+            margin-bottom: 7px;
 
-            font-size: 16px;
+            font-size: 15px;
 
             font-weight: 600;
 
             transition: 0.2s;
-        }
 
-        .menu-link:active {
-
-            transform: scale(0.98);
+            -webkit-tap-highlight-color:
+                transparent;
         }
 
         .menu-link:hover {
 
             background: #eaf5ff;
+        }
+
+        .menu-link:active {
+
+            transform: scale(0.98);
         }
 
         .menu-link.active {
@@ -204,18 +224,20 @@
             color: #1685d8;
         }
 
-        .menu-icon {
 
-            font-size: 23px;
+        .menu-icon {
 
             width: 30px;
 
             text-align: center;
+
+            font-size: 22px;
         }
 
-        /* =========================================
-           PAGE
-        ========================================= */
+
+        /* =====================================================
+           ANA SAYFA
+        ===================================================== */
 
         .page {
 
@@ -226,12 +248,13 @@
             margin: 0 auto;
 
             padding:
-                92px 18px 40px;
+                92px 18px 45px;
         }
 
-        /* =========================================
+
+        /* =====================================================
            HERO
-        ========================================= */
+        ===================================================== */
 
         .hero {
 
@@ -240,105 +263,190 @@
             margin-bottom: 28px;
         }
 
-        .medicine-icon {
+
+        .hero-icon {
 
             width: 78px;
             height: 78px;
 
-            margin: 0 auto 12px;
+            margin:
+                0 auto 14px;
 
             border-radius: 25px;
 
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             background:
                 linear-gradient(
-                    135deg,
+                    145deg,
                     #dff5ff,
-                    #cceaff
+                    #c9ecff
                 );
 
             font-size: 42px;
 
             box-shadow:
                 0 12px 30px
-                rgba(60,150,210,0.15);
+                rgba(50,150,220,0.13);
         }
+
 
         .hero h1 {
 
             font-size:
-                clamp(32px, 8vw, 48px);
+                clamp(30px, 7vw, 46px);
 
             font-weight: 800;
 
-            letter-spacing: -1.5px;
+            letter-spacing: -1.2px;
 
             color: #152c3d;
         }
+
 
         .hero p {
 
             margin-top: 9px;
 
-            font-size: 16px;
+            color: #637585;
 
-            color: #687b89;
+            font-size: 16px;
 
             line-height: 1.5;
         }
 
-        /* =========================================
-           ADD CARD
-        ========================================= */
 
-        .add-card {
+        /* =====================================================
+           ANA KART
+        ===================================================== */
+
+        .main-card {
 
             background:
                 rgba(255,255,255,0.95);
 
             border:
-                1px solid rgba(150,190,220,0.3);
+                1px solid rgba(150,190,220,0.28);
 
-            border-radius: 26px;
+            border-radius: 27px;
 
             padding: 20px;
 
             box-shadow:
                 0 15px 45px
-                rgba(35,90,130,0.10);
-
-            margin-bottom: 25px;
+                rgba(35,90,130,0.11);
         }
 
-        .card-title {
 
-            font-size: 21px;
+        /* =====================================================
+           MESAJ
+        ===================================================== */
 
-            font-weight: 750;
+        .message {
 
-            color: #1c3445;
+            padding:
+                13px 15px;
 
-            margin-bottom: 16px;
+            border-radius: 16px;
+
+            margin-bottom: 18px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
         }
 
-        /* =========================================
+
+        .message.success {
+
+            background: #eafaf2;
+
+            color: #227d53;
+
+            border:
+                1px solid #c9eedc;
+        }
+
+
+        .message.error {
+
+            background: #fff0f0;
+
+            color: #b23b3b;
+
+            border:
+                1px solid #f3cece;
+        }
+
+
+        /* =====================================================
+           FORM BAŞLIĞI
+        ===================================================== */
+
+        .section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .section-title-icon {
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 13px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #e8f7ff;
+
+            font-size: 22px;
+        }
+
+
+        .section-title h2 {
+
+            font-size: 20px;
+
+            color: #203746;
+        }
+
+
+        .section-title p {
+
+            margin-top: 2px;
+
+            font-size: 12px;
+
+            color: #82919b;
+        }
+
+
+        /* =====================================================
            FORM
-        ========================================= */
+        ===================================================== */
 
-        .form-grid {
+        .medicine-form {
 
-            display: grid;
+            display: flex;
 
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
+            flex-direction: column;
 
             gap: 13px;
         }
+
 
         .field {
 
@@ -346,37 +454,35 @@
 
             flex-direction: column;
 
-            gap: 7px;
+            gap: 6px;
         }
 
-        .field.full {
-
-            grid-column:
-                1 / -1;
-        }
 
         .field label {
 
             font-size: 13px;
 
-            font-weight: 650;
+            font-weight: 700;
 
-            color: #607584;
+            color: #526571;
         }
+
 
         .field input {
 
             width: 100%;
 
-            border:
-                2px solid #e1ebf2;
+            height: 51px;
 
-            background: #ffffff;
+            border:
+                1.5px solid #d9e7ef;
 
             border-radius: 15px;
 
+            background: #fbfdff;
+
             padding:
-                13px 14px;
+                0 14px;
 
             font-size: 15px;
 
@@ -387,32 +493,51 @@
             transition: 0.2s;
         }
 
+
         .field input:focus {
 
-            border-color: #63b6ed;
+            border-color: #62b5e5;
+
+            background: white;
 
             box-shadow:
                 0 0 0 4px
-                rgba(99,182,237,0.12);
+                rgba(98,181,229,0.11);
         }
+
+
+        .form-row {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 12px;
+        }
+
+
+        /* =====================================================
+           EKLE BUTONU
+        ===================================================== */
 
         .add-button {
 
             width: 100%;
 
-            margin-top: 16px;
-
-            min-height: 54px;
+            min-height: 53px;
 
             border: none;
 
-            border-radius: 17px;
+            border-radius: 16px;
+
+            margin-top: 3px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #63b8ec,
-                    #399bdc
+                    #59b5e8,
+                    #328fc9
                 );
 
             color: white;
@@ -430,89 +555,128 @@
             transition: 0.2s;
         }
 
+
+        .add-button:hover {
+
+            transform:
+                translateY(-1px);
+        }
+
+
         .add-button:active {
 
             transform:
                 scale(0.98);
         }
 
-        /* =========================================
-           MESSAGE
-        ========================================= */
 
-        .message {
+        /* =====================================================
+           AYIRICI
+        ===================================================== */
 
-            padding:
-                13px 15px;
+        .divider {
 
-            border-radius: 15px;
+            height: 1px;
 
-            margin-bottom: 18px;
+            background: #e7eef3;
 
-            font-size: 14px;
-
-            font-weight: 600;
+            margin:
+                25px 0;
         }
 
-        .message.success {
 
-            background: #e7f8ef;
+        /* =====================================================
+           KAYITLAR
+        ===================================================== */
 
-            color: #19764d;
-
-            border:
-                1px solid #c5ead7;
-        }
-
-        .message.error {
-
-            background: #fff0f0;
-
-            color: #b64242;
-
-            border:
-                1px solid #f2cccc;
-        }
-
-        /* =========================================
-           MEDICINE LIST
-        ========================================= */
-
-        .records-title {
+        .records-header {
 
             display: flex;
 
-            justify-content: space-between;
-
             align-items: center;
 
-            gap: 10px;
+            justify-content: space-between;
 
-            margin-bottom: 13px;
+            margin-bottom: 14px;
         }
 
-        .records-title h2 {
 
-            font-size: 22px;
+        .records-header h2 {
 
-            color: #1c3445;
+            font-size: 20px;
+
+            color: #203746;
         }
 
-        .count {
 
-            background: #dff3ff;
+        .record-count {
 
-            color: #1979a8;
+            background: #e8f6ff;
+
+            color: #2886b7;
+
+            border-radius: 20px;
 
             padding:
                 6px 10px;
-
-            border-radius: 12px;
 
             font-size: 12px;
 
             font-weight: 700;
         }
+
+
+        /* =====================================================
+           BOŞ DURUM
+        ===================================================== */
+
+        .empty {
+
+            text-align: center;
+
+            padding:
+                30px 15px;
+
+            background: #f7fbfe;
+
+            border:
+                1px dashed #d7e7ef;
+
+            border-radius: 18px;
+        }
+
+
+        .empty-icon {
+
+            font-size: 35px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .empty strong {
+
+            display: block;
+
+            color: #405561;
+
+            margin-bottom: 5px;
+        }
+
+
+        .empty span {
+
+            color: #8998a1;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           İLAÇ KARTI
+        ===================================================== */
 
         .medicine-list {
 
@@ -523,11 +687,18 @@
             gap: 12px;
         }
 
-        /* =========================================
-           MEDICINE CARD
-        ========================================= */
 
         .medicine-card {
+
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
 
             background: white;
 
@@ -536,58 +707,69 @@
 
             border-radius: 20px;
 
-            padding: 17px;
+            padding: 16px;
 
             box-shadow:
-                0 7px 22px
-                rgba(35,90,130,0.07);
+                0 5px 18px
+                rgba(0,0,0,0.055);
 
-            display: flex;
-
-            align-items: center;
-
-            gap: 14px;
+            transition: 0.2s;
         }
 
-        .medicine-card-icon {
 
-            width: 53px;
-            min-width: 53px;
+        .medicine-card:hover {
 
-            height: 53px;
-
-            border-radius: 17px;
-
-            background: #e8f6ff;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 28px;
+            box-shadow:
+                0 8px 23px
+                rgba(35,100,140,0.09);
         }
+
 
         .medicine-info {
 
-            flex: 1;
-
             min-width: 0;
+
+            flex: 1;
         }
+
 
         .medicine-name {
 
-            font-size: 17px;
+            display: flex;
 
-            font-weight: 750;
+            align-items: center;
 
-            color: #1c3445;
+            gap: 8px;
+
+            color: #243a49;
+
+            font-size: 16px;
+
+            font-weight: 800;
 
             word-break: break-word;
-
-            margin-bottom: 7px;
         }
+
+
+        .medicine-name-icon {
+
+            width: 37px;
+            height: 37px;
+
+            min-width: 37px;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #eaf7ff;
+
+            font-size: 19px;
+        }
+
 
         .medicine-details {
 
@@ -596,149 +778,154 @@
             flex-wrap: wrap;
 
             gap: 7px;
+
+            margin-top: 10px;
         }
+
 
         .detail {
 
-            background: #f1f7fb;
+            display: inline-flex;
 
-            color: #607584;
+            align-items: center;
+
+            gap: 4px;
+
+            background: #f3f8fb;
+
+            color: #667984;
 
             border-radius: 10px;
 
             padding:
-                5px 8px;
+                6px 8px;
 
             font-size: 12px;
 
             font-weight: 600;
         }
 
-        /* =========================================
-           DELETE
-        ========================================= */
+
+        /* =====================================================
+           SİL BUTONU
+        ===================================================== */
+
+        .delete-form {
+
+            flex-shrink: 0;
+        }
+
 
         .delete-button {
 
-            width: 43px;
-
-            height: 43px;
-
-            min-width: 43px;
-
             border: none;
 
-            border-radius: 13px;
+            border-radius: 12px;
 
-            background: #fff0f0;
+            padding:
+                10px 12px;
 
-            color: #d75b5b;
+            background: #fff1f1;
 
-            font-size: 19px;
+            color: #d15353;
+
+            font-size: 13px;
+
+            font-weight: 700;
 
             cursor: pointer;
 
             transition: 0.2s;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
+
+
+        .delete-button:hover {
+
+            background: #ffe2e2;
+        }
+
 
         .delete-button:active {
 
             transform:
-                scale(0.92);
+                scale(0.94);
         }
 
-        .delete-button:hover {
 
-            background: #ffe1e1;
-        }
+        /* =====================================================
+           ALT BİLGİ
+        ===================================================== */
 
-        /* =========================================
-           EMPTY
-        ========================================= */
+        .safety-note {
 
-        .empty {
+            margin-top: 18px;
 
-            background: white;
+            padding:
+                12px 14px;
 
-            border:
-                1px dashed #cddfe9;
+            border-radius: 15px;
 
-            border-radius: 21px;
+            background: #f4f9fc;
 
-            padding: 30px 20px;
+            color: #788994;
 
-            text-align: center;
-
-            color: #71828e;
-        }
-
-        .empty-icon {
-
-            font-size: 42px;
-
-            margin-bottom: 10px;
-        }
-
-        .empty strong {
-
-            display: block;
-
-            color: #425765;
-
-            font-size: 16px;
-
-            margin-bottom: 6px;
-        }
-
-        .empty p {
-
-            font-size: 14px;
+            font-size: 11px;
 
             line-height: 1.5;
+
+            text-align: center;
         }
 
-        /* =========================================
+
+        /* =====================================================
            MOBİL
-        ========================================= */
+        ===================================================== */
 
         @media (max-width: 600px) {
 
             .menu-button {
 
                 top: 13px;
-
                 left: 13px;
 
                 width: 48px;
-
                 height: 48px;
 
                 border-radius: 15px;
 
-                font-size: 25px;
+                font-size: 24px;
             }
+
 
             .sidebar {
 
                 width:
                     min(290px, 84vw);
+
+                padding:
+                    78px 14px 22px;
             }
+
 
             .page {
 
                 padding:
-                    78px 12px 30px;
+                    82px 11px 30px;
             }
+
 
             .hero {
 
                 margin-bottom: 22px;
             }
 
-            .medicine-icon {
+
+            .hero-icon {
 
                 width: 68px;
-
                 height: 68px;
 
                 border-radius: 22px;
@@ -746,87 +933,116 @@
                 font-size: 36px;
             }
 
+
             .hero h1 {
 
-                font-size: 34px;
+                font-size: 32px;
             }
+
 
             .hero p {
 
                 font-size: 14px;
+
+                padding:
+                    0 8px;
             }
 
-            .add-card {
 
-                padding: 15px;
+            .main-card {
+
+                padding: 14px;
 
                 border-radius: 22px;
             }
 
-            .form-grid {
+
+            .form-row {
 
                 grid-template-columns:
                     1fr;
             }
 
-            .field.full {
 
-                grid-column:
-                    auto;
+            .field input {
+
+                height: 49px;
             }
+
 
             .medicine-card {
 
-                padding: 14px;
+                align-items:
+                    flex-start;
 
-                border-radius: 18px;
+                padding: 14px;
 
                 gap: 10px;
             }
 
-            .medicine-card-icon {
-
-                width: 47px;
-
-                min-width: 47px;
-
-                height: 47px;
-
-                font-size: 24px;
-            }
 
             .medicine-name {
 
                 font-size: 15px;
             }
 
-            .detail {
 
-                font-size: 11px;
+            .medicine-name-icon {
 
-                padding:
-                    5px 7px;
+                width: 34px;
+                height: 34px;
+
+                min-width: 34px;
             }
+
 
             .delete-button {
 
-                width: 40px;
+                padding:
+                    9px 10px;
 
-                min-width: 40px;
+                font-size: 12px;
+            }
 
-                height: 40px;
+
+            .records-header h2 {
+
+                font-size: 18px;
+            }
+        }
+
+
+        @media (max-width: 380px) {
+
+            .medicine-card {
+
+                flex-direction: column;
+            }
+
+
+            .delete-form {
+
+                width: 100%;
+            }
+
+
+            .delete-button {
+
+                width: 100%;
             }
         }
 
     </style>
+
 </head>
 
 
 <body>
 
-    <!-- =========================================
-         OVERLAY
-    ========================================= -->
+
+    <!-- =====================================================
+         KARARTMA
+    ====================================================== -->
 
     <div
         class="overlay"
@@ -834,9 +1050,9 @@
     </div>
 
 
-    <!-- =========================================
+    <!-- =====================================================
          HAMBURGER
-    ========================================= -->
+    ====================================================== -->
 
     <button
         class="menu-button"
@@ -849,9 +1065,9 @@
     </button>
 
 
-    <!-- =========================================
+    <!-- =====================================================
          SIDEBAR
-    ========================================= -->
+    ====================================================== -->
 
     <aside
         class="sidebar"
@@ -954,18 +1170,20 @@
     </aside>
 
 
-    <!-- =========================================
-         PAGE
-    ========================================= -->
+    <!-- =====================================================
+         ANA SAYFA
+    ====================================================== -->
 
     <main class="page">
 
 
-        <!-- HERO -->
+        <!-- =================================================
+             HERO
+        ================================================== -->
 
         <section class="hero">
 
-            <div class="medicine-icon">
+            <div class="hero-icon">
                 💊
             </div>
 
@@ -975,162 +1193,14 @@
 
             <p>
                 Kullandığın ilaçları düzenli şekilde
-                kaydet ve kolayca görüntüle.
+                kaydet ve görüntüle.
             </p>
 
         </section>
 
 
-        <!-- =====================================
-             MESAJ
-        ====================================== -->
+        <!-- =================================================
+             ANA KART
+        ================================================== -->
 
-        {% if kayit_mesaji %}
-
-            {% if "kaydedildi" in kayit_mesaji %}
-
-                <div class="message success">
-                    {{ kayit_mesaji }}
-                </div>
-
-            {% else %}
-
-                <div class="message error">
-                    {{ kayit_mesaji }}
-                </div>
-
-            {% endif %}
-
-        {% endif %}
-
-
-        <!-- =====================================
-             ADD MEDICINE
-        ====================================== -->
-
-        <section class="add-card">
-
-            <div class="card-title">
-                ➕ Yeni ilaç ekle
-            </div>
-
-
-            <form
-                method="POST"
-                action="/medicine">
-
-                <div class="form-grid">
-
-
-                    <div class="field full">
-
-                        <label for="name">
-                            İlaç adı
-                        </label>
-
-                        <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="Örn. İlaç adı"
-                            autocomplete="off"
-                            required>
-
-                    </div>
-
-
-                    <div class="field">
-
-                        <label for="dose">
-                            Doz
-                        </label>
-
-                        <input
-                            id="dose"
-                            name="dose"
-                            type="text"
-                            placeholder="Örn. 1 tablet">
-
-                    </div>
-
-
-                    <div class="field">
-
-                        <label for="hour">
-                            Saat
-                        </label>
-
-                        <input
-                            id="hour"
-                            name="hour"
-                            type="time">
-
-                    </div>
-
-
-                    <div class="field full">
-
-                        <label for="start_date">
-                            Başlangıç tarihi
-                        </label>
-
-                        <input
-                            id="start_date"
-                            name="start_date"
-                            type="date">
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    class="add-button"
-                    type="submit">
-
-                    💊 İlacı Kaydet
-
-                </button>
-
-            </form>
-
-        </section>
-
-
-        <!-- =====================================
-             MEDICINE RECORDS
-        ====================================== -->
-
-        <section class="records">
-
-            <div class="records-title">
-
-                <h2>
-                    📋 Kayıtlı ilaçlar
-                </h2>
-
-                <span class="count">
-                    {{ kayitlar|length }} kayıt
-                </span>
-
-            </div>
-
-
-            {% if kayitlar %}
-
-                <div class="medicine-list">
-
-                    {% for kayit in kayitlar %}
-
-                        <div class="medicine-card">
-
-                            <div class="medicine-card-icon">
-                                💊
-                            </div>
-
-
-                            <div class="medicine-info">
-
-                                <div class="medicine-name">
-
-                     
+        <se
