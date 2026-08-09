@@ -14,11 +14,8 @@ DB_NAME = "chat.db"
 # ============================================================
 
 def get_db():
-
     conn = sqlite3.connect(DB_NAME)
-
     conn.row_factory = sqlite3.Row
-
     return conn
 
 
@@ -29,9 +26,7 @@ def get_db():
 def init_db():
 
     conn = get_db()
-
     cursor = conn.cursor()
-
 
     # --------------------------------------------------------
     # SOHBETLER
@@ -47,7 +42,6 @@ def init_db():
         )
     """)
 
-
     # --------------------------------------------------------
     # SAĞLIK KAYITLARI
     # --------------------------------------------------------
@@ -62,9 +56,8 @@ def init_db():
         )
     """)
 
-
     # --------------------------------------------------------
-    # REGL
+    # REGL KAYITLARI
     # --------------------------------------------------------
 
     cursor.execute("""
@@ -77,9 +70,8 @@ def init_db():
         )
     """)
 
-
     # --------------------------------------------------------
-    # SİNDİRİM
+    # SİNDİRİM KAYITLARI
     # --------------------------------------------------------
 
     cursor.execute("""
@@ -92,7 +84,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
 
     # --------------------------------------------------------
     # İLAÇLAR
@@ -109,9 +100,7 @@ def init_db():
         )
     """)
 
-
     conn.commit()
-
     conn.close()
 
 
@@ -125,11 +114,7 @@ def save_chat(chat_type, message, response):
 
     conn.execute("""
         INSERT INTO chats
-        (
-            chat_type,
-            message,
-            response
-        )
+        (chat_type, message, response)
         VALUES (?, ?, ?)
     """, (
         chat_type,
@@ -138,7 +123,6 @@ def save_chat(chat_type, message, response):
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -168,7 +152,7 @@ def get_chats(chat_type="normal"):
 # TEK SOHBET GETİR
 # ============================================================
 
-def get_chat(chat_id):
+def get_chat_by_id(chat_id):
 
     conn = get_db()
 
@@ -187,12 +171,12 @@ def get_chat(chat_id):
 
 
 # ============================================================
-# ESKİ FONKSİYON DA KALSIN
+# ROUTES.PY İÇİN GET_CHAT
 # ============================================================
 
-def get_chat_by_id(chat_id):
+def get_chat(chat_id):
 
-    return get_chat(chat_id)
+    return get_chat_by_id(chat_id)
 
 
 # ============================================================
@@ -209,11 +193,7 @@ def save_health_record(
 
     conn.execute("""
         INSERT INTO health_records
-        (
-            symptom,
-            medicine,
-            note
-        )
+        (symptom, medicine, note)
         VALUES (?, ?, ?)
     """, (
         symptom,
@@ -222,7 +202,6 @@ def save_health_record(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -259,11 +238,7 @@ def save_period_record(
 
     conn.execute("""
         INSERT INTO period_records
-        (
-            start_date,
-            end_date,
-            note
-        )
+        (start_date, end_date, note)
         VALUES (?, ?, ?)
     """, (
         start_date,
@@ -272,7 +247,6 @@ def save_period_record(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -310,12 +284,7 @@ def save_diarrhea_record(
 
     conn.execute("""
         INSERT INTO diarrhea_records
-        (
-            date,
-            count,
-            condition,
-            note
-        )
+        (date, count, condition, note)
         VALUES (?, ?, ?, ?)
     """, (
         date,
@@ -325,7 +294,6 @@ def save_diarrhea_record(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -363,12 +331,7 @@ def save_medicine(
 
     conn.execute("""
         INSERT INTO medicines
-        (
-            name,
-            dose,
-            hour,
-            start_date
-        )
+        (name, dose, hour, start_date)
         VALUES (?, ?, ?, ?)
     """, (
         name,
@@ -378,7 +341,6 @@ def save_medicine(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -395,8 +357,7 @@ def get_medicines():
         FROM medicines
         ORDER BY
             CASE
-                WHEN hour IS NULL
-                     OR hour = ''
+                WHEN hour IS NULL OR hour = ''
                 THEN 1
                 ELSE 0
             END,
@@ -425,12 +386,11 @@ def delete_medicine(medicine_id):
     ))
 
     conn.commit()
-
     conn.close()
 
 
 # ============================================================
-# DATABASE'I BAŞLAT
+# DATABASE BAŞLAT
 # ============================================================
 
 init_db()
