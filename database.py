@@ -1,10 +1,8 @@
 import sqlite3
 import os
-from contextlib import contextmanager
-
 
 # ============================================================
-# VERİTABANI AYARLARI
+# DATABASE AYARLARI
 # ============================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,56 +10,29 @@ DB_NAME = os.path.join(BASE_DIR, "chat.db")
 
 
 # ============================================================
-# VERİTABANI BAĞLANTISI
+# DATABASE BAĞLANTISI
 # ============================================================
 
 def get_db():
-    """
-    SQLite veritabanına bağlantı oluşturur.
-    """
-
     conn = sqlite3.connect(
         DB_NAME,
-        timeout=30
+        timeout=10
     )
 
     conn.row_factory = sqlite3.Row
 
-    # SQLite'ın foreign key desteğini aktif et
-    conn.execute("PRAGMA foreign_keys = ON")
-
     return conn
 
 
-@contextmanager
-def db_connection():
-    """
-    Güvenli veritabanı bağlantısı.
-    İşlem başarılıysa commit,
-    hata olursa rollback yapar.
-    """
-
-    conn = get_db()
-
-    try:
-        yield conn
-        conn.commit()
-
-    except Exception:
-        conn.rollback()
-        raise
-
-    finally:
-        conn.close()
-
-
 # ============================================================
-# VERİTABANINI OLUŞTUR
+# DATABASE OLUŞTURMA
 # ============================================================
 
 def init_db():
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -116,7 +87,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS diarrhea_records (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 date TEXT,
-                count INTEGER,
+                count INTEGER DEFAULT 0,
                 condition TEXT,
                 note TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -134,31 +105,28 @@ def init_db():
                 dose TEXT,
                 hour TEXT,
                 start_date TEXT,
-                note TEXT DEFAULT '',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
-        # ----------------------------------------------------
-        # ESKİ VERİTABANINDA medicines TABLOSU VARSA
-        # note SÜTUNUNU EKLE
-        # ----------------------------------------------------
+        conn.commit()
 
-        cursor.execute("""
-            PRAGMA table_info(medicines)
-        """)
+        print("DATABASE HAZIR:", DB_NAME)
 
-        columns = [
-            row["name"]
-            for row in cursor.fetchall()
-        ]
+    except Exception as e:
 
-        if "note" not in columns:
+        conn.rollback()
 
-            cursor.execute("""
-                ALTER TABLE medicines
-                ADD COLUMN note TEXT DEFAULT ''
-            """)
+        print(
+            "DATABASE INIT HATASI:",
+            repr(e)
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
 
 
 # ============================================================
@@ -167,7 +135,9 @@ def init_db():
 
 def save_chat(chat_type, message, reply):
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -185,10 +155,29 @@ def save_chat(chat_type, message, reply):
             reply
         ))
 
+        conn.commit()
 
-def get_chats(chat_type="normal"):
+    except Exception as e:
 
-    with db_connection() as conn:
+        conn.rollback()
+
+        print(
+            "SOHBET KAYDETME HATASI:",
+            repr(e)
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
+
+
+def get_chats(chat_type):
+
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -203,41 +192,22 @@ def get_chats(chat_type="normal"):
 
         return cursor.fetchall()
 
+    except Exception as e:
 
-def delete_chat(chat_id):
+        print(
+            "SOHBETLERİ OKUMA HATASI:",
+            repr(e)
+        )
 
-    with db_connection() as conn:
+        return []
 
-        cursor = conn.cursor()
+    finally:
 
-        cursor.execute("""
-            DELETE FROM messages
-            WHERE id = ?
-        """, (
-            chat_id,
-        ))
-
-        return cursor.rowcount > 0
-
-
-def clear_chats(chat_type="normal"):
-
-    with db_connection() as conn:
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            DELETE FROM messages
-            WHERE chat_type = ?
-        """, (
-            chat_type,
-        ))
-
-        return cursor.rowcount
+        conn.close()
 
 
 # ============================================================
-# SAĞLIK KAYITLARI
+# SAĞLIK
 # ============================================================
 
 def save_health_record(
@@ -246,7 +216,9 @@ def save_health_record(
     note
 ):
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -264,10 +236,29 @@ def save_health_record(
             note
         ))
 
+        conn.commit()
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "SAĞLIK KAYDETME HATASI:",
+            repr(e)
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
+
 
 def get_health_records():
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -279,21 +270,18 @@ def get_health_records():
 
         return cursor.fetchall()
 
+    except Exception as e:
 
-def delete_health_record(record_id):
+        print(
+            "SAĞLIK KAYITLARINI OKUMA HATASI:",
+            repr(e)
+        )
 
-    with db_connection() as conn:
+        return []
 
-        cursor = conn.cursor()
+    finally:
 
-        cursor.execute("""
-            DELETE FROM health_records
-            WHERE id = ?
-        """, (
-            record_id,
-        ))
-
-        return cursor.rowcount > 0
+        conn.close()
 
 
 # ============================================================
@@ -306,7 +294,9 @@ def save_period_record(
     note
 ):
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -324,10 +314,29 @@ def save_period_record(
             note
         ))
 
+        conn.commit()
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "REGL KAYDETME HATASI:",
+            repr(e)
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
+
 
 def get_period_records():
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -339,21 +348,18 @@ def get_period_records():
 
         return cursor.fetchall()
 
+    except Exception as e:
 
-def delete_period_record(record_id):
+        print(
+            "REGL KAYITLARINI OKUMA HATASI:",
+            repr(e)
+        )
 
-    with db_connection() as conn:
+        return []
 
-        cursor = conn.cursor()
+    finally:
 
-        cursor.execute("""
-            DELETE FROM period_records
-            WHERE id = ?
-        """, (
-            record_id,
-        ))
-
-        return cursor.rowcount > 0
+        conn.close()
 
 
 # ============================================================
@@ -367,15 +373,11 @@ def save_diarrhea_record(
     note
 ):
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
-
-        # Sayısal değer geldiyse integer yap
-        try:
-            count_value = int(count)
-        except (ValueError, TypeError):
-            count_value = 0
 
         cursor.execute("""
             INSERT INTO diarrhea_records
@@ -388,15 +390,34 @@ def save_diarrhea_record(
             VALUES (?, ?, ?, ?)
         """, (
             date,
-            count_value,
+            count,
             condition,
             note
         ))
 
+        conn.commit()
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "SİNDİRİM KAYDETME HATASI:",
+            repr(e)
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
+
 
 def get_diarrhea_records():
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -408,47 +429,34 @@ def get_diarrhea_records():
 
         return cursor.fetchall()
 
+    except Exception as e:
 
-def delete_diarrhea_record(record_id):
+        print(
+            "SİNDİRİM KAYITLARINI OKUMA HATASI:",
+            repr(e)
+        )
 
-    with db_connection() as conn:
+        return []
 
-        cursor = conn.cursor()
+    finally:
 
-        cursor.execute("""
-            DELETE FROM diarrhea_records
-            WHERE id = ?
-        """, (
-            record_id,
-        ))
-
-        return cursor.rowcount > 0
+        conn.close()
 
 
 # ============================================================
-# İLAÇLAR
+# İLAÇ EKLE
 # ============================================================
 
 def save_medicine(
     name,
     dose,
     hour,
-    start_date,
-    note=""
+    start_date
 ):
 
-    name = (name or "").strip()
-    dose = (dose or "").strip()
-    hour = (hour or "").strip()
-    start_date = (start_date or "").strip()
-    note = (note or "").strip()
+    conn = get_db()
 
-    if not name:
-        raise ValueError(
-            "İlaç adı boş bırakılamaz."
-        )
-
-    with db_connection() as conn:
+    try:
 
         cursor = conn.cursor()
 
@@ -458,24 +466,43 @@ def save_medicine(
                 name,
                 dose,
                 hour,
-                start_date,
-                note
+                start_date
             )
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?)
         """, (
             name,
             dose,
             hour,
-            start_date,
-            note
+            start_date
         ))
 
-        return cursor.lastrowid
+        conn.commit()
 
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "İLAÇ KAYDETME HATASI:",
+            repr(e)
+        )
+
+        raise
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# İLAÇLARI GETİR
+# ============================================================
 
 def get_medicines():
 
-    with db_connection() as conn:
+    conn = get_db()
+
+    try:
 
         cursor = conn.cursor()
 
@@ -486,136 +513,3 @@ def get_medicines():
                 CASE
                     WHEN hour IS NULL OR hour = ''
                     THEN 1
-                    ELSE 0
-                END,
-                hour ASC,
-                id DESC
-        """)
-
-        return cursor.fetchall()
-
-
-def get_medicine(medicine_id):
-
-    with db_connection() as conn:
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT *
-            FROM medicines
-            WHERE id = ?
-        """, (
-            medicine_id,
-        ))
-
-        return cursor.fetchone()
-
-
-def update_medicine(
-    medicine_id,
-    name,
-    dose,
-    hour,
-    start_date,
-    note=""
-):
-
-    name = (name or "").strip()
-    dose = (dose or "").strip()
-    hour = (hour or "").strip()
-    start_date = (start_date or "").strip()
-    note = (note or "").strip()
-
-    if not name:
-        raise ValueError(
-            "İlaç adı boş bırakılamaz."
-        )
-
-    with db_connection() as conn:
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            UPDATE medicines
-
-            SET
-                name = ?,
-                dose = ?,
-                hour = ?,
-                start_date = ?,
-                note = ?
-
-            WHERE id = ?
-        """, (
-            name,
-            dose,
-            hour,
-            start_date,
-            note,
-            medicine_id
-        ))
-
-        return cursor.rowcount > 0
-
-
-def delete_medicine(medicine_id):
-
-    with db_connection() as conn:
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            DELETE FROM medicines
-            WHERE id = ?
-        """, (
-            medicine_id,
-        ))
-
-        return cursor.rowcount > 0
-
-
-# ============================================================
-# TÜM VERİLERİ TEMİZLEME
-# ============================================================
-
-def clear_all_data():
-
-    with db_connection() as conn:
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            DELETE FROM messages
-        """)
-
-        cursor.execute("""
-            DELETE FROM health_records
-        """)
-
-        cursor.execute("""
-            DELETE FROM period_records
-        """)
-
-        cursor.execute("""
-            DELETE FROM diarrhea_records
-        """)
-
-        cursor.execute("""
-            DELETE FROM medicines
-        """)
-
-
-# ============================================================
-# UYGULAMA BAŞLARKEN VERİTABANINI HAZIRLA
-# ============================================================
-
-try:
-    init_db()
-
-except Exception as e:
-
-    print(
-        "VERİTABANI BAŞLATMA HATASI:",
-        repr(e)
-        )
