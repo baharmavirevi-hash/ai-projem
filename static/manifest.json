@@ -1,1 +1,9 @@
-
+{
+  "name": "Cebimdeki Doktor",
+  "short_name": "Cebimdeki Doktor",
+  "start_url": "/doctor",
+  "display": "standalone",
+  "background_color": "#eef8ff",
+  "theme_color": "#55afe9",
+  "lang": "tr"
+}
