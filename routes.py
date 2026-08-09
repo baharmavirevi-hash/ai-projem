@@ -1,5 +1,4 @@
 import os
-
 from flask import render_template, request
 from werkzeug.utils import secure_filename
 from PIL import Image
