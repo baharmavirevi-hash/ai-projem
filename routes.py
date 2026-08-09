@@ -1,6 +1,6 @@
-from flask import render_template, request
 import os
 
+from flask import render_template, request
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google import genai
@@ -21,18 +21,12 @@ from database import (
 # GEMINI
 # ============================================================
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+api_key = os.environ.get("GEMINI_API_KEY")
 
 client = None
 
-if GEMINI_API_KEY:
-    try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        print("GEMINI HAZIR")
-    except Exception as e:
-        print("GEMINI BASLATMA HATASI:", repr(e))
-else:
-    print("UYARI: GEMINI_API_KEY bulunamadi")
+if api_key:
+    client = genai.Client(api_key=api_key)
 
 
 # ============================================================
@@ -41,50 +35,29 @@ else:
 
 def ask_mavigpt(message, image_path=None):
 
+    if not message:
+        message = "Merhaba!"
+
+    if client is None:
+        return (
+            "MaviGPT şu anda yapay zekâ bağlantısına ulaşamıyor. "
+            "Railway Variables bölümünde GEMINI_API_KEY "
+            "tanımlı olduğundan emin ol."
+        )
+
     try:
-
-        if not message:
-            message = "Merhaba!"
-
-        if client is None:
-            return (
-                "MaviGPT şu anda yapay zekâ servisine bağlanamıyor. "
-                "Railway Variables bölümünde GEMINI_API_KEY "
-                "ayarını kontrol et."
-            )
-
-        # ----------------------------------------------------
-        # FOTOĞRAFLI MESAJ
-        # ----------------------------------------------------
 
         if image_path:
 
-            try:
-                image = Image.open(image_path)
+            image = Image.open(image_path)
 
-                response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=[
-                        image,
-                        message
-                    ]
-                )
-
-            except Exception as e:
-
-                print(
-                    "FOTOGRAF AI HATASI:",
-                    repr(e)
-                )
-
-                return (
-                    "Fotoğrafı işlerken bir sorun oluştu. "
-                    "Lütfen tekrar dene."
-                )
-
-        # ----------------------------------------------------
-        # NORMAL MESAJ
-        # ----------------------------------------------------
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[
+                    image,
+                    message
+                ]
+            )
 
         else:
 
@@ -93,12 +66,7 @@ def ask_mavigpt(message, image_path=None):
                 contents=message
             )
 
-        # ----------------------------------------------------
-        # CEVAP
-        # ----------------------------------------------------
-
         if response and response.text:
-
             return response.text
 
         return (
@@ -108,13 +76,10 @@ def ask_mavigpt(message, image_path=None):
 
     except Exception as e:
 
-        print(
-            "GEMINI HATASI:",
-            repr(e)
-        )
+        print("GEMINI HATASI:", repr(e))
 
         return (
-            "Şu anda yanıt oluştururken bir sorun oluştu. "
+            "MaviGPT cevap oluştururken bir sorun yaşadı. "
             "Lütfen biraz sonra tekrar dene."
         )
 
@@ -155,15 +120,6 @@ def upload_photo(app):
         exist_ok=True
     )
 
-    # Aynı isimli dosyaların üzerine yazılmasını önle
-    import time
-
-    name, extension = os.path.splitext(filename)
-
-    filename = (
-        f"{name}_{int(time.time())}{extension}"
-    )
-
     path = os.path.join(
         upload_folder,
         filename
@@ -181,16 +137,16 @@ def upload_photo(app):
 def register_routes(app):
 
     # ========================================================
-    # MAVIGPT ANA SAYFA
+    # ANA MAVIGPT
     # ========================================================
 
     @app.route("/", methods=["GET", "POST"])
     def home():
 
-        print("================================")
+        print("==============================")
         print("MAVIGPT HOME CALISTI")
         print("METHOD:", request.method)
-        print("================================")
+        print("==============================")
 
         mesaj = ""
         cevap = ""
@@ -254,8 +210,8 @@ def register_routes(app):
 
                     ai_mesaj = (
                         "Bu fotoğrafı incele. "
-                        "Gördüğün şey hakkında genel, "
-                        "güvenli ve anlaşılır bilgi ver."
+                        "Gördüğün şey hakkında genel "
+                        "ve anlaşılır bilgi ver."
                     )
 
                 cevap = ask_mavigpt(
@@ -292,7 +248,7 @@ def register_routes(app):
                     )
 
         # ----------------------------------------------------
-        # SAYFAYI GÖSTER
+        # SAYFAYI GÖNDER
         # ----------------------------------------------------
 
         return render_template(
@@ -322,14 +278,10 @@ def register_routes(app):
     )
     def doctor():
 
-        mesaj = None
-        cevap = None
+        mesaj = ""
+        cevap = ""
         filename = None
         kayit_mesaji = None
-
-        # ----------------------------------------------------
-        # POST
-        # ----------------------------------------------------
 
         if request.method == "POST":
 
@@ -357,11 +309,7 @@ def register_routes(app):
             # SAĞLIK KAYDI
             # ------------------------------------------------
 
-            if (
-                symptom
-                or medicine
-                or note
-            ):
+            if symptom or medicine or note:
 
                 try:
 
@@ -371,9 +319,7 @@ def register_routes(app):
                         note
                     )
 
-                    kayit_mesaji = (
-                        "✅ Kayıt edildi."
-                    )
+                    kayit_mesaji = "✅ Kayıt edildi."
 
                 except Exception as e:
 
@@ -398,8 +344,8 @@ def register_routes(app):
                     mesaj
                     if mesaj
                     else
-                    "Bu sağlık fotoğrafı hakkında "
-                    "genel ve güvenli bilgi ver."
+                    "Bu sağlık fotoğrafını genel "
+                    "olarak incele ve anlaşılır bilgi ver."
                 )
 
                 cevap = ask_mavigpt(
@@ -423,10 +369,6 @@ def register_routes(app):
             )
 
             kayitlar = []
-
-        # ----------------------------------------------------
-        # SAYFA
-        # ----------------------------------------------------
 
         return render_template(
             "doctor.html",
@@ -484,20 +426,12 @@ def register_routes(app):
                         note
                     )
 
-                    print(
-                        "REGL KAYDI KAYDEDILDI"
-                    )
-
                 except Exception as e:
 
                     print(
                         "REGL KAYIT HATASI:",
                         repr(e)
                     )
-
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
 
         try:
 
@@ -519,7 +453,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # SİNDİRİM / İSHAL TAKİBİ
+    # SİNDİRİM TAKİBİ
     # ========================================================
 
     @app.route(
@@ -550,12 +484,7 @@ def register_routes(app):
                 ""
             ).strip()
 
-            if (
-                date
-                or count
-                or condition
-                or note
-            ):
+            if date or count or condition or note:
 
                 try:
 
@@ -566,20 +495,12 @@ def register_routes(app):
                         note
                     )
 
-                    print(
-                        "SINDIRIM KAYDI KAYDEDILDI"
-                    )
-
                 except Exception as e:
 
                     print(
-                        "SINDIRIM KAYIT HATASI:",
+                        "SİNDİRİM KAYIT HATASI:",
                         repr(e)
                     )
-
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
 
         try:
 
@@ -588,7 +509,7 @@ def register_routes(app):
         except Exception as e:
 
             print(
-                "SINDIRIM KAYITLARI OKUNAMADI:",
+                "SİNDİRİM KAYITLARI OKUNAMADI:",
                 repr(e)
             )
 
@@ -597,4 +518,4 @@ def register_routes(app):
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
-)
+        )
