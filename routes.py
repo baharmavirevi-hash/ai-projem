@@ -9,16 +9,12 @@ from google import genai
 from database import (
     save_chat,
     get_chats,
-
     save_health_record,
     get_health_records,
-
     save_period_record,
     get_period_records,
-
     save_diarrhea_record,
     get_diarrhea_records,
-
     save_medicine,
     get_medicines,
     delete_medicine
@@ -39,7 +35,6 @@ def ask_mavigpt(message, image_path=None):
         api_key = os.environ.get("GEMINI_API_KEY")
 
         if not api_key:
-
             return (
                 "MaviGPT şu anda çalışıyor fakat "
                 "GEMINI_API_KEY ayarı bulunamadı."
@@ -49,10 +44,7 @@ def ask_mavigpt(message, image_path=None):
             api_key=api_key
         )
 
-        # ----------------------------------------------------
-        # FOTOĞRAFLI MESAJ
-        # ----------------------------------------------------
-
+        # Fotoğraflı mesaj
         if image_path:
 
             try:
@@ -79,10 +71,7 @@ def ask_mavigpt(message, image_path=None):
                     "Lütfen tekrar göndermeyi dene."
                 )
 
-        # ----------------------------------------------------
-        # NORMAL MESAJ
-        # ----------------------------------------------------
-
+        # Normal mesaj
         else:
 
             response = client.models.generate_content(
@@ -157,7 +146,6 @@ def upload_photo(app):
 
         return None, None
 
-    # Benzersiz dosya adı
     filename = (
         uuid.uuid4().hex +
         extension
@@ -232,25 +220,16 @@ def register_routes(app):
     # MAVIGPT
     # ========================================================
 
-    @app.route(
-        "/",
-        methods=["GET", "POST"]
-    )
+    @app.route("/", methods=["GET", "POST"])
     def home():
 
         mesaj = ""
         cevap = ""
         filename = None
 
-        # ----------------------------------------------------
-        # SOHBET GEÇMİŞİ
-        # ----------------------------------------------------
-
         try:
 
-            sohbetler = get_chats(
-                "normal"
-            )
+            sohbetler = get_chats("normal")
 
         except Exception as e:
 
@@ -260,10 +239,6 @@ def register_routes(app):
             )
 
             sohbetler = []
-
-        # ----------------------------------------------------
-        # POST
-        # ----------------------------------------------------
 
         if request.method == "POST":
 
@@ -275,9 +250,7 @@ def register_routes(app):
             print("================================")
             print("MAVIGPT MESAJ:", mesaj)
 
-            foto, filename = upload_photo(
-                app
-            )
+            foto, filename = upload_photo(app)
 
             print(
                 "MAVIGPT FOTO:",
@@ -309,10 +282,6 @@ def register_routes(app):
                     cevap
                 )
 
-                # ------------------------------------------------
-                # SOHBETİ KAYDET
-                # ------------------------------------------------
-
                 try:
 
                     save_chat(
@@ -323,10 +292,6 @@ def register_routes(app):
 
                     sohbetler = get_chats(
                         "normal"
-                    )
-
-                    print(
-                        "SOHBET DATABASE'E KAYDEDILDI."
                     )
 
                 except Exception as e:
@@ -342,9 +307,7 @@ def register_routes(app):
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
-            foto_url=get_photo_url(
-                filename
-            ),
+            foto_url=get_photo_url(filename),
             sohbetler=sohbetler
         )
 
@@ -353,20 +316,13 @@ def register_routes(app):
     # CEBİMDEKİ DOKTOR
     # ========================================================
 
-    @app.route(
-        "/doctor",
-        methods=["GET", "POST"]
-    )
+    @app.route("/doctor", methods=["GET", "POST"])
     def doctor():
 
         mesaj = None
         cevap = None
         filename = None
         kayit_mesaji = None
-
-        # ----------------------------------------------------
-        # POST
-        # ----------------------------------------------------
 
         if request.method == "POST":
 
@@ -390,10 +346,7 @@ def register_routes(app):
                 ""
             ).strip()
 
-            # ------------------------------------------------
-            # SAĞLIK KAYDI
-            # ------------------------------------------------
-
+            # Sağlık kaydı
             if symptom or medicine or note:
 
                 try:
@@ -419,18 +372,10 @@ def register_routes(app):
                         "❌ Sağlık kaydı kaydedilemedi."
                     )
 
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
+            # Fotoğraf
+            foto, filename = upload_photo(app)
 
-            foto, filename = upload_photo(
-                app
-            )
-
-            # ------------------------------------------------
-            # MAVIGPT
-            # ------------------------------------------------
-
+            # MaviGPT
             if mesaj or foto:
 
                 if mesaj:
@@ -449,10 +394,6 @@ def register_routes(app):
                     ai_mesaj,
                     foto
                 )
-
-        # ----------------------------------------------------
-        # SAĞLIK KAYITLARINI GETİR
-        # ----------------------------------------------------
 
         try:
 
@@ -473,9 +414,7 @@ def register_routes(app):
             cevap=cevap,
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji,
-            foto_url=get_photo_url(
-                filename
-            )
+            foto_url=get_photo_url(filename)
         )
 
 
@@ -483,10 +422,7 @@ def register_routes(app):
     # REGL TAKİBİ
     # ========================================================
 
-    @app.route(
-        "/period",
-        methods=["GET", "POST"]
-    )
+    @app.route("/period", methods=["GET", "POST"])
     def period():
 
         kayit_mesaji = None
@@ -533,10 +469,6 @@ def register_routes(app):
                         "❌ Regl kaydı kaydedilemedi."
                     )
 
-        # ----------------------------------------------------
-        # KAYITLARI GETİR
-        # ----------------------------------------------------
-
         try:
 
             kayitlar = get_period_records()
@@ -552,3 +484,225 @@ def register_routes(app):
 
         return render_template(
             "period.html",
+            kayitlar=kayitlar,
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # SİNDİRİM TAKİBİ
+    # ========================================================
+
+    @app.route("/diarrhea", methods=["GET", "POST"])
+    def diarrhea():
+
+        kayit_mesaji = None
+
+        if request.method == "POST":
+
+            date = request.form.get(
+                "date",
+                ""
+            ).strip()
+
+            count_raw = request.form.get(
+                "count",
+                ""
+            ).strip()
+
+            condition = request.form.get(
+                "condition",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            count = 0
+
+            if count_raw:
+
+                try:
+
+                    count = int(
+                        count_raw
+                    )
+
+                    if count < 0:
+                        count = 0
+
+                except (ValueError, TypeError):
+
+                    count = 0
+
+            if date or count or condition or note:
+
+                try:
+
+                    save_diarrhea_record(
+                        date,
+                        count,
+                        condition,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Sindirim kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SİNDİRİM KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Sindirim kaydı kaydedilemedi."
+                    )
+
+        try:
+
+            kayitlar = get_diarrhea_records()
+
+        except Exception as e:
+
+            print(
+                "SİNDİRİM KAYITLARI OKUNAMADI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        return render_template(
+            "diarrhea.html",
+            kayitlar=kayitlar,
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # İLAÇLAR
+    # ========================================================
+
+    @app.route("/medicine", methods=["GET", "POST"])
+    def medicine():
+
+        kayit_mesaji = None
+
+        if request.method == "POST":
+
+            name = request.form.get(
+                "name",
+                ""
+            ).strip()
+
+            dose = request.form.get(
+                "dose",
+                ""
+            ).strip()
+
+            hour = request.form.get(
+                "hour",
+                ""
+            ).strip()
+
+            start_date = request.form.get(
+                "start_date",
+                ""
+            ).strip()
+
+            if name:
+
+                try:
+
+                    save_medicine(
+                        name,
+                        dose,
+                        hour,
+                        start_date
+                    )
+
+                    kayit_mesaji = (
+                        "✅ İlaç kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "İLAÇ KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ İlaç kaydı kaydedilemedi."
+                    )
+
+        try:
+
+            kayitlar = get_medicines()
+
+        except Exception as e:
+
+            print(
+                "İLAÇLAR OKUNAMADI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        return render_template(
+            "medicine.html",
+            kayitlar=kayitlar,
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # İLAÇ SİL
+    # ========================================================
+
+    @app.route(
+        "/medicine/delete/<int:medicine_id>",
+        methods=["POST"]
+    )
+    def medicine_delete(medicine_id):
+
+        try:
+
+            delete_medicine(
+                medicine_id
+            )
+
+            print(
+                "İLAÇ SİLİNDİ:",
+                medicine_id
+            )
+
+        except Exception as e:
+
+            print(
+                "İLAÇ SİLME HATASI:",
+                repr(e)
+            )
+
+        return redirect(
+            url_for("medicine")
+        )
+
+
+    # ========================================================
+    # AYARLAR
+    # ========================================================
+
+    @app.route(
+        "/settings",
+        methods=["GET"]
+    )
+    def settings():
+
+        return redirect(
+            url_for("doctor")
+    )
