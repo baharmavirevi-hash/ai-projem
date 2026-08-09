@@ -1,5 +1,6 @@
 import sqlite3
 
+
 DB_NAME = "chat.db"
 
 
@@ -13,7 +14,6 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
-    # Sohbetler
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,7 +25,6 @@ def init_db():
         )
     """)
 
-    # Sağlık kayıtları
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS health_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +35,6 @@ def init_db():
         )
     """)
 
-    # Regl kayıtları
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS period_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,7 +45,6 @@ def init_db():
         )
     """)
 
-    # İshal kayıtları
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS diarrhea_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,7 +56,6 @@ def init_db():
         )
     """)
 
-    # İlaç kayıtları
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicines (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,10 +69,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-
-# ---------------------------------
-# SOHBET
-# ---------------------------------
 
 def save_chat(chat_type, message, reply):
     conn = get_db()
@@ -109,10 +101,6 @@ def get_chats(chat_type):
     return data
 
 
-# ---------------------------------
-# SAĞLIK
-# ---------------------------------
-
 def save_health_record(symptom, medicine, note):
     conn = get_db()
     cursor = conn.cursor()
@@ -143,10 +131,6 @@ def get_health_records():
 
     return data
 
-
-# ---------------------------------
-# REGL
-# ---------------------------------
 
 def save_period_record(start_date, end_date, note):
     conn = get_db()
@@ -179,11 +163,10 @@ def get_period_records():
     return data
 
 
-# ---------------------------------
-# İSHAL
-# ---------------------------------
-
 def save_diarrhea_record(date, count, condition, note):
+    conn = get_db()
+    cursor = conn.cursor()
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -214,10 +197,6 @@ def get_diarrhea_records():
     return data
 
 
-# ---------------------------------
-# İLAÇ
-# ---------------------------------
-
 def save_medicine(name, dose, hour, start_date):
     conn = get_db()
     cursor = conn.cursor()
@@ -247,3 +226,5 @@ def get_medicines():
     conn.close()
 
     return data
+
+    
