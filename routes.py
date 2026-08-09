@@ -1,5 +1,6 @@
-import os
 from flask import render_template, request
+import os
+
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google import genai
@@ -12,7 +13,7 @@ from database import (
     save_period_record,
     get_period_records,
     save_diarrhea_record,
-    get_diarrhea_records,
+    get_diarrhea_records
 )
 
 
@@ -20,31 +21,24 @@ from database import (
 # GEMINI
 # ============================================================
 
-api_key = os.environ.get("GEMINI_API_KEY")
-
-client = None
-
-if api_key:
-    client = genai.Client(api_key=api_key)
-
-
-# ============================================================
-# MAVIGPT AI
-# ============================================================
-
 def ask_mavigpt(message, image_path=None):
 
-    if not message:
-        message = "Merhaba!"
-
-    if client is None:
-        return (
-            "MaviGPT şu anda yapay zekâ bağlantısına ulaşamıyor. "
-            "Railway Variables bölümünde GEMINI_API_KEY "
-            "tanımlı olduğundan emin ol."
-        )
-
     try:
+
+        if not message:
+            message = "Merhaba!"
+
+        api_key = os.environ.get("GEMINI_API_KEY")
+
+        if not api_key:
+            return (
+                "MaviGPT şu anda çalışıyor fakat "
+                "GEMINI_API_KEY ayarı bulunamadı."
+            )
+
+        client = genai.Client(
+            api_key=api_key
+        )
 
         if image_path:
 
@@ -66,6 +60,7 @@ def ask_mavigpt(message, image_path=None):
             )
 
         if response and response.text:
+
             return response.text
 
         return (
@@ -75,11 +70,14 @@ def ask_mavigpt(message, image_path=None):
 
     except Exception as e:
 
-        print("GEMINI HATASI:", repr(e))
+        print(
+            "GEMINI HATASI:",
+            repr(e)
+        )
 
         return (
             "MaviGPT cevap oluştururken bir sorun yaşadı. "
-            "Lütfen biraz sonra tekrar dene."
+            "Biraz sonra tekrar deneyebilirsin."
         )
 
 
@@ -89,10 +87,10 @@ def ask_mavigpt(message, image_path=None):
 
 def upload_photo(app):
 
-    if "photo" not in request.files:
+    if "foto" not in request.files:
         return None, None
 
-    file = request.files["photo"]
+    file = request.files["foto"]
 
     if not file:
         return None, None
@@ -100,18 +98,15 @@ def upload_photo(app):
     if file.filename == "":
         return None, None
 
-    filename = secure_filename(file.filename)
+    filename = secure_filename(
+        file.filename
+    )
 
     if not filename:
         return None, None
 
     upload_folder = app.config.get(
-        "UPLOAD_FOLDER",
-        os.path.join(
-            app.root_path,
-            "static",
-            "uploads"
-        )
+        "UPLOAD_FOLDER"
     )
 
     os.makedirs(
@@ -136,24 +131,20 @@ def upload_photo(app):
 def register_routes(app):
 
     # ========================================================
-    # ANA MAVIGPT
+    # MAVIGPT
     # ========================================================
 
     @app.route("/", methods=["GET", "POST"])
     def home():
 
-        print("==============================")
+        print("================================")
         print("MAVIGPT HOME CALISTI")
         print("METHOD:", request.method)
-        print("==============================")
+        print("================================")
 
         mesaj = ""
         cevap = ""
         filename = None
-
-        # ----------------------------------------------------
-        # SOHBET GEÇMİŞİ
-        # ----------------------------------------------------
 
         try:
 
@@ -184,20 +175,12 @@ def register_routes(app):
                 mesaj
             )
 
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
-
             foto, filename = upload_photo(app)
 
             print(
-                "FOTOĞRAF:",
+                "FOTOGRAF:",
                 filename
             )
-
-            # ------------------------------------------------
-            # AI
-            # ------------------------------------------------
 
             if mesaj or foto:
 
@@ -209,8 +192,8 @@ def register_routes(app):
 
                     ai_mesaj = (
                         "Bu fotoğrafı incele. "
-                        "Gördüğün şey hakkında genel "
-                        "ve anlaşılır bilgi ver."
+                        "Gördüğün şey hakkında "
+                        "genel ve anlaşılır bilgi ver."
                     )
 
                 cevap = ask_mavigpt(
@@ -223,10 +206,6 @@ def register_routes(app):
                     cevap
                 )
 
-                # --------------------------------------------
-                # SOHBETİ KAYDET
-                # --------------------------------------------
-
                 try:
 
                     save_chat(
@@ -235,9 +214,7 @@ def register_routes(app):
                         cevap
                     )
 
-                    print(
-                        "SOHBET KAYDEDILDI"
-                    )
+                    sohbetler = get_chats("normal")
 
                 except Exception as e:
 
@@ -246,23 +223,15 @@ def register_routes(app):
                         repr(e)
                     )
 
-        # ----------------------------------------------------
-        # SAYFAYI GÖNDER
-        # ----------------------------------------------------
-
         return render_template(
             "mavigpt.html",
-
             mesaj=mesaj,
-
             cevap=cevap,
-
             foto_url=(
                 "/static/uploads/" + filename
                 if filename
                 else None
             ),
-
             sohbetler=sohbetler
         )
 
@@ -277,8 +246,8 @@ def register_routes(app):
     )
     def doctor():
 
-        mesaj = ""
-        cevap = ""
+        mesaj = None
+        cevap = None
         filename = None
         kayit_mesaji = None
 
@@ -304,10 +273,6 @@ def register_routes(app):
                 ""
             ).strip()
 
-            # ------------------------------------------------
-            # SAĞLIK KAYDI
-            # ------------------------------------------------
-
             if symptom or medicine or note:
 
                 try:
@@ -327,34 +292,18 @@ def register_routes(app):
                         repr(e)
                     )
 
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
-
             foto, filename = upload_photo(app)
-
-            # ------------------------------------------------
-            # AI
-            # ------------------------------------------------
 
             if mesaj or foto:
 
-                ai_mesaj = (
+                cevap = ask_mavigpt(
                     mesaj
                     if mesaj
                     else
-                    "Bu sağlık fotoğrafını genel "
-                    "olarak incele ve anlaşılır bilgi ver."
-                )
-
-                cevap = ask_mavigpt(
-                    ai_mesaj,
+                    "Bu sağlık fotoğrafı hakkında "
+                    "genel ve anlaşılır bilgi ver.",
                     foto
                 )
-
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
 
         try:
 
@@ -371,15 +320,10 @@ def register_routes(app):
 
         return render_template(
             "doctor.html",
-
             mesaj=mesaj,
-
             cevap=cevap,
-
             kayitlar=kayitlar,
-
             kayit_mesaji=kayit_mesaji,
-
             foto_url=(
                 "/static/uploads/" + filename
                 if filename
@@ -389,7 +333,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # REGL TAKİBİ
+    # REGL
     # ========================================================
 
     @app.route(
@@ -452,7 +396,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # SİNDİRİM TAKİBİ
+    # SİNDİRİM
     # ========================================================
 
     @app.route(
@@ -517,4 +461,4 @@ def register_routes(app):
         return render_template(
             "diarrhea.html",
             kayitlar=kayitlar
-        )
+                    )
