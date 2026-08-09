@@ -16,8 +16,8 @@
 
         html,
         body {
-            min-height: 100%;
             width: 100%;
+            min-height: 100%;
         }
 
         body {
@@ -33,7 +33,7 @@
                 linear-gradient(
                     180deg,
                     #eaf8ff 0%,
-                    #f8fcff 55%,
+                    #f7fcff 55%,
                     #ffffff 100%
                 );
 
@@ -41,23 +41,24 @@
         }
 
         /* =========================================
-           MENÜ BUTONU
+           HAMBURGER
         ========================================== */
 
         .menu-button {
             position: fixed;
-            top: 16px;
-            left: 16px;
+
+            top: 15px;
+            left: 15px;
 
             width: 52px;
             height: 52px;
 
-            border: none;
+            border: 0;
             border-radius: 17px;
 
-            background: rgba(255,255,255,0.96);
+            background: #ffffff;
 
-            color: #247c9b;
+            color: #247b99;
 
             font-size: 28px;
 
@@ -66,13 +67,14 @@
             justify-content: center;
 
             box-shadow:
-                0 8px 25px rgba(40,100,135,0.15);
+                0 8px 25px rgba(35, 100, 130, 0.16);
 
             cursor: pointer;
 
-            z-index: 2001;
+            z-index: 9999;
 
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .menu-button:active {
@@ -85,16 +87,19 @@
 
         .overlay {
             position: fixed;
+
             inset: 0;
 
-            background: rgba(20,45,60,0.38);
+            background: rgba(20, 45, 60, 0.40);
 
             opacity: 0;
             visibility: hidden;
 
-            transition: 0.25s ease;
+            transition:
+                opacity 0.25s ease,
+                visibility 0.25s ease;
 
-            z-index: 1998;
+            z-index: 9990;
         }
 
         .overlay.active {
@@ -114,105 +119,137 @@
 
             width: 290px;
             max-width: 84vw;
+
             height: 100vh;
 
-            background: rgba(255,255,255,0.98);
+            background: #ffffff;
 
-            padding: 28px 16px;
+            padding: 25px 16px;
 
-            transform: translateX(-105%);
+            transform: translateX(-110%);
 
-            transition: transform 0.28s ease;
+            transition:
+                transform 0.28s ease;
 
             box-shadow:
-                8px 0 35px rgba(20,70,100,0.14);
+                8px 0 35px rgba(20, 70, 100, 0.18);
 
-            z-index: 1999;
+            z-index: 9995;
 
             overflow-y: auto;
+
+            -webkit-overflow-scrolling: touch;
         }
 
         .sidebar.active {
             transform: translateX(0);
         }
 
+        /* SIDEBAR ÜST */
+
         .sidebar-header {
             display: flex;
+
             align-items: center;
             justify-content: space-between;
 
-            padding: 4px 6px 22px;
+            padding: 5px 5px 22px;
         }
 
         .sidebar-brand {
-            color: #267893;
-            font-size: 20px;
+            color: #24748f;
+
+            font-size: 19px;
+
             font-weight: 800;
         }
 
         .close-button {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
 
-            border: none;
-            border-radius: 12px;
+            border: 0;
+            border-radius: 13px;
 
-            background: #edf8fd;
+            background: #edf8fc;
 
-            color: #267893;
+            color: #24748f;
 
-            font-size: 21px;
+            font-size: 23px;
 
             cursor: pointer;
         }
 
-        .sidebar-label {
-            color: #9aabb5;
+        /* SIDEBAR BÖLÜM */
+
+        .sidebar-title {
+            color: #9aaab4;
 
             font-size: 11px;
+
             font-weight: 800;
 
-            letter-spacing: 1.2px;
+            letter-spacing: 1.1px;
+
+            text-transform: uppercase;
 
             padding: 0 10px 9px;
 
-            text-transform: uppercase;
+            margin-top: 5px;
         }
+
+        /* MENÜ LİNK */
 
         .menu-link {
             display: flex;
+
             align-items: center;
+
             gap: 13px;
 
             width: 100%;
 
-            padding: 14px 14px;
+            min-height: 52px;
+
+            padding: 13px 14px;
 
             margin-bottom: 7px;
 
-            border-radius: 15px;
+            border-radius: 16px;
 
             text-decoration: none;
 
-            color: #385564;
+            color: #385563;
 
             font-size: 15px;
+
             font-weight: 700;
 
-            transition: 0.2s ease;
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                transform 0.12s ease;
+        }
+
+        .menu-link:active {
+            transform: scale(0.98);
+        }
+
+        .menu-link.active {
+            background: #dff4fb;
+
+            color: #267b96;
         }
 
         .menu-link:hover {
             background: #eef9fd;
         }
 
-        .menu-link.active {
-            background: #dff4fb;
-            color: #267893;
-        }
-
         .menu-icon {
             width: 31px;
+
+            flex-shrink: 0;
 
             text-align: center;
 
@@ -225,64 +262,66 @@
 
         .page {
             width: 100%;
+
             max-width: 820px;
 
             margin: 0 auto;
 
             padding:
-                88px 16px
-                45px;
+                87px 15px
+                40px;
         }
 
         /* =========================================
-           ÜST BAŞLIK
+           BAŞLIK
         ========================================== */
 
-        .top {
+        .hero {
             text-align: center;
 
-            margin-bottom: 25px;
+            margin-bottom: 23px;
         }
 
-        .doctor-circle {
-            width: 82px;
-            height: 82px;
+        .doctor-icon {
+            width: 76px;
+            height: 76px;
 
-            margin: 0 auto 13px;
+            margin: 0 auto 12px;
 
-            border-radius: 28px;
+            border-radius: 25px;
 
             background:
                 linear-gradient(
                     145deg,
-                    #d9f4fc,
-                    #effbff
+                    #d9f3fb,
+                    #f1fbff
                 );
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            font-size: 43px;
+            font-size: 39px;
 
             box-shadow:
-                0 12px 30px rgba(48,130,160,0.13);
+                0 12px 30px rgba(40, 120, 150, 0.13);
         }
 
-        .top h1 {
-            font-size: clamp(30px, 7vw, 45px);
+        .hero h1 {
+            color: #1e566d;
 
-            letter-spacing: -1.3px;
-
-            color: #1c536a;
+            font-size:
+                clamp(30px, 8vw, 45px);
 
             font-weight: 850;
+
+            letter-spacing: -1.3px;
         }
 
-        .top p {
+        .hero p {
             margin-top: 8px;
 
-            color: #748b97;
+            color: #748a96;
 
             font-size: 14px;
 
@@ -290,49 +329,52 @@
         }
 
         /* =========================================
-           ANA DOKTOR KARTI
+           DOKTOR KARTI
         ========================================== */
 
         .doctor-card {
-            background: rgba(255,255,255,0.96);
+            background: #ffffff;
 
             border: 1px solid #e2f1f6;
 
-            border-radius: 27px;
+            border-radius: 26px;
 
-            padding: 20px;
+            padding: 17px;
 
             box-shadow:
-                0 15px 45px rgba(36,100,130,0.10);
+                0 15px 45px rgba(36, 100, 130, 0.10);
         }
 
-        .doctor-intro {
+        /* GİRİŞ */
+
+        .welcome {
             display: flex;
+
             align-items: center;
 
-            gap: 13px;
+            gap: 12px;
 
-            padding: 16px;
+            padding: 15px;
+
+            border-radius: 19px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #e8f8fd,
+                    #e7f8fd,
                     #f5fcff
                 );
 
-            border-radius: 20px;
-
-            margin-bottom: 15px;
+            margin-bottom: 14px;
         }
 
-        .intro-icon {
-            width: 50px;
-            height: 50px;
+        .welcome-icon {
+            width: 48px;
+            height: 48px;
 
             flex-shrink: 0;
 
-            border-radius: 16px;
+            border-radius: 15px;
 
             background: #ffffff;
 
@@ -340,28 +382,21 @@
             align-items: center;
             justify-content: center;
 
-            font-size: 26px;
-
-            box-shadow:
-                0 5px 15px rgba(50,110,135,0.08);
+            font-size: 25px;
         }
 
-        .intro-text {
-            line-height: 1.45;
-        }
-
-        .intro-text strong {
+        .welcome-text strong {
             display: block;
 
-            color: #245d73;
+            color: #245d72;
 
             font-size: 16px;
 
             margin-bottom: 2px;
         }
 
-        .intro-text span {
-            color: #718893;
+        .welcome-text span {
+            color: #718994;
 
             font-size: 13px;
         }
@@ -371,49 +406,51 @@
         ========================================== */
 
         .answer {
-            padding: 17px;
-
-            border-radius: 20px;
-
             background: #f8fcfe;
 
             border: 1px solid #e7f2f6;
 
-            line-height: 1.65;
+            border-radius: 19px;
+
+            padding: 16px;
+
+            margin-bottom: 14px;
+
+            color: #304b59;
 
             font-size: 15px;
 
-            margin-bottom: 15px;
+            line-height: 1.65;
 
             white-space: pre-wrap;
-
-            color: #304b5a;
         }
 
         .answer-title {
             display: block;
 
-            color: #277894;
+            color: #287894;
+
+            font-size: 14px;
 
             font-weight: 800;
 
-            margin-bottom: 8px;
+            margin-bottom: 7px;
         }
 
         /* =========================================
-           FOTOĞRAF ÖNİZLEME
+           FOTOĞRAF
         ========================================== */
 
         .photo-preview {
             display: none;
 
+            padding: 9px;
+
             margin-bottom: 12px;
 
-            padding: 10px;
-
-            background: #f2faff;
-
             border-radius: 17px;
+
+            background: #eef9fd;
         }
 
         .photo-preview img {
@@ -421,11 +458,11 @@
 
             width: 100%;
 
-            max-height: 230px;
+            max-height: 240px;
 
             object-fit: contain;
 
-            border-radius: 13px;
+            border-radius: 12px;
         }
 
         /* =========================================
@@ -434,9 +471,14 @@
 
         .message-form {
             display: flex;
+
             align-items: center;
 
-            gap: 8px;
+            gap: 7px;
+        }
+
+        .file-input {
+            display: none;
         }
 
         .upload-button {
@@ -445,12 +487,13 @@
 
             flex-shrink: 0;
 
-            border: none;
+            border: 0;
+
             border-radius: 16px;
 
             background: #eaf7fc;
 
-            color: #287b98;
+            color: #267b97;
 
             font-size: 22px;
 
@@ -459,6 +502,8 @@
             justify-content: center;
 
             cursor: pointer;
+
+            -webkit-tap-highlight-color: transparent;
         }
 
         .upload-button:active {
@@ -467,6 +512,7 @@
 
         .message-input {
             flex: 1;
+
             min-width: 0;
 
             height: 50px;
@@ -475,22 +521,23 @@
 
             border-radius: 16px;
 
-            padding: 0 15px;
-
-            outline: none;
+            padding:
+                0 14px;
 
             background: #ffffff;
 
             color: #294452;
 
             font-size: 15px;
+
+            outline: none;
         }
 
         .message-input:focus {
-            border-color: #75bdd8;
+            border-color: #73bad2;
 
             box-shadow:
-                0 0 0 4px rgba(117,189,216,0.12);
+                0 0 0 4px rgba(115, 186, 210, 0.12);
         }
 
         .send-button {
@@ -499,7 +546,7 @@
 
             flex-shrink: 0;
 
-            border: none;
+            border: 0;
 
             border-radius: 16px;
 
@@ -517,27 +564,26 @@
             cursor: pointer;
 
             box-shadow:
-                0 7px 18px rgba(40,125,156,0.20);
+                0 7px 18px rgba(40, 125, 156, 0.20);
+
+            -webkit-tap-highlight-color: transparent;
         }
 
         .send-button:active {
             transform: scale(0.94);
         }
 
-        .file-input {
-            display: none;
-        }
-
         /* =========================================
-           HIZLI MENÜLER
+           HIZLI ERİŞİM
         ========================================== */
 
         .quick-title {
-            margin: 25px 3px 11px;
+            margin:
+                24px 3px 11px;
 
             color: #456572;
 
-            font-size: 16px;
+            font-size: 17px;
 
             font-weight: 800;
         }
@@ -548,15 +594,15 @@
             grid-template-columns:
                 repeat(3, 1fr);
 
-            gap: 10px;
+            gap: 9px;
         }
 
         .quick-card {
-            min-height: 105px;
+            min-height: 103px;
 
-            padding: 14px 10px;
+            padding: 12px 8px;
 
-            border-radius: 20px;
+            border-radius: 19px;
 
             background: #ffffff;
 
@@ -565,21 +611,25 @@
             text-decoration: none;
 
             display: flex;
+
             flex-direction: column;
 
             align-items: center;
+
             justify-content: center;
 
             text-align: center;
 
             box-shadow:
-                0 7px 22px rgba(40,100,125,0.06);
+                0 7px 22px rgba(40, 100, 125, 0.06);
 
-            transition: 0.18s ease;
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
         }
 
         .quick-card:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
 
         .quick-icon {
@@ -589,7 +639,7 @@
         }
 
         .quick-name {
-            color: #315b6c;
+            color: #315c6c;
 
             font-size: 12px;
 
@@ -606,22 +656,15 @@
             margin-top: 25px;
         }
 
-        .section-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            margin-bottom: 11px;
-
-            padding: 0 3px;
-        }
-
-        .section-title h2 {
+        .records-title {
             color: #456572;
 
             font-size: 17px;
 
             font-weight: 800;
+
+            margin:
+                0 3px 11px;
         }
 
         .record {
@@ -631,7 +674,7 @@
 
             border-radius: 18px;
 
-            padding: 15px;
+            padding: 14px 15px;
 
             margin-bottom: 9px;
 
@@ -642,7 +685,7 @@
             line-height: 1.65;
 
             box-shadow:
-                0 6px 20px rgba(40,100,125,0.05);
+                0 6px 20px rgba(40, 100, 125, 0.05);
         }
 
         .record strong {
@@ -655,27 +698,40 @@
 
         @media (max-width: 600px) {
 
+            .menu-button {
+                top: 13px;
+                left: 13px;
+
+                width: 49px;
+                height: 49px;
+
+                border-radius: 15px;
+
+                font-size: 26px;
+            }
+
             .page {
                 padding:
-                    82px 12px
+                    79px 11px
                     30px;
             }
 
-            .doctor-circle {
-                width: 70px;
-                height: 70px;
+            .doctor-icon {
+                width: 68px;
+                height: 68px;
 
-                border-radius: 23px;
+                border-radius: 22px;
 
-                font-size: 36px;
+                font-size: 34px;
             }
 
-            .top h1 {
+            .hero h1 {
                 font-size: 31px;
             }
 
-            .top p {
+            .hero p {
                 font-size: 13px;
+
                 padding: 0 15px;
             }
 
@@ -685,41 +741,31 @@
                 border-radius: 22px;
             }
 
-            .doctor-intro {
+            .welcome {
                 padding: 13px;
 
                 border-radius: 17px;
             }
 
-            .intro-icon {
-                width: 45px;
-                height: 45px;
+            .welcome-icon {
+                width: 44px;
+                height: 44px;
 
                 font-size: 23px;
+            }
+
+            .welcome-text strong {
+                font-size: 15px;
+            }
+
+            .welcome-text span {
+                font-size: 12px;
             }
 
             .answer {
                 padding: 14px;
 
                 font-size: 14px;
-            }
-
-            .quick-grid {
-                gap: 8px;
-            }
-
-            .quick-card {
-                min-height: 96px;
-
-                border-radius: 17px;
-            }
-
-            .quick-icon {
-                font-size: 25px;
-            }
-
-            .quick-name {
-                font-size: 11px;
             }
 
             .message-form {
@@ -737,16 +783,39 @@
             .message-input {
                 height: 47px;
 
-                padding: 0 12px;
-
                 font-size: 14px;
+
+                padding:
+                    0 11px;
+            }
+
+            .quick-grid {
+                gap: 7px;
+            }
+
+            .quick-card {
+                min-height: 94px;
+
+                border-radius: 17px;
+            }
+
+            .quick-icon {
+                font-size: 25px;
+            }
+
+            .quick-name {
+                font-size: 10.5px;
             }
         }
 
         @media (max-width: 360px) {
 
             .quick-card {
-                min-height: 90px;
+                min-height: 88px;
+            }
+
+            .quick-icon {
+                font-size: 23px;
             }
 
             .quick-name {
@@ -766,10 +835,12 @@
     </style>
 </head>
 
+
 <body>
 
+
     <!-- =========================================
-         OVERLAY
+         KARARTMA
     ========================================== -->
 
     <div
@@ -779,7 +850,7 @@
 
 
     <!-- =========================================
-         MENÜ BUTONU
+         HAMBURGER
     ========================================== -->
 
     <button
@@ -801,6 +872,7 @@
         class="sidebar"
         id="sidebar">
 
+
         <div class="sidebar-header">
 
             <div class="sidebar-brand">
@@ -810,7 +882,8 @@
             <button
                 class="close-button"
                 id="closeButton"
-                type="button">
+                type="button"
+                aria-label="Menüyü kapat">
 
                 ×
 
@@ -819,7 +892,7 @@
         </div>
 
 
-        <div class="sidebar-label">
+        <div class="sidebar-title">
             Sağlık
         </div>
 
@@ -828,9 +901,13 @@
             href="{{ url_for('doctor') }}"
             class="menu-link active">
 
-            <span class="menu-icon">🩺</span>
+            <span class="menu-icon">
+                🩺
+            </span>
 
-            <span>Cebimdeki Doktor</span>
+            <span>
+                Cebimdeki Doktor
+            </span>
 
         </a>
 
@@ -839,9 +916,13 @@
             href="{{ url_for('period') }}"
             class="menu-link">
 
-            <span class="menu-icon">📅</span>
+            <span class="menu-icon">
+                📅
+            </span>
 
-            <span>Regl Takibi</span>
+            <span>
+                Regl Takibi
+            </span>
 
         </a>
 
@@ -850,9 +931,13 @@
             href="{{ url_for('diarrhea') }}"
             class="menu-link">
 
-            <span class="menu-icon">📝</span>
+            <span class="menu-icon">
+                📝
+            </span>
 
-            <span>Sindirim Takibi</span>
+            <span>
+                Sindirim Takibi
+            </span>
 
         </a>
 
@@ -861,15 +946,23 @@
             href="{{ url_for('medicine') }}"
             class="menu-link">
 
-            <span class="menu-icon">💊</span>
+            <span class="menu-icon">
+                💊
+            </span>
 
-            <span>İlaçlarım</span>
+            <span>
+                İlaçlarım
+            </span>
 
         </a>
 
 
-        <div class="sidebar-label" style="margin-top:20px;">
+        <div
+            class="sidebar-title"
+            style="margin-top: 20px;">
+
             Diğer
+
         </div>
 
 
@@ -877,9 +970,13 @@
             href="{{ url_for('settings') }}"
             class="menu-link">
 
-            <span class="menu-icon">⚙️</span>
+            <span class="menu-icon">
+                ⚙️
+            </span>
 
-            <span>Ayarlar</span>
+            <span>
+                Ayarlar
+            </span>
 
         </a>
 
@@ -888,11 +985,16 @@
             href="{{ url_for('home') }}"
             class="menu-link">
 
-            <span class="menu-icon">🤖</span>
+            <span class="menu-icon">
+                🤖
+            </span>
 
-            <span>MaviGPT</span>
+            <span>
+                MaviGPT
+            </span>
 
         </a>
+
 
     </aside>
 
@@ -904,11 +1006,13 @@
     <main class="page">
 
 
-        <!-- BAŞLIK -->
+        <!-- =====================================
+             BAŞLIK
+        ====================================== -->
 
-        <section class="top">
+        <section class="hero">
 
-            <div class="doctor-circle">
+            <div class="doctor-icon">
                 🩺
             </div>
 
@@ -930,15 +1034,15 @@
         <section class="doctor-card">
 
 
-            <!-- GİRİŞ -->
+            <!-- KARŞILAMA -->
 
-            <div class="doctor-intro">
+            <div class="welcome">
 
-                <div class="intro-icon">
+                <div class="welcome-icon">
                     🩺
                 </div>
 
-                <div class="intro-text">
+                <div class="welcome-text">
 
                     <strong>
                         Merhaba Bahar! 👋
@@ -976,75 +1080,4 @@
                 </span>
 
                 Belirtilerini veya merak ettiğin sağlık konusunu
-                aşağıya yazabilirsin. Sana genel sağlık bilgileri
-                konusunda yardımcı olabilirim.
-
-            </div>
-
-            {% endif %}
-
-
-            <!-- FOTOĞRAF ÖNİZLEME -->
-
-            <div
-                class="photo-preview"
-                id="photoPreview">
-
-                <img
-                    id="previewImage"
-                    src=""
-                    alt="Seçilen fotoğraf">
-
-            </div>
-
-
-            <!-- MESAJ FORMU -->
-
-            <form
-                class="message-form"
-                method="POST"
-                enctype="multipart/form-data">
-
-
-                <label
-                    class="upload-button"
-                    for="photoInput"
-                    title="Fotoğraf ekle">
-
-                    📷
-
-                </label>
-
-
-                <input
-                    class="file-input"
-                    id="photoInput"
-                    type="file"
-                    name="foto"
-                    accept="image/*">
-
-
-                <input
-                    class="message-input"
-                    type="text"
-                    name="mesaj"
-                    placeholder="Bir şeyler sor..."
-                    autocomplete="off">
-
-
-                <button
-                    class="send-button"
-                    type="submit"
-                    aria-label="Gönder">
-
-                    ➤
-
-                </button>
-
-            </form>
-
-        </section>
-
-
-        <!-- =====================================
-             HIZLI ERİŞ
+                aşağıya yazabilirsin. Sana genel sağlık bilgil
