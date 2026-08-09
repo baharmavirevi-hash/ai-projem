@@ -685,100 +685,104 @@ def register_routes(app):
         )
 
 
-    # ========================================================
-    # İLAÇLAR
-    # ========================================================
+        # ========================================================
+# İLAÇLARIM
+# ========================================================
 
-    @app.route(
-        "/medicine",
-        methods=["GET", "POST"]
+@app.route("/medicine", methods=["GET", "POST"])
+def medicine():
+
+    kayit_mesaji = None
+
+    # ----------------------------------------------------
+    # İLAÇ EKLE
+    # ----------------------------------------------------
+
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip()
+        dose = request.form.get("dose", "").strip()
+        hour = request.form.get("hour", "").strip()
+        start_date = request.form.get("start_date", "").strip()
+
+        if name:
+
+            try:
+
+                save_medicine(
+                    name,
+                    dose,
+                    hour,
+                    start_date
+                )
+
+                kayit_mesaji = "İlaç başarıyla kaydedildi."
+
+            except Exception as e:
+
+                print("İLAÇ KAYIT HATASI:", repr(e))
+
+                kayit_mesaji = "İlaç kaydedilemedi."
+
+    # ----------------------------------------------------
+    # İLAÇLARI GETİR
+    # ----------------------------------------------------
+
+    try:
+
+        kayitlar = get_medicines()
+
+        print("================================")
+        print("İLAÇLAR:")
+        print("SAYI:", len(kayitlar))
+
+        for ilac in kayitlar:
+            print(dict(ilac))
+
+        print("================================")
+
+    except Exception as e:
+
+        print("İLAÇLAR OKUNAMADI:", repr(e))
+
+        kayitlar = []
+
+        kayit_mesaji = "İlaç kayıtları okunamadı."
+
+    return render_template(
+        "medicine.html",
+        kayitlar=kayitlar,
+        kayit_mesaji=kayit_mesaji
     )
-    def medicine():
 
-        kayit_mesaji = None
 
-        if request.method == "POST":
+# ========================================================
+# İLAÇ SİL
+# ========================================================
 
-            name = request.form.get(
-                "name",
-                ""
-            ).strip()
+@app.route(
+    "/medicine/delete/<int:medicine_id>",
+    methods=["POST"]
+)
+def medicine_delete(medicine_id):
 
-            dose = request.form.get(
-                "dose",
-                ""
-            ).strip()
+    try:
 
-            hour = request.form.get(
-                "hour",
-                ""
-            ).strip()
+        delete_medicine(medicine_id)
 
-            start_date = request.form.get(
-                "start_date",
-                ""
-            ).strip()
+    except Exception as e:
 
-            if name:
-
-                try:
-
-                    save_medicine(
-                        name,
-                        dose,
-                        hour,
-                        start_date
-                    )
-
-                    kayit_mesaji = (
-                        "✅ İlaç kaydın kaydedildi."
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "İLAÇ KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    kayit_mesaji = (
-                        "❌ İlaç kaydı kaydedilemedi."
-                    )
-
-        try:
-
-            kayitlar = get_medicines()
-
-        except Exception as e:
-
-            print(
-                "İLAÇ KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
-
-            kayitlar = []
-
-        return render_template(
-            "medicine.html",
-            kayitlar=kayitlar,
-            kayit_mesaji=kayit_mesaji
+        print(
+            "İLAÇ SİLME HATASI:",
+            repr(e)
         )
 
-
-    # ========================================================
-    # İLAÇ SİLME
-    # ========================================================
-
-    @app.route(
-        "/medicine/delete",
-        methods=["POST"]
+    return redirect(
+        url_for("medicine")
     )
-    def medicine_delete():
 
-        medicine_id = request.form.get(
-            "id",
-            ""
-        ).strip()
+
+    
 
         # ----------------------------------------------------
         # ID YOKSA
