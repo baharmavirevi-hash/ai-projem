@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 import os
 import uuid
 
@@ -21,7 +21,7 @@ from database import (
 
 
 # ============================================================
-# GEMINI - MAVIGPT
+# GEMINI / MAVIGPT
 # ============================================================
 
 def ask_mavigpt(message, image_path=None):
@@ -43,10 +43,14 @@ def ask_mavigpt(message, image_path=None):
             api_key=api_key
         )
 
+        # ----------------------------------------------------
         # FOTOĞRAFLI MESAJ
+        # ----------------------------------------------------
+
         if image_path:
 
             try:
+
                 image = Image.open(image_path)
 
                 response = client.models.generate_content(
@@ -57,11 +61,11 @@ def ask_mavigpt(message, image_path=None):
                     ]
                 )
 
-            except Exception as image_error:
+            except Exception as e:
 
                 print(
                     "FOTOĞRAF OKUMA HATASI:",
-                    repr(image_error)
+                    repr(e)
                 )
 
                 return (
@@ -69,7 +73,10 @@ def ask_mavigpt(message, image_path=None):
                     "Lütfen tekrar göndermeyi dene."
                 )
 
+        # ----------------------------------------------------
         # NORMAL MESAJ
+        # ----------------------------------------------------
+
         else:
 
             response = client.models.generate_content(
@@ -113,7 +120,7 @@ def upload_photo(app):
     if not file:
         return None, None
 
-    if file.filename == "":
+    if not file.filename:
         return None, None
 
     original_name = secure_filename(
@@ -123,25 +130,48 @@ def upload_photo(app):
     if not original_name:
         return None, None
 
-    # Aynı isimli fotoğrafların üzerine yazılmasını önle
-    extension = ""
+    # --------------------------------------------------------
+    # UZANTI
+    # --------------------------------------------------------
 
-    if "." in original_name:
-        extension = os.path.splitext(
-            original_name
-        )[1].lower()
+    extension = os.path.splitext(
+        original_name
+    )[1].lower()
 
-    unique_name = (
+    allowed_extensions = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif"
+    }
+
+    if extension not in allowed_extensions:
+
+        print(
+            "DESTEKLENMEYEN FOTOĞRAF:",
+            extension
+        )
+
+        return None, None
+
+    # --------------------------------------------------------
+    # BENZERSİZ DOSYA ADI
+    # --------------------------------------------------------
+
+    filename = (
         uuid.uuid4().hex +
         extension
     )
+
+    # --------------------------------------------------------
+    # UPLOAD KLASÖRÜ
+    # --------------------------------------------------------
 
     upload_folder = app.config.get(
         "UPLOAD_FOLDER"
     )
 
-    # Eğer app.py'de ayarlanmamışsa
-    # güvenli varsayılan klasör
     if not upload_folder:
 
         upload_folder = os.path.join(
@@ -157,24 +187,27 @@ def upload_photo(app):
 
     path = os.path.join(
         upload_folder,
-        unique_name
+        filename
     )
+
+    # --------------------------------------------------------
+    # DOSYAYI KAYDET
+    # --------------------------------------------------------
 
     try:
 
         file.save(path)
 
-        # Dosyanın gerçekten oluştuğunu kontrol et
         if not os.path.exists(path):
 
             print(
-                "FOTOĞRAF DOSYASI OLUŞMADI:",
+                "FOTOĞRAF OLUŞMADI:",
                 path
             )
 
             return None, None
 
-        return path, unique_name
+        return path, filename
 
     except Exception as e:
 
@@ -190,7 +223,7 @@ def upload_photo(app):
 # FOTOĞRAF URL
 # ============================================================
 
-def photo_url(filename):
+def get_photo_url(filename):
 
     if not filename:
         return None
@@ -203,6 +236,7 @@ def photo_url(filename):
 # ============================================================
 
 def register_routes(app):
+
 
     # ========================================================
     # MAVIGPT
@@ -219,7 +253,7 @@ def register_routes(app):
         filename = None
 
         # ----------------------------------------------------
-        # SOHBETLERİ GETİR
+        # GEÇMİŞ SOHBETLER
         # ----------------------------------------------------
 
         try:
@@ -249,6 +283,9 @@ def register_routes(app):
             ).strip()
 
             print(
+                "================================"
+            )
+            print(
                 "MAVIGPT MESAJ:",
                 mesaj
             )
@@ -262,7 +299,10 @@ def register_routes(app):
                 filename
             )
 
-            # Mesaj veya fotoğraf varsa çalış
+            # ------------------------------------------------
+            # MESAJ VEYA FOTOĞRAF VARSA
+            # ------------------------------------------------
+
             if mesaj or foto:
 
                 if mesaj:
@@ -289,7 +329,7 @@ def register_routes(app):
                 )
 
                 # ------------------------------------------------
-                # SOHBETİ DATABASE'E KAYDET
+                # DATABASE'E KAYDET
                 # ------------------------------------------------
 
                 try:
@@ -300,7 +340,10 @@ def register_routes(app):
                         cevap
                     )
 
-                    # Kaydettikten sonra geçmişi yenile
+                    print(
+                        "SOHBET DATABASE'E KAYDEDILDI."
+                    )
+
                     sohbetler = get_chats(
                         "normal"
                     )
@@ -312,11 +355,15 @@ def register_routes(app):
                         repr(e)
                     )
 
+            print(
+                "================================"
+            )
+
         return render_template(
             "mavigpt.html",
             mesaj=mesaj,
             cevap=cevap,
-            foto_url=photo_url(
+            foto_url=get_photo_url(
                 filename
             ),
             sohbetler=sohbetler
@@ -390,7 +437,7 @@ def register_routes(app):
                     )
 
                     kayit_mesaji = (
-                        "❌ Kayıt sırasında bir sorun oluştu."
+                        "❌ Sağlık kaydı kaydedilemedi."
                     )
 
             # ------------------------------------------------
@@ -402,7 +449,7 @@ def register_routes(app):
             )
 
             # ------------------------------------------------
-            # AI
+            # MAVIGPT
             # ------------------------------------------------
 
             if mesaj or foto:
@@ -447,7 +494,7 @@ def register_routes(app):
             cevap=cevap,
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji,
-            foto_url=photo_url(
+            foto_url=get_photo_url(
                 filename
             )
         )
@@ -508,8 +555,7 @@ def register_routes(app):
                     )
 
                     kayit_mesaji = (
-                        "❌ Regl kaydı sırasında "
-                        "bir sorun oluştu."
+                        "❌ Regl kaydı kaydedilemedi."
                     )
 
         # ----------------------------------------------------
@@ -574,7 +620,10 @@ def register_routes(app):
                 ""
             ).strip()
 
-            # Sayıyı güvenli şekilde INTEGER yap
+            # ------------------------------------------------
+            # SAYI
+            # ------------------------------------------------
+
             count = 0
 
             if count_raw:
@@ -586,11 +635,16 @@ def register_routes(app):
                     )
 
                     if count < 0:
+
                         count = 0
 
-                except ValueError:
+                except (ValueError, TypeError):
 
                     count = 0
+
+            # ------------------------------------------------
+            # KAYDET
+            # ------------------------------------------------
 
             if date or count or condition or note:
 
@@ -615,8 +669,7 @@ def register_routes(app):
                     )
 
                     kayit_mesaji = (
-                        "❌ Sindirim kaydı sırasında "
-                        "bir sorun oluştu."
+                        "❌ Sindirim kaydı kaydedilemedi."
                     )
 
         # ----------------------------------------------------
@@ -692,6 +745,59 @@ def register_routes(app):
                         start_date
                     )
 
-                    kay
+                    kayit_mesaji = (
+                        "✅ İlaç kaydın kaydedildi."
+                    )
 
-                    
+                except Exception as e:
+
+                    print(
+                        "İLAÇ KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ İlaç kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # KAYITLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_medicines()
+
+        except Exception as e:
+
+            print(
+                "İLAÇ KAYITLARI OKUNAMADI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        return render_template(
+            "medicine.html",
+            kayitlar=kayitlar,
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # AYARLAR
+    # ========================================================
+    #
+    # Şimdilik settings.html olmadığı için 404 vermesin.
+    # Ayarlar bağlantısı Cebimdeki Doktor'a geri döner.
+    #
+
+    @app.route(
+        "/settings",
+        methods=["GET"]
+    )
+    def settings():
+
+        return redirect(
+            url_for("doctor")
+                    )
