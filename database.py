@@ -1,93 +1,73 @@
-import os
 import sqlite3
-from contextlib import closing
-
-# =========================================================
-# MAVİGPT - DATABASE
-# =========================================================
-#
-# Railway:
-#   Volume bağlandıysa veritabanı /data/chat.db olur.
-#
-# Yerel bilgisayarda:
-#   Proje klasöründeki chat.db kullanılır.
-#
-# Böylece kod hem Railway hem de bilgisayarda çalışabilir.
-# =========================================================
+import os
+from contextlib import contextmanager
 
 
-# Railway Volume için önerilen klasör
-RAILWAY_DATA_DIR = "/data"
+# ============================================================
+# VERİTABANI AYARLARI
+# ============================================================
 
-# /data mevcut ve yazılabiliyorsa onu kullan.
-# Değilse uygulamanın bulunduğu klasörü kullan.
-if os.path.isdir(RAILWAY_DATA_DIR) and os.access(RAILWAY_DATA_DIR, os.W_OK):
-    DB_DIR = RAILWAY_DATA_DIR
-else:
-    DB_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_NAME = os.path.join(BASE_DIR, "chat.db")
 
 
-# Klasör yoksa oluştur
-os.makedirs(DB_DIR, exist_ok=True)
-
-# Veritabanı dosyasının tam yolu
-DB_NAME = os.path.join(DB_DIR, "chat.db")
-
-
-# =========================================================
-# DATABASE BAĞLANTISI
-# =========================================================
+# ============================================================
+# VERİTABANI BAĞLANTISI
+# ============================================================
 
 def get_db():
     """
-    SQLite bağlantısı oluşturur.
-
-    Row factory sayesinde:
-        kayit["message"]
-        kayit["reply"]
-
-    gibi okunabilir şekilde veri alabiliriz.
+    SQLite veritabanına bağlantı oluşturur.
     """
 
     conn = sqlite3.connect(
         DB_NAME,
-        timeout=30,
-        check_same_thread=False
+        timeout=30
     )
 
     conn.row_factory = sqlite3.Row
 
-    # SQLite'ın daha güvenli ve dayanıklı çalışması için
+    # SQLite'ın foreign key desteğini aktif et
     conn.execute("PRAGMA foreign_keys = ON")
-    conn.execute("PRAGMA busy_timeout = 30000")
-
-    # WAL modu aynı anda okuma/yazma sırasında
-    # SQLite'ın daha stabil çalışmasına yardımcı olur.
-    conn.execute("PRAGMA journal_mode = WAL")
 
     return conn
 
 
-# =========================================================
-# DATABASE BAŞLATMA
-# =========================================================
-
-def init_db():
+@contextmanager
+def db_connection():
     """
-    Bütün tabloları oluşturur.
-
-    CREATE TABLE IF NOT EXISTS kullanıldığı için
-    mevcut kayıtlar silinmez.
+    Güvenli veritabanı bağlantısı.
+    İşlem başarılıysa commit,
+    hata olursa rollback yapar.
     """
 
     conn = get_db()
 
     try:
+        yield conn
+        conn.commit()
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        conn.close()
+
+
+# ============================================================
+# VERİTABANINI OLUŞTUR
+# ============================================================
+
+def init_db():
+
+    with db_connection() as conn:
+
         cursor = conn.cursor()
 
-        # -------------------------------------------------
-        # SOHBET MESAJLARI
-        # -------------------------------------------------
+        # ----------------------------------------------------
+        # SOHBETLER
+        # ----------------------------------------------------
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS messages (
@@ -100,9 +80,9 @@ def init_db():
             )
         """)
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # SAĞLIK KAYITLARI
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS health_records (
@@ -114,9 +94,9 @@ def init_db():
             )
         """)
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # REGL KAYITLARI
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS period_records (
@@ -128,9 +108,9 @@ def init_db():
             )
         """)
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # SİNDİRİM / İSHAL KAYITLARI
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS diarrhea_records (
@@ -143,96 +123,73 @@ def init_db():
             )
         """)
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # İLAÇLAR
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS medicines (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
+                name TEXT NOT NULL,
                 dose TEXT,
                 hour TEXT,
                 start_date TEXT,
+                note TEXT DEFAULT '',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
-        # -------------------------------------------------
-        # ESKİ DATABASE UYUMLULUĞU
-        # -------------------------------------------------
-        #
-        # Eğer medicines tablosu eski sürümden geldiyse
-        # created_at sütunu bulunmayabilir.
-        #
-        # Bu yüzden eksik sütunları kontrol ediyoruz.
-        # -------------------------------------------------
+        # ----------------------------------------------------
+        # ESKİ VERİTABANINDA medicines TABLOSU VARSA
+        # note SÜTUNUNU EKLE
+        # ----------------------------------------------------
 
-        cursor.execute("PRAGMA table_info(medicines)")
-        medicine_columns = {
+        cursor.execute("""
+            PRAGMA table_info(medicines)
+        """)
+
+        columns = [
             row["name"]
             for row in cursor.fetchall()
-        }
+        ]
 
-        if "created_at" not in medicine_columns:
+        if "note" not in columns:
+
             cursor.execute("""
                 ALTER TABLE medicines
-                ADD COLUMN created_at
-                TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ADD COLUMN note TEXT DEFAULT ''
             """)
 
-        conn.commit()
 
-    finally:
-        conn.close()
-
-
-# =========================================================
+# ============================================================
 # SOHBET
-# =========================================================
+# ============================================================
 
 def save_chat(chat_type, message, reply):
-    """
-    Bir sohbet mesajını kaydeder.
-    """
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
             INSERT INTO messages
             (
-                user,
+                chat_type,
                 message,
-                reply,
-                chat_type
+                reply
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?)
         """, (
-            "user",
-            message or "",
-            reply or "",
-            chat_type or "normal"
+            chat_type,
+            message,
+            reply
         ))
-
-        conn.commit()
-
-        return cursor.lastrowid
-
-    finally:
-        conn.close()
 
 
 def get_chats(chat_type="normal"):
-    """
-    Belirli bir sohbet türündeki mesajları getirir.
-    """
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -241,49 +198,56 @@ def get_chats(chat_type="normal"):
             WHERE chat_type = ?
             ORDER BY id DESC
         """, (
-            chat_type or "normal",
+            chat_type,
         ))
 
         return cursor.fetchall()
 
-    finally:
-        conn.close()
 
+def delete_chat(chat_id):
 
-def get_all_chats():
-    """
-    Bütün sohbetleri getirir.
-    """
+    with db_connection() as conn:
 
-    conn = get_db()
-
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT *
-            FROM messages
-            ORDER BY id DESC
-        """)
+            DELETE FROM messages
+            WHERE id = ?
+        """, (
+            chat_id,
+        ))
 
-        return cursor.fetchall()
-
-    finally:
-        conn.close()
+        return cursor.rowcount > 0
 
 
-# =========================================================
-# SAĞLIK
-# =========================================================
+def clear_chats(chat_type="normal"):
 
-def save_health_record(symptom="", medicine="", note=""):
-    """
-    Sağlık kaydı oluşturur.
-    """
+    with db_connection() as conn:
 
-    conn = get_db()
+        cursor = conn.cursor()
 
-    try:
+        cursor.execute("""
+            DELETE FROM messages
+            WHERE chat_type = ?
+        """, (
+            chat_type,
+        ))
+
+        return cursor.rowcount
+
+
+# ============================================================
+# SAĞLIK KAYITLARI
+# ============================================================
+
+def save_health_record(
+    symptom,
+    medicine,
+    note
+):
+
+    with db_connection() as conn:
+
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -295,27 +259,16 @@ def save_health_record(symptom="", medicine="", note=""):
             )
             VALUES (?, ?, ?)
         """, (
-            symptom or "",
-            medicine or "",
-            note or ""
+            symptom,
+            medicine,
+            note
         ))
-
-        conn.commit()
-
-        return cursor.lastrowid
-
-    finally:
-        conn.close()
 
 
 def get_health_records():
-    """
-    Sağlık kayıtlarını yeni kayıttan eski kayda doğru getirir.
-    """
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -326,22 +279,35 @@ def get_health_records():
 
         return cursor.fetchall()
 
-    finally:
-        conn.close()
+
+def delete_health_record(record_id):
+
+    with db_connection() as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM health_records
+            WHERE id = ?
+        """, (
+            record_id,
+        ))
+
+        return cursor.rowcount > 0
 
 
-# =========================================================
+# ============================================================
 # REGL
-# =========================================================
+# ============================================================
 
-def save_period_record(start_date="", end_date="", note=""):
-    """
-    Regl kaydı oluşturur.
-    """
+def save_period_record(
+    start_date,
+    end_date,
+    note
+):
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -353,27 +319,16 @@ def save_period_record(start_date="", end_date="", note=""):
             )
             VALUES (?, ?, ?)
         """, (
-            start_date or "",
-            end_date or "",
-            note or ""
+            start_date,
+            end_date,
+            note
         ))
-
-        conn.commit()
-
-        return cursor.lastrowid
-
-    finally:
-        conn.close()
 
 
 def get_period_records():
-    """
-    Regl kayıtlarını getirir.
-    """
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -384,33 +339,42 @@ def get_period_records():
 
         return cursor.fetchall()
 
-    finally:
-        conn.close()
 
+def delete_period_record(record_id):
 
-# =========================================================
-# SİNDİRİM / İSHAL
-# =========================================================
+    with db_connection() as conn:
 
-def save_diarrhea_record(
-    date="",
-    count=0,
-    condition="",
-    note=""
-):
-    """
-    Sindirim kaydı oluşturur.
-    """
-
-    conn = get_db()
-
-    try:
         cursor = conn.cursor()
 
-        # count değerini güvenli şekilde integer'a çevirmeye çalış.
+        cursor.execute("""
+            DELETE FROM period_records
+            WHERE id = ?
+        """, (
+            record_id,
+        ))
+
+        return cursor.rowcount > 0
+
+
+# ============================================================
+# SİNDİRİM / İSHAL
+# ============================================================
+
+def save_diarrhea_record(
+    date,
+    count,
+    condition,
+    note
+):
+
+    with db_connection() as conn:
+
+        cursor = conn.cursor()
+
+        # Sayısal değer geldiyse integer yap
         try:
             count_value = int(count)
-        except (TypeError, ValueError):
+        except (ValueError, TypeError):
             count_value = 0
 
         cursor.execute("""
@@ -423,28 +387,17 @@ def save_diarrhea_record(
             )
             VALUES (?, ?, ?, ?)
         """, (
-            date or "",
+            date,
             count_value,
-            condition or "",
-            note or ""
+            condition,
+            note
         ))
-
-        conn.commit()
-
-        return cursor.lastrowid
-
-    finally:
-        conn.close()
 
 
 def get_diarrhea_records():
-    """
-    Sindirim kayıtlarını getirir.
-    """
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -455,27 +408,48 @@ def get_diarrhea_records():
 
         return cursor.fetchall()
 
-    finally:
-        conn.close()
+
+def delete_diarrhea_record(record_id):
+
+    with db_connection() as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM diarrhea_records
+            WHERE id = ?
+        """, (
+            record_id,
+        ))
+
+        return cursor.rowcount > 0
 
 
-# =========================================================
-# İLAÇ
-# =========================================================
+# ============================================================
+# İLAÇLAR
+# ============================================================
 
 def save_medicine(
-    name="",
-    dose="",
-    hour="",
-    start_date=""
+    name,
+    dose,
+    hour,
+    start_date,
+    note=""
 ):
-    """
-    İlaç kaydı oluşturur.
-    """
 
-    conn = get_db()
+    name = (name or "").strip()
+    dose = (dose or "").strip()
+    hour = (hour or "").strip()
+    start_date = (start_date or "").strip()
+    note = (note or "").strip()
 
-    try:
+    if not name:
+        raise ValueError(
+            "İlaç adı boş bırakılamaz."
+        )
+
+    with db_connection() as conn:
+
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -484,133 +458,164 @@ def save_medicine(
                 name,
                 dose,
                 hour,
-                start_date
+                start_date,
+                note
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
         """, (
-            name or "",
-            dose or "",
-            hour or "",
-            start_date or ""
+            name,
+            dose,
+            hour,
+            start_date,
+            note
         ))
-
-        conn.commit()
 
         return cursor.lastrowid
 
-    finally:
-        conn.close()
-
 
 def get_medicines():
-    """
-    İlaçları saat sırasına göre getirir.
-    """
 
-    conn = get_db()
+    with db_connection() as conn:
 
-    try:
         cursor = conn.cursor()
 
         cursor.execute("""
             SELECT *
             FROM medicines
-            ORDER BY hour ASC, id DESC
+            ORDER BY
+                CASE
+                    WHEN hour IS NULL OR hour = ''
+                    THEN 1
+                    ELSE 0
+                END,
+                hour ASC,
+                id DESC
         """)
 
         return cursor.fetchall()
 
-    finally:
-        conn.close()
+
+def get_medicine(medicine_id):
+
+    with db_connection() as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT *
+            FROM medicines
+            WHERE id = ?
+        """, (
+            medicine_id,
+        ))
+
+        return cursor.fetchone()
 
 
-# =========================================================
-# TEKİL KAYIT SİLME
-# =========================================================
+def update_medicine(
+    medicine_id,
+    name,
+    dose,
+    hour,
+    start_date,
+    note=""
+):
 
-def delete_health_record(record_id):
-    conn = get_db()
+    name = (name or "").strip()
+    dose = (dose or "").strip()
+    hour = (hour or "").strip()
+    start_date = (start_date or "").strip()
+    note = (note or "").strip()
 
-    try:
-        conn.execute(
-            "DELETE FROM health_records WHERE id = ?",
-            (record_id,)
+    if not name:
+        raise ValueError(
+            "İlaç adı boş bırakılamaz."
         )
 
-        conn.commit()
+    with db_connection() as conn:
 
-    finally:
-        conn.close()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE medicines
+
+            SET
+                name = ?,
+                dose = ?,
+                hour = ?,
+                start_date = ?,
+                note = ?
+
+            WHERE id = ?
+        """, (
+            name,
+            dose,
+            hour,
+            start_date,
+            note,
+            medicine_id
+        ))
+
+        return cursor.rowcount > 0
 
 
-def delete_period_record(record_id):
-    conn = get_db()
+def delete_medicine(medicine_id):
 
-    try:
-        conn.execute(
-            "DELETE FROM period_records WHERE id = ?",
-            (record_id,)
+    with db_connection() as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM medicines
+            WHERE id = ?
+        """, (
+            medicine_id,
+        ))
+
+        return cursor.rowcount > 0
+
+
+# ============================================================
+# TÜM VERİLERİ TEMİZLEME
+# ============================================================
+
+def clear_all_data():
+
+    with db_connection() as conn:
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM messages
+        """)
+
+        cursor.execute("""
+            DELETE FROM health_records
+        """)
+
+        cursor.execute("""
+            DELETE FROM period_records
+        """)
+
+        cursor.execute("""
+            DELETE FROM diarrhea_records
+        """)
+
+        cursor.execute("""
+            DELETE FROM medicines
+        """)
+
+
+# ============================================================
+# UYGULAMA BAŞLARKEN VERİTABANINI HAZIRLA
+# ============================================================
+
+try:
+    init_db()
+
+except Exception as e:
+
+    print(
+        "VERİTABANI BAŞLATMA HATASI:",
+        repr(e)
         )
-
-        conn.commit()
-
-    finally:
-        conn.close()
-
-
-def delete_diarrhea_record(record_id):
-    conn = get_db()
-
-    try:
-        conn.execute(
-            "DELETE FROM diarrhea_records WHERE id = ?",
-            (record_id,)
-        )
-
-        conn.commit()
-
-    finally:
-        conn.close()
-
-
-def delete_medicine(record_id):
-    conn = get_db()
-
-    try:
-        conn.execute(
-            "DELETE FROM medicines WHERE id = ?",
-            (record_id,)
-        )
-
-        conn.commit()
-
-    finally:
-        conn.close()
-
-
-# =========================================================
-# DATABASE DURUMU
-# =========================================================
-
-def database_info():
-    """
-    Veritabanının nerede olduğunu kontrol etmek için.
-    """
-
-    return {
-        "database_path": DB_NAME,
-        "database_exists": os.path.exists(DB_NAME),
-        "database_size": (
-            os.path.getsize(DB_NAME)
-            if os.path.exists(DB_NAME)
-            else 0
-        )
-    }
-
-
-# =========================================================
-# OTOMATİK BAŞLAT
-# =========================================================
-
-init_db()
-
