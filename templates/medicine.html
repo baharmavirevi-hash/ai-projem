@@ -1127,4 +1127,161 @@ async function requestNotifications() {
 }
 
 
-n
+/* =========================================================
+   BİLDİRİM BUTONU
+========================================================= */
+
+notificationButton.addEventListener(
+    "click",
+    requestNotifications
+);
+
+
+/* =========================================================
+   SAYFA AÇILINCA DURUMU KONTROL ET
+========================================================= */
+
+checkNotification();
+
+
+/* =========================================================
+   İLAÇ SAATİ KONTROLÜ
+========================================================= */
+
+function checkMedicineTimes() {
+
+    if (
+        !("Notification" in window) ||
+        Notification.permission !== "granted"
+    ) {
+        return;
+    }
+
+    const now = new Date();
+
+    const currentHour =
+        String(now.getHours()).padStart(2, "0");
+
+    const currentMinute =
+        String(now.getMinutes()).padStart(2, "0");
+
+    const currentTime =
+        currentHour + ":" + currentMinute;
+
+
+    document
+        .querySelectorAll(".medicine-card")
+        .forEach(function (card) {
+
+            const medicineHour =
+                card.dataset.hour;
+
+            const medicineName =
+                card.dataset.name || "İlacın";
+
+            const medicineDose =
+                card.dataset.dose || "";
+
+
+            if (
+                medicineHour === currentTime
+            ) {
+
+                const notificationKey =
+                    "medicine-notified-" +
+                    medicineName +
+                    "-" +
+                    currentTime +
+                    "-" +
+                    now.toDateString();
+
+
+                if (
+                    localStorage.getItem(
+                        notificationKey
+                    )
+                ) {
+                    return;
+                }
+
+
+                let message =
+                    "İlaç saatinin geldi!";
+
+                if (medicineDose) {
+
+                    message +=
+                        "\nDoz: " +
+                        medicineDose;
+
+                }
+
+
+                try {
+
+                    new Notification(
+                        "💊 Cebimdeki Doktor",
+                        {
+                            body:
+                                medicineName +
+                                " zamanı!\n" +
+                                message
+                        }
+                    );
+
+                    localStorage.setItem(
+                        notificationKey,
+                        "true"
+                    );
+
+                } catch (error) {
+
+                    console.log(
+                        "Bildirim gönderilemedi:",
+                        error
+                    );
+
+                }
+
+            }
+
+        });
+
+}
+
+
+/* =========================================================
+   HER DAKİKA KONTROL
+========================================================= */
+
+setInterval(
+    checkMedicineTimes,
+    60000
+);
+
+
+/* İlk kontrol */
+
+checkMedicineTimes();
+
+
+/* =========================================================
+   ESC İLE MENÜYÜ KAPAT
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (event.key === "Escape") {
+            closeMenu();
+        }
+
+    }
+);
+
+})();
+</script>
+
+</body>
+</html>
