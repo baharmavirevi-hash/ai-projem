@@ -225,4 +225,199 @@ def save_period_record(start_date, end_date, note):
 
     conn = get_db()
 
-    conn.execute
+    conn.execute("""
+        INSERT INTO period_records
+        (start_date, end_date, note)
+        VALUES (?, ?, ?)
+    """, (
+        start_date,
+        end_date,
+        note
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def get_period_records():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM period_records
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# SİNDİRİM
+# ============================================================
+
+def save_diarrhea_record(date, count, condition, note):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO diarrhea_records
+        (date, count, condition, note)
+        VALUES (?, ?, ?, ?)
+    """, (
+        date,
+        count,
+        condition,
+        note
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def get_diarrhea_records():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM diarrhea_records
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# İLAÇ
+# ============================================================
+
+def save_medicine(name, dose, hour, start_date):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO medicines
+        (name, dose, hour, start_date)
+        VALUES (?, ?, ?, ?)
+    """, (
+        name,
+        dose,
+        hour,
+        start_date
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def get_medicines():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM medicines
+        ORDER BY
+            CASE
+                WHEN hour IS NULL OR hour = ''
+                THEN 1
+                ELSE 0
+            END,
+            hour ASC,
+            id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+def delete_medicine(medicine_id):
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM medicines
+        WHERE id = ?
+    """, (
+        medicine_id,
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# AYARLAR
+# ============================================================
+
+def get_settings():
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT *
+        FROM settings
+        WHERE id = 1
+        LIMIT 1
+    """).fetchone()
+
+    conn.close()
+
+    if row:
+        return row
+
+    return {
+        "mode": "normal",
+        "personality": "friendly"
+    }
+
+
+def save_settings(mode, personality):
+
+    allowed_modes = {
+        "normal",
+        "creative",
+        "study",
+        "concise"
+    }
+
+    allowed_personalities = {
+        "friendly",
+        "funny",
+        "serious",
+        "teacher"
+    }
+
+    if mode not in allowed_modes:
+        mode = "normal"
+
+    if personality not in allowed_personalities:
+        personality = "friendly"
+
+    conn = get_db()
+
+    conn.execute("""
+        UPDATE settings
+        SET mode = ?,
+            personality = ?
+        WHERE id = 1
+    """, (
+        mode,
+        personality
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# BAŞLAT
+# ============================================================
+
+init_db()
