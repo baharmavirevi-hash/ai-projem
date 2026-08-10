@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, Response
 import os
 import uuid
 
@@ -247,6 +247,7 @@ def get_photo_url(filename):
 # ============================================================
 
 def register_routes(app):
+
     # ========================================================
     # PWA SERVICE WORKER
     # ========================================================
@@ -254,15 +255,38 @@ def register_routes(app):
     @app.route("/service-worker.js")
     def service_worker():
 
-        response = app.send_static_file(
+        service_worker_path = os.path.join(
+            app.root_path,
+            "static",
             "service-worker.js"
         )
 
-        response.headers["Content-Type"] = (
-            "application/javascript"
-        )
+        try:
 
-        return response
+            with open(
+                service_worker_path,
+                "r",
+                encoding="utf-8"
+            ) as file:
+
+                javascript = file.read()
+
+            return Response(
+                javascript,
+                mimetype="application/javascript",
+                headers={
+                    "Cache-Control": "no-cache"
+                }
+            )
+
+        except FileNotFoundError:
+
+            return (
+                "service-worker.js bulunamadı.",
+                404
+            )
+
+
     # ========================================================
     # ANA SAYFA / MAVİGPT
     # ========================================================
@@ -276,81 +300,16 @@ def register_routes(app):
 
         try:
             sohbetler = get_chats("normal")
+
         except Exception as e:
-            print("SOHBET OKUMA HATASI:", repr(e))
-            sohbetler = []
 
-        if request.method == "POST":
+            print(
+                "SOHBET OKUMA HATASI:",
+                repr(e)
+            )
 
-            mesaj = request.form.get(
-                "mesaj",
-                ""
-            ).strip()
-
-            foto, filename = upload_photo(app)
-
-            if mesaj or foto:
-
-                if mesaj:
-                    ai_mesaj = mesaj
-                else:
-                    ai_mesaj = (
-                        "Bu fotoğrafı incele ve "
-                        "genel, güvenli bilgi ver."
-                    )
-
-                cevap = ask_mavigpt(
-                    ai_mesaj,
-                    foto
-                )
-
-                try:
-
-                    save_chat(
-                        "normal",
-                        mesaj if mesaj else "Fotoğraf",
-                        cevap
-                    )
-
-                    sohbetler = get_chats(
-                        "normal"
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "SOHBET KAYIT HATASI:",
-                        repr(e)
-                    )
-
-        return render_template(
-            "mavigpt.html",
-            mesaj=mesaj,
-            cevap=cevap,
-            foto_url=get_photo_url(filename),
-            sohbetler=sohbetler
-        )
-
-
-    # ========================================================
-    # TEK SOHBET
-    # ========================================================
-
-    @app.route("/chat/<int:chat_id>")
-    def chat(chat_id):
-
-        sohbet = get_chat(chat_id)
-
-        if not sohbet:
-            return redirect(url_for("home"))
-
-        return render_template(
-            "chat.html",
-            sohbet=sohbet
-        )
-
-
-    # ========================================================
+            sohbet
+                # ========================================================
     # DOKTOR
     # ========================================================
 
@@ -425,9 +384,16 @@ def register_routes(app):
                 )
 
         try:
+
             kayitlar = get_health_records()
+
         except Exception as e:
-            print("SAĞLIK OKUMA HATASI:", repr(e))
+
+            print(
+                "SAĞLIK OKUMA HATASI:",
+                repr(e)
+            )
+
             kayitlar = []
 
         return render_template(
@@ -492,9 +458,16 @@ def register_routes(app):
                     )
 
         try:
+
             kayitlar = get_period_records()
+
         except Exception as e:
-            print("REGL OKUMA HATASI:", repr(e))
+
+            print(
+                "REGL OKUMA HATASI:",
+                repr(e)
+            )
+
             kayitlar = []
 
         return render_template(
@@ -536,8 +509,14 @@ def register_routes(app):
             ).strip()
 
             try:
-                count = max(0, int(count_raw or 0))
+
+                count = max(
+                    0,
+                    int(count_raw or 0)
+                )
+
             except (ValueError, TypeError):
+
                 count = 0
 
             if date or count or condition or note:
@@ -567,9 +546,16 @@ def register_routes(app):
                     )
 
         try:
+
             kayitlar = get_diarrhea_records()
+
         except Exception as e:
-            print("SİNDİRİM OKUMA HATASI:", repr(e))
+
+            print(
+                "SİNDİRİM OKUMA HATASI:",
+                repr(e)
+            )
+
             kayitlar = []
 
         return render_template(
@@ -577,9 +563,7 @@ def register_routes(app):
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji
         )
-
-
-    # ========================================================
+            # ========================================================
     # İLAÇ
     # ========================================================
 
@@ -637,9 +621,16 @@ def register_routes(app):
                     )
 
         try:
+
             kayitlar = get_medicines()
+
         except Exception as e:
-            print("İLAÇ OKUMA HATASI:", repr(e))
+
+            print(
+                "İLAÇ OKUMA HATASI:",
+                repr(e)
+            )
+
             kayitlar = []
 
         return render_template(
@@ -660,8 +651,13 @@ def register_routes(app):
     def medicine_delete(medicine_id):
 
         try:
-            delete_medicine(medicine_id)
+
+            delete_medicine(
+                medicine_id
+            )
+
         except Exception as e:
+
             print(
                 "İLAÇ SİLME HATASI:",
                 repr(e)
@@ -719,9 +715,16 @@ def register_routes(app):
                 )
 
         try:
+
             settings_data = get_settings()
+
         except Exception as e:
-            print("AYAR OKUMA HATASI:", repr(e))
+
+            print(
+                "AYAR OKUMA HATASI:",
+                repr(e)
+            )
+
             settings_data = {
                 "mode": "normal",
                 "personality": "friendly"
@@ -731,4 +734,4 @@ def register_routes(app):
             "settings.html",
             settings=settings_data,
             kayit_mesaji=kayit_mesaji
-    )
+        )
