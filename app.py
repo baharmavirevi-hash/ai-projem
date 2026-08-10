@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask
 from routes import register_routes
 from database import init_db
 import os
@@ -25,20 +25,6 @@ os.makedirs(
     app.config["UPLOAD_FOLDER"],
     exist_ok=True
 )
-
-
-# ============================================================
-# SERVICE WORKER
-# ============================================================
-
-@app.route("/service-worker.js")
-def service_worker():
-
-    return send_from_directory(
-        app.static_folder,
-        "service-worker.js",
-        mimetype="application/javascript"
-    )
 
 
 # ============================================================
