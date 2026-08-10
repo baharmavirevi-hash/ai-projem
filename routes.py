@@ -18,12 +18,14 @@ from database import (
     get_diarrhea_records,
     save_medicine,
     get_medicines,
-    delete_medicine
+    delete_medicine,
+    get_settings,
+    save_settings
 )
 
 
 # ============================================================
-# GEMINI / MAVIGPT
+# MAVİGPT
 # ============================================================
 
 def ask_mavigpt(message, image_path=None):
@@ -36,16 +38,71 @@ def ask_mavigpt(message, image_path=None):
         api_key = os.environ.get("GEMINI_API_KEY")
 
         if not api_key:
-            return (
-                "MaviGPT şu anda çalışıyor fakat "
-                "GEMINI_API_KEY ayarı bulunamadı."
-            )
+            return "GEMINI_API_KEY ayarı bulunamadı."
+
+        settings = get_settings()
+
+        mode = settings["mode"]
+        personality = settings["personality"]
+
+        mode_text = {
+            "normal":
+                "Normal ve dengeli şekilde cevap ver.",
+
+            "creative":
+                "Daha yaratıcı, eğlenceli ve örneklerle cevap ver.",
+
+            "study":
+                "Bir öğretmen gibi açıkla. Konuyu anlaşılır şekilde öğret.",
+
+            "concise":
+                "Kısa, doğrudan ve gereksiz uzatmadan cevap ver."
+        }.get(
+            mode,
+            "Normal ve dengeli şekilde cevap ver."
+        )
+
+        personality_text = {
+            "friendly":
+                "Samimi, nazik ve arkadaşça konuş.",
+
+            "funny":
+                "Uygun yerlerde hafif mizah kullan.",
+
+            "serious":
+                "Sakin, ciddi ve düzenli konuş.",
+
+            "teacher":
+                "Sabırlı ve öğretici bir öğretmen gibi konuş."
+        }.get(
+            personality,
+            "Samimi, nazik ve arkadaşça konuş."
+        )
+
+        system_instruction = f"""
+Sen MaviGPT'sin.
+
+{mode_text}
+
+{personality_text}
+
+Türkçe konuş.
+Kullanıcıya saygılı davran.
+Bilmediğin bilgileri uydurma.
+Sağlık konularında kesin tanı koyma.
+Tehlikeli veya zararlı öneriler verme.
+"""
 
         client = genai.Client(
             api_key=api_key
         )
 
-        # Fotoğraflı mesaj
+        full_message = (
+            system_instruction
+            + "\n\nKullanıcının mesajı:\n"
+            + message
+        )
+
         if image_path:
 
             try:
@@ -55,8 +112,8 @@ def ask_mavigpt(message, image_path=None):
                 response = client.models.generate_content(
                     model="gemini-2.5-flash",
                     contents=[
-                        image,
-                        message
+                        full_message,
+                        image
                     ]
                 )
 
@@ -69,25 +126,21 @@ def ask_mavigpt(message, image_path=None):
 
                 return (
                     "Fotoğrafı şu anda okuyamadım. "
-                    "Lütfen tekrar göndermeyi dene."
+                    "Lütfen tekrar dene."
                 )
 
-        # Normal mesaj
         else:
 
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
-                contents=message
+                contents=full_message
             )
 
         if response and response.text:
 
             return response.text.strip()
 
-        return (
-            "Şu anda cevap oluşturamadım. "
-            "Lütfen tekrar dene."
-        )
+        return "Şu anda cevap oluşturamadım."
 
     except Exception as e:
 
@@ -97,13 +150,12 @@ def ask_mavigpt(message, image_path=None):
         )
 
         return (
-            "MaviGPT cevap oluştururken bir sorun yaşadı. "
-            "Biraz sonra tekrar deneyebilirsin."
+            "MaviGPT cevap oluştururken bir sorun yaşadı."
         )
 
 
 # ============================================================
-# FOTOĞRAF YÜKLEME
+# FOTOĞRAF
 # ============================================================
 
 def upload_photo(app):
@@ -113,10 +165,7 @@ def upload_photo(app):
 
     file = request.files["foto"]
 
-    if not file:
-        return None, None
-
-    if not file.filename:
+    if not file or not file.filename:
         return None, None
 
     original_name = secure_filename(
@@ -139,12 +188,6 @@ def upload_photo(app):
     }
 
     if extension not in allowed_extensions:
-
-        print(
-            "DESTEKLENMEYEN FOTOĞRAF:",
-            extension
-        )
-
         return None, None
 
     filename = (
@@ -178,16 +221,8 @@ def upload_photo(app):
 
         file.save(path)
 
-        if not os.path.exists(path):
-
-            print(
-                "FOTOĞRAF OLUŞMADI:",
-                path
-            )
-
-            return None, None
-
-        return path, filename
+        if os.path.exists(path):
+            return path, filename
 
     except Exception as e:
 
@@ -196,12 +231,8 @@ def upload_photo(app):
             repr(e)
         )
 
-        return None, None
+    return None, None
 
-
-# ============================================================
-# FOTOĞRAF URL
-# ============================================================
 
 def get_photo_url(filename):
 
@@ -218,7 +249,7 @@ def get_photo_url(filename):
 def register_routes(app):
 
     # ========================================================
-    # MAVIGPT
+    # ANA SAYFA / MAVİGPT
     # ========================================================
 
     @app.route("/", methods=["GET", "POST"])
@@ -229,16 +260,9 @@ def register_routes(app):
         filename = None
 
         try:
-
             sohbetler = get_chats("normal")
-
         except Exception as e:
-
-            print(
-                "SOHBETLER OKUNAMADI:",
-                repr(e)
-            )
-
+            print("SOHBET OKUMA HATASI:", repr(e))
             sohbetler = []
 
         if request.method == "POST":
@@ -248,39 +272,21 @@ def register_routes(app):
                 ""
             ).strip()
 
-            print("================================")
-            print("MAVIGPT MESAJ:", mesaj)
-
             foto, filename = upload_photo(app)
-
-            print(
-                "MAVIGPT FOTO:",
-                filename
-            )
 
             if mesaj or foto:
 
                 if mesaj:
-
                     ai_mesaj = mesaj
-
                 else:
-
                     ai_mesaj = (
-                        "Bu fotoğrafı incele. "
-                        "Gördüğün şey hakkında "
-                        "genel, anlaşılır ve güvenli "
-                        "bilgi ver."
+                        "Bu fotoğrafı incele ve "
+                        "genel, güvenli bilgi ver."
                     )
 
                 cevap = ask_mavigpt(
                     ai_mesaj,
                     foto
-                )
-
-                print(
-                    "MAVIGPT CEVAP:",
-                    cevap
                 )
 
                 try:
@@ -302,8 +308,6 @@ def register_routes(app):
                         repr(e)
                     )
 
-            print("================================")
-
         return render_template(
             "mavigpt.html",
             mesaj=mesaj,
@@ -314,7 +318,25 @@ def register_routes(app):
 
 
     # ========================================================
-    # CEBİMDEKİ DOKTOR
+    # TEK SOHBET
+    # ========================================================
+
+    @app.route("/chat/<int:chat_id>")
+    def chat(chat_id):
+
+        sohbet = get_chat(chat_id)
+
+        if not sohbet:
+            return redirect(url_for("home"))
+
+        return render_template(
+            "chat.html",
+            sohbet=sohbet
+        )
+
+
+    # ========================================================
+    # DOKTOR
     # ========================================================
 
     @app.route("/doctor", methods=["GET", "POST"])
@@ -347,7 +369,6 @@ def register_routes(app):
                 ""
             ).strip()
 
-            # Sağlık kaydı
             if symptom or medicine or note:
 
                 try:
@@ -373,23 +394,15 @@ def register_routes(app):
                         "❌ Sağlık kaydı kaydedilemedi."
                     )
 
-            # Fotoğraf
             foto, filename = upload_photo(app)
 
-            # MaviGPT
             if mesaj or foto:
 
-                if mesaj:
-
-                    ai_mesaj = mesaj
-
-                else:
-
-                    ai_mesaj = (
-                        "Bu sağlık fotoğrafı hakkında "
-                        "genel ve anlaşılır bilgi ver. "
-                        "Kesin tanı koyma."
-                    )
+                ai_mesaj = mesaj or (
+                    "Bu sağlık fotoğrafı hakkında "
+                    "genel ve güvenli bilgi ver. "
+                    "Kesin tanı koyma."
+                )
 
                 cevap = ask_mavigpt(
                     ai_mesaj,
@@ -397,16 +410,9 @@ def register_routes(app):
                 )
 
         try:
-
             kayitlar = get_health_records()
-
         except Exception as e:
-
-            print(
-                "SAĞLIK KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
-
+            print("SAĞLIK OKUMA HATASI:", repr(e))
             kayitlar = []
 
         return render_template(
@@ -420,7 +426,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # REGL TAKİBİ
+    # REGL
     # ========================================================
 
     @app.route("/period", methods=["GET", "POST"])
@@ -471,16 +477,9 @@ def register_routes(app):
                     )
 
         try:
-
             kayitlar = get_period_records()
-
         except Exception as e:
-
-            print(
-                "REGL KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
-
+            print("REGL OKUMA HATASI:", repr(e))
             kayitlar = []
 
         return render_template(
@@ -491,7 +490,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # SİNDİRİM TAKİBİ
+    # SİNDİRİM
     # ========================================================
 
     @app.route("/diarrhea", methods=["GET", "POST"])
@@ -521,22 +520,10 @@ def register_routes(app):
                 ""
             ).strip()
 
-            count = 0
-
-            if count_raw:
-
-                try:
-
-                    count = int(
-                        count_raw
-                    )
-
-                    if count < 0:
-                        count = 0
-
-                except (ValueError, TypeError):
-
-                    count = 0
+            try:
+                count = max(0, int(count_raw or 0))
+            except (ValueError, TypeError):
+                count = 0
 
             if date or count or condition or note:
 
@@ -556,7 +543,7 @@ def register_routes(app):
                 except Exception as e:
 
                     print(
-                        "SİNDİRİM KAYIT HATASI:",
+                        "SİNDİRİM HATASI:",
                         repr(e)
                     )
 
@@ -565,16 +552,9 @@ def register_routes(app):
                     )
 
         try:
-
             kayitlar = get_diarrhea_records()
-
         except Exception as e:
-
-            print(
-                "SİNDİRİM KAYITLARI OKUNAMADI:",
-                repr(e)
-            )
-
+            print("SİNDİRİM OKUMA HATASI:", repr(e))
             kayitlar = []
 
         return render_template(
@@ -585,7 +565,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # İLAÇLAR
+    # İLAÇ
     # ========================================================
 
     @app.route("/medicine", methods=["GET", "POST"])
@@ -642,16 +622,9 @@ def register_routes(app):
                     )
 
         try:
-
             kayitlar = get_medicines()
-
         except Exception as e:
-
-            print(
-                "İLAÇLAR OKUNAMADI:",
-                repr(e)
-            )
-
+            print("İLAÇ OKUMA HATASI:", repr(e))
             kayitlar = []
 
         return render_template(
@@ -672,18 +645,8 @@ def register_routes(app):
     def medicine_delete(medicine_id):
 
         try:
-
-            delete_medicine(
-                medicine_id
-            )
-
-            print(
-                "İLAÇ SİLİNDİ:",
-                medicine_id
-            )
-
+            delete_medicine(medicine_id)
         except Exception as e:
-
             print(
                 "İLAÇ SİLME HATASI:",
                 repr(e)
@@ -700,10 +663,57 @@ def register_routes(app):
 
     @app.route(
         "/settings",
-        methods=["GET"]
+        methods=["GET", "POST"]
     )
     def settings():
 
-        return redirect(
-            url_for("doctor")
+        kayit_mesaji = None
+
+        if request.method == "POST":
+
+            mode = request.form.get(
+                "mode",
+                "normal"
+            ).strip()
+
+            personality = request.form.get(
+                "personality",
+                "friendly"
+            ).strip()
+
+            try:
+
+                save_settings(
+                    mode,
+                    personality
+                )
+
+                kayit_mesaji = (
+                    "✅ Ayarların kaydedildi."
+                )
+
+            except Exception as e:
+
+                print(
+                    "AYAR KAYIT HATASI:",
+                    repr(e)
+                )
+
+                kayit_mesaji = (
+                    "❌ Ayarlar kaydedilemedi."
+                )
+
+        try:
+            settings_data = get_settings()
+        except Exception as e:
+            print("AYAR OKUMA HATASI:", repr(e))
+            settings_data = {
+                "mode": "normal",
+                "personality": "friendly"
+            }
+
+        return render_template(
+            "settings.html",
+            settings=settings_data,
+            kayit_mesaji=kayit_mesaji
     )
