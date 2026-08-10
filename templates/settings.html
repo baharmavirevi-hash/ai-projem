@@ -1,1 +1,455 @@
+<!DOCTYPE html>
+<html lang="tr">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>MaviGPT Ayarları</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #f4f9fc;
+            color: #17212b;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+
+            padding: 20px 15px 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+
+            margin: auto;
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+        .back {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 14px;
+
+            background: white;
+
+            border: 1px solid #dbe7ec;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+
+            font-size: 22px;
+
+            color: #14728d;
+        }
+
+        h1 {
+            margin: 0;
+
+            font-size: 23px;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid #dce7ec;
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 16px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,.04);
+        }
+
+        .card h2 {
+            margin: 0 0 7px;
+
+            font-size: 17px;
+        }
+
+        .description {
+            margin: 0 0 15px;
+
+            color: #75838c;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        .option {
+            display: block;
+
+            padding: 14px;
+
+            margin-top: 9px;
+
+            border: 1px solid #dce7ec;
+
+            border-radius: 14px;
+
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background: #f4fbfd;
+        }
+
+        .option input {
+            margin-right: 9px;
+        }
+
+        .option-title {
+            font-weight: bold;
+        }
+
+        .option-text {
+            display: block;
+
+            margin-left: 24px;
+
+            margin-top: 4px;
+
+            color: #7a8790;
+
+            font-size: 12px;
+
+            line-height: 1.4;
+        }
+
+        .save {
+            width: 100%;
+
+            border: none;
+
+            border-radius: 16px;
+
+            padding: 15px;
+
+            background: #0782a8;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .message {
+            padding: 13px 15px;
+
+            margin-bottom: 15px;
+
+            border-radius: 14px;
+
+            background: #e8f8ef;
+
+            color: #19734b;
+
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 15px 10px 30px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 21px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="container">
+
+        <div class="top">
+
+            <a
+                href="/"
+                class="back">
+
+                ←
+
+            </a>
+
+            <h1>
+                ⚙️ MaviGPT Ayarları
+            </h1>
+
+        </div>
+
+
+        {% if kayit_mesaji %}
+
+            <div class="message">
+                {{ kayit_mesaji }}
+            </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            action="/settings">
+
+
+            <!-- MOD -->
+
+            <div class="card">
+
+                <h2>
+                    🤖 MaviGPT modu
+                </h2>
+
+                <p class="description">
+                    MaviGPT'nin cevap verme şeklini seç.
+                </p>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="normal"
+                        {% if settings["mode"] == "normal" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        ⚖️ Normal
+                    </span>
+
+                    <span class="option-text">
+                        Dengeli ve doğal cevaplar.
+                    </span>
+
+                </label>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="creative"
+                        {% if settings["mode"] == "creative" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        🎨 Yaratıcı
+                    </span>
+
+                    <span class="option-text">
+                        Daha yaratıcı ve eğlenceli cevaplar.
+                    </span>
+
+                </label>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="study"
+                        {% if settings["mode"] == "study" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        📚 Ders
+                    </span>
+
+                    <span class="option-text">
+                        Konuları öğretmen gibi açıklar.
+                    </span>
+
+                </label>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="concise"
+                        {% if settings["mode"] == "concise" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        ⚡ Kısa
+                    </span>
+
+                    <span class="option-text">
+                        Kısa ve doğrudan cevaplar.
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- KİŞİLİK -->
+
+            <div class="card">
+
+                <h2>
+                    🩵 MaviGPT kişiliği
+                </h2>
+
+                <p class="description">
+                    MaviGPT'nin konuşma tarzını seç.
+                </p>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="personality"
+                        value="friendly"
+                        {% if settings["personality"] == "friendly" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        🫶 Samimi
+                    </span>
+
+                    <span class="option-text">
+                        Sıcak, nazik ve arkadaşça.
+                    </span>
+
+                </label>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="personality"
+                        value="funny"
+                        {% if settings["personality"] == "funny" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        😂 Komik
+                    </span>
+
+                    <span class="option-text">
+                        Uygun yerlerde hafif mizah kullanır.
+                    </span>
+
+                </label>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="personality"
+                        value="serious"
+                        {% if settings["personality"] == "serious" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        🧠 Ciddi
+                    </span>
+
+                    <span class="option-text">
+                        Sakin, ciddi ve düzenli konuşur.
+                    </span>
+
+                </label>
+
+
+                <label class="option">
+
+                    <input
+                        type="radio"
+                        name="personality"
+                        value="teacher"
+                        {% if settings["personality"] == "teacher" %}
+                        checked
+                        {% endif %}>
+
+                    <span class="option-title">
+                        👩‍🏫 Öğretmen
+                    </span>
+
+                    <span class="option-text">
+                        Sabırlı ve öğretici bir şekilde açıklar.
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="save">
+
+                💾 Ayarları Kaydet
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+
+  </html>
