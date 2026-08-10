@@ -94,6 +94,26 @@ def init_db():
         )
     """)
 
+    # --------------------------------------------------------
+    # AYARLAR
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            theme TEXT DEFAULT 'light',
+            personality TEXT DEFAULT 'friendly',
+            response_style TEXT DEFAULT 'normal'
+        )
+    """)
+
+    # İlk ayar kaydı yoksa oluştur
+    cursor.execute("""
+        INSERT OR IGNORE INTO settings
+        (id, theme, personality, response_style)
+        VALUES (1, 'light', 'friendly', 'normal')
+    """)
+
     conn.commit()
     conn.close()
 
@@ -165,9 +185,6 @@ def get_chat(chat_id):
 
 
 # Eski isim de çalışmaya devam etsin
-# Böylece başka bir dosyada get_chat_by_id kullanılıyorsa
-# o da bozulmaz.
-
 def get_chat_by_id(chat_id):
     return get_chat(chat_id)
 
@@ -273,117 +290,4 @@ def save_diarrhea_record(
     note
 ):
 
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO diarrhea_records
-        (date, count, condition, note)
-        VALUES (?, ?, ?, ?)
-    """, (
-        date,
-        count,
-        condition,
-        note
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-# ============================================================
-# SİNDİRİM KAYITLARINI GETİR
-# ============================================================
-
-def get_diarrhea_records():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM diarrhea_records
-        ORDER BY id DESC
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-
-
-# ============================================================
-# İLAÇ KAYDET
-# ============================================================
-
-def save_medicine(
-    name,
-    dose,
-    hour,
-    start_date
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO medicines
-        (name, dose, hour, start_date)
-        VALUES (?, ?, ?, ?)
-    """, (
-        name,
-        dose,
-        hour,
-        start_date
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-# ============================================================
-# İLAÇLARI GETİR
-# ============================================================
-
-def get_medicines():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM medicines
-        ORDER BY
-            CASE
-                WHEN hour IS NULL OR hour = ''
-                THEN 1
-                ELSE 0
-            END,
-            hour ASC,
-            id DESC
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-
-
-# ============================================================
-# İLAÇ SİL
-# ============================================================
-
-def delete_medicine(medicine_id):
-
-    conn = get_db()
-
-    conn.execute("""
-        DELETE FROM medicines
-        WHERE id = ?
-    """, (
-        medicine_id,
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-# ============================================================
-# DATABASE BAŞLAT
-# ============================================================
-
-init_db()
+   
