@@ -299,6 +299,7 @@ def register_routes(app):
         filename = None
 
         try:
+
             sohbetler = get_chats("normal")
 
         except Exception as e:
@@ -308,8 +309,85 @@ def register_routes(app):
                 repr(e)
             )
 
-            sohbet
-                # ========================================================
+            sohbetler = []
+
+        if request.method == "POST":
+
+            mesaj = request.form.get(
+                "mesaj",
+                ""
+            ).strip()
+
+            foto, filename = upload_photo(app)
+
+            if mesaj or foto:
+
+                if mesaj:
+
+                    ai_mesaj = mesaj
+
+                else:
+
+                    ai_mesaj = (
+                        "Bu fotoğrafı incele ve "
+                        "genel, güvenli bilgi ver."
+                    )
+
+                cevap = ask_mavigpt(
+                    ai_mesaj,
+                    foto
+                )
+
+                try:
+
+                    save_chat(
+                        "normal",
+                        mesaj if mesaj else "Fotoğraf",
+                        cevap
+                    )
+
+                    sohbetler = get_chats(
+                        "normal"
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SOHBET KAYIT HATASI:",
+                        repr(e)
+                    )
+
+        return render_template(
+            "mavigpt.html",
+            mesaj=mesaj,
+            cevap=cevap,
+            foto_url=get_photo_url(filename),
+            sohbetler=sohbetler
+        )
+
+
+    # ========================================================
+    # TEK SOHBET
+    # ========================================================
+
+    @app.route("/chat/<int:chat_id>")
+    def chat(chat_id):
+
+        sohbet = get_chat(chat_id)
+
+        if not sohbet:
+
+            return redirect(
+                url_for("home")
+            )
+
+        return render_template(
+            "chat.html",
+            sohbet=sohbet
+        )
+
+
+    # ========================================================
     # DOKTOR
     # ========================================================
 
@@ -563,7 +641,9 @@ def register_routes(app):
             kayitlar=kayitlar,
             kayit_mesaji=kayit_mesaji
         )
-            # ========================================================
+
+
+    # ========================================================
     # İLAÇ
     # ========================================================
 
