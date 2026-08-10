@@ -1,26 +1,12 @@
 {
-  "name": "Cebimdeki Doktor",
-  "short_name": "Cebimdeki Doktor",
-  "description": "MaviGPT sağlık yardımcın ve günlük sağlık takip uygulaman.",
-  "start_url": "/doctor",
-  "scope": "/",
+  "background_color": "#98daf5",
+  "dir": "ltr",
   "display": "standalone",
-  "background_color": "#eef8ff",
-  "theme_color": "#58b9d8",
-  "orientation": "portrait",
-  "lang": "tr",
-  "icons": [
-    {
-      "src": "/static/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/static/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "name": "MaviGPT",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "MaviGPT",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "MaviGPT - Kişisel yapay zeka asistanın"
 }
