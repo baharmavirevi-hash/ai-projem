@@ -1,76 +1,38 @@
-const CACHE_NAME = "mavigpt-v2";
+const CACHE_NAME = "mavigpt-v1";
 
 const FILES_TO_CACHE = [
     "/",
-    "/doctor",
-    "/medicine",
-    "/period",
-    "/diarrhea",
     "/static/manifest.json"
 ];
 
-self.addEventListener("install", function (event) {
-
+self.addEventListener("install", event => {
     event.waitUntil(
-
-        caches.open(CACHE_NAME).then(function (cache) {
-
+        caches.open(CACHE_NAME).then(cache => {
             return cache.addAll(FILES_TO_CACHE);
-
         })
-
     );
 
     self.skipWaiting();
 });
 
-
-self.addEventListener("activate", function (event) {
-
+self.addEventListener("activate", event => {
     event.waitUntil(
-
-        caches.keys().then(function (cacheNames) {
-
+        caches.keys().then(keys => {
             return Promise.all(
-
-                cacheNames.map(function (cacheName) {
-
-                    if (cacheName !== CACHE_NAME) {
-
-                        return caches.delete(cacheName);
-
-                    }
-
-                })
-
+                keys
+                    .filter(key => key !== CACHE_NAME)
+                    .map(key => caches.delete(key))
             );
-
         })
-
     );
 
     self.clients.claim();
 });
 
-
-self.addEventListener("fetch", function (event) {
-
+self.addEventListener("fetch", event => {
     event.respondWith(
-
-        fetch(event.request)
-
-            .then(function (response) {
-
-                return response;
-
-            })
-
-            .catch(function () {
-
-                return caches.match(event.request);
-
-            })
-
+        fetch(event.request).catch(() => {
+            return caches.match(event.request);
+        })
     );
-
 });
