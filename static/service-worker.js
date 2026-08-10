@@ -1,10 +1,9 @@
-const CACHE_NAME = "mavigpt-v2";
+const CACHE_NAME = "mavigpt-v3";
 
 const FILES_TO_CACHE = [
     "/",
     "/static/manifest.json"
 ];
-
 
 /* =========================================
    KURULUM
@@ -81,7 +80,73 @@ self.addEventListener("fetch", event => {
 
 
 /* =========================================
-   BİLDİRİM TIKLANINCA
+   UYGULAMADAN BİLDİRİM MESAJI
+========================================= */
+
+self.addEventListener(
+    "message",
+    event => {
+
+        if (!event.data) {
+            return;
+        }
+
+        if (
+            event.data.type ===
+            "SHOW_MEDICINE_NOTIFICATION"
+        ) {
+
+            const name =
+                event.data.name ||
+                "İlacın";
+
+            const dose =
+                event.data.dose ||
+                "";
+
+            let body =
+                name + " zamanı geldi!";
+
+            if (dose) {
+
+                body +=
+                    "\nDoz: " + dose;
+
+            }
+
+            event.waitUntil(
+
+                self.registration.showNotification(
+                    "💊 Cebimdeki Doktor",
+                    {
+                        body: body,
+
+                        icon: "/static/icon-192.png",
+
+                        badge: "/static/icon-192.png",
+
+                        tag:
+                            "medicine-" +
+                            name,
+
+                        renotify: true,
+
+                        data: {
+                            url: "/medicine"
+                        }
+                    }
+                )
+
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   BİLDİRİME TIKLANINCA
 ========================================= */
 
 self.addEventListener(
@@ -89,6 +154,12 @@ self.addEventListener(
     event => {
 
         event.notification.close();
+
+        const url =
+            event.notification.data &&
+            event.notification.data.url
+                ? event.notification.data.url
+                : "/medicine";
 
         event.waitUntil(
 
@@ -98,9 +169,22 @@ self.addEventListener(
             })
             .then(clientList => {
 
-                for (const client of clientList) {
+                for (
+                    const client
+                    of clientList
+                ) {
 
-                    if ("focus" in client) {
+                    if (
+                        "navigate" in client
+                    ) {
+
+                        client.navigate(url);
+
+                    }
+
+                    if (
+                        "focus" in client
+                    ) {
 
                         return client.focus();
 
@@ -108,9 +192,13 @@ self.addEventListener(
 
                 }
 
-                if (clients.openWindow) {
+                if (
+                    clients.openWindow
+                ) {
 
-                    return clients.openWindow("/");
+                    return clients.openWindow(
+                        url
+                    );
 
                 }
 
