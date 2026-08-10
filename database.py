@@ -1,6 +1,8 @@
 import sqlite3
+import os
 
-DB_NAME = "chat.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_NAME = os.path.join(BASE_DIR, "chat.db")
 
 
 # ============================================================
@@ -37,7 +39,7 @@ def init_db():
     """)
 
     # --------------------------------------------------------
-    # SAĞLIK KAYITLARI
+    # SAĞLIK
     # --------------------------------------------------------
 
     cursor.execute("""
@@ -101,17 +103,15 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS settings (
             id INTEGER PRIMARY KEY CHECK (id = 1),
-            theme TEXT DEFAULT 'light',
-            personality TEXT DEFAULT 'friendly',
-            response_style TEXT DEFAULT 'normal'
+            mode TEXT DEFAULT 'normal',
+            personality TEXT DEFAULT 'friendly'
         )
     """)
 
-    # İlk ayar kaydı yoksa oluştur
     cursor.execute("""
         INSERT OR IGNORE INTO settings
-        (id, theme, personality, response_style)
-        VALUES (1, 'light', 'friendly', 'normal')
+        (id, mode, personality)
+        VALUES (1, 'normal', 'friendly')
     """)
 
     conn.commit()
@@ -119,7 +119,7 @@ def init_db():
 
 
 # ============================================================
-# SOHBET KAYDET
+# SOHBET
 # ============================================================
 
 def save_chat(chat_type, message, response):
@@ -140,10 +140,6 @@ def save_chat(chat_type, message, response):
     conn.close()
 
 
-# ============================================================
-# SOHBETLERİ GETİR
-# ============================================================
-
 def get_chats(chat_type="normal"):
 
     conn = get_db()
@@ -161,10 +157,6 @@ def get_chats(chat_type="normal"):
 
     return rows
 
-
-# ============================================================
-# TEK SOHBET GETİR
-# ============================================================
 
 def get_chat(chat_id):
 
@@ -184,20 +176,15 @@ def get_chat(chat_id):
     return row
 
 
-# Eski isim de çalışmaya devam etsin
 def get_chat_by_id(chat_id):
     return get_chat(chat_id)
 
 
 # ============================================================
-# SAĞLIK KAYDI
+# SAĞLIK
 # ============================================================
 
-def save_health_record(
-    symptom,
-    medicine,
-    note
-):
+def save_health_record(symptom, medicine, note):
 
     conn = get_db()
 
@@ -215,10 +202,6 @@ def save_health_record(
     conn.close()
 
 
-# ============================================================
-# SAĞLIK KAYITLARINI GETİR
-# ============================================================
-
 def get_health_records():
 
     conn = get_db()
@@ -235,59 +218,11 @@ def get_health_records():
 
 
 # ============================================================
-# REGL KAYDI
+# REGL
 # ============================================================
 
-def save_period_record(
-    start_date,
-    end_date,
-    note
-):
+def save_period_record(start_date, end_date, note):
 
     conn = get_db()
 
-    conn.execute("""
-        INSERT INTO period_records
-        (start_date, end_date, note)
-        VALUES (?, ?, ?)
-    """, (
-        start_date,
-        end_date,
-        note
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-# ============================================================
-# REGL KAYITLARINI GETİR
-# ============================================================
-
-def get_period_records():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM period_records
-        ORDER BY id DESC
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-
-
-# ============================================================
-# SİNDİRİM KAYDI
-# ============================================================
-
-def save_diarrhea_record(
-    date,
-    count,
-    condition,
-    note
-):
-
-   
+    conn.execute
