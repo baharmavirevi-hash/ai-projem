@@ -1104,5 +1104,25 @@
 })();
 </script>
 
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/service-worker.js")
+            .then(function (registration) {
+                console.log(
+                    "MaviGPT Service Worker aktif:",
+                    registration.scope
+                );
+            })
+            .catch(function (error) {
+                console.error(
+                    "MaviGPT Service Worker hatası:",
+                    error
+                );
+            });
+    });
+}
+</script>
+
 </body>
 </html>
