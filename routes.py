@@ -247,7 +247,22 @@ def get_photo_url(filename):
 # ============================================================
 
 def register_routes(app):
+    # ========================================================
+    # PWA SERVICE WORKER
+    # ========================================================
 
+    @app.route("/service-worker.js")
+    def service_worker():
+
+        response = app.send_static_file(
+            "service-worker.js"
+        )
+
+        response.headers["Content-Type"] = (
+            "application/javascript"
+        )
+
+        return response
     # ========================================================
     # ANA SAYFA / MAVİGPT
     # ========================================================
