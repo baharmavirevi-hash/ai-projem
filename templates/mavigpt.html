@@ -1012,51 +1012,93 @@
 
 </div>
 
-
 <script>
-
-/* =========================================================
-   MAVİGPT MENÜ SİSTEMİ
-   ========================================================= */
-
 (function () {
 
-    const sidebar =
-        document.getElementById("sidebar");
+    const sidebar = document.getElementById("sidebar");
+    const menuButton = document.getElementById("menuButton");
+    const closeButton = document.getElementById("closeButton");
+    const backdrop = document.getElementById("backdrop");
+    const newChatButton = document.getElementById("newChatButton");
 
-    const menuButton =
-        document.getElementById("menuButton");
-
-    const closeButton =
-        document.getElementById("closeButton");
-
-    const backdrop =
-        document.getElementById("backdrop");
-
-    const newChatButton =
-        document.getElementById("newChatButton");
-
-    const foto =
-        document.getElementById("foto");
-
-    const fileName =
-        document.getElementById("fileName");
-
-
-    /* =========================
-       MENÜYÜ AÇ
-    ========================= */
+    const foto = document.getElementById("foto");
+    const fileName = document.getElementById("fileName");
 
     function openMenu() {
-
         sidebar.classList.add("open");
-
         backdrop.classList.add("show");
-
-        document.body.style.overflow = "hidden";
     }
 
+    function closeMenu() {
+        sidebar.classList.remove("open");
+        backdrop.classList.remove("show");
+    }
 
-    /* =========================
-       MENÜYÜ KAPAT
-    ==================
+    /* Hamburger */
+    if (menuButton) {
+        menuButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openMenu();
+        });
+    }
+
+    /* X butonu */
+    if (closeButton) {
+        closeButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMenu();
+        });
+    }
+
+    /* Karartmaya basınca kapat */
+    if (backdrop) {
+        backdrop.addEventListener("click", function () {
+            closeMenu();
+        });
+    }
+
+    /* Yeni sohbet */
+    if (newChatButton) {
+        newChatButton.addEventListener("click", function () {
+            window.location.href = "/";
+        });
+    }
+
+    /* Menüdeki linke basınca menüyü kapat */
+    document.querySelectorAll(".menu-item").forEach(function (item) {
+        item.addEventListener("click", function () {
+            closeMenu();
+        });
+    });
+
+    /* Fotoğraf seçildiğinde dosya adını göster */
+    if (foto && fileName) {
+        foto.addEventListener("change", function () {
+
+            if (foto.files && foto.files.length > 0) {
+                fileName.textContent =
+                    "📷 " + foto.files[0].name;
+
+                fileName.classList.add("show");
+            } else {
+                fileName.textContent = "";
+                fileName.classList.remove("show");
+            }
+
+        });
+    }
+
+    /* ESC ile kapat */
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            closeMenu();
+        }
+    });
+
+})();
+</script>
+
+</body>
+</html>
