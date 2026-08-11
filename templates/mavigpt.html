@@ -8,10 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <!-- =========================
-         PWA
-    ========================== -->
-
+    <!-- PWA -->
     <link rel="manifest"
           href="{{ url_for('static', filename='manifest.json') }}">
 
@@ -34,33 +31,25 @@
         body {
             margin: 0;
             padding: 0;
-
             width: 100%;
             height: 100%;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
+            font-family: Arial, Helvetica, sans-serif;
             background: #f4f9fc;
         }
 
         body {
             overflow: hidden;
-
             color: #17212b;
         }
 
 
-        /* =========================
-           MAVİGPT AÇILIŞ EKRANI
-        ========================== */
+        /* =====================================================
+           AÇILIŞ EKRANI
+        ===================================================== */
 
         .splash-screen {
 
             position: fixed;
-
             inset: 0;
 
             z-index: 99999;
@@ -68,25 +57,21 @@
             background: #98daf5;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
 
             opacity: 1;
-
             visibility: visible;
 
             transition:
-                opacity 0.5s ease,
-                visibility 0.5s ease;
+                opacity .5s ease,
+                visibility .5s ease;
         }
 
         .splash-screen.hide {
 
             opacity: 0;
-
             visibility: hidden;
-
             pointer-events: none;
         }
 
@@ -95,8 +80,7 @@
             text-align: center;
 
             animation:
-                splashAppear
-                0.8s ease;
+                splashAppear .8s ease;
         }
 
         .splash-logo {
@@ -104,23 +88,20 @@
             width: 105px;
             height: 105px;
 
-            margin:
-                0 auto 20px;
+            margin: 0 auto 20px;
 
             border-radius: 32px;
 
             background: white;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
 
             font-size: 55px;
 
             box-shadow:
-                0 10px 30px
-                rgba(0, 0, 0, 0.12);
+                0 10px 30px rgba(0,0,0,.12);
         }
 
         .splash-title {
@@ -132,8 +113,6 @@
             font-size: 31px;
 
             font-weight: bold;
-
-            letter-spacing: 0.3px;
         }
 
         .splash-subtitle {
@@ -141,7 +120,7 @@
             margin-top: 9px;
 
             color:
-                rgba(255,255,255,0.9);
+                rgba(255,255,255,.9);
 
             font-size: 14px;
         }
@@ -151,68 +130,57 @@
             width: 35px;
             height: 35px;
 
-            margin:
-                25px auto 0;
+            margin: 25px auto 0;
 
             border:
                 3px solid
-                rgba(255,255,255,0.45);
+                rgba(255,255,255,.45);
 
             border-top-color: white;
 
             border-radius: 50%;
 
             animation:
-                splashSpin
-                0.9s linear infinite;
+                splashSpin .9s linear infinite;
         }
 
         @keyframes splashAppear {
 
             from {
-
                 opacity: 0;
-
-                transform:
-                    scale(0.85);
+                transform: scale(.85);
             }
 
             to {
-
                 opacity: 1;
-
-                transform:
-                    scale(1);
+                transform: scale(1);
             }
         }
 
         @keyframes splashSpin {
 
             to {
-
-                transform:
-                    rotate(360deg);
+                transform: rotate(360deg);
             }
         }
 
 
-        /* =========================
+        /* =====================================================
            ANA UYGULAMA
-        ========================== */
+        ===================================================== */
 
         .app {
 
             width: 100%;
-
             height: 100vh;
 
             position: relative;
         }
 
 
-        /* =========================
+        /* =====================================================
            SIDEBAR
-        ========================== */
+        ===================================================== */
 
         .sidebar {
 
@@ -222,7 +190,6 @@
             left: 0;
 
             width: 285px;
-
             max-width: 82vw;
 
             height: 100vh;
@@ -235,10 +202,9 @@
                 translateX(-110%);
 
             transition:
-                transform 0.25s ease;
+                transform .25s ease;
 
             display: flex;
-
             flex-direction: column;
 
             border-right:
@@ -256,20 +222,17 @@
         }
 
 
-        /* =========================
-           SIDEBAR ÜST
-        ========================== */
+        /* =====================================================
+           SIDEBAR HEADER
+        ===================================================== */
 
         .sidebar-header {
 
             height: 68px;
-
             min-height: 68px;
 
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
 
             padding: 0 14px;
@@ -281,7 +244,6 @@
         .sidebar-title {
 
             font-size: 19px;
-
             font-weight: bold;
 
             color: #0782a8;
@@ -306,9 +268,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            YENİ SOHBET
-        ========================== */
+        ===================================================== */
 
         .new-chat {
 
@@ -326,16 +288,20 @@
             color: #087c9f;
 
             font-size: 15px;
-
             font-weight: bold;
 
             cursor: pointer;
         }
 
+        .new-chat:active {
 
-        /* =========================
+            transform: scale(.98);
+        }
+
+
+        /* =====================================================
            MENÜ
-        ========================== */
+        ===================================================== */
 
         .menu-title {
 
@@ -345,7 +311,6 @@
             color: #8a98a1;
 
             font-size: 11px;
-
             font-weight: bold;
         }
 
@@ -381,7 +346,6 @@
         .menu-icon {
 
             width: 28px;
-
             min-width: 28px;
 
             text-align: center;
@@ -390,9 +354,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            GEÇMİŞ
-        ========================== */
+        ===================================================== */
 
         .history {
 
@@ -410,7 +374,6 @@
             color: #8997a1;
 
             font-size: 12px;
-
             font-weight: bold;
         }
 
@@ -452,9 +415,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            KARARTMA
-        ========================== */
+        ===================================================== */
 
         .backdrop {
 
@@ -477,35 +440,31 @@
         .backdrop.show {
 
             opacity: 1;
-
             visibility: visible;
         }
 
 
-        /* =========================
+        /* =====================================================
            ANA ALAN
-        ========================== */
+        ===================================================== */
 
         .main {
 
             width: 100%;
-
             height: 100vh;
 
             display: flex;
-
             flex-direction: column;
         }
 
 
-        /* =========================
+        /* =====================================================
            HEADER
-        ========================== */
+        ===================================================== */
 
         .header {
 
             height: 65px;
-
             min-height: 65px;
 
             background: white;
@@ -523,14 +482,13 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            HAMBURGER
-        ========================== */
+        ===================================================== */
 
         .menu-button {
 
             width: 45px;
-
             height: 45px;
 
             border: none;
@@ -546,7 +504,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             cursor: pointer;
@@ -558,14 +515,13 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            LOGO
-        ========================== */
+        ===================================================== */
 
         .logo {
 
             width: 43px;
-
             height: 43px;
 
             border-radius: 14px;
@@ -575,7 +531,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 23px;
@@ -589,7 +544,6 @@
         .title {
 
             font-size: 17px;
-
             font-weight: bold;
         }
 
@@ -603,9 +557,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            CHAT
-        ========================== */
+        ===================================================== */
 
         .chat {
 
@@ -630,9 +584,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            HOŞ GELDİN
-        ========================== */
+        ===================================================== */
 
         .welcome {
 
@@ -647,7 +601,6 @@
         .welcome-logo {
 
             width: 75px;
-
             height: 75px;
 
             margin: auto;
@@ -659,7 +612,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 42px;
@@ -685,9 +637,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            MESAJ
-        ========================== */
+        ===================================================== */
 
         .message {
 
@@ -703,7 +655,6 @@
         .avatar {
 
             width: 36px;
-
             min-width: 36px;
 
             height: 36px;
@@ -713,7 +664,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 18px;
@@ -785,9 +735,9 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            FOTOĞRAF
-        ========================== */
+        ===================================================== */
 
         .photo-preview {
 
@@ -796,7 +746,6 @@
             margin-top: 8px;
 
             max-width: 260px;
-
             max-height: 300px;
 
             border-radius: 14px;
@@ -806,18 +755,16 @@
         }
 
 
-        /* =========================
+        /* =====================================================
            INPUT
-        ========================== */
+        ===================================================== */
 
         .input-area {
 
             position: fixed;
 
             left: 0;
-
             right: 0;
-
             bottom: 0;
 
             padding:
@@ -879,7 +826,6 @@
         .plus {
 
             width: 42px;
-
             min-width: 42px;
 
             height: 42px;
@@ -887,7 +833,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 27px;
@@ -924,7 +869,6 @@
         .send {
 
             width: 43px;
-
             min-width: 43px;
 
             height: 43px;
@@ -942,24 +886,88 @@
             cursor: pointer;
         }
 
+        .send:active {
 
-        /* =========================
+            transform: scale(.94);
+        }
+
+
+        /* =====================================================
+           YÜKLENİYOR
+        ===================================================== */
+
+        .loading-message {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: #71808a;
+
+            font-size: 13px;
+        }
+
+        .loading-dots {
+
+            display: flex;
+
+            gap: 4px;
+        }
+
+        .loading-dots span {
+
+            width: 6px;
+            height: 6px;
+
+            background: #7bbdd1;
+
+            border-radius: 50%;
+
+            animation:
+                dotPulse 1.2s infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+
+            animation-delay: .2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+
+            animation-delay: .4s;
+        }
+
+        @keyframes dotPulse {
+
+            0%, 80%, 100% {
+                opacity: .35;
+                transform: scale(.8);
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+
+        /* =====================================================
            MOBİL
-        ========================== */
+        ===================================================== */
 
         @media (max-width: 600px) {
 
             .sidebar {
 
                 width: 285px;
-
                 max-width: 82vw;
             }
 
             .header {
 
                 height: 62px;
-
                 min-height: 62px;
             }
 
@@ -977,7 +985,6 @@
             .welcome-logo {
 
                 width: 68px;
-
                 height: 68px;
 
                 font-size: 38px;
@@ -1001,7 +1008,6 @@
             .splash-logo {
 
                 width: 90px;
-
                 height: 90px;
 
                 font-size: 48px;
@@ -1021,13 +1027,15 @@
 <body>
 
 
-<!-- =========================
-     MAVİGPT AÇILIŞ EKRANI
-========================== -->
+<!-- =========================================================
+     AÇILIŞ EKRANI
+     SADECE BÖLÜM GEÇİŞLERİNDE GÖSTERİLİR
+========================================================== -->
 
 <div
     class="splash-screen"
-    id="splashScreen">
+    id="splashScreen"
+    style="display:none;">
 
     <div class="splash-content">
 
@@ -1053,13 +1061,14 @@
 <div class="app">
 
 
-    <!-- =========================
+    <!-- =====================================================
          SIDEBAR
-    ========================== -->
+    ====================================================== -->
 
     <aside
         class="sidebar"
         id="sidebar">
+
 
         <div class="sidebar-header">
 
@@ -1094,69 +1103,111 @@
         </div>
 
 
+        <!-- YENİ SOHBET -->
+
         <a
             href="/"
             class="menu-item">
 
-            <span class="menu-icon">💬</span>
-            <span>Yeni sohbet</span>
+            <span class="menu-icon">
+                💬
+            </span>
+
+            <span>
+                Yeni sohbet
+            </span>
 
         </a>
 
+
+        <!-- DOKTOR -->
 
         <a
             href="/doctor"
-            class="menu-item">
+            class="menu-item section-link">
 
-            <span class="menu-icon">🩺</span>
-            <span>Cebimdeki Doktor</span>
+            <span class="menu-icon">
+                🩺
+            </span>
+
+            <span>
+                Cebimdeki Doktor
+            </span>
 
         </a>
 
+
+        <!-- REGL -->
 
         <a
             href="/period"
-            class="menu-item">
+            class="menu-item section-link">
 
-            <span class="menu-icon">📅</span>
-            <span>Regl Takibi</span>
+            <span class="menu-icon">
+                📅
+            </span>
+
+            <span>
+                Regl Takibi
+            </span>
 
         </a>
 
+
+        <!-- SİNDİRİM -->
 
         <a
             href="/diarrhea"
-            class="menu-item">
+            class="menu-item section-link">
 
-            <span class="menu-icon">📝</span>
-            <span>Sindirim Takibi</span>
+            <span class="menu-icon">
+                📝
+            </span>
+
+            <span>
+                Sindirim Takibi
+            </span>
 
         </a>
 
+
+        <!-- İLAÇLAR -->
 
         <a
             href="/medicine"
-            class="menu-item">
+            class="menu-item section-link">
 
-            <span class="menu-icon">💊</span>
-            <span>İlaçlarım</span>
+            <span class="menu-icon">
+                💊
+            </span>
+
+            <span>
+                İlaçlarım
+            </span>
 
         </a>
 
+
+        <!-- AYARLAR -->
 
         <a
             href="/settings"
-            class="menu-item">
+            class="menu-item section-link">
 
-            <span class="menu-icon">⚙️</span>
-            <span>Ayarlar</span>
+            <span class="menu-icon">
+                ⚙️
+            </span>
+
+            <span>
+                Ayarlar
+            </span>
 
         </a>
 
 
-        <!-- =========================
+        <!-- =================================================
              GEÇMİŞ
-        ========================== -->
+        ================================================== -->
 
         <div class="history">
 
@@ -1164,15 +1215,17 @@
                 Son sohbetler
             </div>
 
+
             {% if sohbetler %}
 
                 {% for sohbet in sohbetler %}
 
                     <a
                         class="history-item"
-                        href="/chat/{{ sohbet[0] }}">
+                        href="/chat/{{ sohbet['id'] }}">
 
-                        💬 {{ sohbet[2] }}
+                        💬
+                        {{ sohbet['message'] }}
 
                     </a>
 
@@ -1199,14 +1252,17 @@
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          ANA
-    ========================== -->
+    ====================================================== -->
 
     <main class="main">
 
 
+        <!-- HEADER -->
+
         <header class="header">
+
 
             <button
                 class="menu-button"
@@ -1238,18 +1294,23 @@
         </header>
 
 
-        <!-- =========================
+        <!-- =================================================
              CHAT
-        ========================== -->
+        ================================================== -->
 
         <section
             class="chat"
             id="chat">
 
+
             <div class="chat-inner">
 
 
-                {% if not mesaj and not cevap and not foto_url %}
+                <!-- =========================================
+                     HİÇ MESAJ YOKSA HOŞ GELDİN
+                ========================================== -->
+
+                {% if not mesajlar %}
 
                     <div class="welcome">
 
@@ -1272,67 +1333,71 @@
                 {% endif %}
 
 
-                {% if mesaj or foto_url %}
+                <!-- =========================================
+                     TÜM KONUŞMA GEÇMİŞİ
+                ========================================== -->
 
-                    <div class="message">
+                {% if mesajlar %}
 
-                        <div class="avatar user-avatar">
-                            👤
-                        </div>
+                    {% for item in mesajlar %}
 
-                        <div class="message-content">
 
-                            <div class="message-name">
-                                Sen
+                        <!-- KULLANICI MESAJI -->
+
+                        <div class="message">
+
+                            <div class="avatar user-avatar">
+                                👤
                             </div>
 
+                            <div class="message-content">
 
-                            {% if mesaj %}
-
-                                <div class="bubble user-bubble">
-                                    {{ mesaj }}
+                                <div class="message-name">
+                                    Sen
                                 </div>
 
-                            {% endif %}
 
+                                <div class="bubble user-bubble">
 
-                            {% if foto_url %}
+                                    {{ item['message'] }}
 
-                                <img
-                                    src="{{ foto_url }}"
-                                    class="photo-preview"
-                                    alt="Gönderilen fotoğraf">
+                                </div>
 
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                {% endif %}
-
-
-                {% if cevap %}
-
-                    <div class="message">
-
-                        <div class="avatar bot-avatar">
-                            🩵
-                        </div>
-
-                        <div class="message-content">
-
-                            <div class="message-name">
-                                MaviGPT
-                            </div>
-
-                            <div class="bubble bot-bubble">
-                                {{ cevap }}
                             </div>
 
                         </div>
 
-                    </div>
+
+                        <!-- MAVİGPT CEVABI -->
+
+                        {% if item['response'] %}
+
+                            <div class="message">
+
+                                <div class="avatar bot-avatar">
+                                    🩵
+                                </div>
+
+                                <div class="message-content">
+
+                                    <div class="message-name">
+                                        MaviGPT
+                                    </div>
+
+                                    <div class="bubble bot-bubble">
+
+                                        {{ item['response'] }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+                    {% endfor %}
 
                 {% endif %}
 
@@ -1342,13 +1407,14 @@
         </section>
 
 
-        <!-- =========================
+        <!-- =================================================
              MESAJ GÖNDERME
-        ========================== -->
+        ================================================== -->
 
         <div class="input-area">
 
             <div class="input-container">
+
 
                 <div
                     class="file-name"
@@ -1402,19 +1468,24 @@
 
         </div>
 
+
     </main>
 
 </div>
 
 
-<!-- =========================
-     MENÜ / FOTOĞRAF JAVASCRIPT
-========================== -->
+<!-- =========================================================
+     JAVASCRIPT
+========================================================== -->
 
 <script>
 
 (function () {
 
+
+    /* =====================================================
+       ELEMENTLER
+    ====================================================== */
 
     const sidebar =
         document.getElementById(
@@ -1458,41 +1529,81 @@
         );
 
 
+    const chat =
+        document.getElementById(
+            "chat"
+        );
+
+
+    const splashScreen =
+        document.getElementById(
+            "splashScreen"
+        );
+
+
+    /* =====================================================
+       MENÜ AÇ
+    ====================================================== */
+
     function openMenu() {
 
-        sidebar.classList.add(
-            "open"
-        );
+        if (sidebar) {
 
-        backdrop.classList.add(
-            "show"
-        );
+            sidebar.classList.add(
+                "open"
+            );
+
+        }
+
+        if (backdrop) {
+
+            backdrop.classList.add(
+                "show"
+            );
+
+        }
+
     }
 
+
+    /* =====================================================
+       MENÜ KAPAT
+    ====================================================== */
 
     function closeMenu() {
 
-        sidebar.classList.remove(
-            "open"
-        );
+        if (sidebar) {
 
-        backdrop.classList.remove(
-            "show"
-        );
+            sidebar.classList.remove(
+                "open"
+            );
+
+        }
+
+        if (backdrop) {
+
+            backdrop.classList.remove(
+                "show"
+            );
+
+        }
+
     }
 
 
-    /* Hamburger */
+    /* =====================================================
+       HAMBURGER
+    ====================================================== */
 
     if (menuButton) {
 
         menuButton.addEventListener(
             "click",
-            function (e) {
+            function (event) {
 
-                e.preventDefault();
+                event.preventDefault();
 
-                e.stopPropagation();
+                event.stopPropagation();
 
                 openMenu();
 
@@ -1502,17 +1613,19 @@
     }
 
 
-    /* X */
+    /* =====================================================
+       X
+    ====================================================== */
 
     if (closeButton) {
 
         closeButton.addEventListener(
             "click",
-            function (e) {
+            function (event) {
 
-                e.preventDefault();
+                event.preventDefault();
 
-                e.stopPropagation();
+                event.stopPropagation();
 
                 closeMenu();
 
@@ -1522,7 +1635,9 @@
     }
 
 
-    /* Karartma */
+    /* =====================================================
+       KARARTMA
+    ====================================================== */
 
     if (backdrop) {
 
@@ -1538,7 +1653,9 @@
     }
 
 
-    /* Yeni sohbet */
+    /* =====================================================
+       YENİ SOHBET
+    ====================================================== */
 
     if (newChatButton) {
 
@@ -1546,8 +1663,12 @@
             "click",
             function () {
 
-                window.location.href =
-                    "/";
+                /*
+                 * Ana sayfaya gider.
+                 * Splash GÖSTERİLMEZ.
+                 */
+
+                window.location.href = "/";
 
             }
         );
@@ -1555,7 +1676,9 @@
     }
 
 
-    /* Menü linkleri */
+    /* =====================================================
+       MENÜ LİNKLERİ
+    ====================================================== */
 
     document
         .querySelectorAll(
@@ -1566,9 +1689,56 @@
 
                 item.addEventListener(
                     "click",
-                    function () {
+                    function (event) {
 
-                        closeMenu();
+                        const target =
+                            item.getAttribute(
+                                "href"
+                            );
+
+
+                        /*
+                         * Ana sayfaya geçerken
+                         * splash YOK.
+                         */
+
+                        if (
+                            target === "/"
+                        ) {
+
+                            closeMenu();
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * Diğer bölümlere geçerken
+                         * splash GÖSTER.
+                         */
+
+                        if (
+                            target === "/doctor"
+                            ||
+                            target === "/period"
+                            ||
+                            target === "/diarrhea"
+                            ||
+                            target === "/medicine"
+                            ||
+                            target === "/settings"
+                        ) {
+
+                            event.preventDefault();
+
+                            closeMenu();
+
+                            showSplash(
+                                target
+                            );
+
+                        }
 
                     }
                 );
@@ -1577,7 +1747,58 @@
         );
 
 
-    /* Fotoğraf */
+    /* =====================================================
+       SPLASH GÖSTER
+    ====================================================== */
+
+    function showSplash(target) {
+
+        if (!splashScreen) {
+
+            window.location.href =
+                target;
+
+            return;
+
+        }
+
+
+        splashScreen.style.display =
+            "flex";
+
+        splashScreen.classList.remove(
+            "hide"
+        );
+
+
+        setTimeout(
+            function () {
+
+                splashScreen.classList.add(
+                    "hide"
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            target;
+
+                    },
+                    500
+                );
+
+            },
+            1000
+        );
+
+    }
+
+
+    /* =====================================================
+       FOTOĞRAF
+    ====================================================== */
 
     if (foto && fileName) {
 
@@ -1598,7 +1819,8 @@
                         "show"
                     );
 
-                } else {
+                }
+                else {
 
                     fileName.textContent =
                         "";
@@ -1615,14 +1837,89 @@
     }
 
 
-    /* ESC */
+    /* =====================================================
+       FORM GÖNDERİLİRKEN
+       SPLASH ASLA ÇIKMAZ
+    ====================================================== */
+
+    const form =
+        document.querySelector(
+            ".input-box"
+        );
+
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            function () {
+
+                /*
+                 * Yeni mesaj gönderilirken
+                 * splash kesinlikle gösterilmez.
+                 */
+
+                if (splashScreen) {
+
+                    splashScreen.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ENTER İLE MESAJ
+    ====================================================== */
+
+    const messageInput =
+        document.getElementById(
+            "mesaj"
+        );
+
+
+    if (messageInput) {
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                    &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    if (form) {
+
+                        form.requestSubmit();
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ESC
+    ====================================================== */
 
     document.addEventListener(
         "keydown",
-        function (e) {
+        function (event) {
 
             if (
-                e.key === "Escape"
+                event.key === "Escape"
             ) {
 
                 closeMenu();
@@ -1633,63 +1930,33 @@
     );
 
 
-})();
+    /* =====================================================
+       SAYFA AÇILINCA EN SON MESAJI GÖSTER
+    ====================================================== */
 
-</script>
+    if (chat) {
 
+        setTimeout(
+            function () {
 
-<!-- =========================
-     AÇILIŞ EKRANI
-========================== -->
+                chat.scrollTop =
+                    chat.scrollHeight;
 
-<script>
-
-(function () {
-
-
-    const splashScreen =
-        document.getElementById(
-            "splashScreen"
+            },
+            100
         );
-
-
-    if (!splashScreen) {
-
-        return;
 
     }
 
 
-    setTimeout(
-        function () {
-
-            splashScreen.classList.add(
-                "hide"
-            );
-
-
-            setTimeout(
-                function () {
-
-                    splashScreen.remove();
-
-                },
-                500
-            );
-
-        },
-        1500
-    );
-
-
 })();
 
 </script>
 
 
-<!-- =========================
+<!-- =========================================================
      SERVICE WORKER
-========================== -->
+========================================================== -->
 
 <script>
 
