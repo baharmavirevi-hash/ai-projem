@@ -10,6 +10,7 @@ from database import (
     save_chat,
     get_chats,
     get_chat,
+    get_chat_messages,
     save_health_record,
     get_health_records,
     save_period_record,
@@ -57,6 +58,7 @@ def ask_mavigpt(message, image_path=None, history=None):
 
             "concise":
                 "Kısa, doğrudan ve gereksiz uzatmadan cevap ver."
+
         }.get(
             mode,
             "Normal ve dengeli şekilde cevap ver."
@@ -74,10 +76,12 @@ def ask_mavigpt(message, image_path=None, history=None):
 
             "teacher":
                 "Sabırlı ve öğretici bir öğretmen gibi konuş."
+
         }.get(
             personality,
             "Samimi, nazik ve arkadaşça konuş."
         )
+
 
         system_instruction = f"""
 Sen MaviGPT'sin.
@@ -92,56 +96,52 @@ Bilmediğin bilgileri uydurma.
 Sağlık konularında kesin tanı koyma.
 Tehlikeli veya zararlı öneriler verme.
 
+ÖNEMLİ:
 Kullanıcının önceki mesajlarını ve senin önceki
-cevaplarını konuşmanın bağlamı olarak kullan.
-
-Kullanıcı yeni bir mesaj gönderdiğinde, önceki
-konuşmayla bağlantılıysa bağlantıyı koru.
-
-Önceki konuşmadaki bilgileri gereksiz yere tekrar etme.
-Kullanıcı konuya devam ediyorsa önceki bağlamı dikkate al.
+cevaplarını konuşmanın devamı olarak kabul et.
+Önceki konuşmadaki konu ile yeni mesaj arasında
+bağlantı varsa bunu koru.
+Kullanıcı aynı konuyu sürdürüyor olabilir.
 """
 
         client = genai.Client(
             api_key=api_key
         )
 
+
         # ====================================================
-        # ÖNCEKİ KONUŞMALAR
+        # KONUŞMA GEÇMİŞİ
         # ====================================================
 
-        conversation_text = ""
+        history_text = ""
 
         if history:
 
-            conversation_text = (
+            history_text = (
                 "\n\nÖNCEKİ KONUŞMA:\n"
             )
 
             for item in history:
 
-                try:
-                    old_message = item["message"] or ""
-                    old_response = item["response"] or ""
-                except Exception:
-                    old_message = ""
-                    old_response = ""
+                old_message = item["message"] or ""
+                old_response = item["response"] or ""
 
-                conversation_text += (
-                    f"\nKullanıcı: {old_message}\n"
-                    f"MaviGPT: {old_response}\n"
+                history_text += (
+                    "\nKullanıcı: "
+                    + old_message
+                    + "\nMaviGPT: "
+                    + old_response
+                    + "\n"
                 )
 
-        # ====================================================
-        # YENİ MESAJ
-        # ====================================================
 
         full_message = (
             system_instruction
-            + conversation_text
+            + history_text
             + "\n\nYENİ KULLANICI MESAJI:\n"
             + message
         )
+
 
         # ====================================================
         # FOTOĞRAFLI MESAJ
@@ -151,7 +151,9 @@ Kullanıcı konuya devam ediyorsa önceki bağlamı dikkate al.
 
             try:
 
-                image = Image.open(image_path)
+                image = Image.open(
+                    image_path
+                )
 
                 response = client.models.generate_content(
                     model="gemini-2.5-flash",
@@ -180,11 +182,18 @@ Kullanıcı konuya devam ediyorsa önceki bağlamı dikkate al.
                 contents=full_message
             )
 
+
+        # ====================================================
+        # CEVAP
+        # ====================================================
+
         if response and response.text:
 
             return response.text.strip()
 
+
         return "Şu anda cevap oluşturamadım."
+
 
     except Exception as e:
 
@@ -199,29 +208,38 @@ Kullanıcı konuya devam ediyorsa önceki bağlamı dikkate al.
 
 
 # ============================================================
-# FOTOĞRAF
+# FOTOĞRAF YÜKLEME
 # ============================================================
 
 def upload_photo(app):
 
     if "foto" not in request.files:
+
         return None, None
+
 
     file = request.files["foto"]
 
+
     if not file or not file.filename:
+
         return None, None
+
 
     original_name = secure_filename(
         file.filename
     )
 
+
     if not original_name:
+
         return None, None
+
 
     extension = os.path.splitext(
         original_name
     )[1].lower()
+
 
     allowed_extensions = {
         ".jpg",
@@ -231,17 +249,22 @@ def upload_photo(app):
         ".gif"
     }
 
+
     if extension not in allowed_extensions:
+
         return None, None
 
+
     filename = (
-        uuid.uuid4().hex +
-        extension
+        uuid.uuid4().hex
+        + extension
     )
+
 
     upload_folder = app.config.get(
         "UPLOAD_FOLDER"
     )
+
 
     if not upload_folder:
 
@@ -251,22 +274,27 @@ def upload_photo(app):
             "uploads"
         )
 
+
     os.makedirs(
         upload_folder,
         exist_ok=True
     )
+
 
     path = os.path.join(
         upload_folder,
         filename
     )
 
+
     try:
 
         file.save(path)
 
         if os.path.exists(path):
+
             return path, filename
+
 
     except Exception as e:
 
@@ -275,15 +303,24 @@ def upload_photo(app):
             repr(e)
         )
 
+
     return None, None
 
+
+# ============================================================
+# FOTOĞRAF URL
+# ============================================================
 
 def get_photo_url(filename):
 
     if not filename:
+
         return None
 
-    return "/static/uploads/" + filename
+    return (
+        "/static/uploads/"
+        + filename
+    )
 
 
 # ============================================================
@@ -292,8 +329,9 @@ def get_photo_url(filename):
 
 def register_routes(app):
 
+
     # ========================================================
-    # PWA SERVICE WORKER
+    # SERVICE WORKER
     # ========================================================
 
     @app.route("/service-worker.js")
@@ -305,6 +343,7 @@ def register_routes(app):
             "service-worker.js"
         )
 
+
         try:
 
             with open(
@@ -315,6 +354,7 @@ def register_routes(app):
 
                 javascript = file.read()
 
+
             return Response(
                 javascript,
                 mimetype="application/javascript",
@@ -322,6 +362,7 @@ def register_routes(app):
                     "Cache-Control": "no-cache"
                 }
             )
+
 
         except FileNotFoundError:
 
@@ -342,8 +383,9 @@ def register_routes(app):
         cevap = ""
         filename = None
 
+
         # ----------------------------------------------------
-        # SOHBET LİSTESİ
+        # SOL MENÜDEKİ SOHBETLER
         # ----------------------------------------------------
 
         try:
@@ -361,9 +403,30 @@ def register_routes(app):
 
             sohbetler = []
 
+
         # ----------------------------------------------------
-        # MESAJ GÖNDERME
+        # TÜM MESAJ GEÇMİŞİ
         # ----------------------------------------------------
+
+        try:
+
+            mesajlar = get_chat_messages(
+                "normal"
+            )
+
+        except Exception as e:
+
+            print(
+                "MESAJ GEÇMİŞİ HATASI:",
+                repr(e)
+            )
+
+            mesajlar = []
+
+
+        # ====================================================
+        # POST
+        # ====================================================
 
         if request.method == "POST":
 
@@ -372,15 +435,13 @@ def register_routes(app):
                 ""
             ).strip()
 
+
             foto, filename = upload_photo(
                 app
             )
 
-            if mesaj or foto:
 
-                # --------------------------------------------
-                # AI MESAJI
-                # --------------------------------------------
+            if mesaj or foto:
 
                 if mesaj:
 
@@ -393,42 +454,26 @@ def register_routes(app):
                         "genel, güvenli bilgi ver."
                     )
 
-                # --------------------------------------------
-                # ÖNCEKİ SOHBETLER
-                # --------------------------------------------
+
+                # ------------------------------------------------
+                # GEMINI'YE ÖNCEKİ MESAJLARI GÖNDER
+                # ------------------------------------------------
 
                 try:
 
-                    eski_sohbetler = get_chats(
+                    history = get_chat_messages(
                         "normal"
                     )
-
-                    # Veritabanından yeni -> eski
-                    # geliyor.
-                    #
-                    # Gemini'ye eski -> yeni gönderiyoruz.
-
-                    eski_sohbetler = list(
-                        reversed(
-                            eski_sohbetler
-                        )
-                    )
-
-                    # Son 20 konuşmayı bağlam olarak kullan.
-                    history = eski_sohbetler[-20:]
 
                 except Exception as e:
 
                     print(
-                        "GEÇMİŞ OKUMA HATASI:",
+                        "HAFIZA OKUMA HATASI:",
                         repr(e)
                     )
 
                     history = []
 
-                # --------------------------------------------
-                # MAVİGPT
-                # --------------------------------------------
 
                 cevap = ask_mavigpt(
                     ai_mesaj,
@@ -436,9 +481,10 @@ def register_routes(app):
                     history
                 )
 
-                # --------------------------------------------
-                # VERİTABANINA KAYDET
-                # --------------------------------------------
+
+                # ------------------------------------------------
+                # YENİ MESAJI KAYDET
+                # ------------------------------------------------
 
                 try:
 
@@ -448,6 +494,7 @@ def register_routes(app):
                         cevap
                     )
 
+
                 except Exception as e:
 
                     print(
@@ -455,11 +502,16 @@ def register_routes(app):
                         repr(e)
                     )
 
-                # --------------------------------------------
-                # GÜNCEL SOHBET LİSTESİ
-                # --------------------------------------------
+
+                # ------------------------------------------------
+                # EKRANDAKİ MESAJLARI YENİLE
+                # ------------------------------------------------
 
                 try:
+
+                    mesajlar = get_chat_messages(
+                        "normal"
+                    )
 
                     sohbetler = get_chats(
                         "normal"
@@ -468,36 +520,14 @@ def register_routes(app):
                 except Exception as e:
 
                     print(
-                        "SOHBET LİSTESİ HATASI:",
+                        "SOHBET YENİLEME HATASI:",
                         repr(e)
                     )
 
-                    sohbetler = []
 
-        # ----------------------------------------------------
-        # TÜM MESAJ GEÇMİŞİ
-        # ----------------------------------------------------
-
-        try:
-
-            mesaj_gecmisi = list(
-                reversed(
-                    get_chats("normal")
-                )
-            )
-
-        except Exception as e:
-
-            print(
-                "MESAJ GEÇMİŞİ HATASI:",
-                repr(e)
-            )
-
-            mesaj_gecmisi = []
-
-        # ----------------------------------------------------
-        # SAYFA
-        # ----------------------------------------------------
+        # ====================================================
+        # SAYFAYI GÖSTER
+        # ====================================================
 
         return render_template(
             "mavigpt.html",
@@ -510,9 +540,9 @@ def register_routes(app):
                 filename
             ),
 
-            sohbetler=sohbetler,
+            mesajlar=mesajlar,
 
-            mesaj_gecmisi=mesaj_gecmisi
+            sohbetler=sohbetler
         )
 
 
@@ -520,18 +550,22 @@ def register_routes(app):
     # TEK SOHBET
     # ========================================================
 
-    @app.route("/chat/<int:chat_id>")
+    @app.route(
+        "/chat/<int:chat_id>"
+    )
     def chat(chat_id):
 
         sohbet = get_chat(
             chat_id
         )
 
+
         if not sohbet:
 
             return redirect(
                 url_for("home")
             )
+
 
         return render_template(
             "chat.html",
@@ -554,6 +588,7 @@ def register_routes(app):
         filename = None
         kayit_mesaji = None
 
+
         if request.method == "POST":
 
             mesaj = request.form.get(
@@ -561,20 +596,24 @@ def register_routes(app):
                 ""
             ).strip()
 
+
             symptom = request.form.get(
                 "symptom",
                 ""
             ).strip()
+
 
             medicine = request.form.get(
                 "medicine",
                 ""
             ).strip()
 
+
             note = request.form.get(
                 "note",
                 ""
             ).strip()
+
 
             if symptom or medicine or note:
 
@@ -601,9 +640,11 @@ def register_routes(app):
                         "❌ Sağlık kaydı kaydedilemedi."
                     )
 
+
             foto, filename = upload_photo(
                 app
             )
+
 
             if mesaj or foto:
 
@@ -613,10 +654,12 @@ def register_routes(app):
                     "Kesin tanı koyma."
                 )
 
+
                 cevap = ask_mavigpt(
                     ai_mesaj,
                     foto
                 )
+
 
         try:
 
@@ -631,12 +674,18 @@ def register_routes(app):
 
             kayitlar = []
 
+
         return render_template(
             "doctor.html",
+
             mesaj=mesaj,
+
             cevap=cevap,
+
             kayitlar=kayitlar,
+
             kayit_mesaji=kayit_mesaji,
+
             foto_url=get_photo_url(
                 filename
             )
@@ -655,6 +704,7 @@ def register_routes(app):
 
         kayit_mesaji = None
 
+
         if request.method == "POST":
 
             start = request.form.get(
@@ -662,15 +712,18 @@ def register_routes(app):
                 ""
             ).strip()
 
+
             end = request.form.get(
                 "end_date",
                 ""
             ).strip()
 
+
             note = request.form.get(
                 "note",
                 ""
             ).strip()
+
 
             if start:
 
@@ -697,6 +750,7 @@ def register_routes(app):
                         "❌ Regl kaydı kaydedilemedi."
                     )
 
+
         try:
 
             kayitlar = get_period_records()
@@ -710,9 +764,12 @@ def register_routes(app):
 
             kayitlar = []
 
+
         return render_template(
             "period.html",
+
             kayitlar=kayitlar,
+
             kayit_mesaji=kayit_mesaji
         )
 
@@ -729,6 +786,7 @@ def register_routes(app):
 
         kayit_mesaji = None
 
+
         if request.method == "POST":
 
             date = request.form.get(
@@ -736,26 +794,32 @@ def register_routes(app):
                 ""
             ).strip()
 
+
             count_raw = request.form.get(
                 "count",
                 ""
             ).strip()
+
 
             condition = request.form.get(
                 "condition",
                 ""
             ).strip()
 
+
             note = request.form.get(
                 "note",
                 ""
             ).strip()
 
+
             try:
 
                 count = max(
                     0,
-                    int(count_raw or 0)
+                    int(
+                        count_raw or 0
+                    )
                 )
 
             except (
@@ -765,7 +829,13 @@ def register_routes(app):
 
                 count = 0
 
-            if date or count or condition or note:
+
+            if (
+                date
+                or count
+                or condition
+                or note
+            ):
 
                 try:
 
@@ -791,6 +861,7 @@ def register_routes(app):
                         "❌ Sindirim kaydı kaydedilemedi."
                     )
 
+
         try:
 
             kayitlar = get_diarrhea_records()
@@ -804,9 +875,12 @@ def register_routes(app):
 
             kayitlar = []
 
+
         return render_template(
             "diarrhea.html",
+
             kayitlar=kayitlar,
+
             kayit_mesaji=kayit_mesaji
         )
 
@@ -823,6 +897,7 @@ def register_routes(app):
 
         kayit_mesaji = None
 
+
         if request.method == "POST":
 
             name = request.form.get(
@@ -830,20 +905,24 @@ def register_routes(app):
                 ""
             ).strip()
 
+
             dose = request.form.get(
                 "dose",
                 ""
             ).strip()
+
 
             hour = request.form.get(
                 "hour",
                 ""
             ).strip()
 
+
             start_date = request.form.get(
                 "start_date",
                 ""
             ).strip()
+
 
             if name:
 
@@ -871,6 +950,7 @@ def register_routes(app):
                         "❌ İlaç kaydı kaydedilemedi."
                     )
 
+
         try:
 
             kayitlar = get_medicines()
@@ -884,9 +964,12 @@ def register_routes(app):
 
             kayitlar = []
 
+
         return render_template(
             "medicine.html",
+
             kayitlar=kayitlar,
+
             kayit_mesaji=kayit_mesaji
         )
 
@@ -899,7 +982,9 @@ def register_routes(app):
         "/medicine/delete/<int:medicine_id>",
         methods=["POST"]
     )
-    def medicine_delete(medicine_id):
+    def medicine_delete(
+        medicine_id
+    ):
 
         try:
 
@@ -913,6 +998,7 @@ def register_routes(app):
                 "İLAÇ SİLME HATASI:",
                 repr(e)
             )
+
 
         return redirect(
             url_for("medicine")
@@ -931,6 +1017,7 @@ def register_routes(app):
 
         kayit_mesaji = None
 
+
         if request.method == "POST":
 
             mode = request.form.get(
@@ -938,10 +1025,12 @@ def register_routes(app):
                 "normal"
             ).strip()
 
+
             personality = request.form.get(
                 "personality",
                 "friendly"
             ).strip()
+
 
             try:
 
@@ -965,6 +1054,7 @@ def register_routes(app):
                     "❌ Ayarlar kaydedilemedi."
                 )
 
+
         try:
 
             settings_data = get_settings()
@@ -981,8 +1071,11 @@ def register_routes(app):
                 "personality": "friendly"
             }
 
+
         return render_template(
             "settings.html",
+
             settings=settings_data,
+
             kayit_mesaji=kayit_mesaji
         )
