@@ -2073,7 +2073,307 @@ def register_routes(app):
 
 
         state = VIDEO_ROOMS[
-            room_code
+            room_code# ============================================================
+# GÖRÜNTÜLÜ ARAMA SİSTEMİ
+# ============================================================
+
+CALLS = {}
+
+
+def create_call(room_code, caller):
+    call_id = uuid.uuid4().hex
+
+    CALLS[room_code] = {
+        "call_id": call_id,
+        "caller": caller,
+        "status": "ringing",
+        "created_at": time.time()
+    }
+
+    return call_id
+
+
+# ============================================================
+# ARAMA BAŞLAT
+# ============================================================
+
+@app.route(
+    "/friends/<room_code>/call/start",
+    methods=["POST"]
+)
+def start_friend_call(room_code):
+
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
+    try:
+        room = get_friend_room(room_code)
+
+        if not room:
+            return jsonify({
+                "success": False,
+                "error": "Oda bulunamadı."
+            }), 404
+
+    except Exception as e:
+
+        print(
+            "ARAMA ODA KONTROL HATASI:",
+            repr(e)
+        )
+
+        return jsonify({
+            "success": False,
+            "error": "Oda kontrol edilemedi."
+        }), 500
+
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    caller = data.get(
+        "caller",
+        "Arkadaşın"
+    ).strip()
+
+
+    if not caller:
+        caller = "Arkadaşın"
+
+
+    # Aynı odada aktif arama varsa
+    existing = CALLS.get(room_code)
+
+    if existing:
+
+        if existing.get("status") in [
+            "ringing",
+            "accepted"
+        ]:
+
+            return jsonify({
+                "success": False,
+                "error": "Bu odada zaten aktif bir arama var."
+            }), 409
+
+
+    call_id = create_call(
+        room_code,
+        caller
+    )
+
+
+    # Yeni video signaling odası
+    VIDEO_ROOMS[room_code] = {
+        "offer": None,
+        "answer": None,
+        "candidates": [],
+        "created_at": time.time()
+    }
+
+
+    return jsonify({
+        "success": True,
+        "call_id": call_id,
+        "caller": caller
+    })
+
+
+# ============================================================
+# GELEN ARAMAYI KONTROL ET
+# ============================================================
+
+@app.route(
+    "/friends/<room_code>/call",
+    methods=["GET"]
+)
+def get_friend_call(room_code):
+
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
+
+    call = CALLS.get(
+        room_code
+    )
+
+
+    if not call:
+
+        return jsonify({
+            "success": True,
+            "call": None
+        })
+
+
+    # Çok eski aramaları temizle
+    if (
+        time.time()
+        - call.get("created_at", time.time())
+        > 60
+    ):
+
+        CALLS.pop(
+            room_code,
+            None
+        )
+
+        return jsonify({
+            "success": True,
+            "call": None
+        })
+
+
+    return jsonify({
+        "success": True,
+        "call": call
+    })
+
+
+# ============================================================
+# ARAMAYI KABUL ET
+# ============================================================
+
+@app.route(
+    "/friends/<room_code>/call/answer",
+    methods=["POST"]
+)
+def answer_friend_call(room_code):
+
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    call_id = data.get(
+        "call_id"
+    )
+
+
+    call = CALLS.get(
+        room_code
+    )
+
+
+    if not call:
+
+        return jsonify({
+            "success": False,
+            "error": "Aktif arama bulunamadı."
+        }), 404
+
+
+    if (
+        call_id
+        and call.get("call_id")
+        != call_id
+    ):
+
+        return jsonify({
+            "success": False,
+            "error": "Arama artık geçerli değil."
+        }), 400
+
+
+    call["status"] = "accepted"
+
+
+    return jsonify({
+        "success": True,
+        "call": call
+    })
+
+
+# ============================================================
+# ARAMAYI REDDET
+# ============================================================
+
+@app.route(
+    "/friends/<room_code>/call/reject",
+    methods=["POST"]
+)
+def reject_friend_call(room_code):
+
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    call_id = data.get(
+        "call_id"
+    )
+
+
+    call = CALLS.get(
+        room_code
+    )
+
+
+    if call:
+
+        if (
+            not call_id
+            or call.get("call_id")
+            == call_id
+        ):
+
+            CALLS.pop(
+                room_code,
+                None
+            )
+
+            VIDEO_ROOMS.pop(
+                room_code,
+                None
+            )
+
+
+    return jsonify({
+        "success": True
+    })
+
+
+# ============================================================
+# GÖRÜŞMEYİ BİTİR
+# ============================================================
+
+@app.route(
+    "/friends/<room_code>/call/end",
+    methods=["POST"]
+)
+def end_friend_call(room_code):
+
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
+
+    CALLS.pop(
+        room_code,
+        None
+    )
+
+    VIDEO_ROOMS.pop(
+        room_code,
+        None
+    )
+
+
+    return jsonify({
+        "success": True
+    })
+        
         ]
 
 
