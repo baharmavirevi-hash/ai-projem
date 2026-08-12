@@ -80,8 +80,6 @@ def register_routes(app):
         app.config["UPLOAD_FOLDER"],
         exist_ok=True
     )
-
-
     # ========================================================
     # 404 SAYFASI
     # ========================================================
@@ -100,16 +98,28 @@ def register_routes(app):
     # ========================================================
     # 500 SAYFASI
     # ========================================================
-     @app.errorhandler(500)
-def internal_server_error(error):
 
-    return (
-        render_template(
-            "500.html"
-        ),
-        500
-    )
+    @app.errorhandler(500)
+    def internal_server_error(error):
+
+        return (
+            render_template(
+                "500.html"
+            ),
+            500
+        )
+
+
     # ========================================================
+    # ANA SAYFA / MAVİGPT
+    # ========================================================
+
+    @app.route(
+        "/",
+        methods=["GET", "POST"]
+    )
+    def home():
+============================
     # ANA SAYFA / MAVİGPT
     # ========================================================
 
