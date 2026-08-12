@@ -8,7 +8,6 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <!-- PWA -->
     <link rel="manifest"
           href="{{ url_for('static', filename='manifest.json') }}">
 
@@ -18,11 +17,7 @@
     <meta name="mobile-web-app-capable"
           content="yes">
 
-    <meta name="apple-mobile-web-app-capable"
-          content="yes">
-
     <title>MaviGPT</title>
-
 
     <style>
 
@@ -45,1040 +40,641 @@
             color: #17212b;
         }
 
-
         /* =====================================================
            SPLASH
         ===================================================== */
 
         .splash-screen {
-
             position: fixed;
-
             inset: 0;
-
             z-index: 99999;
-
             background: #98daf5;
-
             display: none;
-
             align-items: center;
             justify-content: center;
-
             opacity: 1;
-
             visibility: visible;
-
-            transition:
-                opacity .5s ease,
-                visibility .5s ease;
-        }
-
-        .splash-screen.show {
-            display: flex;
+            transition: opacity .5s ease;
         }
 
         .splash-screen.hide {
-
             opacity: 0;
-
             visibility: hidden;
-
             pointer-events: none;
         }
 
         .splash-content {
-
             text-align: center;
-
-            animation:
-                splashAppear .7s ease;
+            animation: splashAppear .8s ease;
         }
 
         .splash-logo {
-
-            width: 100px;
-            height: 100px;
-
-            margin: 0 auto 18px;
-
-            border-radius: 30px;
-
+            width: 105px;
+            height: 105px;
+            margin: 0 auto 20px;
+            border-radius: 32px;
             background: white;
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
-            font-size: 52px;
-
-            box-shadow:
-                0 10px 30px
-                rgba(0, 0, 0, .12);
+            font-size: 55px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
         }
 
         .splash-title {
-
             margin: 0;
-
             color: white;
-
-            font-size: 30px;
-
+            font-size: 31px;
             font-weight: bold;
         }
 
         .splash-subtitle {
-
-            margin-top: 8px;
-
-            color:
-                rgba(255,255,255,.9);
-
+            margin-top: 9px;
+            color: rgba(255,255,255,.9);
             font-size: 14px;
         }
 
         .splash-loading {
-
-            width: 34px;
-            height: 34px;
-
-            margin: 23px auto 0;
-
-            border:
-                3px solid
-                rgba(255,255,255,.4);
-
+            width: 35px;
+            height: 35px;
+            margin: 25px auto 0;
+            border: 3px solid rgba(255,255,255,.45);
             border-top-color: white;
-
             border-radius: 50%;
-
-            animation:
-                splashSpin .9s linear infinite;
+            animation: splashSpin .9s linear infinite;
         }
 
         @keyframes splashAppear {
 
             from {
-
                 opacity: 0;
-
-                transform:
-                    scale(.85);
+                transform: scale(.85);
             }
 
             to {
-
                 opacity: 1;
-
-                transform:
-                    scale(1);
+                transform: scale(1);
             }
         }
 
         @keyframes splashSpin {
 
             to {
-
-                transform:
-                    rotate(360deg);
+                transform: rotate(360deg);
             }
         }
-
 
         /* =====================================================
            APP
         ===================================================== */
 
         .app {
-
             width: 100%;
-
             height: 100vh;
-
             position: relative;
         }
-
 
         /* =====================================================
            SIDEBAR
         ===================================================== */
 
         .sidebar {
-
             position: fixed;
-
             top: 0;
             left: 0;
-
-            width: 285px;
-
-            max-width: 82vw;
-
+            width: 300px;
+            max-width: 84vw;
             height: 100vh;
-
             background: white;
-
             z-index: 1000;
-
-            transform:
-                translateX(-110%);
-
-            transition:
-                transform .25s ease;
-
+            transform: translateX(-110%);
+            transition: transform .25s ease;
             display: flex;
-
             flex-direction: column;
-
-            border-right:
-                1px solid #dce7ec;
-
-            box-shadow:
-                6px 0 25px
-                rgba(0,0,0,.12);
+            border-right: 1px solid #dce7ec;
+            box-shadow: 6px 0 25px rgba(0,0,0,.12);
         }
 
         .sidebar.open {
-
-            transform:
-                translateX(0);
+            transform: translateX(0);
         }
-
 
         /* =====================================================
            SIDEBAR HEADER
         ===================================================== */
 
         .sidebar-header {
-
             height: 68px;
-
             min-height: 68px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
-            padding:
-                0 14px;
-
-            border-bottom:
-                1px solid #edf2f5;
+            padding: 0 14px;
+            border-bottom: 1px solid #edf2f5;
         }
 
         .sidebar-title {
-
             font-size: 19px;
-
             font-weight: bold;
-
             color: #0782a8;
         }
 
         .close-button {
-
             width: 44px;
-
             height: 44px;
-
             border: none;
-
             border-radius: 13px;
-
             background: #f1f7fa;
-
-            color: #53646d;
-
             font-size: 27px;
-
+            color: #53646d;
             cursor: pointer;
         }
 
-
         /* =====================================================
-           NEW CHAT
+           YENİ SOHBET
         ===================================================== */
 
         .new-chat {
-
             margin: 15px;
-
             padding: 14px;
-
-            border:
-                1px solid #d5e8ef;
-
+            border: 1px solid #d5e8ef;
             border-radius: 14px;
-
             background: #eefaff;
-
             color: #087c9f;
-
             font-size: 15px;
-
             font-weight: bold;
-
             cursor: pointer;
         }
 
         .new-chat:active {
-
-            transform:
-                scale(.98);
+            transform: scale(.98);
         }
 
-
         /* =====================================================
-           MENU
+           MENÜ
         ===================================================== */
 
         .menu-title {
-
-            padding:
-                8px 20px;
-
+            padding: 8px 20px;
             color: #8a98a1;
-
             font-size: 11px;
-
             font-weight: bold;
         }
 
         .menu-item {
-
             display: flex;
-
             align-items: center;
-
             gap: 12px;
-
-            margin:
-                3px 10px;
-
-            padding:
-                13px 11px;
-
+            margin: 3px 10px;
+            padding: 13px 11px;
             border-radius: 13px;
-
             text-decoration: none;
-
             color: #26343d;
-
             font-size: 14px;
-
             cursor: pointer;
-
-            transition:
-                background .15s ease;
         }
 
         .menu-item:hover {
-
-            background:
-                #f1f8fb;
-        }
-
-        .menu-item:active {
-
-            transform:
-                scale(.99);
+            background: #f1f8fb;
         }
 
         .menu-icon {
-
             width: 28px;
-
             min-width: 28px;
-
             text-align: center;
-
             font-size: 19px;
         }
 
-
         /* =====================================================
-           HISTORY
+           GEÇMİŞ
         ===================================================== */
 
         .history {
-
             flex: 1;
-
             overflow-y: auto;
-
-            padding: 10px;
+            padding: 8px 10px 20px;
         }
 
         .history-title {
-
             padding: 10px;
-
             color: #8997a1;
-
             font-size: 12px;
-
             font-weight: bold;
         }
 
-        .history-item {
-
-            display: block;
-
-            padding: 11px;
-
-            margin-bottom: 4px;
-
-            border-radius: 11px;
-
-            color: #45545e;
-
-            text-decoration: none;
-
+        .history-empty {
+            padding: 12px 10px;
+            color: #8997a1;
             font-size: 13px;
+        }
 
-            overflow: hidden;
-
-            white-space: nowrap;
-
-            text-overflow: ellipsis;
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 13px;
+            background: #f8fbfc;
+            border: 1px solid transparent;
         }
 
         .history-item:hover {
-
-            background:
-                #eef8fb;
+            border-color: #d9edf3;
+            background: #f1f9fb;
         }
 
-        .history-empty {
-
-            padding: 10px;
-
-            color: #8997a1;
-
+        .history-link {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #45545e;
+            text-decoration: none;
             font-size: 13px;
+            overflow: hidden;
         }
 
+        .history-icon {
+            min-width: 23px;
+            text-align: center;
+        }
+
+        .history-text {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 3px;
+        }
+
+        .history-action {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 9px;
+            background: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .history-action:hover {
+            background: #eaf7fb;
+        }
+
+        .history-delete:hover {
+            background: #fff0f0;
+        }
 
         /* =====================================================
-           BACKDROP
+           DÜZENLEME ALANI
+        ===================================================== */
+
+        .edit-box {
+            display: none;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 13px;
+            background: #eefaff;
+            border: 1px solid #cfeaf3;
+        }
+
+        .edit-box.show {
+            display: block;
+        }
+
+        .edit-input {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #c8dfe7;
+            border-radius: 9px;
+            padding: 0 10px;
+            outline: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        .edit-input:focus {
+            border-color: #70c8df;
+        }
+
+        .edit-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 7px;
+        }
+
+        .edit-save,
+        .edit-cancel {
+            flex: 1;
+            height: 34px;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .edit-save {
+            background: #0782a8;
+            color: white;
+        }
+
+        .edit-cancel {
+            background: white;
+            color: #61727c;
+            border: 1px solid #d7e5ea;
+        }
+
+        /* =====================================================
+           KARARTMA
         ===================================================== */
 
         .backdrop {
-
             position: fixed;
-
             inset: 0;
-
-            background:
-                rgba(0,0,0,.3);
-
+            background: rgba(0,0,0,.3);
             z-index: 900;
-
             opacity: 0;
-
             visibility: hidden;
-
-            transition:
-                opacity .25s ease,
-                visibility .25s ease;
+            transition: .25s;
         }
 
         .backdrop.show {
-
             opacity: 1;
-
             visibility: visible;
         }
 
-
         /* =====================================================
-           MAIN
+           ANA ALAN
         ===================================================== */
 
         .main {
-
             width: 100%;
-
             height: 100vh;
-
             display: flex;
-
             flex-direction: column;
         }
-
 
         /* =====================================================
            HEADER
         ===================================================== */
 
         .header {
-
             height: 65px;
-
             min-height: 65px;
-
             background: white;
-
-            border-bottom:
-                1px solid #dfe8ee;
-
+            border-bottom: 1px solid #dfe8ee;
             display: flex;
-
             align-items: center;
-
-            padding:
-                0 12px;
-
+            padding: 0 12px;
             gap: 10px;
         }
 
-
-        /* =====================================================
-           MENU BUTTON
-        ===================================================== */
-
         .menu-button {
-
             width: 45px;
-
             height: 45px;
-
             border: none;
-
             border-radius: 14px;
-
-            background:
-                #eef8fb;
-
-            color:
-                #14728d;
-
+            background: #eef8fb;
+            color: #14728d;
             font-size: 27px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             cursor: pointer;
         }
 
         .menu-button:active {
-
-            transform:
-                scale(.94);
+            transform: scale(.94);
         }
 
-
-        /* =====================================================
-           LOGO
-        ===================================================== */
-
         .logo {
-
             width: 43px;
-
             height: 43px;
-
             border-radius: 14px;
-
-            background:
-                #d9f5ff;
-
+            background: #d9f5ff;
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             font-size: 23px;
         }
 
         .header-info {
-
             min-width: 0;
         }
 
         .title {
-
             font-size: 17px;
-
             font-weight: bold;
         }
 
         .status {
-
             margin-top: 3px;
-
-            color:
-                #29a56f;
-
+            color: #29a56f;
             font-size: 11px;
         }
-
 
         /* =====================================================
            CHAT
         ===================================================== */
 
         .chat {
-
             flex: 1;
-
             overflow-y: auto;
-
-            padding:
-                25px 12px 125px;
-
-            -webkit-overflow-scrolling:
-                touch;
-
-            scroll-behavior:
-                smooth;
+            padding: 25px 12px 125px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .chat-inner {
-
             width: 100%;
-
             max-width: 850px;
-
-            margin:
-                auto;
+            margin: auto;
         }
-
 
         /* =====================================================
            WELCOME
         ===================================================== */
 
         .welcome {
-
             text-align: center;
-
-            margin:
-                65px auto 40px;
-
+            margin: 65px auto 40px;
             max-width: 500px;
         }
 
         .welcome-logo {
-
             width: 75px;
-
             height: 75px;
-
-            margin:
-                auto;
-
+            margin: auto;
             border-radius: 24px;
-
-            background:
-                #d9f5ff;
-
+            background: #d9f5ff;
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             font-size: 42px;
         }
 
         .welcome h1 {
-
-            margin:
-                18px 0 8px;
-
+            margin: 18px 0 8px;
             font-size: 25px;
         }
 
         .welcome p {
-
             margin: 0;
-
-            color:
-                #72808a;
-
+            color: #72808a;
             line-height: 1.6;
-
             font-size: 14px;
         }
 
-
         /* =====================================================
-           MESSAGE
+           MESAJ
         ===================================================== */
 
         .message {
-
             display: flex;
-
             gap: 9px;
-
             margin-bottom: 20px;
-
             align-items: flex-start;
         }
 
         .avatar {
-
             width: 36px;
-
             min-width: 36px;
-
             height: 36px;
-
             border-radius: 12px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             font-size: 18px;
         }
 
         .user-avatar {
-
-            background:
-                #e2eaff;
+            background: #e2eaff;
         }
 
         .bot-avatar {
-
-            background:
-                #d9f5ff;
+            background: #d9f5ff;
         }
 
         .message-content {
-
-            max-width:
-                calc(100% - 45px);
-
+            max-width: calc(100% - 45px);
             min-width: 0;
         }
 
         .message-name {
-
-            margin:
-                0 0 5px 3px;
-
-            color:
-                #84919a;
-
+            margin: 0 0 5px 3px;
+            color: #84919a;
             font-size: 11px;
         }
 
         .bubble {
-
-            padding:
-                12px 15px;
-
+            padding: 12px 15px;
             border-radius: 17px;
-
             line-height: 1.55;
-
             font-size: 15px;
-
             word-break: break-word;
-
             white-space: pre-wrap;
-
-            overflow-wrap: anywhere;
         }
 
         .user-bubble {
-
-            background:
-                #dcecff;
-
-            border-top-left-radius:
-                5px;
+            background: #dcecff;
+            border-top-left-radius: 5px;
         }
 
         .bot-bubble {
-
-            background:
-                white;
-
-            border:
-                1px solid #dfe7eb;
-
-            border-top-left-radius:
-                5px;
-
-            box-shadow:
-                0 2px 7px
-                rgba(0,0,0,.025);
+            background: white;
+            border: 1px solid #dfe7eb;
+            border-top-left-radius: 5px;
+            box-shadow: 0 2px 7px rgba(0,0,0,.025);
         }
 
-
         /* =====================================================
-           PHOTO
-        ===================================================== */
-
-        .photo-preview {
-
-            display: block;
-
-            margin-top: 8px;
-
-            max-width: 260px;
-
-            max-height: 300px;
-
-            border-radius: 14px;
-
-            border:
-                1px solid #dbe6eb;
-        }
-
-
-        /* =====================================================
-           INPUT AREA
+           INPUT
         ===================================================== */
 
         .input-area {
-
             position: fixed;
-
             left: 0;
-
             right: 0;
-
             bottom: 0;
-
-            padding:
-                9px 10px 12px;
-
-            background:
-                #f4f9fc;
-
+            padding: 9px 10px 12px;
+            background: #f4f9fc;
             z-index: 500;
         }
 
         .input-container {
-
             width: 100%;
-
             max-width: 850px;
-
-            margin:
-                auto;
+            margin: auto;
         }
 
         .file-name {
-
             display: none;
-
-            padding:
-                5px 10px;
-
-            color:
-                #087c9f;
-
+            padding: 5px 10px;
+            color: #087c9f;
             font-size: 12px;
         }
 
         .file-name.show {
-
             display: block;
         }
 
         .input-box {
-
             min-height: 54px;
-
             background: white;
-
-            border:
-                1px solid #d5e2e8;
-
+            border: 1px solid #d5e2e8;
             border-radius: 19px;
-
             display: flex;
-
             align-items: center;
-
-            padding:
-                5px 6px;
-
-            box-shadow:
-                0 4px 18px
-                rgba(0,0,0,.06);
+            padding: 5px 6px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.06);
         }
 
         .plus {
-
             width: 42px;
-
             min-width: 42px;
-
             height: 42px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             font-size: 27px;
-
-            color:
-                #60717c;
-
+            color: #60717c;
             cursor: pointer;
-
-            border-radius: 12px;
-        }
-
-        .plus:active {
-
-            background:
-                #eef5f8;
         }
 
         #foto {
-
             display: none;
         }
 
         #mesaj {
-
             flex: 1;
-
             min-width: 0;
-
             height: 42px;
-
             border: none;
-
             outline: none;
-
-            padding:
-                8px;
-
-            background:
-                transparent;
-
+            padding: 8px;
+            background: transparent;
             font-size: 15px;
         }
 
-        #mesaj::placeholder {
-
-            color:
-                #9aa7ae;
-        }
-
         .send {
-
             width: 43px;
-
             min-width: 43px;
-
             height: 43px;
-
             border: none;
-
             border-radius: 14px;
-
-            background:
-                #0782a8;
-
+            background: #0782a8;
             color: white;
-
             font-size: 19px;
-
             cursor: pointer;
         }
 
         .send:active {
-
-            transform:
-                scale(.94);
+            transform: scale(.94);
         }
-
-
-        /* =====================================================
-           LOADING
-        ===================================================== */
-
-        .loading-message {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            color:
-                #71808a;
-
-            font-size: 13px;
-        }
-
-        .loading-dots {
-
-            display: flex;
-
-            gap: 4px;
-        }
-
-        .loading-dots span {
-
-            width: 6px;
-
-            height: 6px;
-
-            background:
-                #7bbdd1;
-
-            border-radius: 50%;
-
-            animation:
-                dotPulse 1.2s infinite;
-        }
-
-        .loading-dots span:nth-child(2) {
-
-            animation-delay:
-                .2s;
-        }
-
-        .loading-dots span:nth-child(3) {
-
-            animation-delay:
-                .4s;
-        }
-
-        @keyframes dotPulse {
-
-            0%,
-            80%,
-            100% {
-
-                opacity: .35;
-
-                transform:
-                    scale(.8);
-            }
-
-            40% {
-
-                opacity: 1;
-
-                transform:
-                    scale(1);
-            }
-        }
-
 
         /* =====================================================
            MOBİL
@@ -1087,89 +683,54 @@
         @media (max-width: 600px) {
 
             .sidebar {
-
                 width: 285px;
-
-                max-width:
-                    82vw;
+                max-width: 84vw;
             }
 
             .header {
-
                 height: 62px;
-
                 min-height: 62px;
             }
 
             .chat {
-
-                padding:
-                    20px 9px 115px;
+                padding: 20px 9px 115px;
             }
 
             .welcome {
-
-                margin-top:
-                    50px;
+                margin-top: 50px;
             }
 
             .welcome-logo {
-
                 width: 68px;
-
                 height: 68px;
-
                 font-size: 38px;
             }
 
             .welcome h1 {
-
                 font-size: 22px;
             }
 
             .bubble {
-
                 font-size: 14px;
             }
 
             .input-area {
+                padding: 7px;
+            }
 
-                padding:
-                    7px;
+            .history-action {
+                width: 34px;
+                height: 34px;
             }
 
             .splash-logo {
-
                 width: 90px;
-
                 height: 90px;
-
                 font-size: 48px;
             }
 
             .splash-title {
-
                 font-size: 27px;
-            }
-
-            .message {
-
-                gap: 7px;
-            }
-
-            .avatar {
-
-                width: 34px;
-
-                min-width: 34px;
-
-                height: 34px;
-            }
-
-            .message-content {
-
-                max-width:
-                    calc(100% - 41px);
             }
         }
 
@@ -1231,8 +792,7 @@
             <button
                 class="close-button"
                 id="closeButton"
-                type="button"
-                aria-label="Menüyü kapat">
+                type="button">
 
                 ×
 
@@ -1240,8 +800,6 @@
 
         </div>
 
-
-        <!-- YENİ SOHBET -->
 
         <button
             class="new-chat"
@@ -1258,8 +816,6 @@
         </div>
 
 
-        <!-- ANA SOHBET -->
-
         <a
             href="/"
             class="menu-item">
@@ -1274,8 +830,6 @@
 
         </a>
 
-
-        <!-- DOKTOR -->
 
         <a
             href="/doctor"
@@ -1292,8 +846,6 @@
         </a>
 
 
-        <!-- REGL -->
-
         <a
             href="/period"
             class="menu-item section-link">
@@ -1308,8 +860,6 @@
 
         </a>
 
-
-        <!-- SİNDİRİM -->
 
         <a
             href="/diarrhea"
@@ -1326,8 +876,6 @@
         </a>
 
 
-        <!-- İLAÇ -->
-
         <a
             href="/medicine"
             class="menu-item section-link">
@@ -1342,8 +890,6 @@
 
         </a>
 
-
-        <!-- AYARLAR -->
 
         <a
             href="/settings"
@@ -1375,21 +921,119 @@
 
                 {% for sohbet in sohbetler %}
 
-                    <a
+                    <div
                         class="history-item"
-                        href="/chat/{{ sohbet['id'] }}">
+                        id="history-{{ sohbet['id'] }}">
 
-                        💬
-                        {{ sohbet['message'] }}
 
-                    </a>
+                        <a
+                            class="history-link"
+                            href="/chat/{{ sohbet['id'] }}">
+
+                            <span class="history-icon">
+                                💬
+                            </span>
+
+                            <span class="history-text">
+                                {{ sohbet['message'] }}
+                            </span>
+
+                        </a>
+
+
+                        <div class="history-actions">
+
+                            <!-- DÜZENLE -->
+
+                            <button
+                                type="button"
+                                class="history-action"
+                                title="Düzenle"
+                                onclick="editHistory({{ sohbet['id'] }})">
+
+                                ✏️
+
+                            </button>
+
+
+                            <!-- SİL -->
+
+                            <form
+                                action="/chat/delete/{{ sohbet['id'] }}"
+                                method="POST"
+                                onsubmit="return confirmDelete();">
+
+                                <button
+                                    type="submit"
+                                    class="history-action history-delete"
+                                    title="Sil">
+
+                                    🗑️
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             DÜZENLEME KUTUSU
+                        ================================================== -->
+
+                        <div
+                            class="edit-box"
+                            id="edit-box-{{ sohbet['id'] }}">
+
+
+                            <form
+                                action="/chat/edit/{{ sohbet['id'] }}"
+                                method="POST">
+
+
+                                <input
+                                    type="text"
+                                    name="title"
+                                    class="edit-input"
+                                    value="{{ sohbet['message'] }}"
+                                    maxlength="200"
+                                    autocomplete="off">
+
+
+                                <div class="edit-buttons">
+
+                                    <button
+                                        type="submit"
+                                        class="edit-save">
+
+                                        Kaydet
+
+                                    </button>
+
+
+                                    <button
+                                        type="button"
+                                        class="edit-cancel"
+                                        onclick="cancelEdit({{ sohbet['id'] }})">
+
+                                        Vazgeç
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
 
                 {% endfor %}
 
             {% else %}
 
                 <div class="history-empty">
-                    Henüz sohbet yok.
+                    Henüz sohbet yok. 🩵
                 </div>
 
             {% endif %}
@@ -1400,7 +1044,7 @@
 
 
     <!-- =====================================================
-         BACKDROP
+         KARARTMA
     ====================================================== -->
 
     <div
@@ -1410,24 +1054,18 @@
 
 
     <!-- =====================================================
-         MAIN
+         ANA
     ====================================================== -->
 
     <main class="main">
 
 
-        <!-- =================================================
-             HEADER
-        ================================================== -->
-
         <header class="header">
-
 
             <button
                 class="menu-button"
                 id="menuButton"
-                type="button"
-                aria-label="Menüyü aç">
+                type="button">
 
                 ☰
 
@@ -1462,13 +1100,8 @@
             class="chat"
             id="chat">
 
-
             <div class="chat-inner">
 
-
-                <!-- =================================================
-                     HOŞ GELDİN
-                ================================================== -->
 
                 {% if not mesajlar %}
 
@@ -1493,16 +1126,10 @@
                 {% endif %}
 
 
-                <!-- =================================================
-                     MESAJLAR
-                ================================================== -->
-
                 {% if mesajlar %}
 
                     {% for item in mesajlar %}
 
-
-                        <!-- KULLANICI -->
 
                         <div class="message">
 
@@ -1524,8 +1151,6 @@
 
                         </div>
 
-
-                        <!-- MAVİGPT -->
 
                         {% if item['response'] %}
 
@@ -1579,16 +1204,14 @@
 
                 <form
                     class="input-box"
-                    id="messageForm"
-                    action="{{ url_for('home') }}"
+                    action="/"
                     method="POST"
                     enctype="multipart/form-data">
 
 
                     <label
                         class="plus"
-                        for="foto"
-                        title="Fotoğraf ekle">
+                        for="foto">
 
                         ＋
 
@@ -1607,19 +1230,16 @@
                         id="mesaj"
                         name="mesaj"
                         placeholder="Mesajını yaz..."
-                        autocomplete="off"
-                        maxlength="5000">
+                        autocomplete="off">
 
 
                     <button
                         class="send"
-                        type="submit"
-                        aria-label="Mesaj gönder">
+                        type="submit">
 
                         ➤
 
                     </button>
-
 
                 </form>
 
@@ -1640,13 +1260,6 @@
 <script>
 
 (function () {
-
-    "use strict";
-
-
-    /* =====================================================
-       ELEMENTLER
-    ====================================================== */
 
     const sidebar =
         document.getElementById("sidebar");
@@ -1672,18 +1285,18 @@
     const chat =
         document.getElementById("chat");
 
+    const splashScreen =
+        document.getElementById("splashScreen");
+
     const form =
-        document.getElementById("messageForm");
+        document.querySelector(".input-box");
 
     const messageInput =
         document.getElementById("mesaj");
 
-    const splashScreen =
-        document.getElementById("splashScreen");
-
 
     /* =====================================================
-       MENÜ AÇ
+       MENÜ
     ====================================================== */
 
     function openMenu() {
@@ -1695,13 +1308,8 @@
         if (backdrop) {
             backdrop.classList.add("show");
         }
-
     }
 
-
-    /* =====================================================
-       MENÜ KAPAT
-    ====================================================== */
 
     function closeMenu() {
 
@@ -1712,13 +1320,8 @@
         if (backdrop) {
             backdrop.classList.remove("show");
         }
-
     }
 
-
-    /* =====================================================
-       HAMBURGER
-    ====================================================== */
 
     if (menuButton) {
 
@@ -1728,7 +1331,18 @@
 
                 event.preventDefault();
 
-                openMenu();
+                if (
+                    sidebar &&
+                    sidebar.classList.contains("open")
+                ) {
+
+                    closeMenu();
+
+                } else {
+
+                    openMenu();
+
+                }
 
             }
         );
@@ -1736,17 +1350,11 @@
     }
 
 
-    /* =====================================================
-       X
-    ====================================================== */
-
     if (closeButton) {
 
         closeButton.addEventListener(
             "click",
-            function (event) {
-
-                event.preventDefault();
+            function () {
 
                 closeMenu();
 
@@ -1755,10 +1363,6 @@
 
     }
 
-
-    /* =====================================================
-       BACKDROP
-    ====================================================== */
 
     if (backdrop) {
 
@@ -1767,6 +1371,191 @@
             function () {
 
                 closeMenu();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       YENİ SOHBET
+    ====================================================== */
+
+    if (newChatButton) {
+
+        newChatButton.addEventListener(
+            "click",
+            function () {
+
+                closeMenu();
+
+                window.location.href = "/";
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       BÖLÜM LİNKLERİ
+    ====================================================== */
+
+    document
+        .querySelectorAll(".section-link")
+        .forEach(
+            function (item) {
+
+                item.addEventListener(
+                    "click",
+                    function (event) {
+
+                        const target =
+                            item.getAttribute("href");
+
+                        if (
+                            target === "/doctor" ||
+                            target === "/period" ||
+                            target === "/diarrhea" ||
+                            target === "/medicine" ||
+                            target === "/settings"
+                        ) {
+
+                            event.preventDefault();
+
+                            closeMenu();
+
+                            showSplash(target);
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       SPLASH
+    ====================================================== */
+
+    function showSplash(target) {
+
+        if (!splashScreen) {
+
+            window.location.href = target;
+
+            return;
+
+        }
+
+        splashScreen.style.display = "flex";
+
+        splashScreen.classList.remove("hide");
+
+        setTimeout(
+            function () {
+
+                splashScreen.classList.add("hide");
+
+                setTimeout(
+                    function () {
+
+                        window.location.href = target;
+
+                    },
+                    500
+                );
+
+            },
+            1000
+        );
+
+    }
+
+
+    /* =====================================================
+       FOTOĞRAF
+    ====================================================== */
+
+    if (foto && fileName) {
+
+        foto.addEventListener(
+            "change",
+            function () {
+
+                if (
+                    foto.files &&
+                    foto.files.length > 0
+                ) {
+
+                    fileName.textContent =
+                        "📷 " +
+                        foto.files[0].name;
+
+                    fileName.classList.add("show");
+
+                } else {
+
+                    fileName.textContent = "";
+
+                    fileName.classList.remove("show");
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       FORM
+    ====================================================== */
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            function () {
+
+                if (splashScreen) {
+
+                    splashScreen.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ENTER
+    ====================================================== */
+
+    if (messageInput) {
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    if (form) {
+                        form.requestSubmit();
+                    }
+
+                }
 
             }
         );
@@ -1793,345 +1582,98 @@
 
 
     /* =====================================================
-       YENİ SOHBET
+       EN SON MESAJ
     ====================================================== */
 
-    if (newChatButton) {
-
-        newChatButton.addEventListener(
-            "click",
-            function () {
-
-                closeMenu();
-
-                /*
-                 * Şimdilik ana sohbet ekranına dönüyoruz.
-                 * Mevcut sohbet veritabanından silinmez.
-                 */
-
-                window.location.href = "/";
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       MENÜDEKİ BÖLÜMLER
-    ====================================================== */
-
-    document
-        .querySelectorAll(".section-link")
-        .forEach(
-            function (item) {
-
-                item.addEventListener(
-                    "click",
-                    function (event) {
-
-                        const target =
-                            item.getAttribute("href");
-
-
-                        if (!target) {
-                            return;
-                        }
-
-
-                        /*
-                         * Menü kapanır.
-                         */
-
-                        closeMenu();
-
-
-                        /*
-                         * Splash göster.
-                         */
-
-                        if (splashScreen) {
-
-                            event.preventDefault();
-
-                            showSplashAndNavigate(
-                                target
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-
-
-    /* =====================================================
-       SPLASH + GEÇİŞ
-    ====================================================== */
-
-    let navigating = false;
-
-    function showSplashAndNavigate(target) {
-
-        if (navigating) {
-            return;
-        }
-
-        navigating = true;
-
-
-        if (!splashScreen) {
-
-            window.location.href =
-                target;
-
-            return;
-        }
-
-
-        splashScreen.classList.add("show");
-
-        splashScreen.classList.remove("hide");
-
-
-        /*
-         * Yaklaşık 1 saniye göster.
-         */
+    if (chat) {
 
         setTimeout(
             function () {
 
-                splashScreen.classList.add("hide");
-
-
-                setTimeout(
-                    function () {
-
-                        window.location.href =
-                            target;
-
-                    },
-                    500
-                );
+                chat.scrollTop =
+                    chat.scrollHeight;
 
             },
-            1000
+            100
         );
 
     }
-
-
-    /* =====================================================
-       FOTOĞRAF SEÇİMİ
-    ====================================================== */
-
-    if (foto) {
-
-        foto.addEventListener(
-            "change",
-            function () {
-
-                if (
-                    foto.files &&
-                    foto.files.length > 0
-                ) {
-
-                    const selectedFile =
-                        foto.files[0];
-
-
-                    if (fileName) {
-
-                        fileName.textContent =
-                            "📷 " +
-                            selectedFile.name;
-
-                        fileName.classList.add(
-                            "show"
-                        );
-
-                    }
-
-                }
-                else {
-
-                    if (fileName) {
-
-                        fileName.textContent =
-                            "";
-
-                        fileName.classList.remove(
-                            "show"
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       FORM GÖNDERME
-    ====================================================== */
-
-    if (form) {
-
-        form.addEventListener(
-            "submit",
-            function () {
-
-                /*
-                 * Mesaj gönderirken splash yok.
-                 */
-
-                if (splashScreen) {
-
-                    splashScreen.classList.remove(
-                        "show"
-                    );
-
-                    splashScreen.classList.add(
-                        "hide"
-                    );
-
-                }
-
-
-                /*
-                 * Gönder butonunu kısa süreli pasifleştir.
-                 */
-
-                const sendButton =
-                    form.querySelector(".send");
-
-
-                if (sendButton) {
-
-                    sendButton.disabled =
-                        true;
-
-                    sendButton.style.opacity =
-                        ".65";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       ENTER İLE GÖNDER
-    ====================================================== */
-
-    if (messageInput) {
-
-        messageInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key === "Enter"
-                    &&
-                    !event.shiftKey
-                ) {
-
-                    event.preventDefault();
-
-
-                    if (
-                        messageInput.value.trim()
-                        ||
-                        (
-                            foto &&
-                            foto.files &&
-                            foto.files.length
-                        )
-                    ) {
-
-                        if (form) {
-
-                            form.requestSubmit();
-
-                        }
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       SAYFA AÇILDIĞINDA EN ALTA
-    ====================================================== */
-
-    function scrollToBottom() {
-
-        if (!chat) {
-            return;
-        }
-
-        chat.scrollTop =
-            chat.scrollHeight;
-
-    }
-
-
-    window.addEventListener(
-        "load",
-        function () {
-
-            setTimeout(
-                scrollToBottom,
-                100
-            );
-
-            setTimeout(
-                scrollToBottom,
-                400
-            );
-
-        }
-    );
-
-
-    /* =====================================================
-       MOBİLDE KLAVYE AÇILINCA INPUT
-    ====================================================== */
-
-    if (messageInput) {
-
-        messageInput.addEventListener(
-            "focus",
-            function () {
-
-                setTimeout(
-                    function () {
-
-                        scrollToBottom();
-
-                    },
-                    250
-                );
-
-            }
-        );
-
-    }
-
 
 })();
+
+
+/* =========================================================
+   GEÇMİŞ DÜZENLE
+========================================================= */
+
+function editHistory(id) {
+
+    const box =
+        document.getElementById(
+            "edit-box-" + id
+        );
+
+    if (!box) {
+        return;
+    }
+
+    document
+        .querySelectorAll(".edit-box.show")
+        .forEach(
+            function (item) {
+
+                item.classList.remove("show");
+
+            }
+        );
+
+    box.classList.add("show");
+
+    const input =
+        box.querySelector(".edit-input");
+
+    if (input) {
+
+        input.focus();
+
+        input.select();
+
+    }
+
+}
+
+
+/* =========================================================
+   DÜZENLEME İPTAL
+========================================================= */
+
+function cancelEdit(id) {
+
+    const box =
+        document.getElementById(
+            "edit-box-" + id
+        );
+
+    if (box) {
+
+        box.classList.remove("show");
+
+    }
+
+}
+
+
+/* =========================================================
+   SİLME ONAYI
+========================================================= */
+
+function confirmDelete() {
+
+    return confirm(
+        "Bu sohbet geçmişten silinsin mi?"
+    );
+
+}
 
 </script>
 
@@ -2149,7 +1691,9 @@ if ("serviceWorker" in navigator) {
         function () {
 
             navigator.serviceWorker
-                .register("/service-worker.js")
+                .register(
+                    "/service-worker.js"
+                )
                 .then(
                     function (registration) {
 
