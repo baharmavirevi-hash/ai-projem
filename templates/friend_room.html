@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Arkadaş Sohbeti | MaviGPT</title>
 
     <style>
@@ -36,7 +35,7 @@
 
         .back {
             text-decoration: none;
-            font-size: 28px;
+            font-size: 30px;
             color: #14536b;
         }
 
@@ -86,15 +85,6 @@
 
         .message-text {
             word-break: break-word;
-        }
-
-        .message-image {
-            display: block;
-            max-width: 240px;
-            width: 100%;
-            margin-top: 7px;
-            border-radius: 12px;
-            cursor: pointer;
         }
 
         .time {
@@ -160,7 +150,9 @@
             display: none;
         }
 
-        /* GÖRÜNTÜLÜ KONUŞMA */
+        /* =========================
+           GÖRÜNTÜLÜ KONUŞMA
+        ========================= */
 
         .video-screen {
             display: none;
@@ -253,7 +245,6 @@
         }
 
         @media(max-width:600px) {
-
             .header {
                 height: 64px;
                 padding: 0 9px;
@@ -290,12 +281,7 @@
 
     <div class="header-left">
 
-        <a
-            href="{{ url_for('friends') }}"
-            class="back"
-        >
-            ‹
-        </a>
+        <a href="{{ url_for('friends') }}" class="back">‹</a>
 
         <div>
             <div class="title">
@@ -319,10 +305,7 @@
 </header>
 
 
-<main
-    class="messages"
-    id="messages"
->
+<main class="messages" id="messages">
 
     {% if messages %}
 
@@ -342,16 +325,6 @@
 
                 {% endif %}
 
-                {% if msg["image"] %}
-
-                    <img
-                        class="message-image"
-                        src="{{ url_for('static', filename='uploads/' + msg['image']) }}"
-                        onclick="window.open(this.src, '_blank')"
-                    >
-
-                {% endif %}
-
                 <div class="time">
                     {{ msg["created_at"] }}
                 </div>
@@ -368,13 +341,9 @@
                 💙
             </div>
 
-            <p>
-                Henüz mesaj yok.
-            </p>
+            <p>Henüz mesaj yok.</p>
 
-            <p>
-                İlk mesajı sen gönder!
-            </p>
+            <p>İlk mesajı sen gönder!</p>
 
         </div>
 
@@ -427,7 +396,9 @@
 </form>
 
 
-<!-- GÖRÜNTÜLÜ KONUŞMA EKRANI -->
+<!-- =========================
+     GÖRÜNTÜLÜ KONUŞMA
+========================= -->
 
 <div
     class="video-screen"
@@ -449,7 +420,6 @@
 
     </div>
 
-
     <div class="video-area">
 
         <video
@@ -467,14 +437,12 @@
 
     </div>
 
-
     <div
         class="video-status"
         id="videoStatus"
     >
         Kamera hazırlanıyor...
     </div>
-
 
     <div class="video-controls">
 
@@ -508,9 +476,9 @@
 
 <script>
 
-    /* ============================
+    /* =========================
        KULLANICI ADI
-    ============================ */
+    ========================= */
 
     let username =
         localStorage.getItem(
@@ -531,8 +499,7 @@
             username = "Misafir";
         }
 
-        username =
-            username.trim();
+        username = username.trim();
 
         localStorage.setItem(
             "mavigpt_username",
@@ -545,9 +512,9 @@
     ).value = username;
 
 
-    /* ============================
-       OTOMATİK YENİLEME
-    ============================ */
+    /* =========================
+       MESAJLARI OTOMATİK YENİLE
+    ========================= */
 
     let messageCount =
         document.querySelectorAll(
@@ -625,9 +592,7 @@
                 "Yenileme hatası:",
                 error
             );
-
         }
-
     }
 
 
@@ -637,23 +602,11 @@
     );
 
 
-    /* ============================
-       WEBRTC
-    ============================ */
+    /* =========================
+       GÖRÜNTÜLÜ KONUŞMA
+    ========================= */
 
     let localStream = null;
-    let peerConnection = null;
-
-    const rtcConfig = {
-
-        iceServers: [
-            {
-                urls:
-                    "stun:stun.l.google.com:19302"
-            }
-        ]
-
-    };
 
 
     async function startVideoCall() {
@@ -673,10 +626,8 @@
                 await navigator
                     .mediaDevices
                     .getUserMedia({
-
                         video: true,
                         audio: true
-
                     });
 
 
@@ -689,10 +640,7 @@
             document.getElementById(
                 "videoStatus"
             ).textContent =
-                "🟢 Kameran hazır. Görüşme bağlantısı bekleniyor.";
-
-
-            createPeerConnection();
+                "🟢 Kamera ve mikrofon hazır.";
 
         } catch (error) {
 
@@ -707,74 +655,6 @@
                 "Kamera ve mikrofon izni vermen gerekiyor."
             );
         }
-    }
-
-
-    function createPeerConnection() {
-
-        peerConnection =
-            new RTCPeerConnection(
-                rtcConfig
-            );
-
-
-        if (localStream) {
-
-            localStream
-                .getTracks()
-                .forEach(
-                    track => {
-
-                        peerConnection.addTrack(
-                            track,
-                            localStream
-                        );
-
-                    }
-                );
-        }
-
-
-        peerConnection.ontrack =
-            event => {
-
-                if (
-                    event.streams &&
-                    event.streams[0]
-                ) {
-
-                    document.getElementById(
-                        "remoteVideo"
-                    ).srcObject =
-                        event.streams[0];
-
-                }
-
-            };
-
-
-        peerConnection.onconnectionstatechange =
-            () => {
-
-                if (!peerConnection) {
-                    return;
-                }
-
-                if (
-                    peerConnection
-                        .connectionState ===
-                    "connected"
-                ) {
-
-                    document.getElementById(
-                        "videoStatus"
-                    ).textContent =
-                        "🟢 Görüşme bağlandı!";
-
-                }
-
-            };
-
     }
 
 
@@ -842,22 +722,8 @@
             localStream = null;
         }
 
-
-        if (peerConnection) {
-
-            peerConnection.close();
-
-            peerConnection =
-                null;
-        }
-
-
         document.getElementById(
             "localVideo"
-        ).srcObject = null;
-
-        document.getElementById(
-            "remoteVideo"
         ).srcObject = null;
 
         document.getElementById(
@@ -865,10 +731,10 @@
         ).classList.remove(
             "show"
         );
-
     }
 
 </script>
 
 </body>
 </html>
+
