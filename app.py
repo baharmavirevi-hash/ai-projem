@@ -19,6 +19,16 @@ app.secret_key = os.environ.get(
     "mavigpt-development-secret-key"
 )
 
+# Session ayarları
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+# HTTPS üzerinde çalışıyorsa:
+if os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RENDER"):
+    app.config["SESSION_COOKIE_SECURE"] = True
+else:
+    app.config["SESSION_COOKIE_SECURE"] = False
+
 
 # ============================================================
 # DATABASE
@@ -41,11 +51,6 @@ register_routes(app)
 # ============================================================
 # MAVİGPT FONKSİYONU
 # ============================================================
-#
-# Eğer mevcut projenizde ask_mavigpt fonksiyonunuz zaten
-# varsa BU BÖLÜMÜ mevcut fonksiyonunuzla değiştirin.
-#
-# ============================================================
 
 def ask_mavigpt(
     mesaj,
@@ -56,14 +61,11 @@ def ask_mavigpt(
     try:
 
         import os
-
         from google import genai
-
 
         api_key = os.environ.get(
             "GEMINI_API_KEY"
         )
-
 
         if not api_key:
 
@@ -72,11 +74,9 @@ def ask_mavigpt(
                 "GEMINI_API_KEY eksik."
             )
 
-
         client = genai.Client(
             api_key=api_key
         )
-
 
         prompt = f"""
 Sen MaviGPT'sin.
@@ -91,18 +91,12 @@ Kullanıcının mesajı:
 {mesaj}
 """
 
-
         response = client.models.generate_content(
-
             model="gemini-2.5-flash",
-
             contents=prompt
-
         )
 
-
         return response.text
-
 
     except Exception as e:
 
@@ -110,7 +104,6 @@ Kullanıcının mesajı:
             "MAVİGPT HATASI:",
             repr(e)
         )
-
 
         return (
             "Üzgünüm, şu anda cevap oluştururken "
@@ -130,7 +123,6 @@ if __name__ == "__main__":
             5050
         )
     )
-
 
     app.run(
         host="0.0.0.0",
