@@ -1155,9 +1155,9 @@ def register_routes(app):
 
             kayit_mesaji=kayit_mesaji
         )
-        # ============================================================
-# AYARLAR
-# ============================================================
+           # ============================================================
+    # AYARLAR
+    # ============================================================
 
     @app.route(
         "/settings",
@@ -1166,10 +1166,6 @@ def register_routes(app):
     def settings():
 
         kayit_mesaji = None
-
-        # ----------------------------------------------------
-        # POST
-        # ----------------------------------------------------
 
         if request.method == "POST":
 
@@ -1205,10 +1201,6 @@ def register_routes(app):
                     "❌ Ayarlar kaydedilemedi."
                 )
 
-        # ----------------------------------------------------
-        # AYARLARI GETİR
-        # ----------------------------------------------------
-
         try:
 
             settings_data = get_settings()
@@ -1225,15 +1217,9 @@ def register_routes(app):
                 "personality": "friendly"
             }
 
-        # ----------------------------------------------------
-        # SAYFAYI GÖSTER
-        # ----------------------------------------------------
-
         return render_template(
             "settings.html",
-
             settings=settings_data,
-
             kayit_mesaji=kayit_mesaji
         )
         # ============================================================
