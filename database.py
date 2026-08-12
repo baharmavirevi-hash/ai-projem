@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import secrets
 
 
 # ============================================================
@@ -41,8 +42,9 @@ def init_db():
 
     cursor = conn.cursor()
 
+
     # ========================================================
-    # SOHBETLER
+    # MAVİGPT SOHBETLERİ
     # ========================================================
 
     cursor.execute("""
@@ -62,6 +64,7 @@ def init_db():
 
         )
     """)
+
 
     # ========================================================
     # SAĞLIK
@@ -85,6 +88,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # REGL
     # ========================================================
@@ -106,6 +110,7 @@ def init_db():
 
         )
     """)
+
 
     # ========================================================
     # SİNDİRİM
@@ -131,6 +136,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # İLAÇLAR
     # ========================================================
@@ -155,6 +161,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # AYARLAR
     # ========================================================
@@ -170,6 +177,7 @@ def init_db():
 
         )
     """)
+
 
     cursor.execute("""
         INSERT OR IGNORE INTO settings
@@ -187,13 +195,70 @@ def init_db():
         )
     """)
 
+
+    # ========================================================
+    # ARKADAŞ SOHBET ODALARI
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_rooms (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_code TEXT UNIQUE NOT NULL,
+
+            room_name TEXT DEFAULT 'Arkadaş Sohbeti',
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
+
+        )
+    """)
+
+
+    # ========================================================
+    # ARKADAŞ MESAJLARI
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_messages (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_code TEXT NOT NULL,
+
+            username TEXT NOT NULL,
+
+            message TEXT NOT NULL,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
+
+        )
+    """)
+
+
+    # ========================================================
+    # ARKADAŞ MESAJLARI İNDEKSİ
+    # ========================================================
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friend_messages_room
+
+        ON friend_messages(room_code)
+    """)
+
+
     conn.commit()
 
     conn.close()
 
 
 # ============================================================
-# SOHBET KAYDET
+# MAVİGPT SOHBET KAYDET
 # ============================================================
 
 def save_chat(
@@ -225,7 +290,7 @@ def save_chat(
 
 
 # ============================================================
-# TÜM SOHBET MESAJLARINI GETİR
+# MAVİGPT MESAJLARI
 # ============================================================
 
 def get_chat_messages(
@@ -334,7 +399,7 @@ def get_chat_by_id(
 
 
 # ============================================================
-# SOHBET BAŞLIĞINI / MESAJINI DÜZENLE
+# SOHBET BAŞLIĞINI DÜZENLE
 # ============================================================
 
 def update_chat_title(
@@ -375,7 +440,7 @@ def delete_chat(
 
         WHERE id = ?
     """, (
-        chat_id
+        chat_id,
     ))
 
     conn.commit()
@@ -684,6 +749,279 @@ def save_settings(
     """, (
         mode,
         personality
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+
+# ============================================================
+# ARKADAŞ SOHBETİ
+# ============================================================
+
+def generate_room_code():
+
+    """
+    8 karakterlik rastgele sohbet kodu üretir.
+    """
+
+    while True:
+
+        code = secrets.token_hex(4).upper()
+
+        conn = get_db()
+
+        existing = conn.execute("""
+            SELECT id
+            FROM friend_rooms
+            WHERE room_code = ?
+        """, (
+            code,
+        )).fetchone()
+
+        conn.close()
+
+        if not existing:
+
+            return code
+
+
+# ============================================================
+# SOHBET ODASI OLUŞTUR
+# ============================================================
+
+def create_friend_room(
+    room_name="Arkadaş Sohbeti"
+):
+
+    room_code = generate_room_code()
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO friend_rooms
+        (
+            room_code,
+            room_name
+        )
+
+        VALUES (?, ?)
+    """, (
+        room_code,
+        room_name
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return room_code
+
+
+# ============================================================
+# SOHBET ODASI BUL
+# ============================================================
+
+def get_friend_room(
+    room_code
+):
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            room_code,
+            room_name,
+            created_at
+
+        FROM friend_rooms
+
+        WHERE room_code = ?
+
+        LIMIT 1
+    """, (
+        room_code,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ARKADAŞ MESAJI KAYDET
+# ============================================================
+
+def save_friend_message(
+    room_code,
+    username,
+    message
+):
+
+    message = (
+        message
+        or ""
+    ).strip()
+
+    username = (
+        username
+        or "Misafir"
+    ).strip()
+
+    room_code = (
+        room_code
+        or ""
+    ).strip().upper()
+
+    if not room_code or not message:
+
+        return False
+
+    # Çok uzun mesajları engelle
+    message = message[:2000]
+
+    # Kullanıcı adını sınırla
+    username = username[:30]
+
+    conn = get_db()
+
+    room = conn.execute("""
+        SELECT id
+        FROM friend_rooms
+
+        WHERE room_code = ?
+
+        LIMIT 1
+    """, (
+        room_code,
+    )).fetchone()
+
+    if not room:
+
+        conn.close()
+
+        return False
+
+    conn.execute("""
+        INSERT INTO friend_messages
+        (
+            room_code,
+            username,
+            message
+        )
+
+        VALUES (?, ?, ?)
+    """, (
+        room_code,
+        username,
+        message
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return True
+
+
+# ============================================================
+# ARKADAŞ MESAJLARINI GETİR
+# ============================================================
+
+def get_friend_messages(
+    room_code,
+    limit=100
+):
+
+    room_code = (
+        room_code
+        or ""
+    ).strip().upper()
+
+    try:
+
+        limit = int(limit)
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
+        limit = 100
+
+    limit = max(
+        1,
+        min(limit, 200)
+    )
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            id,
+            room_code,
+            username,
+            message,
+            created_at
+
+        FROM friend_messages
+
+        WHERE room_code = ?
+
+        ORDER BY id ASC
+
+        LIMIT ?
+    """, (
+        room_code,
+        limit
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# ARKADAŞ MESAJI SİL
+# ============================================================
+
+def delete_friend_message(
+    message_id
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM friend_messages
+
+        WHERE id = ?
+    """, (
+        message_id,
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+
+# ============================================================
+# ARKADAŞ SOHBETİNİ TEMİZLE
+# ============================================================
+
+def clear_friend_messages(
+    room_code
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM friend_messages
+
+        WHERE room_code = ?
+    """, (
+        room_code,
     ))
 
     conn.commit()
