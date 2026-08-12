@@ -1,1 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Arkadaşlar | MaviGPT</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f4fbff;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    margin-bottom:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:#5cb8d8;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.friend{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+}
+
+a{
+    text-decoration:none;
+}
+
+.chat-btn{
+    background:#4CAF50;
+    color:white;
+    padding:8px 12px;
+    border-radius:10px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>👥 Arkadaşlar</h1>
+
+<div class="card">
+
+<form method="POST">
+
+<input
+type="text"
+name="friend_name"
+placeholder="Arkadaş adı"
+required>
+
+<button type="submit">
+
+➕ Arkadaş Ekle
+
+</button>
+
+</form>
+
+</div>
+
+{% for friend in friends %}
+
+<div class="card">
+
+<div class="friend">
+
+<div>
+
+👤 {{ friend["name"] }}
+
+</div>
+
+<a
+class="chat-btn"
+href="/friend/{{ friend['id'] }}">
+
+💬 Sohbet
+
+</a>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+<a href="/">
+<button>
+
+🏠 Ana Sayfa
+
+</button>
+
+</a>
+
+</div>
+
+</body>
+</html>
