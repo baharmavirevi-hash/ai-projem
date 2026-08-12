@@ -11,6 +11,8 @@ from database import (
     get_chats,
     get_chat,
     get_chat_messages,
+    update_chat_title,
+    delete_chat,
     save_health_record,
     get_health_records,
     save_period_record,
@@ -36,27 +38,15 @@ def ask_mavigpt(message, image_path=None, history=None):
         if not message:
             message = "Merhaba!"
 
-        # ----------------------------------------------------
-        # GEMINI API
-        # ----------------------------------------------------
-
         api_key = os.environ.get("GEMINI_API_KEY")
 
         if not api_key:
             return "GEMINI_API_KEY ayarı bulunamadı."
 
-        # ----------------------------------------------------
-        # AYARLAR
-        # ----------------------------------------------------
-
         settings = get_settings()
 
         mode = settings["mode"]
         personality = settings["personality"]
-
-        # ----------------------------------------------------
-        # MOD
-        # ----------------------------------------------------
 
         mode_text = {
             "normal":
@@ -76,10 +66,6 @@ def ask_mavigpt(message, image_path=None, history=None):
             "Normal ve dengeli şekilde cevap ver."
         )
 
-        # ----------------------------------------------------
-        # KİŞİLİK
-        # ----------------------------------------------------
-
         personality_text = {
             "friendly":
                 "Samimi, nazik ve arkadaşça konuş.",
@@ -97,10 +83,6 @@ def ask_mavigpt(message, image_path=None, history=None):
             personality,
             "Samimi, nazik ve arkadaşça konuş."
         )
-
-        # ----------------------------------------------------
-        # SİSTEM TALİMATI
-        # ----------------------------------------------------
 
         system_instruction = f"""
 Sen MaviGPT'sin.
@@ -124,12 +106,9 @@ Tehlikeli veya zararlı öneriler verme.
 
 2. Kullanıcı aynı soruyu tekrar sorarsa:
    "Bunu daha önce sormuştun."
-   "Az önce de bunu sormuştun."
    gibi gereksiz ifadeler kullanma.
-   Soruyu yeniden doğal şekilde cevapla.
 
 3. Kullanıcı kısa bir mesaj yazarsa
-   ("evet", "hayır", "tamam", "olur", "pardon" gibi)
    önceki konuşmanın bağlamını dikkate al.
 
 4. Önceki konuşmayı kullanıcı istemedikçe
@@ -141,8 +120,6 @@ Tehlikeli veya zararlı öneriler verme.
    yalnızca yeni mesajı daha iyi anlamak için kullan.
 
 7. Aynı cevabı tekrar tekrar verme.
-   Kullanıcı aynı isteği yeniden yaparsa farklı,
-   yararlı ve doğal bir cevap oluştur.
 
 8. Kullanıcı bir öğrenci ise anlatımı seviyesine uygun,
    anlaşılır ve destekleyici yap.
@@ -151,10 +128,6 @@ Tehlikeli veya zararlı öneriler verme.
 
 10. Kullanıcı Türkçe konuşuyorsa Türkçe cevap ver.
 """
-
-        # ----------------------------------------------------
-        # GEMINI CLIENT
-        # ----------------------------------------------------
 
         client = genai.Client(
             api_key=api_key
@@ -168,14 +141,6 @@ Tehlikeli veya zararlı öneriler verme.
 
         if history:
 
-            # ------------------------------------------------
-            # SADECE SON 12 KONUŞMA
-            # ------------------------------------------------
-            #
-            # Böylece sohbet sonsuza kadar büyüyüp
-            # Gemini'ye gereksiz veri göndermez.
-            # ------------------------------------------------
-
             recent_history = history[-12:]
 
             history_text = (
@@ -187,17 +152,13 @@ Tehlikeli veya zararlı öneriler verme.
                 try:
 
                     old_message = (
-                        item["message"]
-                        or ""
+                        item["message"] or ""
                     )
 
                     old_response = (
-                        item["response"]
-                        or ""
+                        item["response"] or ""
                     )
 
-                    # Çok uzun cevapların tamamını
-                    # tekrar göndermemek için sınır.
                     old_message = old_message[:3000]
                     old_response = old_response[:5000]
 
@@ -280,10 +241,6 @@ Tehlikeli veya zararlı öneriler verme.
 
         return "Şu anda cevap oluşturamadım."
 
-    # ========================================================
-    # GENEL HATA
-    # ========================================================
-
     except Exception as e:
 
         print(
@@ -303,13 +260,11 @@ Tehlikeli veya zararlı öneriler verme.
 def upload_photo(app):
 
     if "foto" not in request.files:
-
         return None, None
 
     file = request.files["foto"]
 
     if not file or not file.filename:
-
         return None, None
 
     original_name = secure_filename(
@@ -317,7 +272,6 @@ def upload_photo(app):
     )
 
     if not original_name:
-
         return None, None
 
     extension = os.path.splitext(
@@ -333,7 +287,6 @@ def upload_photo(app):
     }
 
     if extension not in allowed_extensions:
-
         return None, None
 
     filename = (
@@ -388,7 +341,6 @@ def upload_photo(app):
 def get_photo_url(filename):
 
     if not filename:
-
         return None
 
     return (
@@ -456,10 +408,6 @@ def register_routes(app):
         cevap = ""
         filename = None
 
-        # ----------------------------------------------------
-        # SOHBET LİSTESİ
-        # ----------------------------------------------------
-
         try:
 
             sohbetler = get_chats(
@@ -474,10 +422,6 @@ def register_routes(app):
             )
 
             sohbetler = []
-
-        # ----------------------------------------------------
-        # MESAJ GEÇMİŞİ
-        # ----------------------------------------------------
 
         try:
 
@@ -522,10 +466,6 @@ def register_routes(app):
                         "genel, güvenli bilgi ver."
                     )
 
-                # --------------------------------------------
-                # HAFIZA
-                # --------------------------------------------
-
                 try:
 
                     history = get_chat_messages(
@@ -541,19 +481,11 @@ def register_routes(app):
 
                     history = []
 
-                # --------------------------------------------
-                # MAVİGPT
-                # --------------------------------------------
-
                 cevap = ask_mavigpt(
                     ai_mesaj,
                     foto,
                     history
                 )
-
-                # --------------------------------------------
-                # KAYDET
-                # --------------------------------------------
 
                 try:
 
@@ -569,10 +501,6 @@ def register_routes(app):
                         "SOHBET KAYIT HATASI:",
                         repr(e)
                     )
-
-                # --------------------------------------------
-                # EKRANI YENİLE
-                # --------------------------------------------
 
                 try:
 
@@ -590,10 +518,6 @@ def register_routes(app):
                         "SOHBET YENİLEME HATASI:",
                         repr(e)
                     )
-
-        # ====================================================
-        # SAYFA
-        # ====================================================
 
         return render_template(
             "mavigpt.html",
@@ -638,6 +562,70 @@ def register_routes(app):
 
 
     # ========================================================
+    # SOHBET DÜZENLE
+    # ========================================================
+
+    @app.route(
+        "/chat/edit/<int:chat_id>",
+        methods=["POST"]
+    )
+    def edit_chat(chat_id):
+
+        title = request.form.get(
+            "title",
+            ""
+        ).strip()
+
+        if title:
+
+            try:
+
+                update_chat_title(
+                    chat_id,
+                    title
+                )
+
+            except Exception as e:
+
+                print(
+                    "SOHBET DÜZENLEME HATASI:",
+                    repr(e)
+                )
+
+        return redirect(
+            url_for("home")
+        )
+
+
+    # ========================================================
+    # SOHBET SİL
+    # ========================================================
+
+    @app.route(
+        "/chat/delete/<int:chat_id>",
+        methods=["POST"]
+    )
+    def delete_chat_route(chat_id):
+
+        try:
+
+            delete_chat(
+                chat_id
+            )
+
+        except Exception as e:
+
+            print(
+                "SOHBET SİLME HATASI:",
+                repr(e)
+            )
+
+        return redirect(
+            url_for("home")
+        )
+
+
+    # ========================================================
     # DOKTOR
     # ========================================================
 
@@ -674,10 +662,6 @@ def register_routes(app):
                 ""
             ).strip()
 
-            # ------------------------------------------------
-            # SAĞLIK KAYDI
-            # ------------------------------------------------
-
             if symptom or medicine or note:
 
                 try:
@@ -703,17 +687,9 @@ def register_routes(app):
                         "❌ Sağlık kaydı kaydedilemedi."
                     )
 
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
-
             foto, filename = upload_photo(
                 app
             )
-
-            # ------------------------------------------------
-            # MAVİGPT
-            # ------------------------------------------------
 
             if mesaj or foto:
 
@@ -727,10 +703,6 @@ def register_routes(app):
                     ai_mesaj,
                     foto
                 )
-
-        # ----------------------------------------------------
-        # KAYITLAR
-        # ----------------------------------------------------
 
         try:
 
