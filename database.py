@@ -16,10 +16,7 @@ DB_NAME = os.path.join(BASE_DIR, "chat.db")
 
 def get_db():
 
-    conn = sqlite3.connect(
-        DB_NAME
-    )
-
+    conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
 
     return conn
@@ -32,9 +29,7 @@ def get_db():
 def init_db():
 
     conn = get_db()
-
     cursor = conn.cursor()
-
 
     # --------------------------------------------------------
     # SOHBETLER
@@ -51,6 +46,8 @@ def init_db():
 
             response TEXT,
 
+            title TEXT,
+
             created_at
                 TIMESTAMP
                 DEFAULT CURRENT_TIMESTAMP
@@ -58,6 +55,32 @@ def init_db():
         )
     """)
 
+    # --------------------------------------------------------
+    # ESKİ VERİTABANLARINA TITLE EKLE
+    # --------------------------------------------------------
+
+    columns = cursor.execute("""
+        PRAGMA table_info(chats)
+    """).fetchall()
+
+    column_names = [
+        column["name"]
+        for column in columns
+    ]
+
+    if "title" not in column_names:
+
+        cursor.execute("""
+            ALTER TABLE chats
+            ADD COLUMN title TEXT
+        """)
+
+        cursor.execute("""
+            UPDATE chats
+            SET title = message
+            WHERE title IS NULL
+               OR title = ''
+        """)
 
     # --------------------------------------------------------
     # SAĞLIK
@@ -81,7 +104,6 @@ def init_db():
         )
     """)
 
-
     # --------------------------------------------------------
     # REGL
     # --------------------------------------------------------
@@ -103,7 +125,6 @@ def init_db():
 
         )
     """)
-
 
     # --------------------------------------------------------
     # SİNDİRİM
@@ -129,7 +150,6 @@ def init_db():
         )
     """)
 
-
     # --------------------------------------------------------
     # İLAÇLAR
     # --------------------------------------------------------
@@ -154,7 +174,6 @@ def init_db():
         )
     """)
 
-
     # --------------------------------------------------------
     # AYARLAR
     # --------------------------------------------------------
@@ -171,7 +190,6 @@ def init_db():
         )
     """)
 
-
     cursor.execute("""
         INSERT OR IGNORE INTO settings
         (id, mode, personality)
@@ -180,9 +198,7 @@ def init_db():
         (1, 'normal', 'friendly')
     """)
 
-
     conn.commit()
-
     conn.close()
 
 
@@ -203,19 +219,85 @@ def save_chat(
         (
             chat_type,
             message,
-            response
+            response,
+            title
         )
 
-        VALUES (?, ?, ?)
+        VALUES (?, ?, ?, ?)
     """, (
         chat_type,
         message,
-        response
+        response,
+        message[:60]
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# SOHBET BAŞLIĞINI DÜZENLE
+# ============================================================
+
+def update_chat_title(
+    chat_id,
+    title
+):
+
+    title = (title or "").strip()
+
+    if not title:
+        return False
+
+    title = title[:100]
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        UPDATE chats
+
+        SET title = ?
+
+        WHERE id = ?
+    """, (
+        title,
+        chat_id
     ))
 
     conn.commit()
 
+    changed = cursor.rowcount > 0
+
     conn.close()
+
+    return changed
+
+
+# ============================================================
+# SOHBET SİL
+# ============================================================
+
+def delete_chat(
+    chat_id
+):
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        DELETE FROM chats
+
+        WHERE id = ?
+    """, (
+        chat_id,
+    ))
+
+    conn.commit()
+
+    deleted = cursor.rowcount > 0
+
+    conn.close()
+
+    return deleted
 
 
 # ============================================================
@@ -234,6 +316,7 @@ def get_chat_messages(
             chat_type,
             message,
             response,
+            title,
             created_at
 
         FROM chats
@@ -266,6 +349,7 @@ def get_chats(
             chat_type,
             message,
             response,
+            title,
             created_at
 
         FROM chats
@@ -298,6 +382,7 @@ def get_chat(
             chat_type,
             message,
             response,
+            title,
             created_at
 
         FROM chats
@@ -353,7 +438,6 @@ def save_health_record(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -400,7 +484,6 @@ def save_period_record(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -450,7 +533,6 @@ def save_diarrhea_record(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -500,7 +582,6 @@ def save_medicine(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -552,7 +633,6 @@ def delete_medicine(
     ))
 
     conn.commit()
-
     conn.close()
 
 
@@ -576,11 +656,8 @@ def get_settings():
 
     conn.close()
 
-
     if row:
-
         return row
-
 
     return {
         "mode": "normal",
@@ -600,7 +677,6 @@ def save_settings(
         "concise"
     }
 
-
     allowed_personalities = {
         "friendly",
         "funny",
@@ -608,16 +684,11 @@ def save_settings(
         "teacher"
     }
 
-
     if mode not in allowed_modes:
-
         mode = "normal"
 
-
     if personality not in allowed_personalities:
-
         personality = "friendly"
-
 
     conn = get_db()
 
@@ -635,7 +706,6 @@ def save_settings(
     ))
 
     conn.commit()
-
     conn.close()
 
 
