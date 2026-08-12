@@ -1236,5 +1236,250 @@ def register_routes(app):
 
             kayit_mesaji=kayit_mesaji
         )
+        # ============================================================
+# ARKADAŞ SİSTEMİ
+# ============================================================
+
+    @app.route(
+        "/friends",
+        methods=["GET", "POST"]
+    )
+    def friends():
+
+        error = None
+        room = None
+        room_code = ""
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            action = request.form.get(
+                "action",
+                ""
+            ).strip()
+
+            # =================================================
+            # YENİ ODA OLUŞTUR
+            # =================================================
+
+            if action == "create":
+
+                room_name = request.form.get(
+                    "room_name",
+                    "Arkadaş Sohbeti"
+                ).strip()
+
+                if not room_name:
+                    room_name = "Arkadaş Sohbeti"
+
+                try:
+
+                    room_code = create_friend_room(
+                        room_name
+                    )
+
+                    return redirect(
+                        url_for(
+                            "friend_room",
+                            room_code=room_code
+                        )
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "ARKADAŞ ODASI OLUŞTURMA HATASI:",
+                        repr(e)
+                    )
+
+                    error = (
+                        "Sohbet odası oluşturulamadı."
+                    )
+
+            # =================================================
+            # ODAYA KATIL
+            # =================================================
+
+            elif action == "join":
+
+                room_code = request.form.get(
+                    "room_code",
+                    ""
+                ).strip().upper()
+
+                if not room_code:
+
+                    error = (
+                        "Lütfen sohbet kodunu gir."
+                    )
+
+                else:
+
+                    try:
+
+                        room = get_friend_room(
+                            room_code
+                        )
+
+                        if not room:
+
+                            error = (
+                                "Bu sohbet koduna ait oda bulunamadı."
+                            )
+
+                        else:
+
+                            return redirect(
+                                url_for(
+                                    "friend_room",
+                                    room_code=room_code
+                                )
+                            )
+
+                    except Exception as e:
+
+                        print(
+                            "ARKADAŞ ODASI ARAMA HATASI:",
+                            repr(e)
+                        )
+
+                        error = (
+                            "Sohbet odası bulunurken "
+                            "bir hata oluştu."
+                        )
+
+        # ----------------------------------------------------
+        # ARKADAŞ SAYFASI
+        # ----------------------------------------------------
+
+        return render_template(
+            "friends.html",
+
+            room=room,
+
+            room_code=room_code,
+
+            error=error
+        )
+
+
+# ============================================================
+# ARKADAŞ SOHBET ODASI
+# ============================================================
+
+    @app.route(
+        "/friends/<room_code>",
+        methods=["GET", "POST"]
+    )
+    def friend_room(room_code):
+
+        room_code = (
+            room_code or ""
+        ).strip().upper()
+
+        # ----------------------------------------------------
+        # ODAYI BUL
+        # ----------------------------------------------------
+
+        room = get_friend_room(
+            room_code
+        )
+
+        if not room:
+
+            return redirect(
+                url_for("friends")
+            )
+
+        error = None
+
+        # ----------------------------------------------------
+        # MESAJ GÖNDER
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            username = request.form.get(
+                "username",
+                ""
+            ).strip()
+
+            message = request.form.get(
+                "message",
+                ""
+            ).strip()
+
+            if not username:
+                username = "Misafir"
+
+            if message:
+
+                try:
+
+                    success = save_friend_message(
+                        room_code,
+                        username,
+                        message
+                    )
+
+                    if not success:
+
+                        error = (
+                            "Mesaj gönderilemedi."
+                        )
+
+                except Exception as e:
+
+                    print(
+                        "ARKADAŞ MESAJI KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    error = (
+                        "Mesaj gönderilirken "
+                        "bir hata oluştu."
+                    )
+
+        # ----------------------------------------------------
+        # MESAJLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            messages = get_friend_messages(
+                room_code
+            )
+
+        except Exception as e:
+
+            print(
+                "ARKADAŞ MESAJLARI OKUMA HATASI:",
+                repr(e)
+            )
+
+            messages = []
+
+            error = (
+                "Mesajlar yüklenemedi."
+            )
+
+        # ----------------------------------------------------
+        # SOHBET ODASINI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "friend_room.html",
+
+            room=room,
+
+            room_code=room_code,
+
+            messages=messages,
+
+            error=error
+        )
         
         
