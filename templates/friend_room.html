@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -11,16 +12,25 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
             font-family: Arial, sans-serif;
             background: #eefaff;
             color: #234;
+            overflow: hidden;
         }
 
         .header {
+            height: 70px;
             background: #98daf5;
-            padding: 15px;
+            padding: 10px 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -31,32 +41,62 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            min-width: 0;
         }
 
         .back {
             text-decoration: none;
             color: white;
-            font-size: 25px;
+            font-size: 32px;
+            line-height: 1;
+        }
+
+        .title-area {
+            min-width: 0;
         }
 
         .title {
             color: white;
-            font-size: 19px;
+            font-size: 18px;
             font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .room-code {
-            background: rgba(255,255,255,.3);
+            display: inline-block;
+            margin-top: 3px;
+            background: rgba(255,255,255,.25);
             color: white;
-            padding: 7px 10px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
         }
+
+        button {
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .video-btn {
+            background: white;
+            color: #4ca7ca;
+            padding: 10px 13px;
+            border-radius: 13px;
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+           VIDEO
+        ===================================================== */
 
         .video-panel {
             display: none;
-            padding: 12px;
             background: #dff6ff;
+            padding: 12px;
+            border-bottom: 1px solid #c7eaf4;
         }
 
         .video-panel.active {
@@ -69,18 +109,24 @@
             gap: 10px;
         }
 
-        video {
-            width: 100%;
-            height: 220px;
-            background: #111;
-            border-radius: 15px;
-            object-fit: cover;
+        .video-box {
+            position: relative;
         }
 
         .video-label {
             font-size: 12px;
-            margin: 5px 0;
             color: #567;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        video {
+            display: block;
+            width: 100%;
+            height: 230px;
+            background: #111;
+            border-radius: 15px;
+            object-fit: cover;
         }
 
         .video-buttons {
@@ -90,15 +136,14 @@
             margin-top: 10px;
         }
 
-        button {
-            border: none;
+        .video-control {
+            background: white;
+            color: #456;
+            padding: 10px 13px;
             border-radius: 12px;
-            padding: 11px 15px;
-            cursor: pointer;
-            font-weight: bold;
         }
 
-        .video-btn {
+        .start-call {
             background: #70c8e9;
             color: white;
         }
@@ -108,16 +153,24 @@
             color: white;
         }
 
-        .mute {
-            background: #fff;
-            color: #456;
+        .status {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #527;
         }
 
+        /* =====================================================
+           CHAT
+        ===================================================== */
+
         .chat {
-            height: calc(100vh - 190px);
-            min-height: 400px;
+            height: calc(100vh - 70px);
             display: flex;
             flex-direction: column;
+        }
+
+        .video-panel.active + .chat {
+            height: calc(100vh - 380px);
         }
 
         .messages {
@@ -143,7 +196,7 @@
         }
 
         .message-text {
-            word-wrap: break-word;
+            word-break: break-word;
         }
 
         .message-time {
@@ -152,15 +205,27 @@
             margin-top: 5px;
         }
 
+        .photo-message {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+
+        /* =====================================================
+           COMPOSER
+        ===================================================== */
+
         .composer {
             background: white;
             padding: 10px;
             display: flex;
+            align-items: center;
             gap: 8px;
             border-top: 1px solid #dceff5;
         }
 
         .composer input[type="text"] {
+            min-width: 0;
             flex: 1;
             border: 1px solid #c9e7ef;
             border-radius: 20px;
@@ -168,9 +233,26 @@
             outline: none;
         }
 
+        .composer input[type="text"]:focus {
+            border-color: #98daf5;
+        }
+
         .send {
             background: #98daf5;
             color: white;
+            padding: 11px 15px;
+            border-radius: 20px;
+        }
+
+        .photo-button {
+            background: #eefaff;
+            color: #4ca7ca;
+            padding: 11px 13px;
+            border-radius: 20px;
+        }
+
+        #photoInput {
+            display: none;
         }
 
         .error {
@@ -181,27 +263,71 @@
             border-radius: 12px;
         }
 
-        .status {
-            margin-top: 8px;
-            font-size: 13px;
-            color: #527;
+        @media (max-width: 700px) {
+
+            body {
+                overflow: hidden;
+            }
+
+            .header {
+                height: 65px;
+            }
+
+            .title {
+                font-size: 15px;
+            }
+
+            .video-btn {
+                font-size: 12px;
+                padding: 9px;
+            }
+
+            .videos {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            video {
+                height: 150px;
+            }
+
+            .video-panel.active + .chat {
+                height: calc(100vh - 365px);
+            }
+
+            .composer {
+                padding: 8px;
+            }
+
+            .composer input[type="text"] {
+                padding: 10px;
+            }
+
+            .send {
+                padding: 10px 12px;
+            }
+
+            .photo-button {
+                padding: 10px;
+            }
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 450px) {
+
             .videos {
                 grid-template-columns: 1fr;
             }
 
             video {
-                height: 190px;
+                height: 170px;
             }
 
-            .chat {
-                height: calc(100vh - 180px);
+            .video-panel.active + .chat {
+                height: calc(100vh - 560px);
             }
 
-            .room-code {
+            .video-buttons button {
                 font-size: 11px;
+                padding: 8px;
             }
         }
     </style>
@@ -212,9 +338,16 @@
 <header class="header">
 
     <div class="header-left">
-        <a href="{{ url_for('friends') }}" class="back">‹</a>
 
-        <div>
+        <a
+            href="{{ url_for('friends') }}"
+            class="back"
+        >
+            ‹
+        </a>
+
+        <div class="title-area">
+
             <div class="title">
                 💬 {{ room["name"] if room else "Arkadaş Sohbeti" }}
             </div>
@@ -222,7 +355,9 @@
             <div class="room-code">
                 Oda: {{ room_code }}
             </div>
+
         </div>
+
     </div>
 
     <button
@@ -236,15 +371,17 @@
 
 
 {% if error %}
+
 <div class="error">
     {{ error }}
 </div>
+
 {% endif %}
 
 
-<!-- ======================================================
+<!-- =====================================================
      GÖRÜNTÜLÜ KONUŞMA
-====================================================== -->
+===================================================== -->
 
 <section
     id="videoPanel"
@@ -253,7 +390,8 @@
 
     <div class="videos">
 
-        <div>
+        <div class="video-box">
+
             <div class="video-label">
                 📹 Sen
             </div>
@@ -264,9 +402,12 @@
                 muted
                 playsinline
             ></video>
+
         </div>
 
-        <div>
+
+        <div class="video-box">
+
             <div class="video-label">
                 👤 Arkadaşın
             </div>
@@ -276,6 +417,7 @@
                 autoplay
                 playsinline
             ></video>
+
         </div>
 
     </div>
@@ -284,34 +426,35 @@
     <div class="video-buttons">
 
         <button
-            class="video-btn"
+            class="video-control start-call"
             onclick="startCall()"
         >
             📹 Kamerayı Aç
         </button>
 
         <button
-            class="mute"
+            class="video-control"
             onclick="toggleMicrophone()"
         >
             🎤 Mikrofon
         </button>
 
         <button
-            class="mute"
+            class="video-control"
             onclick="toggleCamera()"
         >
             📷 Kamera
         </button>
 
         <button
-            class="hangup"
+            class="video-control hangup"
             onclick="hangUp()"
         >
             📞 Görüşmeyi Bitir
         </button>
 
     </div>
+
 
     <div
         id="callStatus"
@@ -323,9 +466,9 @@
 </section>
 
 
-<!-- ======================================================
+<!-- =====================================================
      MESAJLAR
-====================================================== -->
+===================================================== -->
 
 <main class="chat">
 
@@ -336,42 +479,59 @@
 
         {% for message in messages %}
 
-            <div class="message">
+        <div class="message">
 
-                <div class="username">
-                    {{ message["username"] }}
-                </div>
+            <div class="username">
+                {{ message["username"] }}
+            </div>
+
+            {% set msg = message["message"] %}
+
+            {% if msg.startswith("📷 FOTOĞRAF|") %}
+
+                <img
+                    class="photo-message"
+                    src="{{ msg.split('|', 1)[1] }}"
+                    alt="Gönderilen fotoğraf"
+                >
+
+            {% else %}
 
                 <div class="message-text">
-                    {{ message["message"] }}
+                    {{ msg }}
                 </div>
 
-                {% if message["created_at"] %}
-                <div class="message-time">
-                    {{ message["created_at"] }}
-                </div>
-                {% endif %}
+            {% endif %}
 
+            {% if message["created_at"] %}
+
+            <div class="message-time">
+                {{ message["created_at"] }}
             </div>
+
+            {% endif %}
+
+        </div>
 
         {% endfor %}
 
     </div>
 
 
-    <!-- ==================================================
-         MESAJ FORMU
-    ================================================== -->
+    <!-- =================================================
+         MESAJ GÖNDER
+    ================================================= -->
 
     <form
+        id="messageForm"
         class="composer"
         method="POST"
-        enctype="multipart/form-data"
     >
 
         <input
             type="text"
             name="username"
+            id="username"
             placeholder="Adın"
             value="{{ request.form.get('username', '') }}"
             required
@@ -380,13 +540,28 @@
         <input
             type="text"
             name="message"
+            id="message"
             placeholder="Mesaj yaz..."
             autocomplete="off"
         >
 
         <button
-            class="send"
+            type="button"
+            class="photo-button"
+            onclick="document.getElementById('photoInput').click()"
+        >
+            📷
+        </button>
+
+        <input
+            id="photoInput"
+            type="file"
+            accept="image/*"
+        >
+
+        <button
             type="submit"
+            class="send"
         >
             Gönder
         </button>
@@ -398,65 +573,113 @@
 
 <script>
 
+/* =====================================================
+   AYARLAR
+===================================================== */
+
 const ROOM_CODE = {{ room_code|tojson }};
 
 let localStream = null;
 let peerConnection = null;
-let callActive = false;
+
 let microphoneEnabled = true;
 let cameraEnabled = true;
 
-let lastSignalId = 0;
+let receivedOffer = false;
+let receivedAnswer = false;
+
+let receivedCandidates = new Set();
+
+let lastMessageCount =
+    document.querySelectorAll(".message").length;
+
+
+/* =====================================================
+   WEBRTC
+===================================================== */
 
 const configuration = {
+
     iceServers: [
+
         {
             urls: "stun:stun.l.google.com:19302"
         },
+
         {
             urls: "stun:stun1.l.google.com:19302"
         }
+
     ]
+
 };
 
 
+/* =====================================================
+   DURUM
+===================================================== */
+
 function setStatus(text) {
 
-    const status = document.getElementById("callStatus");
+    const status =
+        document.getElementById("callStatus");
 
     if (status) {
+
         status.textContent = text;
+
     }
+
 }
 
 
+/* =====================================================
+   VIDEO PANEL
+===================================================== */
+
 function toggleVideoPanel() {
 
-    const panel = document.getElementById("videoPanel");
+    const panel =
+        document.getElementById("videoPanel");
 
     panel.classList.toggle("active");
 
 }
 
 
-/* ======================================================
-   WEBRTC BAĞLANTISI
-====================================================== */
+/* =====================================================
+   PEER CONNECTION
+===================================================== */
 
 function createPeerConnection() {
 
-    peerConnection =
-        new RTCPeerConnection(configuration);
+    if (peerConnection) {
 
+        return peerConnection;
+
+    }
+
+
+    peerConnection =
+        new RTCPeerConnection(
+            configuration
+        );
+
+
+    /* ICE */
 
     peerConnection.onicecandidate =
-        function(event) {
+        async function(event) {
 
             if (event.candidate) {
 
-                sendSignal({
+                await sendSignal({
+
                     type: "candidate",
-                    candidate: event.candidate
+
+                    candidate:
+                        event.candidate
+
                 });
 
             }
@@ -464,24 +687,44 @@ function createPeerConnection() {
         };
 
 
+    /* UZAK GÖRÜNTÜ */
+
     peerConnection.ontrack =
         function(event) {
 
+            console.log(
+                "REMOTE TRACK GELDİ",
+                event.streams
+            );
+
+
             const remoteVideo =
-                document.getElementById("remoteVideo");
+                document.getElementById(
+                    "remoteVideo"
+                );
+
 
             if (
-                remoteVideo.srcObject !==
+                event.streams &&
                 event.streams[0]
             ) {
 
                 remoteVideo.srcObject =
                     event.streams[0];
 
+                remoteVideo.play()
+                    .catch(() => {});
+
+                setStatus(
+                    "🟢 Arkadaşına bağlandın!"
+                );
+
             }
 
         };
 
+
+    /* BAĞLANTI DURUMU */
 
     peerConnection.onconnectionstatechange =
         function() {
@@ -490,8 +733,16 @@ function createPeerConnection() {
                 return;
             }
 
+
             const state =
                 peerConnection.connectionState;
+
+
+            console.log(
+                "WebRTC:",
+                state
+            );
+
 
             if (state === "connected") {
 
@@ -501,13 +752,29 @@ function createPeerConnection() {
 
             }
 
-            if (
-                state === "disconnected" ||
-                state === "failed"
-            ) {
+
+            if (state === "connecting") {
 
                 setStatus(
-                    "🔴 Görüşme bağlantısı kesildi."
+                    "🟡 Arkadaşına bağlanılıyor..."
+                );
+
+            }
+
+
+            if (state === "disconnected") {
+
+                setStatus(
+                    "🔴 Bağlantı kesildi."
+                );
+
+            }
+
+
+            if (state === "failed") {
+
+                setStatus(
+                    "🔴 Görüşme bağlantısı başarısız."
                 );
 
             }
@@ -515,12 +782,14 @@ function createPeerConnection() {
         };
 
 
+    /* TRACKLER */
+
     if (localStream) {
 
         localStream
             .getTracks()
             .forEach(
-                track => {
+                function(track) {
 
                     peerConnection.addTrack(
                         track,
@@ -532,29 +801,52 @@ function createPeerConnection() {
 
     }
 
+
+    return peerConnection;
+
 }
 
 
-/* ======================================================
-   KAMERA VE MİKROFON
-====================================================== */
+/* =====================================================
+   KAMERA AÇ
+===================================================== */
 
 async function startCall() {
 
     try {
 
-        toggleVideoPanelOpen();
+        document
+            .getElementById("videoPanel")
+            .classList.add("active");
+
 
         setStatus(
             "📹 Kamera ve mikrofon açılıyor..."
         );
 
 
-        localStream =
-            await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true
-            });
+        if (!navigator.mediaDevices) {
+
+            throw new Error(
+                "Tarayıcı kamera API'sini desteklemiyor."
+            );
+
+        }
+
+
+        if (!localStream) {
+
+            localStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+
+                        video: true,
+
+                        audio: true
+
+                    });
+
+        }
 
 
         document
@@ -562,42 +854,54 @@ async function startCall() {
             .srcObject = localStream;
 
 
+        document
+            .getElementById("localVideo")
+            .play()
+            .catch(() => {});
+
+
         createPeerConnection();
-
-        callActive = true;
-
-
-        setStatus(
-            "🟢 Kamera açıldı. Arkadaşın bağlanınca görüşme başlayacak."
-        );
 
 
         /*
-         * Aynı odadaki diğer kişiyle
-         * WebRTC bağlantısı başlat.
+         * Yeni offer oluştur.
          */
 
         const offer =
-            await peerConnection.createOffer();
+            await peerConnection
+                .createOffer();
 
 
-        await peerConnection.setLocalDescription(
-            offer
-        );
+        await peerConnection
+            .setLocalDescription(
+                offer
+            );
 
 
         await sendSignal({
+
             type: "offer",
+
             offer: offer
+
         });
+
+
+        setStatus(
+            "🟡 Kamera açık. Arkadaşın bekleniyor..."
+        );
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "KAMERA HATASI:",
+            error
+        );
+
 
         setStatus(
-            "❌ Kamera/mikrofon açılamadı. Tarayıcı izinlerini kontrol et."
+            "❌ Kamera açılamadı. Tarayıcı izinlerini kontrol et."
         );
 
     }
@@ -605,21 +909,490 @@ async function startCall() {
 }
 
 
-function toggleVideoPanelOpen() {
+/* =====================================================
+   SIGNAL GÖNDER
+===================================================== */
 
-    const panel =
-        document.getElementById("videoPanel");
+async function sendSignal(data) {
 
-    panel.classList.add("active");
+    try {
+
+        let signalType =
+            data.type;
+
+
+        let signalData =
+            null;
+
+
+        if (
+            signalType === "offer"
+        ) {
+
+            signalData =
+                data.offer;
+
+        }
+
+
+        else if (
+            signalType === "answer"
+        ) {
+
+            signalData =
+                data.answer;
+
+        }
+
+
+        else if (
+            signalType === "candidate"
+        ) {
+
+            signalData =
+                data.candidate;
+
+        }
+
+
+        else if (
+            signalType === "hangup"
+        ) {
+
+            signalType =
+                "reset";
+
+        }
+
+
+        const response =
+            await fetch(
+                `/friends/${ROOM_CODE}/video/signal`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        type:
+                            signalType,
+
+                        data:
+                            signalData
+
+                    })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Signal gönderilemedi:",
+                await response.text()
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Signal gönderme hatası:",
+            error
+        );
+
+        return false;
+
+    }
 
 }
 
 
+/* =====================================================
+   SIGNAL KONTROL
+===================================================== */
+
+async function checkSignals() {
+
+    try {
+
+        const response =
+            await fetch(
+                `/friends/${ROOM_CODE}/video/state`
+            );
+
+
+        if (!response.ok) {
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            return;
+
+        }
+
+
+        /*
+         * OFFER
+         */
+
+        if (
+            data.offer &&
+            !receivedOffer
+        ) {
+
+            receivedOffer = true;
+
+
+            await handleSignal({
+
+                type: "offer",
+
+                offer:
+                    data.offer
+
+            });
+
+        }
+
+
+        /*
+         * ANSWER
+         */
+
+        if (
+            data.answer &&
+            !receivedAnswer
+        ) {
+
+            receivedAnswer = true;
+
+
+            await handleSignal({
+
+                type: "answer",
+
+                answer:
+                    data.answer
+
+            });
+
+        }
+
+
+        /*
+         * ICE
+         */
+
+        if (
+            data.candidates &&
+            data.candidates.length
+        ) {
+
+            for (
+                const candidate
+                of data.candidates
+            ) {
+
+                const key =
+                    JSON.stringify(
+                        candidate
+                    );
+
+
+                if (
+                    receivedCandidates
+                        .has(key)
+                ) {
+
+                    continue;
+
+                }
+
+
+                receivedCandidates
+                    .add(key);
+
+
+                await handleSignal({
+
+                    type:
+                        "candidate",
+
+                    candidate:
+                        candidate
+
+                });
+
+            }
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Signal kontrol hatası:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SIGNAL İŞLE
+===================================================== */
+
+async function handleSignal(data) {
+
+    if (!data) {
+
+        return;
+
+    }
+
+
+    /* =================================================
+       OFFER
+    ================================================= */
+
+    if (
+        data.type === "offer"
+    ) {
+
+        try {
+
+            document
+                .getElementById(
+                    "videoPanel"
+                )
+                .classList.add("active");
+
+
+            setStatus(
+                "📞 Arkadaşından görüntülü konuşma isteği geldi..."
+            );
+
+
+            /*
+             * Kamera aç.
+             */
+
+            if (!localStream) {
+
+                localStream =
+                    await navigator
+                        .mediaDevices
+                        .getUserMedia({
+
+                            video: true,
+
+                            audio: true
+
+                        });
+
+
+                document
+                    .getElementById(
+                        "localVideo"
+                    )
+                    .srcObject =
+                    localStream;
+
+            }
+
+
+            /*
+             * Peer oluştur.
+             */
+
+            createPeerConnection();
+
+
+            /*
+             * Offer'ı kabul et.
+             */
+
+            await peerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        data.offer
+                    )
+                );
+
+
+            /*
+             * Answer oluştur.
+             */
+
+            const answer =
+                await peerConnection
+                    .createAnswer();
+
+
+            await peerConnection
+                .setLocalDescription(
+                    answer
+                );
+
+
+            /*
+             * Answer gönder.
+             */
+
+            await sendSignal({
+
+                type:
+                    "answer",
+
+                answer:
+                    answer
+
+            });
+
+
+            setStatus(
+                "🟡 Arkadaşına bağlanılıyor..."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "OFFER HATASI:",
+                error
+            );
+
+
+            setStatus(
+                "❌ Görüşme bağlantısı kurulamadı."
+            );
+
+        }
+
+    }
+
+
+    /* =================================================
+       ANSWER
+    ================================================= */
+
+    else if (
+        data.type === "answer"
+    ) {
+
+        try {
+
+            if (!peerConnection) {
+
+                return;
+
+            }
+
+
+            await peerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        data.answer
+                    )
+                );
+
+
+            setStatus(
+                "🟢 Arkadaşına bağlanılıyor..."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "ANSWER HATASI:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =================================================
+       ICE
+    ================================================= */
+
+    else if (
+        data.type === "candidate"
+    ) {
+
+        try {
+
+            if (
+                peerConnection &&
+                data.candidate
+            ) {
+
+                await peerConnection
+                    .addIceCandidate(
+                        new RTCIceCandidate(
+                            data.candidate
+                        )
+                    );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "ICE HATASI:",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   MİKROFON
+===================================================== */
+
 function toggleMicrophone() {
 
     if (!localStream) {
+
+        setStatus(
+            "Önce kamerayı aç."
+        );
+
         return;
+
     }
+
 
     microphoneEnabled =
         !microphoneEnabled;
@@ -628,27 +1401,44 @@ function toggleMicrophone() {
     localStream
         .getAudioTracks()
         .forEach(
-            track => {
+            function(track) {
+
                 track.enabled =
                     microphoneEnabled;
+
             }
         );
 
 
     setStatus(
+
         microphoneEnabled
+
             ? "🎤 Mikrofon açık."
+
             : "🔇 Mikrofon kapalı."
+
     );
 
 }
 
 
+/* =====================================================
+   KAMERA
+===================================================== */
+
 function toggleCamera() {
 
     if (!localStream) {
+
+        setStatus(
+            "Önce kamerayı aç."
+        );
+
         return;
+
     }
+
 
     cameraEnabled =
         !cameraEnabled;
@@ -657,25 +1447,40 @@ function toggleCamera() {
     localStream
         .getVideoTracks()
         .forEach(
-            track => {
+            function(track) {
+
                 track.enabled =
                     cameraEnabled;
+
             }
         );
 
 
     setStatus(
+
         cameraEnabled
+
             ? "📷 Kamera açık."
+
             : "📷 Kamera kapalı."
+
     );
 
 }
 
 
-function hangUp() {
+/* =====================================================
+   GÖRÜŞMEYİ BİTİR
+===================================================== */
 
-    callActive = false;
+async function hangUp() {
+
+    receivedOffer = false;
+
+    receivedAnswer = false;
+
+    receivedCandidates =
+        new Set();
 
 
     if (peerConnection) {
@@ -692,7 +1497,11 @@ function hangUp() {
         localStream
             .getTracks()
             .forEach(
-                track => track.stop()
+                function(track) {
+
+                    track.stop();
+
+                }
             );
 
         localStream = null;
@@ -701,335 +1510,196 @@ function hangUp() {
 
 
     document
-        .getElementById("localVideo")
+        .getElementById(
+            "localVideo"
+        )
         .srcObject = null;
 
 
     document
-        .getElementById("remoteVideo")
+        .getElementById(
+            "remoteVideo"
+        )
         .srcObject = null;
+
+
+    try {
+
+        await fetch(
+            `/friends/${ROOM_CODE}/video/signal`,
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    type: "reset",
+
+                    data: null
+
+                })
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
 
 
     setStatus(
         "📞 Görüşme sonlandırıldı."
     );
 
-
-    sendSignal({
-        type: "hangup"
-    });
-
 }
 
 
-/* ======================================================
-   SİNYALLEŞME
-====================================================== */
+/* =====================================================
+   FOTOĞRAF
+===================================================== */
 
-async function sendSignal(data) {
+document
+    .getElementById("photoInput")
+    .addEventListener(
+        "change",
+        async function() {
 
-    try {
+            const file =
+                this.files[0];
 
-        await fetch(
-            `/friends/${ROOM_CODE}/signal`,
-            {
-                method: "POST",
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
+            if (!file) {
 
-                body: JSON.stringify(data)
+                return;
+
             }
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Signal gönderilemedi:",
-            error
-        );
-
-    }
-
-}
 
 
-async function checkSignals() {
+            const username =
+                document
+                    .getElementById(
+                        "username"
+                    )
+                    .value
+                    .trim()
+                    || "Misafir";
 
-    try {
 
-        const response =
-            await fetch(
-                `/friends/${ROOM_CODE}/signals?after=${lastSignalId}`
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "photo",
+                file
             );
 
 
-        if (!response.ok) {
-            return;
-        }
+            formData.append(
+                "username",
+                username
+            );
 
 
-        const data =
-            await response.json();
+            try {
 
+                const response =
+                    await fetch(
+                        `/friends/${ROOM_CODE}/upload`,
+                        {
 
-        if (
-            data.signals &&
-            data.signals.length
-        ) {
+                            method: "POST",
 
-            for (
-                const signal
-                of data.signals
-            ) {
+                            body:
+                                formData
 
-                lastSignalId =
-                    Math.max(
-                        lastSignalId,
-                        signal.id
+                        }
                     );
 
 
-                await handleSignal(
-                    signal.data
+                const data =
+                    await response.json();
+
+
+                if (
+                    data.success
+                ) {
+
+                    location.reload();
+
+                }
+
+                else {
+
+                    alert(
+                        data.error ||
+                        "Fotoğraf yüklenemedi."
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                alert(
+                    "Fotoğraf yüklenemedi."
                 );
 
             }
 
+
+            this.value = "";
+
         }
-
-    } catch (error) {
-
-        console.error(
-            "Signal kontrol hatası:",
-            error
-        );
-
-    }
-
-}
+    );
 
 
-async function handleSignal(data) {
+/* =====================================================
+   MESAJ FORMU
+===================================================== */
 
-    if (!data) {
-        return;
-    }
+document
+    .getElementById("messageForm")
+    .addEventListener(
+        "submit",
+        function(event) {
 
-
-    /* ================================================
-       OFFER
-    ================================================ */
-
-    if (data.type === "offer") {
-
-        try {
-
-            if (!localStream) {
-
-                localStream =
-                    await navigator.mediaDevices.getUserMedia({
-                        video: true,
-                        audio: true
-                    });
-
-
+            const message =
                 document
-                    .getElementById("localVideo")
-                    .srcObject =
-                    localStream;
-
-            }
-
-
-            if (!peerConnection) {
-
-                createPeerConnection();
-
-            }
-
-
-            await peerConnection.setRemoteDescription(
-                new RTCSessionDescription(
-                    data.offer
-                )
-            );
-
-
-            const answer =
-                await peerConnection.createAnswer();
-
-
-            await peerConnection.setLocalDescription(
-                answer
-            );
-
-
-            await sendSignal({
-                type: "answer",
-                answer: answer
-            });
-
-
-            callActive = true;
-
-
-            toggleVideoPanelOpen();
-
-
-            setStatus(
-                "🟢 Görüşmeye bağlanılıyor..."
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Offer hatası:",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* ================================================
-       ANSWER
-    ================================================ */
-
-    else if (data.type === "answer") {
-
-        try {
-
-            if (!peerConnection) {
-                return;
-            }
-
-
-            await peerConnection.setRemoteDescription(
-                new RTCSessionDescription(
-                    data.answer
-                )
-            );
-
-
-            setStatus(
-                "🟢 Arkadaşına bağlanılıyor..."
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Answer hatası:",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* ================================================
-       ICE CANDIDATE
-    ================================================ */
-
-    else if (data.type === "candidate") {
-
-        try {
-
-            if (
-                peerConnection &&
-                data.candidate
-            ) {
-
-                await peerConnection.addIceCandidate(
-                    new RTCIceCandidate(
-                        data.candidate
+                    .getElementById(
+                        "message"
                     )
-                );
+                    .value
+                    .trim();
+
+
+            if (!message) {
+
+                event.preventDefault();
 
             }
 
-        } catch (error) {
-
-            console.error(
-                "ICE hatası:",
-                error
-            );
-
         }
-
-    }
-
-
-    /* ================================================
-       HANGUP
-    ================================================ */
-
-    else if (data.type === "hangup") {
-
-        if (peerConnection) {
-
-            peerConnection.close();
-
-            peerConnection = null;
-
-        }
+    );
 
 
-        if (localStream) {
-
-            localStream
-                .getTracks()
-                .forEach(
-                    track => track.stop()
-                );
-
-            localStream = null;
-
-        }
-
-
-        document
-            .getElementById("localVideo")
-            .srcObject = null;
-
-
-        document
-            .getElementById("remoteVideo")
-            .srcObject = null;
-
-
-        setStatus(
-            "📞 Arkadaşın görüşmeyi sonlandırdı."
-        );
-
-    }
-
-}
-
-
-/* ======================================================
-   OTOMATİK SİNYAL KONTROLÜ
-====================================================== */
-
-setInterval(
-    checkSignals,
-    1000
-);
-
-
-/* ======================================================
+/* =====================================================
    MESAJLARI OTOMATİK YENİLE
-====================================================== */
-
-let currentMessageCount =
-    document.querySelectorAll(
-        ".message"
-    ).length;
-
+===================================================== */
 
 setInterval(
     async function() {
@@ -1043,7 +1713,9 @@ setInterval(
 
 
             if (!response.ok) {
+
                 return;
+
             }
 
 
@@ -1054,7 +1726,7 @@ setInterval(
             if (
                 data.messages &&
                 data.messages.length !==
-                currentMessageCount
+                    lastMessageCount
             ) {
 
                 location.reload();
@@ -1063,7 +1735,10 @@ setInterval(
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Mesaj yenileme hatası:",
+                error
+            );
 
         }
 
@@ -1072,23 +1747,34 @@ setInterval(
 );
 
 
-/* ======================================================
-   SAYFA AÇILINCA MESAJLARI EN AŞAĞI KAYDIR
-====================================================== */
+/* =====================================================
+   VIDEO SİNYALLERİNİ KONTROL ET
+===================================================== */
+
+setInterval(
+    checkSignals,
+    1000
+);
+
+
+/* =====================================================
+   SAYFA AÇILINCA EN ALTA İN
+===================================================== */
 
 window.addEventListener(
     "load",
     function() {
 
-        const box =
+        const messages =
             document.getElementById(
                 "messages"
             );
 
-        if (box) {
 
-            box.scrollTop =
-                box.scrollHeight;
+        if (messages) {
+
+            messages.scrollTop =
+                messages.scrollHeight;
 
         }
 
@@ -1099,3 +1785,4 @@ window.addEventListener(
 
 </body>
 </html>
+```
