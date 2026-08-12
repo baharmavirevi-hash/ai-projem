@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -6,7 +7,7 @@
           content="width=device-width, initial-scale=1.0,
                    maximum-scale=1.0, user-scalable=no">
 
-    <title>{{ room.get("room_name", "Arkadaş Sohbeti") }}</title>
+    <title>{{ room["room_name"] if room["room_name"] else "Arkadaş Sohbeti" }}</title>
 
     <style>
         * {
@@ -27,10 +28,6 @@
         body {
             overflow: hidden;
         }
-
-        /* =====================================================
-           ANA SOHBET
-        ===================================================== */
 
         .app {
             width: 100%;
@@ -172,10 +169,6 @@
             cursor: pointer;
         }
 
-        /* =====================================================
-           MESAJ GÖNDERME
-        ===================================================== */
-
         .composer {
             background: #ffffff;
             padding: 9px 10px;
@@ -224,11 +217,8 @@
             display: none;
         }
 
-        /* =====================================================
-           GÖRÜNTÜLÜ ARAMA EKRANI
-           NORMAL SAYFADA HİÇBİR ZAMAN GÖRÜNMEZ
-        ===================================================== */
-
+        /* GÖRÜNTÜLÜ GÖRÜŞME
+           NORMAL SOHBETTE GÖRÜNMEZ */
         .call-screen {
             position: fixed;
             inset: 0;
@@ -371,9 +361,7 @@
             font-size: 25px;
         }
 
-        /* =====================================================
-           GELEN ARAMA
-        ===================================================== */
+        /* GELEN ARAMA */
 
         .incoming-call {
             position: fixed;
@@ -451,10 +439,6 @@
             font-size: 12px;
         }
 
-        /* =====================================================
-           BİLDİRİM
-        ===================================================== */
-
         .toast {
             position: fixed;
             left: 50%;
@@ -475,10 +459,6 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-
-        /* =====================================================
-           MOBİL
-        ===================================================== */
 
         @media (max-width: 600px) {
 
@@ -524,30 +504,24 @@
 
 <div class="app">
 
-    <!-- =====================================================
-         SOHBET ÜST BAR
-    ====================================================== -->
-
     <header class="topbar">
 
-        <button class="back-btn"
-                onclick="goBack()">
-            ‹
-        </button>
+        <button class="back-btn" onclick="goBack()">‹</button>
 
         <div class="room-info">
+
             <div class="room-name">
-                {{ room.get("room_name", "Arkadaş Sohbeti") }}
+                {{ room["room_name"] if room["room_name"] else "Arkadaş Sohbeti" }}
             </div>
 
             <div class="room-code">
                 Kod: {{ room_code }}
             </div>
+
         </div>
 
         <div class="top-actions">
 
-            <!-- GÖRÜNTÜLÜ ARAMA -->
             <button class="top-action"
                     title="Görüntülü ara"
                     onclick="startCall()">
@@ -557,11 +531,6 @@
         </div>
 
     </header>
-
-
-    <!-- =====================================================
-         MESAJLAR
-    ====================================================== -->
 
     <main class="messages" id="messages">
 
@@ -607,28 +576,17 @@
 
             <div class="empty">
 
-                <div class="empty-icon">
-                    💬
-                </div>
+                <div class="empty-icon">💬</div>
 
-                <div>
-                    Henüz mesaj yok.
-                </div>
+                <div>Henüz mesaj yok.</div>
 
-                <small>
-                    İlk mesajı sen gönder!
-                </small>
+                <small>İlk mesajı sen gönder!</small>
 
             </div>
 
         {% endif %}
 
     </main>
-
-
-    <!-- =====================================================
-         MESAJ GÖNDERME
-    ====================================================== -->
 
     <form class="composer"
           id="messageForm"
@@ -666,19 +624,13 @@
 </div>
 
 
-<!-- =========================================================
-     GELEN ARAMA EKRANI
-========================================================= -->
+<!-- GELEN ARAMA -->
 
-<div class="incoming-call"
-     id="incomingCall">
+<div class="incoming-call" id="incomingCall">
 
-    <div class="incoming-avatar">
-        👤
-    </div>
+    <div class="incoming-avatar">👤</div>
 
-    <div class="incoming-title"
-         id="incomingCaller">
+    <div class="incoming-title" id="incomingCaller">
         Arkadaşın
     </div>
 
@@ -708,56 +660,41 @@
 </div>
 
 
-<!-- =========================================================
-     TAM EKRAN GÖRÜŞME
-========================================================= -->
+<!-- TAM EKRAN GÖRÜŞME -->
 
-<div class="call-screen"
-     id="callScreen">
+<div class="call-screen" id="callScreen">
 
-    <!-- KARŞI TARAF -->
     <video id="remoteVideo"
            class="remote-video"
            autoplay
            playsinline></video>
 
-    <div class="remote-placeholder"
-         id="remotePlaceholder">
+    <div class="remote-placeholder" id="remotePlaceholder">
 
-        <div class="remote-avatar">
-            👤
-        </div>
+        <div class="remote-avatar">👤</div>
 
-        <div class="remote-name"
-             id="remoteName">
+        <div class="remote-name" id="remoteName">
             Arkadaşın
         </div>
 
-        <div class="call-status"
-             id="callStatus">
+        <div class="call-status" id="callStatus">
             Bağlanıyor...
         </div>
 
     </div>
 
-
-    <!-- ÜST BİLGİ -->
     <div class="call-header">
 
-        <div class="call-title"
-             id="callTitle">
+        <div class="call-title" id="callTitle">
             Görüntülü görüşme
         </div>
 
-        <div class="call-time"
-             id="callTime">
+        <div class="call-time" id="callTime">
             Bağlanıyor...
         </div>
 
     </div>
 
-
-    <!-- SEN -->
     <div class="local-video-wrap">
 
         <video id="localVideo"
@@ -768,33 +705,27 @@
 
     </div>
 
-
-    <!-- KONTROLLER -->
     <div class="call-controls">
 
         <button class="call-control"
                 id="micButton"
-                onclick="toggleMicrophone()"
-                title="Mikrofon">
+                onclick="toggleMicrophone()">
             🎤
         </button>
 
         <button class="call-control"
                 id="cameraButton"
-                onclick="toggleCamera()"
-                title="Kamera">
+                onclick="toggleCamera()">
             📷
         </button>
 
         <button class="call-control"
-                onclick="switchCamera()"
-                title="Kamerayı değiştir">
+                onclick="switchCamera()">
             🔄
         </button>
 
         <button class="call-control end-call"
-                onclick="endCall()"
-                title="Görüşmeyi bitir">
+                onclick="endCall()">
             ☎
         </button>
 
@@ -803,14 +734,10 @@
 </div>
 
 
-<div class="toast"
-     id="toast"></div>
+<div class="toast" id="toast"></div>
 
 
 <script>
-/* ============================================================
-   TEMEL AYARLAR
-============================================================ */
 
 const ROOM_CODE = {{ room_code|tojson }};
 
@@ -818,17 +745,27 @@ let username =
     localStorage.getItem("friend_username") || "";
 
 if (!username) {
-    username = prompt("Adın ne olsun?") || "Misafir";
-    username = username.trim() || "Misafir";
-    localStorage.setItem("friend_username", username);
+
+    username =
+        prompt("Adın ne olsun?") || "Misafir";
+
+    username =
+        username.trim() || "Misafir";
+
+    localStorage.setItem(
+        "friend_username",
+        username
+    );
 }
 
-document.getElementById("usernameHidden").value = username;
+document.getElementById(
+    "usernameHidden"
+).value = username;
+
+window.friendUsername = username;
 
 
-/* ============================================================
-   YARDIMCI
-============================================================ */
+/* TOAST */
 
 function showToast(text) {
 
@@ -836,22 +773,27 @@ function showToast(text) {
         document.getElementById("toast");
 
     toast.textContent = text;
+
     toast.classList.add("show");
 
     setTimeout(() => {
+
         toast.classList.remove("show");
+
     }, 2500);
 }
 
 
+/* GERİ */
+
 function goBack() {
-    window.location.href = "{{ url_for('friends') }}";
+
+    window.location.href =
+        "{{ url_for('friends') }}";
 }
 
 
-/* ============================================================
-   MESAJLARI OTOMATİK YENİLE
-============================================================ */
+/* MESAJLAR */
 
 async function loadMessages() {
 
@@ -869,7 +811,9 @@ async function loadMessages() {
             return;
         }
 
-        renderMessages(data.messages || []);
+        renderMessages(
+            data.messages || []
+        );
 
     } catch (error) {
 
@@ -899,18 +843,15 @@ function renderMessages(messages) {
         return;
     }
 
-
     container.innerHTML = "";
 
     messages.forEach(message => {
 
-        const username =
-            message.username ||
-            "Misafir";
+        const messageUsername =
+            message.username || "Misafir";
 
         const text =
-            message.message ||
-            "";
+            message.message || "";
 
         const row =
             document.createElement("div");
@@ -918,18 +859,16 @@ function renderMessages(messages) {
         row.className =
             "message-row " +
             (
-                username === window.friendUsername
+                messageUsername === window.friendUsername
                     ? "mine"
                     : ""
             );
-
 
         const bubble =
             document.createElement("div");
 
         bubble.className =
             "message-bubble";
-
 
         const user =
             document.createElement("div");
@@ -938,11 +877,9 @@ function renderMessages(messages) {
             "message-user";
 
         user.textContent =
-            username;
-
+            messageUsername;
 
         bubble.appendChild(user);
-
 
         if (
             String(text).startsWith(
@@ -962,14 +899,15 @@ function renderMessages(messages) {
                     ""
                 );
 
-            image.alt =
-                "Fotoğraf";
+            image.alt = "Fotoğraf";
 
             image.onclick = () => {
+
                 window.open(
                     image.src,
                     "_blank"
                 );
+
             };
 
             bubble.appendChild(image);
@@ -990,123 +928,115 @@ function renderMessages(messages) {
             );
         }
 
-
         row.appendChild(bubble);
+
         container.appendChild(row);
     });
-
 
     container.scrollTop =
         container.scrollHeight;
 }
 
 
-window.friendUsername =
-    username;
+/* MESAJ FORMU */
 
+document
+    .getElementById("messageForm")
+    .addEventListener(
+        "submit",
+        function(event) {
 
-/* ============================================================
-   MESAJ FORMU
-============================================================ */
+            const input =
+                document.getElementById(
+                    "messageInput"
+                );
 
-document.getElementById("messageForm")
-    .addEventListener("submit", function(event) {
+            if (!input.value.trim()) {
 
-        const input =
-            document.getElementById("messageInput");
+                event.preventDefault();
 
-        if (!input.value.trim()) {
-
-            event.preventDefault();
-            return;
+            }
         }
-    });
+    );
 
 
-/* ============================================================
-   FOTOĞRAF GÖNDER
-============================================================ */
+/* FOTOĞRAF */
 
-document.getElementById("photoInput")
-    .addEventListener("change", async function() {
+document
+    .getElementById("photoInput")
+    .addEventListener(
+        "change",
+        async function() {
 
-        const file =
-            this.files[0];
+            const file =
+                this.files[0];
 
-        if (!file) {
-            return;
-        }
-
-
-        const formData =
-            new FormData();
-
-        formData.append(
-            "photo",
-            file
-        );
-
-        formData.append(
-            "username",
-            username
-        );
-
-
-        try {
-
-            showToast(
-                "Fotoğraf gönderiliyor..."
-            );
-
-
-            const response =
-                await fetch(
-                    `/friends/${encodeURIComponent(ROOM_CODE)}/upload`,
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            if (data.success) {
-
-                showToast(
-                    "Fotoğraf gönderildi."
-                );
-
-                await loadMessages();
-
-            } else {
-
-                showToast(
-                    data.error ||
-                    "Fotoğraf gönderilemedi."
-                );
+            if (!file) {
+                return;
             }
 
-        } catch (error) {
+            const formData =
+                new FormData();
 
-            console.error(error);
-
-            showToast(
-                "Fotoğraf gönderilirken hata oluştu."
+            formData.append(
+                "photo",
+                file
             );
 
-        } finally {
+            formData.append(
+                "username",
+                username
+            );
 
-            this.value = "";
+            try {
+
+                showToast(
+                    "Fotoğraf gönderiliyor..."
+                );
+
+                const response =
+                    await fetch(
+                        `/friends/${encodeURIComponent(ROOM_CODE)}/upload`,
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (data.success) {
+
+                    showToast(
+                        "Fotoğraf gönderildi."
+                    );
+
+                    await loadMessages();
+
+                } else {
+
+                    showToast(
+                        data.error ||
+                        "Fotoğraf gönderilemedi."
+                    );
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "Fotoğraf gönderilirken hata oluştu."
+                );
+
+            } finally {
+
+                this.value = "";
+            }
         }
-    });
+    );
 
-
-/* ============================================================
-   SOHBETİ PERİYODİK YENİLE
-============================================================ */
 
 setInterval(
     loadMessages,
@@ -1133,16 +1063,13 @@ let microphoneEnabled = true;
 let cameraEnabled = true;
 let usingFrontCamera = true;
 
-let processedCandidates =
-    new Set();
+let processedCandidates = new Set();
 
 let creatingOffer = false;
 let creatingAnswer = false;
 
 
-/* ============================================================
-   WEBRTC AYARLARI
-============================================================ */
+/* WEBRTC */
 
 const rtcConfiguration = {
 
@@ -1157,17 +1084,13 @@ const rtcConfiguration = {
 };
 
 
-/* ============================================================
-   KAMERA + MİKROFON
-   YANKI ENGELLEME AKTİF
-============================================================ */
+/* KAMERA + YANKI ENGELLEME */
 
 async function getLocalMedia() {
 
     if (localStream) {
         return localStream;
     }
-
 
     try {
 
@@ -1194,17 +1117,12 @@ async function getLocalMedia() {
                         ideal: 720
                     }
                 }
+
             });
 
-
-        const localVideo =
-            document.getElementById(
-                "localVideo"
-            );
-
-        localVideo.srcObject =
-            localStream;
-
+        document.getElementById(
+            "localVideo"
+        ).srcObject = localStream;
 
         return localStream;
 
@@ -1224,9 +1142,7 @@ async function getLocalMedia() {
 }
 
 
-/* ============================================================
-   PEER CONNECTION
-============================================================ */
+/* PEER */
 
 function createPeerConnection() {
 
@@ -1234,12 +1150,10 @@ function createPeerConnection() {
         return peerConnection;
     }
 
-
     peerConnection =
         new RTCPeerConnection(
             rtcConfiguration
         );
-
 
     if (localStream) {
 
@@ -1254,7 +1168,6 @@ function createPeerConnection() {
 
             });
     }
-
 
     peerConnection.ontrack =
         function(event) {
@@ -1272,21 +1185,16 @@ function createPeerConnection() {
                 remoteVideo.srcObject =
                     event.streams[0];
 
-                document
-                    .getElementById(
-                        "remotePlaceholder"
-                    )
-                    .style.display = "none";
+                document.getElementById(
+                    "remotePlaceholder"
+                ).style.display = "none";
 
-                document
-                    .getElementById(
-                        "callStatus"
-                    )
-                    .textContent =
+                document.getElementById(
+                    "callStatus"
+                ).textContent =
                     "Görüşme devam ediyor";
             }
         };
-
 
     peerConnection.onicecandidate =
         async function(event) {
@@ -1294,7 +1202,6 @@ function createPeerConnection() {
             if (!event.candidate) {
                 return;
             }
-
 
             try {
 
@@ -1312,54 +1219,46 @@ function createPeerConnection() {
             }
         };
 
-
     peerConnection.onconnectionstatechange =
         function() {
 
+            if (!peerConnection) {
+                return;
+            }
+
             const state =
                 peerConnection.connectionState;
-
 
             console.log(
                 "WebRTC:",
                 state
             );
 
-
             if (state === "connected") {
 
-                document
-                    .getElementById(
-                        "callStatus"
-                    )
-                    .textContent =
+                document.getElementById(
+                    "callStatus"
+                ).textContent =
                     "Bağlandı";
-
             }
-
 
             if (
                 state === "failed" ||
                 state === "disconnected"
             ) {
 
-                document
-                    .getElementById(
-                        "callStatus"
-                    )
-                    .textContent =
+                document.getElementById(
+                    "callStatus"
+                ).textContent =
                     "Bağlantı kesildi";
             }
         };
-
 
     return peerConnection;
 }
 
 
-/* ============================================================
-   SİNYAL GÖNDER
-============================================================ */
+/* SİNYAL */
 
 async function sendSignal(
     type,
@@ -1384,14 +1283,9 @@ async function sendSignal(
             }
         );
 
-
     return response.json();
 }
 
-
-/* ============================================================
-   VİDEO STATE OKU
-============================================================ */
 
 async function getVideoState() {
 
@@ -1404,9 +1298,7 @@ async function getVideoState() {
 }
 
 
-/* ============================================================
-   ARAMA BAŞLAT
-============================================================ */
+/* ARAMA BAŞLAT */
 
 async function startCall() {
 
@@ -1414,11 +1306,9 @@ async function startCall() {
         return;
     }
 
-
     try {
 
         await getLocalMedia();
-
 
         const response =
             await fetch(
@@ -1437,10 +1327,8 @@ async function startCall() {
                 }
             );
 
-
         const data =
             await response.json();
-
 
         if (!data.success) {
 
@@ -1452,32 +1340,24 @@ async function startCall() {
             return;
         }
 
-
         currentCallId =
             data.call_id;
 
         currentCallRole =
             "caller";
 
-
         openCallScreen(
             data.caller || username
         );
 
-
-        document
-            .getElementById(
-                "callStatus"
-            )
-            .textContent =
+        document.getElementById(
+            "callStatus"
+        ).textContent =
             "Karşı tarafın açması bekleniyor...";
-
 
         startCallTimer();
 
-
         startVideoStatePolling();
-
 
     } catch (error) {
 
@@ -1490,9 +1370,7 @@ async function startCall() {
 }
 
 
-/* ============================================================
-   GELEN ARAMALARI KONTROL ET
-============================================================ */
+/* GELEN ARAMA */
 
 async function checkIncomingCall() {
 
@@ -1500,17 +1378,16 @@ async function checkIncomingCall() {
         return;
     }
 
+    const incoming =
+        document.getElementById(
+            "incomingCall"
+        );
 
     if (
-        document
-            .getElementById(
-                "incomingCall"
-            )
-            .classList.contains("active")
+        incoming.classList.contains("active")
     ) {
         return;
     }
-
 
     try {
 
@@ -1519,10 +1396,8 @@ async function checkIncomingCall() {
                 `/friends/${encodeURIComponent(ROOM_CODE)}/call`
             );
 
-
         const data =
             await response.json();
-
 
         if (
             !data.success ||
@@ -1531,17 +1406,12 @@ async function checkIncomingCall() {
             return;
         }
 
-
         const call =
             data.call;
 
-
-        if (
-            call.status !== "ringing"
-        ) {
+        if (call.status !== "ringing") {
             return;
         }
-
 
         currentCallId =
             call.call_id;
@@ -1549,22 +1419,14 @@ async function checkIncomingCall() {
         currentCallRole =
             "callee";
 
-
-        document
-            .getElementById(
-                "incomingCaller"
-            )
-            .textContent =
+        document.getElementById(
+            "incomingCaller"
+        ).textContent =
             call.caller || "Arkadaşın";
 
-
-        document
-            .getElementById(
-                "incomingCall"
-            )
-            .classList.add(
-                "active"
-            );
+        incoming.classList.add(
+            "active"
+        );
 
     } catch (error) {
 
@@ -1576,10 +1438,6 @@ async function checkIncomingCall() {
 }
 
 
-/* ============================================================
-   ARAMA POLL
-============================================================ */
-
 callPollTimer =
     setInterval(
         checkIncomingCall,
@@ -1587,9 +1445,7 @@ callPollTimer =
     );
 
 
-/* ============================================================
-   GELEN ARAMAYI KABUL ET
-============================================================ */
+/* KABUL */
 
 async function acceptIncomingCall() {
 
@@ -1597,11 +1453,9 @@ async function acceptIncomingCall() {
         return;
     }
 
-
     try {
 
         await getLocalMedia();
-
 
         const response =
             await fetch(
@@ -1621,10 +1475,8 @@ async function acceptIncomingCall() {
                 }
             );
 
-
         const data =
             await response.json();
-
 
         if (!data.success) {
 
@@ -1638,27 +1490,20 @@ async function acceptIncomingCall() {
             return;
         }
 
-
-        document
-            .getElementById(
-                "incomingCall"
-            )
-            .classList.remove(
-                "active"
-            );
-
+        document.getElementById(
+            "incomingCall"
+        ).classList.remove(
+            "active"
+        );
 
         openCallScreen(
             data.call.caller ||
             "Arkadaşın"
         );
 
-
         startCallTimer();
 
-
         startVideoStatePolling();
-
 
     } catch (error) {
 
@@ -1673,16 +1518,13 @@ async function acceptIncomingCall() {
 }
 
 
-/* ============================================================
-   GELEN ARAMAYI REDDET
-============================================================ */
+/* REDDET */
 
 async function rejectIncomingCall() {
 
     if (!currentCallId) {
         return;
     }
-
 
     try {
 
@@ -1708,68 +1550,51 @@ async function rejectIncomingCall() {
         console.log(error);
     }
 
-
-    document
-        .getElementById(
-            "incomingCall"
-        )
-        .classList.remove(
-            "active"
-        );
-
+    document.getElementById(
+        "incomingCall"
+    ).classList.remove(
+        "active"
+    );
 
     resetCallState();
 }
 
 
-/* ============================================================
-   TAM EKRAN GÖRÜŞMEYİ AÇ
-============================================================ */
+/* GÖRÜŞME EKRANI */
 
 function openCallScreen(name) {
 
-    document
-        .getElementById(
-            "remoteName"
-        )
-        .textContent =
+    document.getElementById(
+        "remoteName"
+    ).textContent =
         name || "Arkadaşın";
 
-
-    document
-        .getElementById(
-            "callTitle"
-        )
-        .textContent =
+    document.getElementById(
+        "callTitle"
+    ).textContent =
         name || "Görüntülü görüşme";
 
-
-    document
-        .getElementById(
-            "callScreen"
-        )
-        .classList.add(
-            "active"
-        );
-
+    document.getElementById(
+        "callScreen"
+    ).classList.add(
+        "active"
+    );
 
     document.body.style.overflow =
         "hidden";
 }
 
 
-/* ============================================================
-   VIDEO SIGNALING POLLING
-============================================================ */
+/* STATE POLLING */
 
 function startVideoStatePolling() {
 
     if (statePollTimer) {
+
         clearInterval(
             statePollTimer
         );
     }
-
 
     statePollTimer =
         setInterval(
@@ -1777,21 +1602,17 @@ function startVideoStatePolling() {
             1200
         );
 
-
     processVideoState();
 }
 
 
-/* ============================================================
-   STATE İŞLE
-============================================================ */
+/* STATE */
 
 async function processVideoState() {
 
     if (!currentCallId) {
         return;
     }
-
 
     try {
 
@@ -1800,31 +1621,22 @@ async function processVideoState() {
                 `/friends/${encodeURIComponent(ROOM_CODE)}/call`
             );
 
-
         const callData =
             await callResponse.json();
 
+        if (!callData.call) {
 
-        if (
-            !callData.call
-        ) {
+            showToast(
+                "Arama sona erdi."
+            );
 
-            if (currentCallRole) {
-
-                showToast(
-                    "Arama sona erdi."
-                );
-
-                closeCallScreen();
-            }
+            closeCallScreen();
 
             return;
         }
 
-
         const call =
             callData.call;
-
 
         if (
             call.call_id !==
@@ -1832,7 +1644,6 @@ async function processVideoState() {
         ) {
             return;
         }
-
 
         if (
             call.status === "rejected"
@@ -1847,7 +1658,6 @@ async function processVideoState() {
             return;
         }
 
-
         if (
             call.status === "accepted"
         ) {
@@ -1855,15 +1665,12 @@ async function processVideoState() {
             await createOrHandleConnection();
         }
 
-
         const state =
             await getVideoState();
-
 
         await handleSignalingState(
             state
         );
-
 
     } catch (error) {
 
@@ -1875,25 +1682,19 @@ async function processVideoState() {
 }
 
 
-/* ============================================================
-   BAĞLANTIYI OLUŞTUR
-============================================================ */
+/* CONNECTION */
 
 async function createOrHandleConnection() {
 
     if (!localStream) {
+
         await getLocalMedia();
     }
 
-
     if (!peerConnection) {
+
         createPeerConnection();
     }
-
-
-    /*
-       ARAYAN TARAF OFFER OLUŞTURUR.
-    */
 
     if (
         currentCallRole === "caller" &&
@@ -1902,7 +1703,6 @@ async function createOrHandleConnection() {
 
         const state =
             await getVideoState();
-
 
         if (!state.offer) {
 
@@ -1931,27 +1731,13 @@ async function createOrHandleConnection() {
 }
 
 
-/* ============================================================
-   SIGNALING STATE İŞLE
-============================================================ */
+/* SIGNALING */
 
 async function handleSignalingState(state) {
 
-    if (!state) {
+    if (!state || !peerConnection) {
         return;
     }
-
-
-    if (
-        !peerConnection
-    ) {
-        return;
-    }
-
-
-    /*
-       CALLEE OFFER GÖRÜR.
-    */
 
     if (
         currentCallRole === "callee" &&
@@ -1967,10 +1753,7 @@ async function handleSignalingState(state) {
                 )
             );
 
-
-            if (
-                !creatingAnswer
-            ) {
+            if (!creatingAnswer) {
 
                 creatingAnswer = true;
 
@@ -1979,11 +1762,9 @@ async function handleSignalingState(state) {
                     const answer =
                         await peerConnection.createAnswer();
 
-
                     await peerConnection.setLocalDescription(
                         answer
                     );
-
 
                     await sendSignal(
                         "answer",
@@ -2004,11 +1785,6 @@ async function handleSignalingState(state) {
             );
         }
     }
-
-
-    /*
-       CALLER ANSWER GÖRÜR.
-    */
 
     if (
         currentCallRole === "caller" &&
@@ -2033,11 +1809,6 @@ async function handleSignalingState(state) {
         }
     }
 
-
-    /*
-       ICE CANDIDATES
-    */
-
     if (
         Array.isArray(
             state.candidates
@@ -2056,7 +1827,6 @@ async function handleSignalingState(state) {
                         candidate
                     );
 
-
                 if (
                     processedCandidates.has(
                         key
@@ -2065,26 +1835,15 @@ async function handleSignalingState(state) {
                     continue;
                 }
 
+                if (
+                    !peerConnection.remoteDescription
+                ) {
+                    continue;
+                }
 
                 processedCandidates.add(
                     key
                 );
-
-
-                /*
-                   Remote description henüz
-                   hazır değilse candidate'i
-                   daha sonra denemek için
-                   beklet.
-                */
-
-                if (
-                    !peerConnection.remoteDescription
-                ) {
-
-                    continue;
-                }
-
 
                 await peerConnection.addIceCandidate(
                     new RTCIceCandidate(
@@ -2104,9 +1863,7 @@ async function handleSignalingState(state) {
 }
 
 
-/* ============================================================
-   MİKROFON
-============================================================ */
+/* MİKROFON */
 
 function toggleMicrophone() {
 
@@ -2114,39 +1871,31 @@ function toggleMicrophone() {
         return;
     }
 
-
     const tracks =
         localStream.getAudioTracks();
-
 
     if (!tracks.length) {
         return;
     }
 
-
     microphoneEnabled =
         !microphoneEnabled;
-
 
     tracks.forEach(track => {
 
         track.enabled =
             microphoneEnabled;
-
     });
-
 
     const button =
         document.getElementById(
             "micButton"
         );
 
-
     button.textContent =
         microphoneEnabled
             ? "🎤"
             : "🔇";
-
 
     button.classList.toggle(
         "off",
@@ -2155,9 +1904,7 @@ function toggleMicrophone() {
 }
 
 
-/* ============================================================
-   KAMERA
-============================================================ */
+/* KAMERA */
 
 function toggleCamera() {
 
@@ -2165,39 +1912,31 @@ function toggleCamera() {
         return;
     }
 
-
     const tracks =
         localStream.getVideoTracks();
-
 
     if (!tracks.length) {
         return;
     }
 
-
     cameraEnabled =
         !cameraEnabled;
-
 
     tracks.forEach(track => {
 
         track.enabled =
             cameraEnabled;
-
     });
-
 
     const button =
         document.getElementById(
             "cameraButton"
         );
 
-
     button.textContent =
         cameraEnabled
             ? "📷"
             : "🚫";
-
 
     button.classList.toggle(
         "off",
@@ -2206,9 +1945,7 @@ function toggleCamera() {
 }
 
 
-/* ============================================================
-   KAMERA DEĞİŞTİR
-============================================================ */
+/* KAMERA DEĞİŞTİR */
 
 async function switchCamera() {
 
@@ -2216,19 +1953,15 @@ async function switchCamera() {
         return;
     }
 
-
     const oldVideoTrack =
         localStream.getVideoTracks()[0];
-
 
     if (!oldVideoTrack) {
         return;
     }
 
-
     usingFrontCamera =
         !usingFrontCamera;
-
 
     try {
 
@@ -2253,10 +1986,8 @@ async function switchCamera() {
                 }
             });
 
-
         const newVideoTrack =
             newStream.getVideoTracks()[0];
-
 
         const sender =
             peerConnection
@@ -2267,7 +1998,6 @@ async function switchCamera() {
                         s.track.kind === "video"
                 );
 
-
         if (sender) {
 
             await sender.replaceTrack(
@@ -2275,26 +2005,20 @@ async function switchCamera() {
             );
         }
 
-
         localStream.removeTrack(
             oldVideoTrack
         );
 
         oldVideoTrack.stop();
 
-
         localStream.addTrack(
             newVideoTrack
         );
 
-
-        document
-            .getElementById(
-                "localVideo"
-            )
-            .srcObject =
+        document.getElementById(
+            "localVideo"
+        ).srcObject =
             localStream;
-
 
     } catch (error) {
 
@@ -2313,29 +2037,25 @@ async function switchCamera() {
 }
 
 
-/* ============================================================
-   ARAMA SÜRESİ
-============================================================ */
+/* SÜRE */
 
 function startCallTimer() {
 
     callStartTime =
         Date.now();
 
-
     if (callTimer) {
+
         clearInterval(
             callTimer
         );
     }
-
 
     callTimer =
         setInterval(
             updateCallTimer,
             1000
         );
-
 
     updateCallTimer();
 }
@@ -2347,7 +2067,6 @@ function updateCallTimer() {
         return;
     }
 
-
     const seconds =
         Math.floor(
             (
@@ -2356,35 +2075,24 @@ function updateCallTimer() {
             ) / 1000
         );
 
-
     const minutes =
         Math.floor(
             seconds / 60
         );
 
-
     const remainingSeconds =
         seconds % 60;
 
-
-    const formatted =
+    document.getElementById(
+        "callTime"
+    ).textContent =
         String(minutes).padStart(2, "0")
         + ":"
         + String(remainingSeconds).padStart(2, "0");
-
-
-    document
-        .getElementById(
-            "callTime"
-        )
-        .textContent =
-        formatted;
 }
 
 
-/* ============================================================
-   GÖRÜŞMEYİ BİTİR
-============================================================ */
+/* BİTİR */
 
 async function endCall() {
 
@@ -2402,34 +2110,25 @@ async function endCall() {
         console.log(error);
     }
 
-
     closeCallScreen();
 }
 
 
-/* ============================================================
-   EKRANI KAPAT
-============================================================ */
+/* KAPAT */
 
 function closeCallScreen() {
 
-    document
-        .getElementById(
-            "callScreen"
-        )
-        .classList.remove(
-            "active"
-        );
+    document.getElementById(
+        "callScreen"
+    ).classList.remove(
+        "active"
+    );
 
-
-    document
-        .getElementById(
-            "incomingCall"
-        )
-        .classList.remove(
-            "active"
-        );
-
+    document.getElementById(
+        "incomingCall"
+    ).classList.remove(
+        "active"
+    );
 
     if (statePollTimer) {
 
@@ -2440,7 +2139,6 @@ function closeCallScreen() {
         statePollTimer = null;
     }
 
-
     if (callTimer) {
 
         clearInterval(
@@ -2450,13 +2148,12 @@ function closeCallScreen() {
         callTimer = null;
     }
 
-
     if (peerConnection) {
 
         peerConnection.close();
+
         peerConnection = null;
     }
-
 
     if (localStream) {
 
@@ -2470,24 +2167,16 @@ function closeCallScreen() {
         localStream = null;
     }
 
+    document.getElementById(
+        "localVideo"
+    ).srcObject = null;
 
-    document
-        .getElementById(
-            "localVideo"
-        )
-        .srcObject = null;
-
-
-    document
-        .getElementById(
-            "remoteVideo"
-        )
-        .srcObject = null;
-
+    document.getElementById(
+        "remoteVideo"
+    ).srcObject = null;
 
     document.body.style.overflow =
         "hidden";
-
 
     currentCallId = null;
     currentCallRole = null;
@@ -2501,28 +2190,22 @@ function closeCallScreen() {
 }
 
 
-/* ============================================================
-   STATE SIFIRLA
-============================================================ */
+/* RESET */
 
 function resetCallState() {
 
     currentCallId = null;
     currentCallRole = null;
 
-    document
-        .getElementById(
-            "incomingCall"
-        )
-        .classList.remove(
-            "active"
-        );
+    document.getElementById(
+        "incomingCall"
+    ).classList.remove(
+        "active"
+    );
 }
 
 
-/* ============================================================
-   SAYFA KAPATILIRKEN
-============================================================ */
+/* SAYFA KAPANIRKEN */
 
 window.addEventListener(
     "beforeunload",
@@ -2538,9 +2221,7 @@ window.addEventListener(
 );
 
 
-/* ============================================================
-   İLK YÜKLEME
-============================================================ */
+/* İLK YÜKLEME */
 
 window.addEventListener(
     "load",
@@ -2554,21 +2235,14 @@ window.addEventListener(
         messages.scrollTop =
             messages.scrollHeight;
 
-
-        /*
-           Arama ekranı sayfanın altında
-           bulunmaz. Sadece arama başlarsa
-           position: fixed tam ekran olarak
-           açılır.
-        */
-
         console.log(
             "✅ Arkadaş odası hazır."
         );
-
     }
 );
+
 </script>
 
 </body>
 </html>
+```
