@@ -29,9 +29,7 @@ def get_db():
     conn.row_factory = sqlite3.Row
 
     return conn
-
-
-# ============================================================
+    # ============================================================
 # DATABASE OLUŞTUR
 # ============================================================
 
@@ -196,17 +194,7 @@ def init_db():
 
 
     # ========================================================
-    # ARKADAŞLAR
-    # ========================================================
-    #
-    # Şimdilik basit bir arkadaş listesi sistemi.
-    #
-    # name:
-    # Arkadaşın görünen adı
-    #
-    # created_at:
-    # Arkadaşın eklenme zamanı
-    #
+    # ESKİ ARKADAŞ SİSTEMİ
     # ========================================================
 
     cursor.execute("""
@@ -225,15 +213,7 @@ def init_db():
 
 
     # ========================================================
-    # ARKADAŞ MESAJLARI
-    # ========================================================
-    #
-    # friend_id:
-    # Mesajın hangi arkadaşla olan sohbete ait olduğunu tutar.
-    #
-    # message:
-    # Gönderilen mesaj.
-    #
+    # ESKİ ARKADAŞ MESAJLARI
     # ========================================================
 
     cursor.execute("""
@@ -258,15 +238,57 @@ def init_db():
 
 
     # ========================================================
-    # DATABASE DEĞİŞİKLİKLERİNİ KAYDET
+    # 🆕 ARKADAŞ SOHBET ODALARI
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_rooms (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_code TEXT UNIQUE NOT NULL,
+
+            room_name TEXT NOT NULL,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
+
+        )
+    """)
+
+
+    # ========================================================
+    # 🆕 ARKADAŞ ODA MESAJLARI
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_room_messages (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_code TEXT NOT NULL,
+
+            username TEXT NOT NULL,
+
+            message TEXT NOT NULL,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
+
+        )
+    """)
+
+
+    # ========================================================
+    # DEĞİŞİKLİKLERİ KAYDET
     # ========================================================
 
     conn.commit()
 
     conn.close()
-
-
-# ============================================================
+    # ============================================================
 # MAVİGPT SOHBET KAYDET
 # ============================================================
 
@@ -455,9 +477,7 @@ def delete_chat(
     conn.commit()
 
     conn.close()
-
-
-# ============================================================
+    # ============================================================
 # SAĞLIK
 # ============================================================
 
@@ -599,9 +619,7 @@ def get_diarrhea_records():
     conn.close()
 
     return rows
-
-
-# ============================================================
+    # ============================================================
 # İLAÇ
 # ============================================================
 
@@ -730,7 +748,6 @@ def save_settings(
         "concise"
     }
 
-
     allowed_personalities = {
         "friendly",
         "funny",
@@ -738,16 +755,13 @@ def save_settings(
         "teacher"
     }
 
-
     if mode not in allowed_modes:
 
         mode = "normal"
 
-
     if personality not in allowed_personalities:
 
         personality = "friendly"
-
 
     conn = get_db()
 
@@ -767,9 +781,7 @@ def save_settings(
     conn.commit()
 
     conn.close()
-
-
-# ============================================================
+    # ============================================================
 # ARKADAŞ EKLE
 # ============================================================
 
@@ -785,7 +797,6 @@ def add_friend(
     if not name:
 
         return None
-
 
     conn = get_db()
 
@@ -895,10 +906,10 @@ def delete_friend(
 
 
 # ============================================================
-# ARKADAŞA MESAJ KAYDET
+# ESKİ ARKADAŞA MESAJ KAYDET
 # ============================================================
 
-def save_friend_message(
+def save_old_friend_message(
     friend_id,
     message
 ):
@@ -911,7 +922,6 @@ def save_friend_message(
     if not message:
 
         return None
-
 
     conn = get_db()
 
@@ -938,10 +948,10 @@ def save_friend_message(
 
 
 # ============================================================
-# ARKADAŞ MESAJLARINI GETİR
+# ESKİ ARKADAŞ MESAJLARINI GETİR
 # ============================================================
 
-def get_friend_messages(
+def get_old_friend_messages(
     friend_id
 ):
 
@@ -969,7 +979,7 @@ def get_friend_messages(
 
 
 # ============================================================
-# SON ARKADAŞ MESAJLARI
+# SON ESKİ ARKADAŞ MESAJLARI
 # ============================================================
 
 def get_recent_friend_messages(
@@ -988,16 +998,13 @@ def get_recent_friend_messages(
 
         limit = 50
 
-
     if limit < 1:
 
         limit = 50
 
-
     if limit > 200:
 
         limit = 200
-
 
     conn = get_db()
 
@@ -1022,15 +1029,261 @@ def get_recent_friend_messages(
 
     conn.close()
 
-    # En eskiden yeniye çevir
-
     return list(
         reversed(rows)
     )
+    # ============================================================
+# ARKADAŞ SOHBET ODASI
+# ============================================================
+
+def create_friend_room(
+    room_name="Arkadaş Sohbeti"
+):
+
+    room_name = (
+        room_name
+        or "Arkadaş Sohbeti"
+    ).strip()
+
+    if not room_name:
+
+        room_name = "Arkadaş Sohbeti"
+
+
+    # --------------------------------------------------------
+    # BENZERSİZ ODA KODU OLUŞTUR
+    # --------------------------------------------------------
+
+    import uuid
+
+    conn = get_db()
+
+    while True:
+
+        room_code = (
+            uuid.uuid4()
+            .hex[:8]
+            .upper()
+        )
+
+        existing = conn.execute("""
+            SELECT id
+
+            FROM friend_rooms
+
+            WHERE room_code = ?
+
+            LIMIT 1
+        """, (
+            room_code,
+        )).fetchone()
+
+        if not existing:
+
+            break
+
+
+    # --------------------------------------------------------
+    # ODAYI KAYDET
+    # --------------------------------------------------------
+
+    cursor = conn.execute("""
+        INSERT INTO friend_rooms
+        (
+            room_code,
+            room_name
+        )
+
+        VALUES (?, ?)
+    """, (
+        room_code,
+        room_name
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return room_code
 
 
 # ============================================================
+# ARKADAŞ ODASINI GETİR
+# ============================================================
+
+def get_friend_room(
+    room_code
+):
+
+    room_code = (
+        room_code
+        or ""
+    ).strip().upper()
+
+    if not room_code:
+
+        return None
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            room_code,
+            room_name,
+            created_at
+
+        FROM friend_rooms
+
+        WHERE room_code = ?
+
+        LIMIT 1
+    """, (
+        room_code,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ARKADAŞ ODASINA MESAJ KAYDET
+# ============================================================
+
+def save_friend_message(
+    room_code,
+    username,
+    message
+):
+
+    room_code = (
+        room_code
+        or ""
+    ).strip().upper()
+
+    username = (
+        username
+        or "Misafir"
+    ).strip()
+
+    message = (
+        message
+        or ""
+    ).strip()
+
+
+    if not room_code:
+
+        return None
+
+    if not message:
+
+        return None
+
+    if not username:
+
+        username = "Misafir"
+
+
+    conn = get_db()
+
+
+    # --------------------------------------------------------
+    # ODA VAR MI?
+    # --------------------------------------------------------
+
+    room = conn.execute("""
+        SELECT id
+
+        FROM friend_rooms
+
+        WHERE room_code = ?
+
+        LIMIT 1
+    """, (
+        room_code,
+    )).fetchone()
+
+
+    if not room:
+
+        conn.close()
+
+        return None
+
+
+    # --------------------------------------------------------
+    # MESAJI KAYDET
+    # --------------------------------------------------------
+
+    cursor = conn.execute("""
+        INSERT INTO friend_room_messages
+        (
+            room_code,
+            username,
+            message
+        )
+
+        VALUES (?, ?, ?)
+    """, (
+        room_code,
+        username,
+        message
+    ))
+
+
+    message_id = cursor.lastrowid
+
+    conn.commit()
+
+    conn.close()
+
+    return message_id
+
+
+# ============================================================
+# ARKADAŞ ODASI MESAJLARINI GETİR
+# ============================================================
+
+def get_friend_messages(
+    room_code
+):
+
+    room_code = (
+        room_code
+        or ""
+    ).strip().upper()
+
+    if not room_code:
+
+        return []
+
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            id,
+            room_code,
+            username,
+            message,
+            created_at
+
+        FROM friend_room_messages
+
+        WHERE room_code = ?
+
+        ORDER BY id ASC
+    """, (
+        room_code,
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+   # ============================================================
 # DATABASE BAŞLAT
 # ============================================================
 
-init_db()
+init_db() 
