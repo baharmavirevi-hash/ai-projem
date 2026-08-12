@@ -912,5 +912,124 @@ def register_routes(app):
 
             kayit_mesaji=kayit_mesaji
         )
+        # ============================================================
+# SİNDİRİM TAKİBİ
+# ============================================================
+
+    @app.route(
+        "/diarrhea",
+        methods=["GET", "POST"]
+    )
+    def diarrhea():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            date = request.form.get(
+                "date",
+                ""
+            ).strip()
+
+            count_raw = request.form.get(
+                "count",
+                ""
+            ).strip()
+
+            condition = request.form.get(
+                "condition",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            # ------------------------------------------------
+            # SAYIYI GÜVENLİ ŞEKİLDE AL
+            # ------------------------------------------------
+
+            try:
+
+                count = max(
+                    0,
+                    int(count_raw or 0)
+                )
+
+            except (
+                ValueError,
+                TypeError
+            ):
+
+                count = 0
+
+            # ------------------------------------------------
+            # KAYIT
+            # ------------------------------------------------
+
+            if (
+                date
+                or count
+                or condition
+                or note
+            ):
+
+                try:
+
+                    save_diarrhea_record(
+                        date,
+                        count,
+                        condition,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Sindirim kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SİNDİRİM KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Sindirim kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # KAYITLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_diarrhea_records()
+
+        except Exception as e:
+
+            print(
+                "SİNDİRİM OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "diarrhea.html",
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji
+        )
         
         
