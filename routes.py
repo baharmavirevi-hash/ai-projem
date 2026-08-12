@@ -822,5 +822,95 @@ def register_routes(app):
             foto_url=get_photo_url(
                 filename
             )
+        )# ============================================================
+# REGL TAKİBİ
+# ============================================================
+
+    @app.route(
+        "/period",
+        methods=["GET", "POST"]
+    )
+    def period():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            start = request.form.get(
+                "start_date",
+                ""
+            ).strip()
+
+            end = request.form.get(
+                "end_date",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            # ------------------------------------------------
+            # KAYIT
+            # ------------------------------------------------
+
+            if start:
+
+                try:
+
+                    save_period_record(
+                        start,
+                        end,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Regl kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "REGL KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Regl kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # KAYITLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_period_records()
+
+        except Exception as e:
+
+            print(
+                "REGL OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "period.html",
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji
         )
+        
         
