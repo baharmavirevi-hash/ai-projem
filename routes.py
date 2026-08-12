@@ -7,23 +7,54 @@ from PIL import Image
 from google import genai
 
 from database import (
+    # --------------------------------------------------------
+    # MAVİGPT
+    # --------------------------------------------------------
     save_chat,
     get_chats,
     get_chat,
     get_chat_messages,
     update_chat_title,
     delete_chat,
+
+    # --------------------------------------------------------
+    # SAĞLIK
+    # --------------------------------------------------------
     save_health_record,
     get_health_records,
+
+    # --------------------------------------------------------
+    # REGL
+    # --------------------------------------------------------
     save_period_record,
     get_period_records,
+
+    # --------------------------------------------------------
+    # SİNDİRİM
+    # --------------------------------------------------------
     save_diarrhea_record,
     get_diarrhea_records,
+
+    # --------------------------------------------------------
+    # İLAÇ
+    # --------------------------------------------------------
     save_medicine,
     get_medicines,
     delete_medicine,
+
+    # --------------------------------------------------------
+    # AYARLAR
+    # --------------------------------------------------------
     get_settings,
-    save_settings
+    save_settings,
+
+    # --------------------------------------------------------
+    # ARKADAŞ SOHBETİ
+    # --------------------------------------------------------
+    create_friend_room,
+    get_friend_room,
+    save_friend_message,
+    get_friend_messages
 )
 
 
@@ -38,17 +69,32 @@ def ask_mavigpt(message, image_path=None, history=None):
         if not message:
             message = "Merhaba!"
 
-        api_key = os.environ.get("GEMINI_API_KEY")
+        # ----------------------------------------------------
+        # GEMINI API
+        # ----------------------------------------------------
+
+        api_key = os.environ.get(
+            "GEMINI_API_KEY"
+        )
 
         if not api_key:
             return "GEMINI_API_KEY ayarı bulunamadı."
+
+        # ----------------------------------------------------
+        # AYARLAR
+        # ----------------------------------------------------
 
         settings = get_settings()
 
         mode = settings["mode"]
         personality = settings["personality"]
 
+        # ----------------------------------------------------
+        # MOD
+        # ----------------------------------------------------
+
         mode_text = {
+
             "normal":
                 "Normal ve dengeli şekilde cevap ver.",
 
@@ -66,7 +112,12 @@ def ask_mavigpt(message, image_path=None, history=None):
             "Normal ve dengeli şekilde cevap ver."
         )
 
+        # ----------------------------------------------------
+        # KİŞİLİK
+        # ----------------------------------------------------
+
         personality_text = {
+
             "friendly":
                 "Samimi, nazik ve arkadaşça konuş.",
 
@@ -83,6 +134,10 @@ def ask_mavigpt(message, image_path=None, history=None):
             personality,
             "Samimi, nazik ve arkadaşça konuş."
         )
+
+        # ----------------------------------------------------
+        # SİSTEM TALİMATI
+        # ----------------------------------------------------
 
         system_instruction = f"""
 Sen MaviGPT'sin.
@@ -106,9 +161,12 @@ Tehlikeli veya zararlı öneriler verme.
 
 2. Kullanıcı aynı soruyu tekrar sorarsa:
    "Bunu daha önce sormuştun."
+   "Az önce de bunu sormuştun."
    gibi gereksiz ifadeler kullanma.
+   Soruyu yeniden doğal şekilde cevapla.
 
 3. Kullanıcı kısa bir mesaj yazarsa
+   ("evet", "hayır", "tamam", "olur", "pardon" gibi)
    önceki konuşmanın bağlamını dikkate al.
 
 4. Önceki konuşmayı kullanıcı istemedikçe
@@ -120,6 +178,8 @@ Tehlikeli veya zararlı öneriler verme.
    yalnızca yeni mesajı daha iyi anlamak için kullan.
 
 7. Aynı cevabı tekrar tekrar verme.
+   Kullanıcı aynı isteği yeniden yaparsa farklı,
+   yararlı ve doğal bir cevap oluştur.
 
 8. Kullanıcı bir öğrenci ise anlatımı seviyesine uygun,
    anlaşılır ve destekleyici yap.
@@ -128,6 +188,10 @@ Tehlikeli veya zararlı öneriler verme.
 
 10. Kullanıcı Türkçe konuşuyorsa Türkçe cevap ver.
 """
+
+        # ----------------------------------------------------
+        # GEMINI CLIENT
+        # ----------------------------------------------------
 
         client = genai.Client(
             api_key=api_key
@@ -152,11 +216,13 @@ Tehlikeli veya zararlı öneriler verme.
                 try:
 
                     old_message = (
-                        item["message"] or ""
+                        item["message"]
+                        or ""
                     )
 
                     old_response = (
-                        item["response"] or ""
+                        item["response"]
+                        or ""
                     )
 
                     old_message = old_message[:3000]
@@ -260,11 +326,13 @@ Tehlikeli veya zararlı öneriler verme.
 def upload_photo(app):
 
     if "foto" not in request.files:
+
         return None, None
 
     file = request.files["foto"]
 
     if not file or not file.filename:
+
         return None, None
 
     original_name = secure_filename(
@@ -272,6 +340,7 @@ def upload_photo(app):
     )
 
     if not original_name:
+
         return None, None
 
     extension = os.path.splitext(
@@ -287,6 +356,7 @@ def upload_photo(app):
     }
 
     if extension not in allowed_extensions:
+
         return None, None
 
     filename = (
@@ -341,6 +411,7 @@ def upload_photo(app):
 def get_photo_url(filename):
 
     if not filename:
+
         return None
 
     return (
@@ -437,10 +508,6 @@ def register_routes(app):
             )
 
             mesajlar = []
-
-        # ====================================================
-        # POST
-        # ====================================================
 
         if request.method == "POST":
 
@@ -562,14 +629,14 @@ def register_routes(app):
 
 
     # ========================================================
-    # SOHBET DÜZENLE
+    # SOHBET BAŞLIĞI DÜZENLE
     # ========================================================
 
     @app.route(
         "/chat/edit/<int:chat_id>",
         methods=["POST"]
     )
-    def edit_chat(chat_id):
+    def chat_edit(chat_id):
 
         title = request.form.get(
             "title",
@@ -593,7 +660,10 @@ def register_routes(app):
                 )
 
         return redirect(
-            url_for("home")
+            url_for(
+                "chat",
+                chat_id=chat_id
+            )
         )
 
 
@@ -605,7 +675,7 @@ def register_routes(app):
         "/chat/delete/<int:chat_id>",
         methods=["POST"]
     )
-    def delete_chat_route(chat_id):
+    def chat_delete(chat_id):
 
         try:
 
@@ -848,9 +918,7 @@ def register_routes(app):
 
                 count = max(
                     0,
-                    int(
-                        count_raw or 0
-                    )
+                    int(count_raw or 0)
                 )
 
             except (
@@ -1093,4 +1161,242 @@ def register_routes(app):
             settings=settings_data,
 
             kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # ARKADAŞ SOHBETİ ANA SAYFA
+    # ========================================================
+
+    @app.route(
+        "/friends",
+        methods=["GET", "POST"]
+    )
+    def friends():
+
+        error = None
+        room = None
+        room_code = ""
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            action = request.form.get(
+                "action",
+                ""
+            ).strip()
+
+            # =================================================
+            # YENİ ODA OLUŞTUR
+            # =================================================
+
+            if action == "create":
+
+                room_name = request.form.get(
+                    "room_name",
+                    "Arkadaş Sohbeti"
+                ).strip()
+
+                if not room_name:
+
+                    room_name = "Arkadaş Sohbeti"
+
+                try:
+
+                    room_code = create_friend_room(
+                        room_name
+                    )
+
+                    return redirect(
+                        url_for(
+                            "friend_room",
+                            room_code=room_code
+                        )
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "ARKADAŞ ODASI OLUŞTURMA HATASI:",
+                        repr(e)
+                    )
+
+                    error = (
+                        "Sohbet odası oluşturulamadı."
+                    )
+
+            # =================================================
+            # ODAYA KATIL
+            # =================================================
+
+            elif action == "join":
+
+                room_code = request.form.get(
+                    "room_code",
+                    ""
+                ).strip().upper()
+
+                if not room_code:
+
+                    error = (
+                        "Lütfen sohbet kodunu gir."
+                    )
+
+                else:
+
+                    try:
+
+                        room = get_friend_room(
+                            room_code
+                        )
+
+                        if not room:
+
+                            error = (
+                                "Bu sohbet koduna ait oda bulunamadı."
+                            )
+
+                        else:
+
+                            return redirect(
+                                url_for(
+                                    "friend_room",
+                                    room_code=room_code
+                                )
+                            )
+
+                    except Exception as e:
+
+                        print(
+                            "ARKADAŞ ODASI ARAMA HATASI:",
+                            repr(e)
+                        )
+
+                        error = (
+                            "Sohbet odası bulunurken bir hata oluştu."
+                        )
+
+        return render_template(
+            "friends.html",
+
+            room=room,
+
+            room_code=room_code,
+
+            error=error
+        )
+
+
+    # ========================================================
+    # ARKADAŞ SOHBET ODASI
+    # ========================================================
+
+    @app.route(
+        "/friends/<room_code>",
+        methods=["GET", "POST"]
+    )
+    def friend_room(
+        room_code
+    ):
+
+        room_code = (
+            room_code
+            or ""
+        ).strip().upper()
+
+        room = get_friend_room(
+            room_code
+        )
+
+        if not room:
+
+            return redirect(
+                url_for("friends")
+            )
+
+        error = None
+
+        # ----------------------------------------------------
+        # MESAJ GÖNDER
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            username = request.form.get(
+                "username",
+                ""
+            ).strip()
+
+            message = request.form.get(
+                "message",
+                ""
+            ).strip()
+
+            if not username:
+
+                username = "Misafir"
+
+            if message:
+
+                try:
+
+                    success = save_friend_message(
+                        room_code,
+                        username,
+                        message
+                    )
+
+                    if not success:
+
+                        error = (
+                            "Mesaj gönderilemedi."
+                        )
+
+                except Exception as e:
+
+                    print(
+                        "ARKADAŞ MESAJI KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    error = (
+                        "Mesaj gönderilirken bir hata oluştu."
+                    )
+
+        # ----------------------------------------------------
+        # MESAJLAR
+        # ----------------------------------------------------
+
+        try:
+
+            messages = get_friend_messages(
+                room_code
+            )
+
+        except Exception as e:
+
+            print(
+                "ARKADAŞ MESAJLARI OKUMA HATASI:",
+                repr(e)
+            )
+
+            messages = []
+
+            error = (
+                "Mesajlar yüklenemedi."
+            )
+
+        return render_template(
+            "friend_room.html",
+
+            room=room,
+
+            room_code=room_code,
+
+            messages=messages,
+
+            error=error
         )
