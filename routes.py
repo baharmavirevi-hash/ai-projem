@@ -995,35 +995,43 @@ def register_routes(app):
             url_for("settings")
         )
 
+# ========================================================
+# ARKADAŞLAR SAYFASI
+# ========================================================
 
-    # ========================================================
-    # ARKADAŞLAR SAYFASI
-    # ========================================================
+@app.route("/friends")
+@login_required
+def friends():
 
-    @app.route("/friends")
-    @login_required
-    def friends():
+    user_id = session["user_id"]
 
-        user_id = session["user_id"]
+    # Arkadaşlar
+    friends_list = get_friends(
+        user_id
+    )
 
-        friends_list = get_friends(
+    # Gelen arkadaşlık istekleri
+    pending_requests = (
+        get_pending_friend_requests(
             user_id
         )
+    )
 
-        pending_requests = (
-            get_pending_friend_requests(
-                user_id
-            )
-        )
+    # Kullanıcının katıldığı / oluşturduğu odalar
+    rooms = get_user_friend_rooms(
+        user_id
+    )
 
-
-        return render_template(
-            "friends.html",
-            friends=friends_list,
-            pending_requests=pending_requests,
-            requests=pending_requests,
-            user=current_user()
-        )
+    return render_template(
+        "friends.html",
+        friends=friends_list,
+        pending_friend_requests=pending_requests,
+        pending_requests=pending_requests,
+        requests=pending_requests,
+        rooms=rooms,
+        user=current_user()
+    )
+  
 
 
     # ========================================================
