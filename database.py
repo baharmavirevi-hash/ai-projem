@@ -1,6 +1,9 @@
+```python
 import sqlite3
 import os
 import secrets
+import string
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # ============================================================
@@ -24,7 +27,8 @@ DB_NAME = os.path.join(
 def get_db():
 
     conn = sqlite3.connect(
-        DB_NAME
+        DB_NAME,
+        timeout=10
     )
 
     conn.row_factory = sqlite3.Row
@@ -47,11 +51,18 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS chats (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             chat_type TEXT DEFAULT 'normal',
+
             message TEXT,
+
             response TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -61,11 +72,18 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS health_records (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             symptom TEXT,
+
             medicine TEXT,
+
             note TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -75,11 +93,18 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS period_records (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             start_date TEXT,
+
             end_date TEXT,
+
             note TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -89,12 +114,20 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS diarrhea_records (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             date TEXT,
+
             count INTEGER DEFAULT 0,
+
             condition TEXT,
+
             note TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -104,12 +137,20 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicines (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             name TEXT NOT NULL,
+
             dose TEXT,
+
             hour TEXT,
+
             start_date TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -119,8 +160,11 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS settings (
+
             id INTEGER PRIMARY KEY CHECK (id = 1),
+
             mode TEXT DEFAULT 'normal',
+
             personality TEXT DEFAULT 'friendly'
         )
     """)
@@ -132,6 +176,7 @@ def init_db():
             mode,
             personality
         )
+
         VALUES
         (
             1,
@@ -141,15 +186,113 @@ def init_db():
     """)
 
     # ========================================================
+    # KULLANICILAR
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            username TEXT NOT NULL UNIQUE,
+
+            password_hash TEXT NOT NULL,
+
+            display_name TEXT,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # ========================================================
+    # ARKADAŞLIKLAR
+    #
+    # status:
+    # pending  = bekliyor
+    # accepted = kabul edildi
+    # rejected = reddedildi
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friendships (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            sender_id INTEGER NOT NULL,
+
+            receiver_id INTEGER NOT NULL,
+
+            status TEXT DEFAULT 'pending',
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            UNIQUE(sender_id, receiver_id),
+
+            FOREIGN KEY(sender_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY(receiver_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
+        )
+    """)
+
+    # ========================================================
     # ARKADAŞ SOHBET ODALARI
     # ========================================================
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS friend_rooms (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            room_code TEXT UNIQUE NOT NULL,
-            room_name TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            room_code TEXT NOT NULL UNIQUE,
+
+            name TEXT DEFAULT 'Arkadaş Sohbeti',
+
+            owner_id INTEGER,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY(owner_id)
+                REFERENCES users(id)
+                ON DELETE SET NULL
+        )
+    """)
+
+    # ========================================================
+    # ODA ÜYELERİ
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_room_members (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_id INTEGER NOT NULL,
+
+            user_id INTEGER NOT NULL,
+
+            joined_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            UNIQUE(room_id, user_id),
+
+            FOREIGN KEY(room_id)
+                REFERENCES friend_rooms(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY(user_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
         )
     """)
 
@@ -159,16 +302,211 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS friend_messages (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            room_code TEXT NOT NULL,
-            username TEXT NOT NULL,
-            message TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+            room_id INTEGER NOT NULL,
+
+            user_id INTEGER,
+
+            username TEXT,
+
+            message TEXT,
+
+            photo_path TEXT,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY(room_id)
+                REFERENCES friend_rooms(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY(user_id)
+                REFERENCES users(id)
+                ON DELETE SET NULL
         )
+    """)
+
+    # ========================================================
+    # INDEXLER
+    # ========================================================
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friend_messages_room
+        ON friend_messages(room_id)
+    """)
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friendships_sender
+        ON friendships(sender_id)
+    """)
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friendships_receiver
+        ON friendships(receiver_id)
     """)
 
     conn.commit()
     conn.close()
+
+
+# ============================================================
+# KULLANICI HESABI
+# ============================================================
+
+def create_user(
+    username,
+    password,
+    display_name=None
+):
+
+    username = (username or "").strip()
+    password = password or ""
+
+    if not username or not password:
+        return None
+
+    if display_name is None:
+        display_name = username
+
+    display_name = (
+        display_name.strip()
+        if display_name
+        else username
+    )
+
+    password_hash = generate_password_hash(
+        password
+    )
+
+    conn = get_db()
+
+    try:
+
+        cursor = conn.execute("""
+            INSERT INTO users
+            (
+                username,
+                password_hash,
+                display_name
+            )
+
+            VALUES (?, ?, ?)
+        """, (
+            username,
+            password_hash,
+            display_name
+        ))
+
+        conn.commit()
+
+        user_id = cursor.lastrowid
+
+        return user_id
+
+    except sqlite3.IntegrityError:
+
+        return None
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# KULLANICI ADIYLE KULLANICI BUL
+# ============================================================
+
+def get_user_by_username(
+    username
+):
+
+    username = (username or "").strip()
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            username,
+            password_hash,
+            display_name,
+            created_at
+
+        FROM users
+
+        WHERE username = ?
+
+        LIMIT 1
+    """, (
+        username,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ID İLE KULLANICI BUL
+# ============================================================
+
+def get_user_by_id(
+    user_id
+):
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            username,
+            display_name,
+            created_at
+
+        FROM users
+
+        WHERE id = ?
+
+        LIMIT 1
+    """, (
+        user_id,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ŞİFRE KONTROL
+# ============================================================
+
+def check_user_password(
+    username,
+    password
+):
+
+    user = get_user_by_username(
+        username
+    )
+
+    if not user:
+        return None
+
+    if check_password_hash(
+        user["password_hash"],
+        password
+    ):
+
+        return user
+
+    return None
 
 
 # ============================================================
@@ -190,6 +528,7 @@ def save_chat(
             message,
             response
         )
+
         VALUES (?, ?, ?)
     """, (
         chat_type,
@@ -202,7 +541,7 @@ def save_chat(
 
 
 # ============================================================
-# MESAJLARI GETİR
+# MAVİGPT MESAJLARINI GETİR
 # ============================================================
 
 def get_chat_messages(
@@ -218,8 +557,11 @@ def get_chat_messages(
             message,
             response,
             created_at
+
         FROM chats
+
         WHERE chat_type = ?
+
         ORDER BY id ASC
     """, (
         chat_type,
@@ -231,7 +573,7 @@ def get_chat_messages(
 
 
 # ============================================================
-# SOHBETLERİ GETİR
+# SON SOHBETLER
 # ============================================================
 
 def get_chats(
@@ -247,8 +589,11 @@ def get_chats(
             message,
             response,
             created_at
+
         FROM chats
+
         WHERE chat_type = ?
+
         ORDER BY id DESC
     """, (
         chat_type,
@@ -276,8 +621,11 @@ def get_chat(
             message,
             response,
             created_at
+
         FROM chats
+
         WHERE id = ?
+
         LIMIT 1
     """, (
         chat_id,
@@ -302,7 +650,7 @@ def get_chat_by_id(
 
 
 # ============================================================
-# SOHBET BAŞLIĞI / MESAJ DÜZENLE
+# SOHBET BAŞLIĞI DÜZENLE
 # ============================================================
 
 def update_chat_title(
@@ -314,7 +662,9 @@ def update_chat_title(
 
     conn.execute("""
         UPDATE chats
+
         SET message = ?
+
         WHERE id = ?
     """, (
         title,
@@ -337,6 +687,7 @@ def delete_chat(
 
     conn.execute("""
         DELETE FROM chats
+
         WHERE id = ?
     """, (
         chat_id,
@@ -347,7 +698,7 @@ def delete_chat(
 
 
 # ============================================================
-# SAĞLIK KAYDI
+# SAĞLIK KAYDI KAYDET
 # ============================================================
 
 def save_health_record(
@@ -365,6 +716,7 @@ def save_health_record(
             medicine,
             note
         )
+
         VALUES (?, ?, ?)
     """, (
         symptom,
@@ -377,7 +729,7 @@ def save_health_record(
 
 
 # ============================================================
-# SAĞLIK KAYITLARI
+# SAĞLIK KAYITLARINI GETİR
 # ============================================================
 
 def get_health_records():
@@ -396,7 +748,7 @@ def get_health_records():
 
 
 # ============================================================
-# REGL KAYDI
+# REGL KAYDI KAYDET
 # ============================================================
 
 def save_period_record(
@@ -414,6 +766,7 @@ def save_period_record(
             end_date,
             note
         )
+
         VALUES (?, ?, ?)
     """, (
         start_date,
@@ -426,7 +779,7 @@ def save_period_record(
 
 
 # ============================================================
-# REGL KAYITLARI
+# REGL KAYITLARINI GETİR
 # ============================================================
 
 def get_period_records():
@@ -445,7 +798,7 @@ def get_period_records():
 
 
 # ============================================================
-# SİNDİRİM KAYDI
+# SİNDİRİM KAYDI KAYDET
 # ============================================================
 
 def save_diarrhea_record(
@@ -465,6 +818,7 @@ def save_diarrhea_record(
             condition,
             note
         )
+
         VALUES (?, ?, ?, ?)
     """, (
         date,
@@ -478,7 +832,7 @@ def save_diarrhea_record(
 
 
 # ============================================================
-# SİNDİRİM KAYITLARI
+# SİNDİRİM KAYITLARINI GETİR
 # ============================================================
 
 def get_diarrhea_records():
@@ -497,7 +851,7 @@ def get_diarrhea_records():
 
 
 # ============================================================
-# İLAÇ KAYDI
+# İLAÇ KAYDET
 # ============================================================
 
 def save_medicine(
@@ -517,6 +871,7 @@ def save_medicine(
             hour,
             start_date
         )
+
         VALUES (?, ?, ?, ?)
     """, (
         name,
@@ -570,33 +925,6 @@ def delete_medicine(
 
 
 # ============================================================
-# AYARLARI GETİR
-# ============================================================
-
-def get_settings():
-
-    conn = get_db()
-
-    row = conn.execute("""
-        SELECT
-            mode,
-            personality
-        FROM settings
-        WHERE id = 1
-    """).fetchone()
-
-    conn.close()
-
-    if row:
-        return row
-
-    return {
-        "mode": "normal",
-        "personality": "friendly"
-    }
-
-
-# ============================================================
 # AYARLARI KAYDET
 # ============================================================
 
@@ -614,7 +942,13 @@ def save_settings(
             mode,
             personality
         )
-        VALUES (1, ?, ?)
+
+        VALUES
+        (
+            1,
+            ?,
+            ?
+        )
     """, (
         mode,
         personality
@@ -625,62 +959,416 @@ def save_settings(
 
 
 # ============================================================
-# ARKADAŞ SOHBET ODASI OLUŞTUR
+# AYARLARI GETİR
 # ============================================================
 
-def create_friend_room(
-    room_name
+def get_settings():
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            mode,
+            personality
+
+        FROM settings
+
+        WHERE id = 1
+
+        LIMIT 1
+    """).fetchone()
+
+    conn.close()
+
+    if not row:
+
+        return {
+            "mode": "normal",
+            "personality": "friendly"
+        }
+
+    return row
+
+
+# ============================================================
+# ARKADAŞLIK İSTEĞİ GÖNDER
+# ============================================================
+
+def send_friend_request(
+    sender_id,
+    receiver_id
+):
+
+    if not sender_id or not receiver_id:
+        return False
+
+    if sender_id == receiver_id:
+        return False
+
+    conn = get_db()
+
+    try:
+
+        # Zaten arkadaşlar mı?
+        existing = conn.execute("""
+            SELECT id
+            FROM friendships
+
+            WHERE
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+                OR
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+
+            LIMIT 1
+        """, (
+            sender_id,
+            receiver_id,
+            receiver_id,
+            sender_id
+        )).fetchone()
+
+        if existing:
+            return False
+
+        conn.execute("""
+            INSERT INTO friendships
+            (
+                sender_id,
+                receiver_id,
+                status
+            )
+
+            VALUES (?, ?, 'pending')
+        """, (
+            sender_id,
+            receiver_id
+        ))
+
+        conn.commit()
+
+        return True
+
+    except sqlite3.IntegrityError:
+
+        return False
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# ARKADAŞLIK İSTEĞİNİ KABUL ET
+# ============================================================
+
+def accept_friend_request(
+    request_id,
+    user_id
 ):
 
     conn = get_db()
 
-    while True:
+    cursor = conn.execute("""
+        UPDATE friendships
 
-        room_code = secrets.token_hex(3).upper()
+        SET status = 'accepted'
 
-        existing = conn.execute("""
-            SELECT id
-            FROM friend_rooms
-            WHERE room_code = ?
-        """, (
-            room_code,
-        )).fetchone()
-
-        if not existing:
-            break
-
-    conn.execute("""
-        INSERT INTO friend_rooms
-        (
-            room_code,
-            room_name
-        )
-        VALUES (?, ?)
+        WHERE
+            id = ?
+            AND receiver_id = ?
+            AND status = 'pending'
     """, (
-        room_code,
-        room_name
+        request_id,
+        user_id
     ))
 
     conn.commit()
+
+    success = cursor.rowcount > 0
+
     conn.close()
 
-    return room_code
+    return success
 
 
 # ============================================================
-# ARKADAŞ ODASI GETİR
+# ARKADAŞLIK İSTEĞİNİ REDDET
+# ============================================================
+
+def reject_friend_request(
+    request_id,
+    user_id
+):
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        UPDATE friendships
+
+        SET status = 'rejected'
+
+        WHERE
+            id = ?
+            AND receiver_id = ?
+            AND status = 'pending'
+    """, (
+        request_id,
+        user_id
+    ))
+
+    conn.commit()
+
+    success = cursor.rowcount > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# ARKADAŞLARI GETİR
+# ============================================================
+
+def get_friends(
+    user_id
+):
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            u.id,
+            u.username,
+            u.display_name
+
+        FROM users u
+
+        INNER JOIN friendships f
+            ON
+            (
+                f.sender_id = ?
+                AND f.receiver_id = u.id
+            )
+            OR
+            (
+                f.receiver_id = ?
+                AND f.sender_id = u.id
+            )
+
+        WHERE f.status = 'accepted'
+
+        ORDER BY u.display_name ASC
+    """, (
+        user_id,
+        user_id
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# GELEN ARKADAŞLIK İSTEKLERİ
+# ============================================================
+
+def get_pending_friend_requests(
+    user_id
+):
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            f.id,
+            f.sender_id,
+            f.receiver_id,
+            f.status,
+            f.created_at,
+
+            u.username,
+            u.display_name
+
+        FROM friendships f
+
+        INNER JOIN users u
+            ON u.id = f.sender_id
+
+        WHERE
+            f.receiver_id = ?
+            AND f.status = 'pending'
+
+        ORDER BY f.id DESC
+    """, (
+        user_id,
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# ARKADAŞLIK KONTROL
+# ============================================================
+
+def are_friends(
+    user_a,
+    user_b
+):
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT id
+
+        FROM friendships
+
+        WHERE
+            status = 'accepted'
+            AND
+            (
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+                OR
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+            )
+
+        LIMIT 1
+    """, (
+        user_a,
+        user_b,
+        user_b,
+        user_a
+    )).fetchone()
+
+    conn.close()
+
+    return row is not None
+
+
+# ============================================================
+# ARKADAŞ ODASI KODU ÜRET
+# ============================================================
+
+def generate_room_code(
+    length=6
+):
+
+    alphabet = (
+        string.ascii_uppercase
+        + string.digits
+    )
+
+    return "".join(
+        secrets.choice(alphabet)
+        for _ in range(length)
+    )
+
+
+# ============================================================
+# ARKADAŞ ODASI OLUŞTUR
+# ============================================================
+
+def create_friend_room(
+    room_name="Arkadaş Sohbeti",
+    owner_id=None
+):
+
+    conn = get_db()
+
+    for _ in range(20):
+
+        room_code = generate_room_code()
+
+        try:
+
+            cursor = conn.execute("""
+                INSERT INTO friend_rooms
+                (
+                    room_code,
+                    name,
+                    owner_id
+                )
+
+                VALUES (?, ?, ?)
+            """, (
+                room_code,
+                room_name or "Arkadaş Sohbeti",
+                owner_id
+            ))
+
+            room_id = cursor.lastrowid
+
+            # Odayı oluşturan kullanıcı otomatik katılır.
+            if owner_id:
+
+                conn.execute("""
+                    INSERT OR IGNORE INTO
+                    friend_room_members
+                    (
+                        room_id,
+                        user_id
+                    )
+
+                    VALUES (?, ?)
+                """, (
+                    room_id,
+                    owner_id
+                ))
+
+            conn.commit()
+
+            conn.close()
+
+            return room_code
+
+        except sqlite3.IntegrityError:
+
+            continue
+
+    conn.close()
+
+    return None
+
+
+# ============================================================
+# ARKADAŞ ODASI BUL
 # ============================================================
 
 def get_friend_room(
     room_code
 ):
 
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
     conn = get_db()
 
     row = conn.execute("""
-        SELECT *
+        SELECT
+            id,
+            room_code,
+            name,
+            owner_id,
+            created_at
+
         FROM friend_rooms
+
         WHERE room_code = ?
+
         LIMIT 1
     """, (
         room_code,
@@ -692,35 +1380,223 @@ def get_friend_room(
 
 
 # ============================================================
+# KULLANICIYI ODAYA EKLE
+# ============================================================
+
+def join_friend_room(
+    room_code,
+    user_id
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room or not user_id:
+        return False
+
+    conn = get_db()
+
+    try:
+
+        conn.execute("""
+            INSERT OR IGNORE INTO
+            friend_room_members
+            (
+                room_id,
+                user_id
+            )
+
+            VALUES (?, ?)
+        """, (
+            room["id"],
+            user_id
+        ))
+
+        conn.commit()
+
+        return True
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# KULLANICI ODADA MI?
+# ============================================================
+
+def is_room_member(
+    room_code,
+    user_id
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room:
+        return False
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT id
+
+        FROM friend_room_members
+
+        WHERE
+            room_id = ?
+            AND user_id = ?
+
+        LIMIT 1
+    """, (
+        room["id"],
+        user_id
+    )).fetchone()
+
+    conn.close()
+
+    return row is not None
+
+
+# ============================================================
+# ODA ÜYELERİ
+# ============================================================
+
+def get_friend_room_members(
+    room_code
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room:
+        return []
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            u.id,
+            u.username,
+            u.display_name,
+            m.joined_at
+
+        FROM friend_room_members m
+
+        INNER JOIN users u
+            ON u.id = m.user_id
+
+        WHERE m.room_id = ?
+
+        ORDER BY m.joined_at ASC
+    """, (
+        room["id"],
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
 # ARKADAŞ MESAJI KAYDET
 # ============================================================
 
 def save_friend_message(
     room_code,
     username,
-    message
+    message,
+    user_id=None,
+    photo_path=None
 ):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room:
+        return False
+
+    # En az mesaj veya fotoğraf olmalı.
+    if not message and not photo_path:
+        return False
 
     conn = get_db()
 
-    conn.execute("""
-        INSERT INTO friend_messages
-        (
-            room_code,
-            username,
-            message
+    try:
+
+        # Kullanıcı verilmişse odanın üyesi olmalı.
+        if user_id:
+
+            member = conn.execute("""
+                SELECT id
+
+                FROM friend_room_members
+
+                WHERE
+                    room_id = ?
+                    AND user_id = ?
+
+                LIMIT 1
+            """, (
+                room["id"],
+                user_id
+            )).fetchone()
+
+            if not member:
+
+                conn.execute("""
+                    INSERT OR IGNORE INTO
+                    friend_room_members
+                    (
+                        room_id,
+                        user_id
+                    )
+
+                    VALUES (?, ?)
+                """, (
+                    room["id"],
+                    user_id
+                ))
+
+        conn.execute("""
+            INSERT INTO friend_messages
+            (
+                room_id,
+                user_id,
+                username,
+                message,
+                photo_path
+            )
+
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            room["id"],
+            user_id,
+            username or "Misafir",
+            message or "",
+            photo_path
+        ))
+
+        conn.commit()
+
+        return True
+
+    except Exception as e:
+
+        print(
+            "ARKADAŞ MESAJI DATABASE HATASI:",
+            repr(e)
         )
-        VALUES (?, ?, ?)
-    """, (
-        room_code,
-        username,
-        message
-    ))
 
-    conn.commit()
-    conn.close()
+        return False
 
-    return True
+    finally:
+
+        conn.close()
 
 
 # ============================================================
@@ -728,20 +1604,113 @@ def save_friend_message(
 # ============================================================
 
 def get_friend_messages(
-    room_code
+    room_code,
+    limit=200
 ):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room:
+        return []
 
     conn = get_db()
 
     rows = conn.execute("""
-        SELECT *
-        FROM friend_messages
-        WHERE room_code = ?
-        ORDER BY id ASC
+        SELECT
+            fm.id,
+            fm.room_id,
+            fm.user_id,
+            fm.username,
+            fm.message,
+            fm.photo_path,
+            fm.created_at,
+
+            u.display_name
+
+        FROM friend_messages fm
+
+        LEFT JOIN users u
+            ON u.id = fm.user_id
+
+        WHERE fm.room_id = ?
+
+        ORDER BY fm.id ASC
+
+        LIMIT ?
     """, (
-        room_code,
+        room["id"],
+        limit
     )).fetchall()
 
     conn.close()
 
     return rows
+
+
+# ============================================================
+# FOTOĞRAFLI MESAJ KAYDETME KOLAY FONKSİYONU
+# ============================================================
+
+def save_friend_photo_message(
+    room_code,
+    username,
+    photo_path,
+    user_id=None
+):
+
+    return save_friend_message(
+        room_code=room_code,
+        username=username,
+        message="",
+        user_id=user_id,
+        photo_path=photo_path
+    )
+
+
+# ============================================================
+# ARKADAŞ ODASI SİL
+# ============================================================
+
+def delete_friend_room(
+    room_code,
+    user_id=None
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room:
+        return False
+
+    if user_id:
+
+        if room["owner_id"] != user_id:
+            return False
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM friend_rooms
+        WHERE id = ?
+    """, (
+        room["id"],
+    ))
+
+    conn.commit()
+
+    success = conn.total_changes > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# DATABASE BAŞLAT
+# ============================================================
+
+init_db()
+```
