@@ -454,6 +454,130 @@ def register_routes(app):
             sohbetler = get_chats(
                 "normal"
             )
+            # ============================================================
+# İLAÇ
+# ============================================================
+
+    @app.route(
+        "/medicine",
+        methods=["GET", "POST"]
+    )
+    def medicine():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            name = request.form.get(
+                "name",
+                ""
+            ).strip()
+
+            dose = request.form.get(
+                "dose",
+                ""
+            ).strip()
+
+            hour = request.form.get(
+                "hour",
+                ""
+            ).strip()
+
+            start_date = request.form.get(
+                "start_date",
+                ""
+            ).strip()
+
+            # ------------------------------------------------
+            # İLAÇ KAYDET
+            # ------------------------------------------------
+
+            if name:
+
+                try:
+
+                    save_medicine(
+                        name,
+                        dose,
+                        hour,
+                        start_date
+                    )
+
+                    kayit_mesaji = (
+                        "✅ İlaç kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "İLAÇ KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ İlaç kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # İLAÇLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_medicines()
+
+        except Exception as e:
+
+            print(
+                "İLAÇ OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "medicine.html",
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+# ============================================================
+# İLAÇ SİL
+# ============================================================
+
+    @app.route(
+        "/medicine/delete/<int:medicine_id>",
+        methods=["POST"]
+    )
+    def medicine_delete(medicine_id):
+
+        try:
+
+            delete_medicine(
+                medicine_id
+            )
+
+        except Exception as e:
+
+            print(
+                "İLAÇ SİLME HATASI:",
+                repr(e)
+            )
+
+        return redirect(
+            url_for("medicine")
+        )
 
         except Exception as e:
 
