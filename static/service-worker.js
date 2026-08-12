@@ -1,4 +1,4 @@
-const CACHE_NAME = "mavigpt-v3";
+const CACHE_NAME = "mavigpt-v4";
 
 const FILES_TO_CACHE = [
     "/",
@@ -25,7 +25,6 @@ self.addEventListener("install", event => {
     );
 
     self.skipWaiting();
-
 });
 
 
@@ -53,7 +52,6 @@ self.addEventListener("activate", event => {
     );
 
     self.clients.claim();
-
 });
 
 
@@ -62,6 +60,15 @@ self.addEventListener("activate", event => {
 ========================================= */
 
 self.addEventListener("fetch", event => {
+
+    /*
+       POST, WebSocket vb. istekleri
+       cache sistemine sokmuyoruz.
+    */
+
+    if (event.request.method !== "GET") {
+        return;
+    }
 
     event.respondWith(
 
@@ -91,6 +98,11 @@ self.addEventListener(
             return;
         }
 
+
+        /* =====================================
+           İLAÇ BİLDİRİMİ
+        ===================================== */
+
         if (
             event.data.type ===
             "SHOW_MEDICINE_NOTIFICATION"
@@ -114,16 +126,20 @@ self.addEventListener(
 
             }
 
+
             event.waitUntil(
 
                 self.registration.showNotification(
                     "💊 Cebimdeki Doktor",
                     {
+
                         body: body,
 
-                        icon: "/static/icon-192.png",
+                        icon:
+                            "/static/icon-192.png",
 
-                        badge: "/static/icon-192.png",
+                        badge:
+                            "/static/icon-192.png",
 
                         tag:
                             "medicine-" +
@@ -134,6 +150,93 @@ self.addEventListener(
                         data: {
                             url: "/medicine"
                         }
+
+                    }
+                )
+
+            );
+
+        }
+
+
+        /* =====================================
+           ARKADAŞ GÖRÜNTÜLÜ ARAMA BİLDİRİMİ
+        ===================================== */
+
+        if (
+            event.data.type ===
+            "SHOW_FRIEND_CALL_NOTIFICATION"
+        ) {
+
+            const caller =
+                event.data.caller ||
+                "Arkadaşın";
+
+            const roomCode =
+                event.data.room_code ||
+                "";
+
+            const url =
+                event.data.url ||
+                (
+                    roomCode
+                        ? "/friends/" +
+                          encodeURIComponent(roomCode)
+                        : "/friends"
+                );
+
+
+            event.waitUntil(
+
+                self.registration.showNotification(
+                    "📹 Görüntülü arama",
+                    {
+
+                        body:
+                            caller +
+                            " seni görüntülü arıyor.",
+
+                        icon:
+                            "/static/icon-192.png",
+
+                        badge:
+                            "/static/icon-192.png",
+
+                        tag:
+                            "friend-call-" +
+                            roomCode,
+
+                        renotify: true,
+
+                        requireInteraction: true,
+
+                        vibrate: [
+                            200,
+                            100,
+                            200,
+                            100,
+                            400
+                        ],
+
+                        data: {
+                            url: url,
+                            type: "friend_call",
+                            room_code: roomCode,
+                            caller: caller
+                        },
+
+                        actions: [
+                            {
+                                action: "open",
+                                title: "📹 Aç"
+                            },
+
+                            {
+                                action: "dismiss",
+                                title: "❌ Kapat"
+                            }
+                        ]
+
                     }
                 )
 
@@ -155,19 +258,45 @@ self.addEventListener(
 
         event.notification.close();
 
+
+        const notificationData =
+            event.notification.data || {};
+
+
+        /*
+           Kapat butonuna basıldıysa
+           hiçbir şey açma.
+        */
+
+        if (
+            event.action ===
+            "dismiss"
+        ) {
+            return;
+        }
+
+
         const url =
-            event.notification.data &&
-            event.notification.data.url
-                ? event.notification.data.url
-                : "/medicine";
+            notificationData.url ||
+            "/";
+
 
         event.waitUntil(
 
             clients.matchAll({
+
                 type: "window",
+
                 includeUncontrolled: true
+
             })
+
             .then(clientList => {
+
+                /*
+                   Uygulama zaten açıksa
+                   mevcut pencereyi kullan.
+                */
 
                 for (
                     const client
@@ -178,7 +307,9 @@ self.addEventListener(
                         "navigate" in client
                     ) {
 
-                        client.navigate(url);
+                        client.navigate(
+                            url
+                        );
 
                     }
 
@@ -191,6 +322,12 @@ self.addEventListener(
                     }
 
                 }
+
+
+                /*
+                   Uygulama kapalıysa
+                   yeni pencere aç.
+                */
 
                 if (
                     clients.openWindow
