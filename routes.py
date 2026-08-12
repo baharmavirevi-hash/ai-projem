@@ -333,5 +333,184 @@ def register_routes(app):
             return jsonify({
                 "success": False,
                 "messages": []
+            }), 500    # ========================================================
+    # SOHBETLER
+    # ========================================================
+
+    @app.route(
+        "/chats",
+        methods=["GET"]
+    )
+    def chats():
+
+        chat_type = request.args.get(
+            "chat_type",
+            "normal"
+        ).strip()
+
+        try:
+
+            sohbetler = get_chats(
+                chat_type
+            )
+
+            result = []
+
+            for row in sohbetler:
+
+                result.append({
+                    "id": row["id"],
+                    "chat_type": row["chat_type"],
+                    "message": row["message"],
+                    "response": row["response"],
+                    "created_at": row["created_at"]
+                })
+
+            return jsonify({
+                "success": True,
+                "chats": result
+            })
+
+        except Exception as e:
+
+            print(
+                "SOHBETLERİ GETİRME HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "chats": []
             }), 500
+
+
+    # ========================================================
+    # TEK SOHBET
+    # ========================================================
+
+    @app.route(
+        "/history/<int:chat_id>",
+        methods=["GET"]
+    )
+    def history(chat_id):
+
+        try:
+
+            sohbet = get_chat(
+                chat_id
+            )
+
+            if not sohbet:
+
+                return jsonify({
+                    "success": False,
+                    "error": "Sohbet bulunamadı."
+                }), 404
+
+            return jsonify({
+                "success": True,
+                "chat": {
+                    "id": sohbet["id"],
+                    "chat_type": sohbet["chat_type"],
+                    "message": sohbet["message"],
+                    "response": sohbet["response"],
+                    "created_at": sohbet["created_at"]
+                }
+            })
+
+        except Exception as e:
+
+            print(
+                "SOHBET GEÇMİŞİ HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet yüklenemedi."
+            }), 500
+
+
+    # ========================================================
+    # SOHBET DÜZENLE
+    # ========================================================
+
+    @app.route(
+        "/chat/edit/<int:chat_id>",
+        methods=["POST"]
+    )
+    def chat_edit(chat_id):
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+        title = data.get(
+            "title",
+            ""
+        ).strip()
+
+        if not title:
+
+            return jsonify({
+                "success": False,
+                "error": "Başlık boş olamaz."
+            }), 400
+
+        try:
+
+            update_chat_title(
+                chat_id,
+                title
+            )
+
+            return jsonify({
+                "success": True
+            })
+
+        except Exception as e:
+
+            print(
+                "SOHBET DÜZENLEME HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet düzenlenemedi."
+            }), 500
+
+
+    # ========================================================
+    # SOHBET SİL
+    # ========================================================
+
+    @app.route(
+        "/chat/delete/<int:chat_id>",
+        methods=["POST", "DELETE"]
+    )
+    def chat_delete(chat_id):
+
+        try:
+
+            delete_chat(
+                chat_id
+            )
+
+            return jsonify({
+                "success": True
+            })
+
+        except Exception as e:
+
+            print(
+                "SOHBET SİLME HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet silinemedi."
+            }), 500
+            
 
