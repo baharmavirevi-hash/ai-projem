@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Hesabım | MaviGPT</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f2fbff;
+        color: #24495a;
+        min-height: 100vh;
+    }
+
+    .topbar {
+        height: 68px;
+        background: white;
+        border-bottom: 1px solid #dceff6;
+        display: flex;
+        align-items: center;
+        padding: 0 18px;
+        gap: 14px;
+    }
+
+    .back {
+        text-decoration: none;
+        color: #35a9d6;
+        font-size: 28px;
+    }
+
+    .title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #238db7;
+    }
+
+    .container {
+        width: min(520px, 94%);
+        margin: 30px auto;
+    }
+
+    .card {
+        background: white;
+        border-radius: 22px;
+        padding: 25px;
+        border: 1px solid #dceff6;
+        box-shadow: 0 8px 30px rgba(70,160,190,.08);
+    }
+
+    .profile {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .avatar {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        background: #dff6fd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 13px;
+    }
+
+    .display-name {
+        font-size: 23px;
+        font-weight: bold;
+        color: #238db7;
+    }
+
+    .field {
+        margin-top: 17px;
+    }
+
+    .label {
+        display: block;
+        color: #7895a0;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .value-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f5fcff;
+        border: 1px solid #d7edf4;
+        border-radius: 13px;
+        padding: 12px;
+    }
+
+    .value {
+        flex: 1;
+        font-size: 16px;
+        font-weight: bold;
+        color: #315f70;
+        word-break: break-word;
+    }
+
+    .copy-button {
+        border: none;
+        border-radius: 10px;
+        background: #8fdaf5;
+        color: white;
+        padding: 9px 12px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .copy-button:hover {
+        background: #65c7eb;
+    }
+
+    .info {
+        margin-top: 22px;
+        background: #eefaff;
+        border-radius: 14px;
+        padding: 14px;
+        color: #648895;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .share-button {
+        width: 100%;
+        border: none;
+        border-radius: 13px;
+        padding: 14px;
+        margin-top: 15px;
+        background: #65c7eb;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .success {
+        display: none;
+        margin-top: 12px;
+        padding: 11px;
+        border-radius: 11px;
+        background: #eafaf0;
+        color: #398257;
+        text-align: center;
+        font-size: 14px;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<header class="topbar">
+    <a href="/" class="back">←</a>
+    <div class="title">👤 Hesabım</div>
+</header>
+
+<main class="container">
+
+```
+<section class="card">
+
+    <div class="profile">
+
+        <div class="avatar">
+            👤
+        </div>
+
+        <div class="display-name">
+            {{ user["display_name"] or user["username"] }}
+        </div>
+
+    </div>
+
+    <div class="field">
+
+        <span class="label">
+            Kullanıcı adım
+        </span>
+
+        <div class="value-box">
+
+            <div
+                class="value"
+                id="username"
+            >
+                @{{ user["username"] }}
+            </div>
+
+            <button
+                class="copy-button"
+                onclick="copyUsername()"
+            >
+                📋 Kopyala
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="field">
+
+        <span class="label">
+            Görünen adım
+        </span>
+
+        <div class="value-box">
+
+            <div class="value">
+                {{ user["display_name"] or user["username"] }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="info">
+        🩵 Arkadaşların seni MaviGPT'de
+        <b>@{{ user["username"] }}</b>
+        kullanıcı adınla bulabilir.
+    </div>
+
+    <button
+        class="share-button"
+        onclick="shareProfile()"
+    >
+        🔗 Kullanıcı Adımı Paylaş
+    </button>
+
+    <div
+        id="success"
+        class="success"
+    >
+        Kullanıcı adın kopyalandı! 🩵
+    </div>
+
+</section>
+```
+
+</main>
+
+<script>
+
+function copyUsername() {
+
+    const username =
+        document.getElementById("username")
+            .textContent
+            .trim();
+
+    navigator.clipboard.writeText(username)
+        .then(() => {
+
+            showSuccess(
+                "Kullanıcı adın kopyalandı! 🩵"
+            );
+
+        })
+        .catch(() => {
+
+            showSuccess(
+                "Kopyalama başarısız oldu."
+            );
+
+        });
+}
+
+
+async function shareProfile() {
+
+    const username =
+        document.getElementById("username")
+            .textContent
+            .trim();
+
+    const text =
+        "MaviGPT kullanıcı adım: " +
+        username;
+
+    if (navigator.share) {
+
+        try {
+
+            await navigator.share({
+                title: "MaviGPT",
+                text: text
+            });
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    } else {
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            showSuccess(
+                "Paylaşım metni kopyalandı! 🩵"
+            );
+
+        } catch (error) {
+
+            showSuccess(
+                text
+            );
+
+        }
+    }
+}
+
+
+function showSuccess(text) {
+
+    const box =
+        document.getElementById("success");
+
+    box.textContent = text;
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+
+        box.style.display = "none";
+
+    }, 2500);
+}
+
+</script>
+
+</body>
+</html>
