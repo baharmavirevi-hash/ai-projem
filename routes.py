@@ -19,6 +19,7 @@ from database import (
     get_user_by_username,
     get_user_by_id,
     check_user_password,
+    get_user_friend_rooms,
 
     # MaviGPT
     save_chat,
