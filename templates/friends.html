@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>👥 Arkadaşlarla Konuş</title>
+    <title>Arkadaşlar | MaviGPT</title>
 
     <style>
         * {
@@ -16,8 +17,8 @@
         body {
             font-family: Arial, sans-serif;
             background: #f4fbff;
-            min-height: 100vh;
             color: #24495a;
+            min-height: 100vh;
         }
 
         .topbar {
@@ -26,81 +27,76 @@
             border-bottom: 1px solid #dceff6;
             display: flex;
             align-items: center;
-            padding: 0 20px;
-            gap: 15px;
+            padding: 0 18px;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
         .back {
             text-decoration: none;
             color: #35a9d6;
-            font-size: 25px;
+            font-size: 28px;
+            line-height: 1;
         }
 
         .title {
             font-size: 20px;
             font-weight: bold;
-            color: #35a9d6;
+            color: #238db7;
         }
 
         .container {
-            width: min(700px, 92%);
-            margin: 35px auto;
+            width: min(720px, 94%);
+            margin: 25px auto 50px;
         }
 
         .card {
             background: white;
             border: 1px solid #dceff6;
-            border-radius: 22px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(70, 160, 190, 0.07);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 7px 25px rgba(70, 160, 190, 0.07);
         }
 
-        .icon {
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
-
-        h1 {
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
             color: #238db7;
-            margin-bottom: 8px;
+            font-size: 19px;
+            margin-bottom: 16px;
         }
 
-        .description {
-            color: #7894a0;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-            font-size: 14px;
+        .section-icon {
+            font-size: 25px;
         }
 
         input {
             width: 100%;
-            padding: 13px;
+            padding: 13px 14px;
             border: 1px solid #cfe7f1;
             border-radius: 12px;
             outline: none;
             font-size: 15px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            background: #fbfeff;
         }
 
         input:focus {
-            border-color: #8fdaf5;
+            border-color: #82d4f2;
+            background: white;
         }
 
         button {
-            width: 100%;
             border: none;
-            border-radius: 13px;
-            padding: 13px;
+            border-radius: 12px;
+            padding: 12px 16px;
             background: #8fdaf5;
             color: white;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -109,26 +105,224 @@
             background: #65c7eb;
         }
 
-        .join-button {
+        .full-button {
+            width: 100%;
+        }
+
+        .secondary {
             background: #65c7eb;
         }
 
-        .error {
-            background: #fff0f0;
-            color: #c45d5d;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 15px;
+        .danger {
+            background: #ef9a9a;
+        }
+
+        .user-item,
+        .request-item,
+        .room-item {
+            border: 1px solid #e0f0f5;
+            border-radius: 15px;
+            padding: 14px;
+            margin-bottom: 10px;
+            background: #fbfeff;
+        }
+
+        .user-row,
+        .request-row,
+        .room-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .user-info,
+        .room-info {
+            min-width: 0;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #dff5fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            flex-shrink: 0;
+        }
+
+        .name {
+            font-weight: bold;
+            color: #2b6073;
+            margin-bottom: 3px;
+        }
+
+        .username {
+            color: #8aa3ad;
+            font-size: 13px;
+        }
+
+        .user-left,
+        .room-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+
+        .small-button {
+            width: auto;
+            white-space: nowrap;
+            padding: 10px 13px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #8ca6b0;
+            padding: 18px 5px;
+            font-size: 14px;
+        }
+
+        .room-code {
+            display: inline-block;
+            margin-top: 5px;
+            background: #eefaff;
+            color: #3997bb;
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .room-actions {
+            display: flex;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        .room-actions button {
+            padding: 9px 11px;
         }
 
         .info {
             background: #eefaff;
-            border-radius: 13px;
-            padding: 13px;
-            color: #5d8493;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            color: #648895;
             font-size: 13px;
             line-height: 1.5;
-            margin-top: 15px;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            display: block;
+            background: #eafaf0;
+            color: #398257;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff0f0;
+            color: #c45d5d;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(35, 70, 85, 0.35);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(450px, 100%);
+            background: white;
+            border-radius: 22px;
+            padding: 23px;
+            box-shadow: 0 15px 50px rgba(40, 100, 120, 0.2);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #238db7;
+            margin-bottom: 17px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 9px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .close-button {
+            background: #e9f5f8;
+            color: #57808d;
+        }
+
+        .search-result {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                height: 62px;
+            }
+
+            .title {
+                font-size: 18px;
+            }
+
+            .container {
+                width: 94%;
+                margin-top: 18px;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 17px;
+            }
+
+            .user-row,
+            .request-row,
+            .room-row {
+                align-items: flex-start;
+            }
+
+            .small-button {
+                font-size: 12px;
+                padding: 9px 10px;
+            }
+
+            .room-actions {
+                flex-direction: column;
+            }
+
+            .room-actions button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -137,12 +331,10 @@
 
 <header class="topbar">
 
-    <a class="back" href="/">
-        ←
-    </a>
+    <a href="/" class="back">←</a>
 
     <div class="title">
-        👥 Arkadaşlarla Konuş
+        👥 Arkadaşlar
     </div>
 
 </header>
@@ -150,115 +342,942 @@
 
 <main class="container">
 
-    {% if error %}
-
-        <div class="error">
-            {{ error }}
-        </div>
-
-    {% endif %}
+    <div id="message" class="message"></div>
 
 
-    <!-- YENİ ODA -->
+    <!-- ================================================= -->
+    <!-- ARKADAŞ ARA -->
+    <!-- ================================================= -->
 
     <section class="card">
 
-        <div class="icon">
-            🩵
+        <div class="section-title">
+            <span class="section-icon">🔎</span>
+            Arkadaş Ara
         </div>
 
-        <h1>
-            Yeni sohbet odası
-        </h1>
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Kullanıcı adı yaz..."
+            autocomplete="off"
+        >
 
-        <p class="description">
-            Bir sohbet odası oluştur ve arkadaşına
-            vereceğin kod ile onu sohbete davet et.
-        </p>
+        <button
+            class="full-button"
+            onclick="searchUser()"
+        >
+            🔎 Ara
+        </button>
 
-        <form method="POST">
-
-            <input
-                type="hidden"
-                name="action"
-                value="create"
-            >
-
-            <label>
-                Oda adı
-            </label>
-
-            <input
-                type="text"
-                name="room_name"
-                placeholder="Örn. Bahar'ın odası"
-                maxlength="50"
-            >
-
-            <button type="submit">
-                ＋ Oda Oluştur
-            </button>
-
-        </form>
+        <div id="searchResult" class="search-result"></div>
 
     </section>
 
 
-    <!-- ODAYA KATIL -->
+    <!-- ================================================= -->
+    <!-- ARKADAŞLIK İSTEKLERİ -->
+    <!-- ================================================= -->
 
     <section class="card">
 
-        <div class="icon">
-            💬
+        <div class="section-title">
+            <span class="section-icon">🔔</span>
+            Arkadaşlık İstekleri
         </div>
 
-        <h1>
-            Bir sohbete katıl
-        </h1>
+        <div id="requestsContainer">
 
-        <p class="description">
-            Arkadaşının verdiği sohbet kodunu
-            aşağıya girerek odaya katıl.
-        </p>
+            {% if pending_requests %}
 
-        <form method="POST">
+                {% for req in pending_requests %}
 
-            <input
-                type="hidden"
-                name="action"
-                value="join"
-            >
+                <div
+                    class="request-item"
+                    id="request-{{ req['id'] }}"
+                >
 
-            <label>
-                Sohbet kodu
-            </label>
+                    <div class="request-row">
 
-            <input
-                type="text"
-                name="room_code"
-                placeholder="Örn. ABC123"
-                maxlength="20"
-                autocomplete="off"
-                style="text-transform:uppercase;"
-            >
+                        <div class="user-left">
 
-            <button
-                type="submit"
-                class="join-button"
-            >
-                🚪 Sohbete Katıl
-            </button>
+                            <div class="avatar">
+                                👤
+                            </div>
 
-        </form>
+                            <div class="user-info">
+
+                                <div class="name">
+                                    {{ req['display_name'] or req['username'] }}
+                                </div>
+
+                                <div class="username">
+                                    @{{ req['username'] }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div style="display:flex; gap:6px;">
+
+                            <button
+                                class="small-button"
+                                onclick="acceptRequest({{ req['id'] }})"
+                            >
+                                ✓
+                            </button>
+
+                            <button
+                                class="small-button danger"
+                                onclick="rejectRequest({{ req['id'] }})"
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty">
+                    Şimdilik bekleyen arkadaşlık isteği yok. 🩵
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ARKADAŞLARIM -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+            <span class="section-icon">👥</span>
+            Arkadaşlarım
+        </div>
+
+        <div id="friendsContainer">
+
+            {% if friends %}
+
+                {% for friend in friends %}
+
+                <div class="user-item">
+
+                    <div class="user-row">
+
+                        <div class="user-left">
+
+                            <div class="avatar">
+                                🧑‍🤝‍🧑
+                            </div>
+
+                            <div class="user-info">
+
+                                <div class="name">
+                                    {{ friend['display_name'] or friend['username'] }}
+                                </div>
+
+                                <div class="username">
+                                    @{{ friend['username'] }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty">
+                    Henüz arkadaşın yok. 🩵
+                    <br>
+                    Yukarıdan kullanıcı adıyla arkadaş arayabilirsin.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ODALARIM -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+            <span class="section-icon">🏠</span>
+            Odalarım
+        </div>
+
+        <div id="roomsContainer">
+
+            {% if rooms %}
+
+                {% for room in rooms %}
+
+                <div class="room-item">
+
+                    <div class="room-row">
+
+                        <div class="room-left">
+
+                            <div class="avatar">
+                                💬
+                            </div>
+
+                            <div class="room-info">
+
+                                <div class="name">
+                                    {{ room['name'] or 'Arkadaş Sohbeti' }}
+                                </div>
+
+                                <div class="room-code">
+                                    {{ room['room_code'] }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="room-actions">
+
+                            <button
+                                onclick="openRoom('{{ room['room_code'] }}')"
+                            >
+                                💬 Gir
+                            </button>
+
+                            {% if room['owner_id'] == session['user_id'] %}
+
+                            <button
+                                class="danger"
+                                onclick="deleteRoom('{{ room['room_code'] }}')"
+                            >
+                                🗑
+                            </button>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty">
+                    Henüz bir sohbet odan yok. 🏠
+                    <br>
+                    Aşağıdan ilk odanı oluşturabilirsin.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <button
+            class="full-button"
+            onclick="openCreateRoom()"
+            style="margin-top:12px;"
+        >
+            ＋ Yeni Oda Oluştur
+        </button>
+
+    </section>
+
+
+    <!-- ================================================= -->
+    <!-- ODAYA KATIL -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+            <span class="section-icon">🔑</span>
+            Odaya Katıl
+        </div>
+
+        <input
+            type="text"
+            id="joinCode"
+            placeholder="Oda kodu (Örn. ABC123)"
+            maxlength="20"
+            autocomplete="off"
+            style="text-transform:uppercase;"
+        >
+
+        <button
+            class="full-button secondary"
+            onclick="joinRoom()"
+        >
+            🚪 Odaya Katıl
+        </button>
 
         <div class="info">
-            💡 Arkadaşın önce bir oda oluşturmalı.
-            Daha sonra oluşan kodu sana göndermeli.
+            💡 Arkadaşının verdiği oda kodunu buraya gir.
+            Katıldığın oda daha sonra <b>Odalarım</b> bölümünde
+            kalıcı olarak görünecek.
         </div>
 
     </section>
 
 </main>
+
+
+<!-- ===================================================== -->
+<!-- YENİ ODA MODALI -->
+<!-- ===================================================== -->
+
+<div
+    class="modal"
+    id="createRoomModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-title">
+            🩵 Yeni Sohbet Odası
+        </div>
+
+        <input
+            type="text"
+            id="roomName"
+            placeholder="Oda adı"
+            maxlength="50"
+        >
+
+        <div class="modal-buttons">
+
+            <button
+                class="close-button"
+                onclick="closeCreateRoom()"
+            >
+                Vazgeç
+            </button>
+
+            <button
+                onclick="createRoom()"
+            >
+                ＋ Oluştur
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // MESAJ
+    // =====================================================
+
+    function showMessage(text, type = "success") {
+
+        const box = document.getElementById("message");
+
+        box.textContent = text;
+
+        box.className = "message " + type;
+
+        setTimeout(() => {
+
+            box.className = "message";
+
+        }, 3500);
+    }
+
+
+    // =====================================================
+    // ARKADAŞ ARA
+    // =====================================================
+
+    async function searchUser() {
+
+        const input = document.getElementById("searchInput");
+
+        const username = input.value.trim();
+
+        const result = document.getElementById("searchResult");
+
+        if (!username) {
+
+            result.innerHTML = `
+                <div class="empty">
+                    Kullanıcı adı yazmalısın.
+                </div>
+            `;
+
+            return;
+        }
+
+        result.innerHTML = `
+            <div class="empty">
+                🔎 Aranıyor...
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch(
+                "/friends/search?username=" +
+                encodeURIComponent(username)
+            );
+
+            const data = await response.json();
+
+            if (!data.success || !data.users.length) {
+
+                result.innerHTML = `
+                    <div class="empty">
+                        Kullanıcı bulunamadı. 😕
+                    </div>
+                `;
+
+                return;
+            }
+
+            const user = data.users[0];
+
+            result.innerHTML = `
+                <div class="user-item">
+
+                    <div class="user-row">
+
+                        <div class="user-left">
+
+                            <div class="avatar">
+                                👤
+                            </div>
+
+                            <div class="user-info">
+
+                                <div class="name">
+                                    ${escapeHtml(
+                                        user.display_name ||
+                                        user.username
+                                    )}
+                                </div>
+
+                                <div class="username">
+                                    @${escapeHtml(user.username)}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <button
+                            class="small-button"
+                            onclick="sendFriendRequest(${user.id})"
+                        >
+                            ＋ Ekle
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+        } catch (error) {
+
+            console.error(error);
+
+            result.innerHTML = `
+                <div class="empty">
+                    Arama sırasında bir hata oluştu.
+                </div>
+            `;
+        }
+    }
+
+
+    // =====================================================
+    // ARKADAŞLIK İSTEĞİ GÖNDER
+    // =====================================================
+
+    async function sendFriendRequest(userId) {
+
+        try {
+
+            const response = await fetch(
+                "/friends/request",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        receiver_id: userId
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                showMessage(
+                    "Arkadaşlık isteği gönderildi! 🩵"
+                );
+
+            } else {
+
+                showMessage(
+                    data.error ||
+                    "İstek gönderilemedi.",
+                    "error"
+                );
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Sunucuya bağlanılamadı.",
+                "error"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // İSTEĞİ KABUL ET
+    // =====================================================
+
+    async function acceptRequest(requestId) {
+
+        try {
+
+            const response = await fetch(
+                `/friends/request/${requestId}/accept`,
+                {
+                    method: "POST"
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                const item =
+                    document.getElementById(
+                        "request-" + requestId
+                    );
+
+                if (item) {
+                    item.remove();
+                }
+
+                showMessage(
+                    "Arkadaşlık isteği kabul edildi! 🩵"
+                );
+
+                setTimeout(() => {
+                    location.reload();
+                }, 700);
+
+            } else {
+
+                showMessage(
+                    "İstek kabul edilemedi.",
+                    "error"
+                );
+            }
+
+        } catch (error) {
+
+            showMessage(
+                "Sunucuya bağlanılamadı.",
+                "error"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // İSTEĞİ REDDET
+    // =====================================================
+
+    async function rejectRequest(requestId) {
+
+        try {
+
+            const response = await fetch(
+                `/friends/request/${requestId}/reject`,
+                {
+                    method: "POST"
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                const item =
+                    document.getElementById(
+                        "request-" + requestId
+                    );
+
+                if (item) {
+                    item.remove();
+                }
+
+                showMessage(
+                    "Arkadaşlık isteği reddedildi."
+                );
+
+            } else {
+
+                showMessage(
+                    "İstek reddedilemedi.",
+                    "error"
+                );
+            }
+
+        } catch (error) {
+
+            showMessage(
+                "Sunucuya bağlanılamadı.",
+                "error"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // YENİ ODA MODALI
+    // =====================================================
+
+    function openCreateRoom() {
+
+        document
+            .getElementById("createRoomModal")
+            .classList.add("show");
+
+        document
+            .getElementById("roomName")
+            .focus();
+    }
+
+
+    function closeCreateRoom() {
+
+        document
+            .getElementById("createRoomModal")
+            .classList.remove("show");
+    }
+
+
+    // =====================================================
+    // ODA OLUŞTUR
+    // =====================================================
+
+    async function createRoom() {
+
+        const input =
+            document.getElementById("roomName");
+
+        const name =
+            input.value.trim() ||
+            "Arkadaş Sohbeti";
+
+        try {
+
+            const response = await fetch(
+                "/friends/room/create",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        name: name
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+
+                showMessage(
+                    data.error ||
+                    "Oda oluşturulamadı.",
+                    "error"
+                );
+
+                return;
+            }
+
+            closeCreateRoom();
+
+            showMessage(
+                "Oda oluşturuldu! 🩵"
+            );
+
+            setTimeout(() => {
+
+                location.reload();
+
+            }, 700);
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Oda oluşturulurken hata oluştu.",
+                "error"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // ODAYA GİR
+    // =====================================================
+
+    function openRoom(roomCode) {
+
+        window.location.href =
+            "/friends/room/" +
+            encodeURIComponent(roomCode);
+    }
+
+
+    // =====================================================
+    // ODAYA KATIL
+    // =====================================================
+
+    async function joinRoom() {
+
+        const input =
+            document.getElementById("joinCode");
+
+        const roomCode =
+            input.value.trim().toUpperCase();
+
+        if (!roomCode) {
+
+            showMessage(
+                "Oda kodunu yazmalısın.",
+                "error"
+            );
+
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "/friends/room/join",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        room_code: roomCode
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+
+                showMessage(
+                    data.error ||
+                    "Odaya katılınamadı.",
+                    "error"
+                );
+
+                return;
+            }
+
+            window.location.href =
+                "/friends/room/" +
+                encodeURIComponent(
+                    data.room_code
+                );
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Odaya katılırken hata oluştu.",
+                "error"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // ODA SİL
+    // =====================================================
+
+    async function deleteRoom(roomCode) {
+
+        const confirmed =
+            confirm(
+                "Bu odayı silmek istediğine emin misin?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `/friends/room/${encodeURIComponent(roomCode)}/delete`,
+                {
+                    method: "POST"
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                showMessage(
+                    "Oda silindi."
+                );
+
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+
+            } else {
+
+                showMessage(
+                    data.error ||
+                    "Oda silinemedi.",
+                    "error"
+                );
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Sunucuya bağlanılamadı.",
+                "error"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // HTML GÜVENLİĞİ
+    // =====================================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // =====================================================
+    // ENTER İLE ARAMA
+    // =====================================================
+
+    document
+        .getElementById("searchInput")
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    searchUser();
+                }
+            }
+        );
+
+
+    // =====================================================
+    // ENTER İLE ODA KATILMA
+    // =====================================================
+
+    document
+        .getElementById("joinCode")
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    joinRoom();
+                }
+            }
+        );
+
+
+    // =====================================================
+    // MODAL DIŞINA TIKLAYINCA KAPAT
+    // =====================================================
+
+    document
+        .getElementById("createRoomModal")
+        .addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target === this
+                ) {
+
+                    closeCreateRoom();
+                }
+            }
+        );
+
+</script>
 
 </body>
 </html>
