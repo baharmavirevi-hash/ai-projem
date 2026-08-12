@@ -1,3 +1,4 @@
+```python
 import os
 
 from flask import Flask
@@ -19,16 +20,6 @@ app.secret_key = os.environ.get(
     "mavigpt-development-secret-key"
 )
 
-# Session ayarları
-app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-
-# HTTPS üzerinde çalışıyorsa:
-if os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("RENDER"):
-    app.config["SESSION_COOKIE_SECURE"] = True
-else:
-    app.config["SESSION_COOKIE_SECURE"] = False
-
 
 # ============================================================
 # DATABASE
@@ -49,7 +40,7 @@ register_routes(app)
 
 
 # ============================================================
-# MAVİGPT FONKSİYONU
+# MAVİGPT
 # ============================================================
 
 def ask_mavigpt(
@@ -57,10 +48,12 @@ def ask_mavigpt(
     foto=None,
     history=None
 ):
+    """
+    MaviGPT cevap sistemi.
+    """
 
     try:
 
-        import os
         from google import genai
 
         api_key = os.environ.get(
@@ -85,6 +78,7 @@ Kullanıcı Türkçe konuşuyor.
 Her zaman Türkçe cevap ver.
 
 Samimi, güvenli ve yardımcı ol.
+Gereksiz yere uzun cevap verme.
 
 Kullanıcının mesajı:
 
@@ -112,7 +106,7 @@ Kullanıcının mesajı:
 
 
 # ============================================================
-# LOCAL ÇALIŞTIRMA
+# UYGULAMAYI ÇALIŞTIR
 # ============================================================
 
 if __name__ == "__main__":
@@ -129,3 +123,4 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+```
