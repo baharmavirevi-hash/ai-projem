@@ -102,9 +102,37 @@
             border: 1px solid #cfeaf4;
         }
 
+        .username-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
         .username-value {
             color: #238db7;
             font-size: 20px;
+            word-break: break-word;
+        }
+
+        .copy-button {
+            border: none;
+            border-radius: 10px;
+            padding: 9px 12px;
+            background: #8fdaf5;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .copy-button:hover {
+            background: #65c7eb;
+        }
+
+        .copy-button.copied {
+            background: #75c995;
         }
 
         .hint {
@@ -135,6 +163,7 @@
         }
 
         @media (max-width: 500px) {
+
             .container {
                 margin-top: 18px;
             }
@@ -146,6 +175,19 @@
 
             .title {
                 font-size: 18px;
+            }
+
+            .username-row {
+                align-items: flex-start;
+            }
+
+            .username-value {
+                font-size: 18px;
+            }
+
+            .copy-button {
+                font-size: 12px;
+                padding: 8px 10px;
             }
         }
     </style>
@@ -200,8 +242,23 @@
                 Kullanıcı adın
             </div>
 
-            <div class="value username-value">
-                @{{ user["username"] }}
+            <div class="username-row">
+
+                <div
+                    class="value username-value"
+                    id="usernameValue"
+                >
+                    @{{ user["username"] }}
+                </div>
+
+                <button
+                    class="copy-button"
+                    id="copyButton"
+                    onclick="copyUsername()"
+                >
+                    📋 Kopyala
+                </button>
+
             </div>
 
         </div>
@@ -222,13 +279,24 @@
         </div>
 
 
+        <!-- ARKADAŞLAR İÇİN BİLGİ -->
+
         <div class="hint">
+
             💡 Arkadaşların seni bulmak için
             <b>@{{ user["username"] }}</b>
             kullanıcı adını Arkadaşlar bölümündeki
             <b>Arkadaş Ara</b> kısmına yazabilir.
+
+            <br><br>
+
+            📋 <b>Kopyala</b> butonuna basıp
+            kullanıcı adını arkadaşına gönderebilirsin.
+
         </div>
 
+
+        <!-- ÇIKIŞ -->
 
         <a
             href="{{ url_for('logout') }}"
@@ -241,7 +309,82 @@
 
 </main>
 
+
+<script>
+
+    // =====================================================
+    // KULLANICI ADINI KOPYALA
+    // =====================================================
+
+    async function copyUsername() {
+
+        const usernameElement =
+            document.getElementById("usernameValue");
+
+        const button =
+            document.getElementById("copyButton");
+
+        const username =
+            usernameElement.textContent.trim();
+
+        try {
+
+            await navigator.clipboard.writeText(
+                username
+            );
+
+            button.textContent = "✓ Kopyalandı";
+            button.classList.add("copied");
+
+            setTimeout(() => {
+
+                button.textContent = "📋 Kopyala";
+                button.classList.remove("copied");
+
+            }, 2000);
+
+        } catch (error) {
+
+            // Eski tarayıcılar için alternatif yöntem
+
+            const textArea =
+                document.createElement("textarea");
+
+            textArea.value = username;
+
+            document.body.appendChild(textArea);
+
+            textArea.select();
+
+            try {
+
+                document.execCommand("copy");
+
+                button.textContent = "✓ Kopyalandı";
+                button.classList.add("copied");
+
+                setTimeout(() => {
+
+                    button.textContent = "📋 Kopyala";
+                    button.classList.remove("copied");
+
+                }, 2000);
+
+            } catch (copyError) {
+
+                alert(
+                    "Kullanıcı adı kopyalanamadı. " +
+                    "Lütfen kullanıcı adını elle kopyala."
+                );
+
+            }
+
+            document.body.removeChild(textArea);
+        }
+    }
+
+</script>
+
 </body>
 </html>
-
 
