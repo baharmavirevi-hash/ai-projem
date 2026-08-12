@@ -1,1919 +1,378 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="theme-color"
-        content="#98daf5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>İlaçlarım | Cebimdeki Doktor</title>
 
-
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-
         body {
-
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    #eaf8ff 0%,
-                    #ffffff 100%
-                );
-
-            color: #23404d;
-
+            font-family: Arial, sans-serif;
+            background: #eefaff;
+            color: #234;
             min-height: 100vh;
-
         }
 
-
-        /* =====================================================
-           MENÜ BUTONU
-        ===================================================== */
-
-        #menuButton {
-
-            position: fixed;
-
-            top: 15px;
-            left: 15px;
-
-            width: 52px;
-            height: 52px;
-
-            border: none;
-
-            border-radius: 16px;
-
-            background: white;
-
-            color: #287b98;
-
-            font-size: 27px;
-
-            box-shadow:
-                0 8px 25px
-                rgba(30, 90, 120, .15);
-
-            z-index: 9999;
-
-            cursor: pointer;
-
-        }
-
-
-        /* =====================================================
-           OVERLAY
-        ===================================================== */
-
-        #overlay {
-
-            position: fixed;
-
-            inset: 0;
-
-            background:
-                rgba(0, 0, 0, .35);
-
-            display: none;
-
-            z-index: 5000;
-
-        }
-
-
-        #overlay.open {
-
-            display: block;
-
-        }
-
-
-        /* =====================================================
-           SIDEBAR
-        ===================================================== */
-
-        #sidebar {
-
-            position: fixed;
-
-            top: 0;
-            left: 0;
-
-            width: 290px;
-
-            max-width: 85vw;
-
-            height: 100vh;
-
-            background: white;
-
-            padding: 20px 15px;
-
-            transform:
-                translateX(-100%);
-
-            transition:
-                transform .25s ease;
-
-            box-shadow:
-                8px 0 30px
-                rgba(0, 0, 0, .15);
-
-            z-index: 9000;
-
-            overflow-y: auto;
-
-        }
-
-
-        #sidebar.open {
-
-            transform:
-                translateX(0);
-
-        }
-
-
-        .sidebar-top {
-
+        .topbar {
+            background: #98daf5;
+            padding: 18px 20px;
             display: flex;
-
             align-items: center;
-
-            justify-content:
-                space-between;
-
-            margin-bottom: 25px;
-
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
         }
 
-
-        .sidebar-title {
-
-            font-size: 18px;
-
-            font-weight: 800;
-
-            color: #287b98;
-
-        }
-
-
-        #closeButton {
-
-            width: 40px;
-            height: 40px;
-
-            border: none;
-
-            border-radius: 13px;
-
-            background: #edf8fc;
-
-            color: #287b98;
-
+        .back {
+            text-decoration: none;
+            color: #17485c;
             font-size: 25px;
-
-            cursor: pointer;
-
+            font-weight: bold;
         }
 
-
-        .menu-item {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 13px;
-
-            width: 100%;
-
-            padding: 15px;
-
-            margin-bottom: 8px;
-
-            border-radius: 16px;
-
-            text-decoration: none;
-
-            color: #345562;
-
-            font-size: 15px;
-
-            font-weight: 700;
-
-            transition:
-                background .2s ease;
-
-        }
-
-
-        .menu-item:hover {
-
-            background: #edf9fd;
-
-        }
-
-
-        .menu-item.active {
-
-            background: #dff4fa;
-
-            color: #287b98;
-
-        }
-
-
-        .menu-icon {
-
-            width: 30px;
-
-            text-align: center;
-
+        .topbar h1 {
             font-size: 22px;
-
+            color: #17485c;
         }
 
-
-        /* =====================================================
-           SAYFA
-        ===================================================== */
-
-        .page {
-
-            width: 100%;
-
-            max-width: 800px;
-
-            margin: auto;
-
-            padding:
-                90px 15px 40px;
-
+        .container {
+            width: min(700px, 94%);
+            margin: 25px auto;
         }
 
-
-        .hero {
-
-            text-align: center;
-
-            margin-bottom: 25px;
-
-        }
-
-
-        .medicine-icon {
-
-            width: 75px;
-            height: 75px;
-
-            margin:
-                auto auto 12px;
-
-            border-radius: 24px;
-
-            background: #def4fa;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 40px;
-
-        }
-
-
-        h1 {
-
-            font-size: 38px;
-
-            color: #20596f;
-
-        }
-
-
-        .subtitle {
-
-            margin-top: 8px;
-
-            color: #728994;
-
-            font-size: 14px;
-
-        }
-
-
-        /* =====================================================
-           BİLDİRİM KARTI
-        ===================================================== */
-
-        .notification-card {
-
+        .card {
             background: white;
-
-            border:
-                1px solid #e3f0f5;
-
-            border-radius: 22px;
-
-            padding: 16px;
-
-            margin-bottom: 15px;
-
-            box-shadow:
-                0 10px 30px
-                rgba(30, 90, 120, .08);
-
-        }
-
-
-        .notification-title {
-
-            font-weight: 800;
-
-            color: #285f72;
-
-            font-size: 16px;
-
-            margin-bottom: 6px;
-
-        }
-
-
-        .notification-text {
-
-            color: #718893;
-
-            font-size: 13px;
-
-            line-height: 1.5;
-
-            margin-bottom: 12px;
-
-        }
-
-
-        #notificationStatus {
-
-            padding: 11px;
-
-            border-radius: 13px;
-
-            background: #f3f9fb;
-
-            color: #617b85;
-
-            font-size: 13px;
-
-            text-align: center;
-
-            margin-bottom: 10px;
-
-        }
-
-
-        #notificationButton {
-
-            width: 100%;
-
-            height: 48px;
-
-            border: none;
-
-            border-radius: 15px;
-
-            background: #4faeca;
-
-            color: white;
-
-            font-size: 14px;
-
-            font-weight: 800;
-
-            cursor: pointer;
-
-        }
-
-
-        #notificationButton.enabled {
-
-            background: #56b987;
-
-        }
-
-
-        /* =====================================================
-           ANA SAYFA BUTONU
-        ===================================================== */
-
-        .home-button {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 8px;
-
-            width: 100%;
-
-            height: 48px;
-
-            margin-bottom: 15px;
-
-            border-radius: 15px;
-
-            background: white;
-
-            border:
-                1px solid #dcecf2;
-
-            color: #287b98;
-
-            text-decoration: none;
-
-            font-size: 14px;
-
-            font-weight: 800;
-
-            box-shadow:
-                0 7px 20px
-                rgba(30, 90, 120, .07);
-
-        }
-
-
-        .home-button:hover {
-
-            background: #f3fbfd;
-
-        }
-
-
-        /* =====================================================
-           EKLEME KARTI
-        ===================================================== */
-
-        .add-card {
-
-            background: white;
-
-            border:
-                1px solid #e3f0f5;
-
-            border-radius: 25px;
-
-            padding: 17px;
-
-            box-shadow:
-                0 15px 45px
-                rgba(30, 90, 120, .10);
-
-            margin-bottom: 25px;
-
-        }
-
-
-        .card-title {
-
-            font-size: 19px;
-
-            font-weight: 800;
-
-            color: #315e6d;
-
-            margin-bottom: 15px;
-
-        }
-
-
-        .field {
-
-            margin-bottom: 13px;
-
-        }
-
-
-        .field label {
-
-            display: block;
-
-            margin-bottom: 6px;
-
-            color: #54707b;
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-        }
-
-
-        .field input {
-
-            width: 100%;
-
-            height: 50px;
-
-            border:
-                1.5px solid #dcecf2;
-
-            border-radius: 15px;
-
-            padding:
-                0 14px;
-
-            background: #fbfeff;
-
-            color: #294653;
-
-            font-size: 15px;
-
-            outline: none;
-
-        }
-
-
-        .field input:focus {
-
-            border-color: #6bbbd5;
-
-            box-shadow:
-                0 0 0 4px
-                rgba(107, 187, 213, .10);
-
-        }
-
-
-        .save-button {
-
-            width: 100%;
-
-            height: 52px;
-
-            border: none;
-
-            border-radius: 16px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #58b9d8,
-                    #287d9c
-                );
-
-            color: white;
-
-            font-size: 15px;
-
-            font-weight: 800;
-
-            cursor: pointer;
-
-        }
-
-
-        .save-button:active {
-
-            transform: scale(.99);
-
-        }
-
-
-        /* =====================================================
-           MESAJ
-        ===================================================== */
-
-        .success-message {
-
-            background: #e9f9f1;
-
-            color: #25805a;
-
-            border:
-                1px solid #ccefe0;
-
-            border-radius: 15px;
-
-            padding: 12px;
-
-            margin-bottom: 15px;
-
-            text-align: center;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-        }
-
-
-        /* =====================================================
-           İLAÇLAR
-        ===================================================== */
-
-        .section-title {
-
-            margin:
-                0 3px 12px;
-
-            font-size: 19px;
-
-            font-weight: 800;
-
-            color: #426371;
-
-        }
-
-
-        .medicine-card {
-
-            background: white;
-
-            border:
-                1px solid #e3f0f5;
-
             border-radius: 20px;
-
-            padding: 16px;
-
-            margin-bottom: 10px;
-
-            box-shadow:
-                0 7px 22px
-                rgba(30, 90, 120, .07);
-
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.07);
         }
 
+        .card h2 {
+            color: #17647d;
+            margin-bottom: 18px;
+            font-size: 20px;
+        }
 
-        .medicine-top {
+        .form-group {
+            margin-bottom: 15px;
+        }
 
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #456;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #c8e6f0;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            background: #fbfeff;
+        }
+
+        input:focus {
+            border-color: #67c8e9;
+        }
+
+        .add-button {
+            width: 100%;
+            border: none;
+            border-radius: 13px;
+            padding: 14px;
+            background: #65c7e8;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-button:hover {
+            opacity: .9;
+        }
+
+        .medicine-list {
             display: flex;
-
-            align-items: center;
-
-            justify-content:
-                space-between;
-
-            gap: 10px;
-
+            flex-direction: column;
+            gap: 14px;
         }
 
+        .medicine-item {
+            border: 1px solid #d9edf4;
+            background: #f8fdff;
+            border-radius: 16px;
+            padding: 17px;
+        }
 
         .medicine-name {
-
-            color: #285f72;
-
-            font-size: 17px;
-
-            font-weight: 800;
-
+            font-size: 19px;
+            font-weight: bold;
+            color: #17647d;
+            margin-bottom: 10px;
         }
-
-
-        .medicine-time {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            padding:
-                7px 10px;
-
-            border-radius: 12px;
-
-            background: #e8f7fb;
-
-            color: #287b98;
-
-            font-size: 13px;
-
-            font-weight: 800;
-
-        }
-
 
         .medicine-info {
-
-            margin-top: 10px;
-
-            color: #718893;
-
-            font-size: 13px;
-
+            color: #567;
             line-height: 1.7;
-
+            font-size: 15px;
         }
 
+        .delete-form {
+            margin-top: 13px;
+        }
 
         .delete-button {
-
-            margin-top: 12px;
-
-            width: 100%;
-
-            height: 42px;
-
             border: none;
-
-            border-radius: 13px;
-
-            background: #fff0f0;
-
-            color: #d65d5d;
-
-            font-size: 13px;
-
-            font-weight: 800;
-
+            background: #ff7676;
+            color: white;
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 14px;
             cursor: pointer;
-
         }
 
+        .delete-button:hover {
+            opacity: .88;
+        }
 
         .empty {
-
-            background: white;
-
-            border:
-                1px dashed #cfe3ea;
-
-            border-radius: 20px;
-
-            padding:
-                25px 15px;
-
             text-align: center;
-
-            color: #7b929d;
-
-            font-size: 14px;
-
+            padding: 25px 10px;
+            color: #789;
         }
 
-
-        /* =====================================================
-           MOBİL
-        ===================================================== */
-
-        @media (max-width: 600px) {
-
-            .page {
-
-                padding:
-                    82px 11px 30px;
-
-            }
-
-
-            h1 {
-
-                font-size: 31px;
-
-            }
-
-
-            .medicine-top {
-
-                align-items:
-                    flex-start;
-
-                flex-direction:
-                    column;
-
-            }
-
-
-            .medicine-time {
-
-                margin-top: 3px;
-
-            }
-
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
         }
 
+        .flash {
+            padding: 13px 15px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            background: #fff0f0;
+            color: #b33;
+            border: 1px solid #ffd1d1;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                width: 94%;
+                margin-top: 18px;
+            }
+
+            .card {
+                padding: 17px;
+                border-radius: 17px;
+            }
+
+            .topbar {
+                padding: 15px;
+            }
+
+            .topbar h1 {
+                font-size: 19px;
+            }
+        }
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =========================================================
-     OVERLAY
-========================================================= -->
-
-<div id="overlay"></div>
-
-
-<!-- =========================================================
-     MENÜ BUTONU
-========================================================= -->
-
-<button
-    id="menuButton"
-    type="button"
-    aria-label="Menüyü aç">
-
-    ☰
-
-</button>
-
-
-<!-- =========================================================
-     SIDEBAR
-========================================================= -->
-
-<aside id="sidebar">
-
-
-    <div class="sidebar-top">
-
-        <div class="sidebar-title">
-
-            💊 İlaçlarım
-
-        </div>
-
-
-        <button
-            id="closeButton"
-            type="button"
-            aria-label="Menüyü kapat">
-
-            ×
-
-        </button>
-
+    <div class="topbar">
+        <a href="{{ url_for('doctor') }}" class="back">‹</a>
+        <h1>💊 İlaçlarım</h1>
     </div>
 
+    <main class="container">
 
-    <!-- ANA SAYFA -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <a
-        href="/"
-        class="menu-item">
 
-        <span class="menu-icon">
-            🏠
-        </span>
+        <!-- ================================================= -->
+        <!-- İLAÇ EKLE -->
+        <!-- ================================================= -->
 
-        <span>
-            Ana Sayfa
-        </span>
+        <section class="card">
 
-    </a>
+            <h2>➕ Yeni İlaç Ekle</h2>
 
+            <form
+                action="{{ url_for('save_medicine_route') }}"
+                method="POST"
+            >
 
-    <!-- DOKTOR -->
+                <div class="form-group">
+                    <label for="name">İlaç adı</label>
 
-    <a
-        href="/doctor"
-        class="menu-item">
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Örn. Vitamin"
+                        required
+                    >
+                </div>
 
-        <span class="menu-icon">
-            🩺
-        </span>
 
-        <span>
-            Cebimdeki Doktor
-        </span>
+                <div class="form-group">
+                    <label for="dose">Doz</label>
 
-    </a>
+                    <input
+                        type="text"
+                        id="dose"
+                        name="dose"
+                        placeholder="Örn. 1 tablet"
+                    >
+                </div>
 
 
-    <!-- REGL -->
+                <div class="form-group">
+                    <label for="hour">Saat</label>
 
-    <a
-        href="/period"
-        class="menu-item">
+                    <input
+                        type="time"
+                        id="hour"
+                        name="hour"
+                    >
+                </div>
 
-        <span class="menu-icon">
-            📅
-        </span>
 
-        <span>
-            Regl Takibi
-        </span>
+                <div class="form-group">
+                    <label for="start_date">Başlangıç tarihi</label>
 
-    </a>
+                    <input
+                        type="date"
+                        id="start_date"
+                        name="start_date"
+                    >
+                </div>
 
 
-    <!-- SİNDİRİM -->
+                <button
+                    type="submit"
+                    class="add-button"
+                >
+                    💊 İlacı Kaydet
+                </button>
 
-    <a
-        href="/diarrhea"
-        class="menu-item">
+            </form>
 
-        <span class="menu-icon">
-            📝
-        </span>
+        </section>
 
-        <span>
-            Sindirim Takibi
-        </span>
 
-    </a>
+        <!-- ================================================= -->
+        <!-- İLAÇ LİSTESİ -->
+        <!-- ================================================= -->
 
+        <section class="card">
 
-    <!-- İLAÇ -->
+            <h2>📋 Kayıtlı İlaçlarım</h2>
 
-    <a
-        href="/medicine"
-        class="menu-item active">
+            {% if medicines and medicines|length > 0 %}
 
-        <span class="menu-icon">
-            💊
-        </span>
+                <div class="medicine-list">
 
-        <span>
-            İlaçlarım
-        </span>
+                    {% for medicine in medicines %}
 
-    </a>
+                        <div class="medicine-item">
 
+                            <div class="medicine-name">
+                                💊 {{ medicine["name"] }}
+                            </div>
 
-    <!-- AYARLAR -->
 
-    <a
-        href="/settings"
-        class="menu-item">
+                            <div class="medicine-info">
 
-        <span class="menu-icon">
-            ⚙️
-        </span>
+                                {% if medicine["dose"] %}
+                                    <div>
+                                        <strong>Doz:</strong>
+                                        {{ medicine["dose"] }}
+                                    </div>
+                                {% endif %}
 
-        <span>
-            Ayarlar
-        </span>
 
-    </a>
+                                {% if medicine["hour"] %}
+                                    <div>
+                                        <strong>Saat:</strong>
+                                        {{ medicine["hour"] }}
+                                    </div>
+                                {% endif %}
 
 
-    <!-- MAVİGPT -->
-
-    <a
-        href="/"
-        class="menu-item">
-
-        <span class="menu-icon">
-            🤖
-        </span>
-
-        <span>
-            MaviGPT
-        </span>
-
-    </a>
-
-
-</aside>
-
-
-<!-- =========================================================
-     ANA İÇERİK
-========================================================= -->
-
-<main class="page">
-
-
-    <!-- BAŞLIK -->
-
-    <section class="hero">
-
-        <div class="medicine-icon">
-            💊
-        </div>
-
-
-        <h1>
-            İlaçlarım
-        </h1>
-
-
-        <div class="subtitle">
-
-            İlaçlarını ve kullanım saatlerini takip et.
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         ANA SAYFAYA DÖN
-    ===================================================== -->
-
-    <a
-        href="/"
-        class="home-button">
-
-        🏠
-        Ana Sayfaya Dön
-
-    </a>
-
-
-    <!-- =====================================================
-         BİLDİRİM
-    ===================================================== -->
-
-    <section class="notification-card">
-
-
-        <div class="notification-title">
-
-            🔔 İlaç Bildirimleri
-
-        </div>
-
-
-        <div class="notification-text">
-
-            İlaç saatlerinde bildirim almak için
-            bildirim iznini aç.
-
-        </div>
-
-
-        <div id="notificationStatus">
-
-            Bildirim durumu kontrol ediliyor...
-
-        </div>
-
-
-        <button
-            id="notificationButton"
-            type="button">
-
-            🔔 Bildirimleri Aç
-
-        </button>
-
-
-    </section>
-
-
-    <!-- =====================================================
-         KAYIT MESAJI
-    ===================================================== -->
-
-    {% if kayit_mesaji %}
-
-        <div class="success-message">
-
-            {{ kayit_mesaji }}
-
-        </div>
-
-    {% endif %}
-
-
-    <!-- =====================================================
-         YENİ İLAÇ
-    ===================================================== -->
-
-    <section class="add-card">
-
-
-        <div class="card-title">
-
-            ➕ Yeni İlaç Ekle
-
-        </div>
-
-
-        <form
-            method="POST"
-            action="/medicine">
-
-
-            <div class="field">
-
-                <label for="medicineName">
-                    İlaç adı
-                </label>
-
-
-                <input
-                    id="medicineName"
-                    type="text"
-                    name="name"
-                    placeholder="Örn. Vitamin"
-                    autocomplete="off"
-                    required>
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="medicineDose">
-                    Doz
-                </label>
-
-
-                <input
-                    id="medicineDose"
-                    type="text"
-                    name="dose"
-                    placeholder="Örn. 1 tablet"
-                    autocomplete="off">
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="medicineHour">
-                    ⏰ Kullanım saati
-                </label>
-
-
-                <input
-                    type="time"
-                    name="hour"
-                    id="medicineHour"
-                    required>
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="medicineDate">
-                    📅 Başlangıç tarihi
-                </label>
-
-
-                <input
-                    id="medicineDate"
-                    type="date"
-                    name="start_date">
-
-            </div>
-
-
-            <button
-                class="save-button"
-                type="submit">
-
-                💊 İlacı Kaydet
-
-            </button>
-
-
-        </form>
-
-
-    </section>
-
-
-    <!-- =====================================================
-         KAYITLI İLAÇLAR
-    ===================================================== -->
-
-    <section>
-
-
-        <div class="section-title">
-
-            💊 Kayıtlı İlaçlar
-
-        </div>
-
-
-        <div id="medicineList">
-
-
-            {% for ilac in kayitlar %}
-
-
-                <div
-                    class="medicine-card"
-                    data-hour="{{ ilac['hour'] or '' }}"
-                    data-name="{{ ilac['name'] or 'İlaç' }}"
-                    data-dose="{{ ilac['dose'] or '' }}">
-
-
-                    <div class="medicine-top">
-
-
-                        <div class="medicine-name">
-
-                            💊 {{ ilac["name"] }}
-
-                        </div>
-
-
-                        {% if ilac["hour"] %}
-
-                            <div class="medicine-time">
-
-                                ⏰ {{ ilac["hour"] }}
+                                {% if medicine["start_date"] %}
+                                    <div>
+                                        <strong>Başlangıç:</strong>
+                                        {{ medicine["start_date"] }}
+                                    </div>
+                                {% endif %}
 
                             </div>
 
-                        {% endif %}
 
+                            <form
+                                class="delete-form"
+                                action="{{ url_for('remove_medicine', medicine_id=medicine['id']) }}"
+                                method="POST"
+                                onsubmit="return confirm('Bu ilacı silmek istediğine emin misin?');"
+                            >
 
-                    </div>
+                                <button
+                                    type="submit"
+                                    class="delete-button"
+                                >
+                                    🗑️ Sil
+                                </button>
 
+                            </form>
 
-                    <div class="medicine-info">
+                        </div>
 
-
-                        {% if ilac["dose"] %}
-
-                            💊 Doz:
-                            {{ ilac["dose"] }}
-
-                            <br>
-
-                        {% endif %}
-
-
-                        {% if ilac["start_date"] %}
-
-                            📅 Başlangıç:
-                            {{ ilac["start_date"] }}
-
-                        {% endif %}
-
-
-                    </div>
-
-
-                    <form
-                        method="POST"
-                        action="/medicine/delete/{{ ilac['id'] }}">
-
-
-                        <button
-                            class="delete-button"
-                            type="submit">
-
-                            🗑️ İlacı Sil
-
-                        </button>
-
-
-                    </form>
-
+                    {% endfor %}
 
                 </div>
-
 
             {% else %}
 
-
                 <div class="empty">
 
-                    💊 Henüz kayıtlı bir ilacın yok.
+                    <div class="empty-icon">💊</div>
 
-                    <br>
-                    <br>
+                    <p>
+                        Henüz kayıtlı bir ilacın yok.
+                    </p>
 
-                    Yukarıdaki formdan ilk ilacını
-                    ekleyebilirsin.
+                    <p style="margin-top:7px;">
+                        Yukarıdaki formdan ilk ilacını ekleyebilirsin.
+                    </p>
 
                 </div>
 
+            {% endif %}
 
-            {% endfor %}
+        </section>
 
-
-        </div>
-
-
-    </section>
-
-
-</main>
-
-
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-
-<script>
-
-
-/* =========================================================
-   MENÜ
-========================================================= */
-
-const menuButton =
-    document.getElementById("menuButton");
-
-const closeButton =
-    document.getElementById("closeButton");
-
-const sidebar =
-    document.getElementById("sidebar");
-
-const overlay =
-    document.getElementById("overlay");
-
-
-function openMenu() {
-
-    sidebar.classList.add("open");
-
-    overlay.classList.add("open");
-
-}
-
-
-function closeMenu() {
-
-    sidebar.classList.remove("open");
-
-    overlay.classList.remove("open");
-
-}
-
-
-menuButton.addEventListener(
-    "click",
-    openMenu
-);
-
-
-closeButton.addEventListener(
-    "click",
-    closeMenu
-);
-
-
-overlay.addEventListener(
-    "click",
-    closeMenu
-);
-
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Escape") {
-
-            closeMenu();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   BİLDİRİM ELEMENTLERİ
-========================================================= */
-
-const notificationButton =
-    document.getElementById(
-        "notificationButton"
-    );
-
-
-const notificationStatus =
-    document.getElementById(
-        "notificationStatus"
-    );
-
-
-/* =========================================================
-   BİLDİRİM DURUMUNU KONTROL ET
-========================================================= */
-
-function checkNotification() {
-
-
-    if (!("Notification" in window)) {
-
-        notificationStatus.innerText =
-            "📱 Bu tarayıcı web bildirimlerini desteklemiyor.";
-
-        notificationButton.disabled =
-            true;
-
-        return;
-
-    }
-
-
-    if (
-        Notification.permission ===
-        "granted"
-    ) {
-
-        notificationStatus.innerText =
-            "✅ Bildirimler açık.";
-
-        notificationButton.innerText =
-            "✅ Bildirimler Açık";
-
-        notificationButton.classList.add(
-            "enabled"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        Notification.permission ===
-        "denied"
-    ) {
-
-        notificationStatus.innerText =
-            "⚠️ Bildirimler engellenmiş. Tarayıcı ayarlarından bu siteye izin vermelisin.";
-
-        notificationButton.innerText =
-            "🔔 Bildirim İznini Kontrol Et";
-
-        return;
-
-    }
-
-
-    notificationStatus.innerText =
-        "🔔 Bildirim izni henüz verilmedi.";
-
-}
-
-
-/* =========================================================
-   BİLDİRİM İZNİ İSTE
-========================================================= */
-
-async function requestNotifications() {
-
-
-    if (!("Notification" in window)) {
-
-        alert(
-            "Bu tarayıcı bildirimleri desteklemiyor."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        Notification.permission ===
-        "granted"
-    ) {
-
-        showTestNotification();
-
-        return;
-
-    }
-
-
-    if (
-        Notification.permission ===
-        "denied"
-    ) {
-
-        notificationStatus.innerText =
-            "⚠️ Bildirim izni engellenmiş. Tarayıcı site ayarlarından bildirim iznini açmalısın.";
-
-        return;
-
-    }
-
-
-    try {
-
-
-        const permission =
-            await Notification.requestPermission();
-
-
-        if (
-            permission ===
-            "granted"
-        ) {
-
-
-            notificationStatus.innerText =
-                "✅ Bildirimler başarıyla açıldı!";
-
-
-            notificationButton.innerText =
-                "✅ Bildirimler Açık";
-
-
-            notificationButton.classList.add(
-                "enabled"
-            );
-
-
-            showTestNotification();
-
-
-        }
-
-
-        else if (
-            permission ===
-            "denied"
-        ) {
-
-
-            notificationStatus.innerText =
-                "⚠️ Bildirim izni reddedildi.";
-
-
-        }
-
-
-        else {
-
-
-            notificationStatus.innerText =
-                "Bildirim izni verilmedi.";
-
-
-        }
-
-
-    }
-    catch (error) {
-
-
-        console.error(
-            "Bildirim hatası:",
-            error
-        );
-
-
-        notificationStatus.innerText =
-            "❌ Bildirim izni alınırken hata oluştu.";
-
-    }
-
-}
-
-
-/* =========================================================
-   TEST BİLDİRİMİ
-========================================================= */
-
-function showTestNotification() {
-
-
-    if (
-        !("Notification" in window)
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        Notification.permission !==
-        "granted"
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-
-        new Notification(
-            "💊 Cebimdeki Doktor",
-            {
-
-                body:
-                    "Bildirimler başarıyla açıldı! 🩵",
-
-                icon:
-                    "/static/icons/icon-192.png"
-
-            }
-        );
-
-
-    }
-    catch (error) {
-
-
-        console.log(
-            "Test bildirimi gönderilemedi:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   BİLDİRİM BUTONU
-========================================================= */
-
-notificationButton.addEventListener(
-    "click",
-    requestNotifications
-);
-
-
-/* =========================================================
-   İLAÇ SAATLERİNİ KONTROL ET
-========================================================= */
-
-function checkMedicineTimes() {
-
-
-    if (
-        !("Notification" in window)
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        Notification.permission !==
-        "granted"
-    ) {
-
-        return;
-
-    }
-
-
-    const now =
-        new Date();
-
-
-    const currentHour =
-        String(
-            now.getHours()
-        ).padStart(2, "0");
-
-
-    const currentMinute =
-        String(
-            now.getMinutes()
-        ).padStart(2, "0");
-
-
-    const currentTime =
-        currentHour +
-        ":" +
-        currentMinute;
-
-
-    const today =
-        now.toDateString();
-
-
-    document
-        .querySelectorAll(
-            ".medicine-card"
-        )
-        .forEach(
-            function(card) {
-
-
-                const medicineHour =
-                    card.dataset.hour;
-
-
-                const medicineName =
-                    card.dataset.name ||
-                    "İlacın";
-
-
-                const medicineDose =
-                    card.dataset.dose ||
-                    "";
-
-
-                if (
-                    !medicineHour
-                ) {
-
-                    return;
-
-                }
-
-
-                if (
-                    medicineHour !==
-                    currentTime
-                ) {
-
-                    return;
-
-                }
-
-
-                /*
-                 * Aynı ilaç için
-                 * aynı gün aynı dakikada
-                 * birden fazla bildirim
-                 * göndermeyi engeller.
-                 */
-
-                const notificationKey =
-                    "medicine-notified-" +
-                    medicineName +
-                    "-" +
-                    medicineHour +
-                    "-" +
-                    today;
-
-
-                if (
-                    localStorage.getItem(
-                        notificationKey
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                let message =
-                    medicineName +
-                    " zamanı geldi!";
-
-
-                if (
-                    medicineDose
-                ) {
-
-                    message +=
-                        " Doz: " +
-                        medicineDose;
-
-                }
-
-
-                try {
-
-
-                    new Notification(
-                        "💊 İlaç Zamanı",
-                        {
-
-                            body:
-                                message,
-
-                            icon:
-                                "/static/icons/icon-192.png"
-
-                        }
-                    );
-
-
-                    localStorage.setItem(
-                        notificationKey,
-                        "true"
-                    );
-
-
-                }
-                catch (error) {
-
-
-                    console.error(
-                        "İlaç bildirimi gönderilemedi:",
-                        error
-                    );
-
-
-                }
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   HER DAKİKA KONTROL
-========================================================= */
-
-setInterval(
-    checkMedicineTimes,
-    60000
-);
-
-
-/*
- * Sayfa açıldığında
- * hemen bir kez kontrol et.
- */
-
-checkMedicineTimes();
-
-
-/* =========================================================
-   SERVICE WORKER
-========================================================= */
-
-if (
-    "serviceWorker" in navigator
-) {
-
-
-    window.addEventListener(
-        "load",
-        function() {
-
-
-            navigator.serviceWorker
-                .register(
-                    "/static/service-worker.js"
-                )
-
-
-                .then(
-                    function(registration) {
-
-
-                        console.log(
-                            "🩵 MaviGPT Service Worker aktif!",
-                            registration
-                        );
-
-
-                    }
-                )
-
-
-                .catch(
-                    function(error) {
-
-
-                        console.error(
-                            "❌ Service Worker hatası:",
-                            error
-                        );
-
-
-                    }
-                );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   SAYFA AÇILINCA BİLDİRİM DURUMU
-========================================================= */
-
-checkNotification();
-
-
-</script>
-
+    </main>
 
 </body>
-
 </html>
+```
