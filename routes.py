@@ -1155,5 +1155,86 @@ def register_routes(app):
 
             kayit_mesaji=kayit_mesaji
         )
+        # ============================================================
+# AYARLAR
+# ============================================================
+
+    @app.route(
+        "/settings",
+        methods=["GET", "POST"]
+    )
+    def settings():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            mode = request.form.get(
+                "mode",
+                "normal"
+            ).strip()
+
+            personality = request.form.get(
+                "personality",
+                "friendly"
+            ).strip()
+
+            try:
+
+                save_settings(
+                    mode,
+                    personality
+                )
+
+                kayit_mesaji = (
+                    "✅ Ayarların kaydedildi."
+                )
+
+            except Exception as e:
+
+                print(
+                    "AYAR KAYIT HATASI:",
+                    repr(e)
+                )
+
+                kayit_mesaji = (
+                    "❌ Ayarlar kaydedilemedi."
+                )
+
+        # ----------------------------------------------------
+        # AYARLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            settings_data = get_settings()
+
+        except Exception as e:
+
+            print(
+                "AYAR OKUMA HATASI:",
+                repr(e)
+            )
+
+            settings_data = {
+                "mode": "normal",
+                "personality": "friendly"
+            }
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "settings.html",
+
+            settings=settings_data,
+
+            kayit_mesaji=kayit_mesaji
+        )
         
         
