@@ -7,8 +7,11 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="theme-color"
+        content="#98daf5">
 
     <title>İlaçlarım | Cebimdeki Doktor</title>
 
@@ -42,6 +45,7 @@
             color: #23404d;
 
             min-height: 100vh;
+
         }
 
 
@@ -60,6 +64,7 @@
             height: 52px;
 
             border: none;
+
             border-radius: 16px;
 
             background: white;
@@ -75,8 +80,13 @@
             z-index: 9999;
 
             cursor: pointer;
+
         }
 
+
+        /* =====================================================
+           OVERLAY
+        ===================================================== */
 
         #overlay {
 
@@ -90,12 +100,14 @@
             display: none;
 
             z-index: 5000;
+
         }
 
 
         #overlay.open {
 
             display: block;
+
         }
 
 
@@ -133,6 +145,7 @@
             z-index: 9000;
 
             overflow-y: auto;
+
         }
 
 
@@ -140,6 +153,7 @@
 
             transform:
                 translateX(0);
+
         }
 
 
@@ -149,9 +163,11 @@
 
             align-items: center;
 
-            justify-content: space-between;
+            justify-content:
+                space-between;
 
             margin-bottom: 25px;
+
         }
 
 
@@ -162,6 +178,7 @@
             font-weight: 800;
 
             color: #287b98;
+
         }
 
 
@@ -181,6 +198,7 @@
             font-size: 25px;
 
             cursor: pointer;
+
         }
 
 
@@ -207,12 +225,17 @@
             font-size: 15px;
 
             font-weight: 700;
+
+            transition:
+                background .2s ease;
+
         }
 
 
         .menu-item:hover {
 
             background: #edf9fd;
+
         }
 
 
@@ -221,6 +244,7 @@
             background: #dff4fa;
 
             color: #287b98;
+
         }
 
 
@@ -231,6 +255,7 @@
             text-align: center;
 
             font-size: 22px;
+
         }
 
 
@@ -247,9 +272,8 @@
             margin: auto;
 
             padding:
-                90px
-                15px
-                40px;
+                90px 15px 40px;
+
         }
 
 
@@ -258,6 +282,7 @@
             text-align: center;
 
             margin-bottom: 25px;
+
         }
 
 
@@ -267,9 +292,7 @@
             height: 75px;
 
             margin:
-                auto
-                auto
-                12px;
+                auto auto 12px;
 
             border-radius: 24px;
 
@@ -282,6 +305,7 @@
             justify-content: center;
 
             font-size: 40px;
+
         }
 
 
@@ -290,6 +314,7 @@
             font-size: 38px;
 
             color: #20596f;
+
         }
 
 
@@ -300,11 +325,12 @@
             color: #728994;
 
             font-size: 14px;
+
         }
 
 
         /* =====================================================
-           BİLDİRİM
+           BİLDİRİM KARTI
         ===================================================== */
 
         .notification-card {
@@ -312,8 +338,7 @@
             background: white;
 
             border:
-                1px solid
-                #e3f0f5;
+                1px solid #e3f0f5;
 
             border-radius: 22px;
 
@@ -324,6 +349,7 @@
             box-shadow:
                 0 10px 30px
                 rgba(30, 90, 120, .08);
+
         }
 
 
@@ -336,6 +362,7 @@
             font-size: 16px;
 
             margin-bottom: 6px;
+
         }
 
 
@@ -348,6 +375,7 @@
             line-height: 1.5;
 
             margin-bottom: 12px;
+
         }
 
 
@@ -366,6 +394,7 @@
             text-align: center;
 
             margin-bottom: 10px;
+
         }
 
 
@@ -388,12 +417,63 @@
             font-weight: 800;
 
             cursor: pointer;
+
         }
 
 
         #notificationButton.enabled {
 
             background: #56b987;
+
+        }
+
+
+        /* =====================================================
+           ANA SAYFA BUTONU
+        ===================================================== */
+
+        .home-button {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            width: 100%;
+
+            height: 48px;
+
+            margin-bottom: 15px;
+
+            border-radius: 15px;
+
+            background: white;
+
+            border:
+                1px solid #dcecf2;
+
+            color: #287b98;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            box-shadow:
+                0 7px 20px
+                rgba(30, 90, 120, .07);
+
+        }
+
+
+        .home-button:hover {
+
+            background: #f3fbfd;
+
         }
 
 
@@ -406,8 +486,7 @@
             background: white;
 
             border:
-                1px solid
-                #e3f0f5;
+                1px solid #e3f0f5;
 
             border-radius: 25px;
 
@@ -418,6 +497,7 @@
                 rgba(30, 90, 120, .10);
 
             margin-bottom: 25px;
+
         }
 
 
@@ -430,12 +510,14 @@
             color: #315e6d;
 
             margin-bottom: 15px;
+
         }
 
 
         .field {
 
             margin-bottom: 13px;
+
         }
 
 
@@ -450,6 +532,7 @@
             font-size: 13px;
 
             font-weight: 700;
+
         }
 
 
@@ -460,8 +543,7 @@
             height: 50px;
 
             border:
-                1.5px solid
-                #dcecf2;
+                1.5px solid #dcecf2;
 
             border-radius: 15px;
 
@@ -475,6 +557,7 @@
             font-size: 15px;
 
             outline: none;
+
         }
 
 
@@ -485,6 +568,7 @@
             box-shadow:
                 0 0 0 4px
                 rgba(107, 187, 213, .10);
+
         }
 
 
@@ -512,6 +596,14 @@
             font-weight: 800;
 
             cursor: pointer;
+
+        }
+
+
+        .save-button:active {
+
+            transform: scale(.99);
+
         }
 
 
@@ -526,8 +618,7 @@
             color: #25805a;
 
             border:
-                1px solid
-                #ccefe0;
+                1px solid #ccefe0;
 
             border-radius: 15px;
 
@@ -540,6 +631,7 @@
             font-size: 14px;
 
             font-weight: 700;
+
         }
 
 
@@ -550,14 +642,14 @@
         .section-title {
 
             margin:
-                0 3px
-                12px;
+                0 3px 12px;
 
             font-size: 19px;
 
             font-weight: 800;
 
             color: #426371;
+
         }
 
 
@@ -566,8 +658,7 @@
             background: white;
 
             border:
-                1px solid
-                #e3f0f5;
+                1px solid #e3f0f5;
 
             border-radius: 20px;
 
@@ -578,6 +669,7 @@
             box-shadow:
                 0 7px 22px
                 rgba(30, 90, 120, .07);
+
         }
 
 
@@ -587,9 +679,11 @@
 
             align-items: center;
 
-            justify-content: space-between;
+            justify-content:
+                space-between;
 
             gap: 10px;
+
         }
 
 
@@ -600,6 +694,7 @@
             font-size: 17px;
 
             font-weight: 800;
+
         }
 
 
@@ -610,8 +705,7 @@
             align-items: center;
 
             padding:
-                7px
-                10px;
+                7px 10px;
 
             border-radius: 12px;
 
@@ -622,6 +716,7 @@
             font-size: 13px;
 
             font-weight: 800;
+
         }
 
 
@@ -634,6 +729,7 @@
             font-size: 13px;
 
             line-height: 1.7;
+
         }
 
 
@@ -658,6 +754,7 @@
             font-weight: 800;
 
             cursor: pointer;
+
         }
 
 
@@ -666,84 +763,19 @@
             background: white;
 
             border:
-                1px dashed
-                #cfe3ea;
+                1px dashed #cfe3ea;
 
             border-radius: 20px;
 
             padding:
-                25px
-                15px;
+                25px 15px;
 
             text-align: center;
 
             color: #7b929d;
 
             font-size: 14px;
-        }
 
-
-        /* =====================================================
-           ANA SAYFAYA DÖN BUTONU
-        ===================================================== */
-
-        .home-button-wrapper {
-
-            margin-top: 25px;
-
-            text-align: center;
-        }
-
-
-        .home-button {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 8px;
-
-            width: 100%;
-
-            min-height: 52px;
-
-            padding:
-                14px
-                20px;
-
-            background: white;
-
-            color: #287b98;
-
-            border:
-                1px solid
-                #dcecf2;
-
-            border-radius: 16px;
-
-            text-decoration: none;
-
-            font-size: 15px;
-
-            font-weight: 800;
-
-            box-shadow:
-                0 8px 25px
-                rgba(30, 90, 120, .08);
-
-            transition:
-                .2s ease;
-        }
-
-
-        .home-button:hover {
-
-            background: #edf9fd;
-
-            transform:
-                translateY(-1px);
         }
 
 
@@ -756,30 +788,35 @@
             .page {
 
                 padding:
-                    82px
-                    11px
-                    30px;
+                    82px 11px 30px;
+
             }
 
 
             h1 {
 
                 font-size: 31px;
+
             }
 
 
             .medicine-top {
 
-                align-items: flex-start;
+                align-items:
+                    flex-start;
 
-                flex-direction: column;
+                flex-direction:
+                    column;
+
             }
 
 
             .medicine-time {
 
                 margin-top: 3px;
+
             }
+
         }
 
     </style>
@@ -839,6 +876,25 @@
     </div>
 
 
+    <!-- ANA SAYFA -->
+
+    <a
+        href="/"
+        class="menu-item">
+
+        <span class="menu-icon">
+            🏠
+        </span>
+
+        <span>
+            Ana Sayfa
+        </span>
+
+    </a>
+
+
+    <!-- DOKTOR -->
+
     <a
         href="/doctor"
         class="menu-item">
@@ -853,6 +909,8 @@
 
     </a>
 
+
+    <!-- REGL -->
 
     <a
         href="/period"
@@ -869,6 +927,8 @@
     </a>
 
 
+    <!-- SİNDİRİM -->
+
     <a
         href="/diarrhea"
         class="menu-item">
@@ -883,6 +943,8 @@
 
     </a>
 
+
+    <!-- İLAÇ -->
 
     <a
         href="/medicine"
@@ -899,6 +961,8 @@
     </a>
 
 
+    <!-- AYARLAR -->
+
     <a
         href="/settings"
         class="menu-item">
@@ -914,6 +978,8 @@
     </a>
 
 
+    <!-- MAVİGPT -->
+
     <a
         href="/"
         class="menu-item">
@@ -928,33 +994,28 @@
 
     </a>
 
+
 </aside>
 
 
 <!-- =========================================================
-     ANA SAYFA
+     ANA İÇERİK
 ========================================================= -->
 
 <main class="page">
 
 
-    <!-- =====================================================
-         BAŞLIK
-    ===================================================== -->
+    <!-- BAŞLIK -->
 
     <section class="hero">
 
         <div class="medicine-icon">
-
             💊
-
         </div>
 
 
         <h1>
-
             İlaçlarım
-
         </h1>
 
 
@@ -968,6 +1029,20 @@
 
 
     <!-- =====================================================
+         ANA SAYFAYA DÖN
+    ===================================================== -->
+
+    <a
+        href="/"
+        class="home-button">
+
+        🏠
+        Ana Sayfaya Dön
+
+    </a>
+
+
+    <!-- =====================================================
          BİLDİRİM
     ===================================================== -->
 
@@ -976,7 +1051,7 @@
 
         <div class="notification-title">
 
-            🔔 İlaç bildirimleri
+            🔔 İlaç Bildirimleri
 
         </div>
 
@@ -1003,6 +1078,7 @@
             🔔 Bildirimleri Aç
 
         </button>
+
 
     </section>
 
@@ -1043,12 +1119,13 @@
 
             <div class="field">
 
-                <label>
+                <label for="medicineName">
                     İlaç adı
                 </label>
 
 
                 <input
+                    id="medicineName"
                     type="text"
                     name="name"
                     placeholder="Örn. Vitamin"
@@ -1060,12 +1137,13 @@
 
             <div class="field">
 
-                <label>
+                <label for="medicineDose">
                     Doz
                 </label>
 
 
                 <input
+                    id="medicineDose"
                     type="text"
                     name="dose"
                     placeholder="Örn. 1 tablet"
@@ -1076,7 +1154,7 @@
 
             <div class="field">
 
-                <label>
+                <label for="medicineHour">
                     ⏰ Kullanım saati
                 </label>
 
@@ -1092,12 +1170,13 @@
 
             <div class="field">
 
-                <label>
+                <label for="medicineDate">
                     📅 Başlangıç tarihi
                 </label>
 
 
                 <input
+                    id="medicineDate"
                     type="date"
                     name="start_date">
 
@@ -1114,6 +1193,7 @@
 
 
         </form>
+
 
     </section>
 
@@ -1140,9 +1220,9 @@
 
                 <div
                     class="medicine-card"
-                    data-hour="{{ ilac['hour'] }}"
-                    data-name="{{ ilac['name'] }}"
-                    data-dose="{{ ilac['dose'] }}">
+                    data-hour="{{ ilac['hour'] or '' }}"
+                    data-name="{{ ilac['name'] or 'İlaç' }}"
+                    data-dose="{{ ilac['dose'] or '' }}">
 
 
                     <div class="medicine-top">
@@ -1155,11 +1235,15 @@
                         </div>
 
 
-                        <div class="medicine-time">
+                        {% if ilac["hour"] %}
 
-                            ⏰ {{ ilac["hour"] }}
+                            <div class="medicine-time">
 
-                        </div>
+                                ⏰ {{ ilac["hour"] }}
+
+                            </div>
+
+                        {% endif %}
 
 
                     </div>
@@ -1196,8 +1280,7 @@
 
                         <button
                             class="delete-button"
-                            type="submit"
-                            onclick="return confirm('Bu ilacı silmek istediğine emin misin?');">
+                            type="submit">
 
                             🗑️ İlacı Sil
 
@@ -1235,25 +1318,6 @@
     </section>
 
 
-    <!-- =====================================================
-         ANA SAYFAYA DÖN
-    ===================================================== -->
-
-    <div class="home-button-wrapper">
-
-
-        <a
-            href="/"
-            class="home-button">
-
-            🤖 MaviGPT Ana Sayfasına Dön
-
-        </a>
-
-
-    </div>
-
-
 </main>
 
 
@@ -1269,50 +1333,33 @@
 ========================================================= */
 
 const menuButton =
-    document.getElementById(
-        "menuButton"
-    );
-
+    document.getElementById("menuButton");
 
 const closeButton =
-    document.getElementById(
-        "closeButton"
-    );
-
+    document.getElementById("closeButton");
 
 const sidebar =
-    document.getElementById(
-        "sidebar"
-    );
-
+    document.getElementById("sidebar");
 
 const overlay =
-    document.getElementById(
-        "overlay"
-    );
+    document.getElementById("overlay");
 
 
 function openMenu() {
 
-    sidebar.classList.add(
-        "open"
-    );
+    sidebar.classList.add("open");
 
-    overlay.classList.add(
-        "open"
-    );
+    overlay.classList.add("open");
+
 }
 
 
 function closeMenu() {
 
-    sidebar.classList.remove(
-        "open"
-    );
+    sidebar.classList.remove("open");
 
-    overlay.classList.remove(
-        "open"
-    );
+    overlay.classList.remove("open");
+
 }
 
 
@@ -1334,24 +1381,22 @@ overlay.addEventListener(
 );
 
 
-/* =========================================================
-   MENÜ LİNKLERİNE BASINCA KAPAT
-========================================================= */
+document.addEventListener(
+    "keydown",
+    function(event) {
 
-document
-    .querySelectorAll(".menu-item")
-    .forEach(function (item) {
+        if (event.key === "Escape") {
 
-        item.addEventListener(
-            "click",
-            closeMenu
-        );
+            closeMenu();
 
-    });
+        }
+
+    }
+);
 
 
 /* =========================================================
-   BİLDİRİM
+   BİLDİRİM ELEMENTLERİ
 ========================================================= */
 
 const notificationButton =
@@ -1366,17 +1411,23 @@ const notificationStatus =
     );
 
 
+/* =========================================================
+   BİLDİRİM DURUMUNU KONTROL ET
+========================================================= */
+
 function checkNotification() {
 
 
-    if (
-        !("Notification" in window)
-    ) {
+    if (!("Notification" in window)) {
 
         notificationStatus.innerText =
             "📱 Bu tarayıcı web bildirimlerini desteklemiyor.";
 
+        notificationButton.disabled =
+            true;
+
         return;
+
     }
 
 
@@ -1396,6 +1447,7 @@ function checkNotification() {
         );
 
         return;
+
     }
 
 
@@ -1405,9 +1457,13 @@ function checkNotification() {
     ) {
 
         notificationStatus.innerText =
-            "⚠️ Bildirimler engellenmiş. Tarayıcı ayarlarından bu siteye bildirim izni vermelisin.";
+            "⚠️ Bildirimler engellenmiş. Tarayıcı ayarlarından bu siteye izin vermelisin.";
+
+        notificationButton.innerText =
+            "🔔 Bildirim İznini Kontrol Et";
 
         return;
+
     }
 
 
@@ -1418,21 +1474,32 @@ function checkNotification() {
 
 
 /* =========================================================
-   BİLDİRİM İZNİ
+   BİLDİRİM İZNİ İSTE
 ========================================================= */
 
 async function requestNotifications() {
 
 
-    if (
-        !("Notification" in window)
-    ) {
+    if (!("Notification" in window)) {
 
         alert(
             "Bu tarayıcı bildirimleri desteklemiyor."
         );
 
         return;
+
+    }
+
+
+    if (
+        Notification.permission ===
+        "granted"
+    ) {
+
+        showTestNotification();
+
+        return;
+
     }
 
 
@@ -1441,11 +1508,11 @@ async function requestNotifications() {
         "denied"
     ) {
 
-        alert(
-            "Bildirimler engellenmiş. Tarayıcı ayarlarından bu siteye bildirim izni vermelisin."
-        );
+        notificationStatus.innerText =
+            "⚠️ Bildirim izni engellenmiş. Tarayıcı site ayarlarından bildirim iznini açmalısın.";
 
         return;
+
     }
 
 
@@ -1475,24 +1542,8 @@ async function requestNotifications() {
             );
 
 
-            try {
+            showTestNotification();
 
-                new Notification(
-                    "💊 Cebimdeki Doktor",
-                    {
-                        body:
-                            "Bildirimler başarıyla açıldı!"
-                    }
-                );
-
-            } catch (error) {
-
-                console.log(
-                    "Test bildirimi oluşturulamadı:",
-                    error
-                );
-
-            }
 
         }
 
@@ -1502,21 +1553,27 @@ async function requestNotifications() {
             "denied"
         ) {
 
+
             notificationStatus.innerText =
                 "⚠️ Bildirim izni reddedildi.";
+
 
         }
 
 
         else {
 
+
             notificationStatus.innerText =
                 "Bildirim izni verilmedi.";
+
 
         }
 
 
-    } catch (error) {
+    }
+    catch (error) {
+
 
         console.error(
             "Bildirim hatası:",
@@ -1532,28 +1589,96 @@ async function requestNotifications() {
 }
 
 
+/* =========================================================
+   TEST BİLDİRİMİ
+========================================================= */
+
+function showTestNotification() {
+
+
+    if (
+        !("Notification" in window)
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        Notification.permission !==
+        "granted"
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        new Notification(
+            "💊 Cebimdeki Doktor",
+            {
+
+                body:
+                    "Bildirimler başarıyla açıldı! 🩵",
+
+                icon:
+                    "/static/icons/icon-192.png"
+
+            }
+        );
+
+
+    }
+    catch (error) {
+
+
+        console.log(
+            "Test bildirimi gönderilemedi:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   BİLDİRİM BUTONU
+========================================================= */
+
 notificationButton.addEventListener(
     "click",
     requestNotifications
 );
 
 
-checkNotification();
-
-
 /* =========================================================
-   İLAÇ SAATİ KONTROLÜ
+   İLAÇ SAATLERİNİ KONTROL ET
 ========================================================= */
 
 function checkMedicineTimes() {
 
 
     if (
-        !("Notification" in window) ||
-        Notification.permission !== "granted"
+        !("Notification" in window)
     ) {
 
         return;
+
+    }
+
+
+    if (
+        Notification.permission !==
+        "granted"
+    ) {
+
+        return;
+
     }
 
 
@@ -1564,19 +1689,13 @@ function checkMedicineTimes() {
     const currentHour =
         String(
             now.getHours()
-        ).padStart(
-            2,
-            "0"
-        );
+        ).padStart(2, "0");
 
 
     const currentMinute =
         String(
             now.getMinutes()
-        ).padStart(
-            2,
-            "0"
-        );
+        ).padStart(2, "0");
 
 
     const currentTime =
@@ -1585,12 +1704,16 @@ function checkMedicineTimes() {
         currentMinute;
 
 
+    const today =
+        now.toDateString();
+
+
     document
         .querySelectorAll(
             ".medicine-card"
         )
         .forEach(
-            function (card) {
+            function(card) {
 
 
                 const medicineHour =
@@ -1608,73 +1731,99 @@ function checkMedicineTimes() {
 
 
                 if (
-                    medicineHour ===
+                    !medicineHour
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    medicineHour !==
                     currentTime
                 ) {
 
+                    return;
 
-                    const notificationKey =
-                        "medicine-notified-" +
-                        medicineName +
-                        "-" +
-                        currentTime +
-                        "-" +
-                        now.toDateString();
+                }
 
 
-                    if (
-                        localStorage.getItem(
-                            notificationKey
-                        )
-                    ) {
+                /*
+                 * Aynı ilaç için
+                 * aynı gün aynı dakikada
+                 * birden fazla bildirim
+                 * göndermeyi engeller.
+                 */
 
-                        return;
-                    }
-
-
-                    let message =
-                        "İlaç saatinin geldi!";
-
-
-                    if (
-                        medicineDose
-                    ) {
-
-                        message +=
-                            "\nDoz: " +
-                            medicineDose;
-
-                    }
+                const notificationKey =
+                    "medicine-notified-" +
+                    medicineName +
+                    "-" +
+                    medicineHour +
+                    "-" +
+                    today;
 
 
-                    try {
+                if (
+                    localStorage.getItem(
+                        notificationKey
+                    )
+                ) {
+
+                    return;
+
+                }
 
 
-                        new Notification(
-                            "💊 Cebimdeki Doktor",
-                            {
-                                body:
-                                    medicineName +
-                                    " zamanı!\n" +
-                                    message
-                            }
-                        );
+                let message =
+                    medicineName +
+                    " zamanı geldi!";
 
 
-                        localStorage.setItem(
-                            notificationKey,
-                            "true"
-                        );
+                if (
+                    medicineDose
+                ) {
+
+                    message +=
+                        " Doz: " +
+                        medicineDose;
+
+                }
 
 
-                    } catch (error) {
+                try {
 
-                        console.log(
-                            "Bildirim gönderilemedi:",
-                            error
-                        );
 
-                    }
+                    new Notification(
+                        "💊 İlaç Zamanı",
+                        {
+
+                            body:
+                                message,
+
+                            icon:
+                                "/static/icons/icon-192.png"
+
+                        }
+                    );
+
+
+                    localStorage.setItem(
+                        notificationKey,
+                        "true"
+                    );
+
+
+                }
+                catch (error) {
+
+
+                    console.error(
+                        "İlaç bildirimi gönderilemedi:",
+                        error
+                    );
+
 
                 }
 
@@ -1694,46 +1843,26 @@ setInterval(
 );
 
 
+/*
+ * Sayfa açıldığında
+ * hemen bir kez kontrol et.
+ */
+
 checkMedicineTimes();
 
 
 /* =========================================================
-   ESC İLE MENÜYÜ KAPAT
+   SERVICE WORKER
 ========================================================= */
-
-document.addEventListener(
-    "keydown",
-    function (event) {
-
-        if (
-            event.key ===
-            "Escape"
-        ) {
-
-            closeMenu();
-
-        }
-
-    }
-);
-
-
-</script>
-
-
-<!-- =========================================================
-     SERVICE WORKER
-========================================================= -->
-
-<script>
 
 if (
     "serviceWorker" in navigator
 ) {
 
+
     window.addEventListener(
         "load",
-        function () {
+        function() {
 
 
             navigator.serviceWorker
@@ -1743,24 +1872,28 @@ if (
 
 
                 .then(
-                    function (registration) {
+                    function(registration) {
+
 
                         console.log(
                             "🩵 MaviGPT Service Worker aktif!",
                             registration
                         );
 
+
                     }
                 )
 
 
                 .catch(
-                    function (error) {
+                    function(error) {
+
 
                         console.error(
                             "❌ Service Worker hatası:",
                             error
                         );
+
 
                     }
                 );
@@ -1769,6 +1902,14 @@ if (
     );
 
 }
+
+
+/* =========================================================
+   SAYFA AÇILINCA BİLDİRİM DURUMU
+========================================================= */
+
+checkNotification();
+
 
 </script>
 
