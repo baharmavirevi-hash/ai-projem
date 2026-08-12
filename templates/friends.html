@@ -1,135 +1,266 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Arkadaşlar | MaviGPT</title>
+    <title>👥 Arkadaşlarla Konuş</title>
 
-<style>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-body{
-    font-family:Arial,sans-serif;
-    background:#f4fbff;
-    margin:0;
-    padding:20px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4fbff;
+            min-height: 100vh;
+            color: #24495a;
+        }
 
-.container{
-    max-width:700px;
-    margin:auto;
-}
+        .topbar {
+            height: 68px;
+            background: white;
+            border-bottom: 1px solid #dceff6;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
 
-.card{
-    background:white;
-    padding:20px;
-    border-radius:20px;
-    margin-bottom:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-}
+        .back {
+            text-decoration: none;
+            color: #35a9d6;
+            font-size: 25px;
+        }
 
-input{
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:1px solid #ccc;
-    margin-bottom:10px;
-}
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #35a9d6;
+        }
 
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    background:#5cb8d8;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-}
+        .container {
+            width: min(700px, 92%);
+            margin: 35px auto;
+        }
 
-.friend{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:10px;
-}
+        .card {
+            background: white;
+            border: 1px solid #dceff6;
+            border-radius: 22px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(70, 160, 190, 0.07);
+        }
 
-a{
-    text-decoration:none;
-}
+        .icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
 
-.chat-btn{
-    background:#4CAF50;
-    color:white;
-    padding:8px 12px;
-    border-radius:10px;
-}
+        h1 {
+            color: #238db7;
+            margin-bottom: 8px;
+        }
 
-</style>
+        .description {
+            color: #7894a0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
 
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cfe7f1;
+            border-radius: 12px;
+            outline: none;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        input:focus {
+            border-color: #8fdaf5;
+        }
+
+        button {
+            width: 100%;
+            border: none;
+            border-radius: 13px;
+            padding: 13px;
+            background: #8fdaf5;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #65c7eb;
+        }
+
+        .join-button {
+            background: #65c7eb;
+        }
+
+        .error {
+            background: #fff0f0;
+            color: #c45d5d;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            background: #eefaff;
+            border-radius: 13px;
+            padding: 13px;
+            color: #5d8493;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="container">
+<header class="topbar">
 
-<h1>👥 Arkadaşlar</h1>
+    <a class="back" href="/">
+        ←
+    </a>
 
-<div class="card">
+    <div class="title">
+        👥 Arkadaşlarla Konuş
+    </div>
 
-<form method="POST">
+</header>
 
-<input
-type="text"
-name="friend_name"
-placeholder="Arkadaş adı"
-required>
 
-<button type="submit">
+<main class="container">
 
-➕ Arkadaş Ekle
+    {% if error %}
 
-</button>
+        <div class="error">
+            {{ error }}
+        </div>
 
-</form>
+    {% endif %}
 
-</div>
 
-{% for friend in friends %}
+    <!-- YENİ ODA -->
 
-<div class="card">
+    <section class="card">
 
-<div class="friend">
+        <div class="icon">
+            🩵
+        </div>
 
-<div>
+        <h1>
+            Yeni sohbet odası
+        </h1>
 
-👤 {{ friend["name"] }}
+        <p class="description">
+            Bir sohbet odası oluştur ve arkadaşına
+            vereceğin kod ile onu sohbete davet et.
+        </p>
 
-</div>
+        <form method="POST">
 
-<a
-class="chat-btn"
-href="/friend/{{ friend['id'] }}">
+            <input
+                type="hidden"
+                name="action"
+                value="create"
+            >
 
-💬 Sohbet
+            <label>
+                Oda adı
+            </label>
 
-</a>
+            <input
+                type="text"
+                name="room_name"
+                placeholder="Örn. Bahar'ın odası"
+                maxlength="50"
+            >
 
-</div>
+            <button type="submit">
+                ＋ Oda Oluştur
+            </button>
 
-</div>
+        </form>
 
-{% endfor %}
+    </section>
 
-<a href="/">
-<button>
 
-🏠 Ana Sayfa
+    <!-- ODAYA KATIL -->
 
-</button>
+    <section class="card">
 
-</a>
+        <div class="icon">
+            💬
+        </div>
 
-</div>
+        <h1>
+            Bir sohbete katıl
+        </h1>
+
+        <p class="description">
+            Arkadaşının verdiği sohbet kodunu
+            aşağıya girerek odaya katıl.
+        </p>
+
+        <form method="POST">
+
+            <input
+                type="hidden"
+                name="action"
+                value="join"
+            >
+
+            <label>
+                Sohbet kodu
+            </label>
+
+            <input
+                type="text"
+                name="room_code"
+                placeholder="Örn. ABC123"
+                maxlength="20"
+                autocomplete="off"
+                style="text-transform:uppercase;"
+            >
+
+            <button
+                type="submit"
+                class="join-button"
+            >
+                🚪 Sohbete Katıl
+            </button>
+
+        </form>
+
+        <div class="info">
+            💡 Arkadaşın önce bir oda oluşturmalı.
+            Daha sonra oluşan kodu sana göndermeli.
+        </div>
+
+    </section>
+
+</main>
 
 </body>
 </html>
+```
