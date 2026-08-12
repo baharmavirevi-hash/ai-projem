@@ -14,14 +14,17 @@ from flask import (
 )
 
 from database import (
-    # Kullanıcı
+    # ============================================================
+    # KULLANICI
+    # ============================================================
     create_user,
     get_user_by_username,
     get_user_by_id,
     check_user_password,
-    get_user_friend_rooms,
 
-    # MaviGPT
+    # ============================================================
+    # MAVİGPT
+    # ============================================================
     save_chat,
     get_chat_messages,
     get_chats,
@@ -30,28 +33,40 @@ from database import (
     update_chat_title,
     delete_chat,
 
-    # Sağlık
+    # ============================================================
+    # SAĞLIK
+    # ============================================================
     save_health_record,
     get_health_records,
 
-    # Regl
+    # ============================================================
+    # REGL
+    # ============================================================
     save_period_record,
     get_period_records,
 
-    # Sindirim
+    # ============================================================
+    # SİNDİRİM
+    # ============================================================
     save_diarrhea_record,
     get_diarrhea_records,
 
-    # İlaç
+    # ============================================================
+    # İLAÇ
+    # ============================================================
     save_medicine,
     get_medicines,
     delete_medicine,
 
-    # Ayarlar
+    # ============================================================
+    # AYARLAR
+    # ============================================================
     save_settings,
     get_settings,
 
-    # Arkadaşlık
+    # ============================================================
+    # ARKADAŞLIK
+    # ============================================================
     send_friend_request,
     accept_friend_request,
     reject_friend_request,
@@ -59,7 +74,9 @@ from database import (
     get_pending_friend_requests,
     are_friends,
 
-    # Arkadaş odaları
+    # ============================================================
+    # ARKADAŞ ODALARI
+    # ============================================================
     create_friend_room,
     get_friend_room,
     join_friend_room,
@@ -69,8 +86,11 @@ from database import (
     save_friend_photo_message,
     get_friend_messages,
     delete_friend_room,
+    get_user_friend_rooms,
 
-    # Push bildirim
+    # ============================================================
+    # PUSH BİLDİRİM
+    # ============================================================
     save_push_subscription,
     get_push_subscriptions,
     delete_push_subscription
@@ -85,6 +105,7 @@ def current_user():
     """
     Oturum açmış kullanıcının bilgilerini döndürür.
     """
+
     user_id = session.get("user_id")
 
     if not user_id:
@@ -140,7 +161,6 @@ def register_routes(app):
             user=user
         )
 
-
     # ========================================================
     # MAVİGPT
     # ========================================================
@@ -157,7 +177,6 @@ def register_routes(app):
             messages=messages,
             user=current_user()
         )
-
 
     # ========================================================
     # MAVİGPT MESAJ GÖNDER
@@ -187,23 +206,9 @@ def register_routes(app):
                     "error": "Mesaj boş olamaz."
                 }), 400
 
-
-            # ------------------------------------------------
-            # ask_mavigpt fonksiyonunu burada import ediyoruz.
-            #
-            # Bunun sebebi:
-            # app.py -> routes.py
-            # app.py daha sonra ask_mavigpt tanımlıyor.
-            #
-            # Böylece circular import oluşmuyor.
-            # ------------------------------------------------
-
             from app import ask_mavigpt
 
-            response = ask_mavigpt(
-                message
-            )
-
+            response = ask_mavigpt(message)
 
             save_chat(
                 "normal",
@@ -211,13 +216,11 @@ def register_routes(app):
                 response
             )
 
-
             return jsonify({
                 "success": True,
                 "message": message,
                 "response": response
             })
-
 
         except Exception as e:
 
@@ -230,7 +233,6 @@ def register_routes(app):
                 "success": False,
                 "error": "Mesaj gönderilirken bir hata oluştu."
             }), 500
-
 
     # ========================================================
     # CHAT MESAJLARI
@@ -245,15 +247,12 @@ def register_routes(app):
             "normal"
         )
 
-        rows = get_chat_messages(
-            chat_type
-        )
+        rows = get_chat_messages(chat_type)
 
         return jsonify([
             dict(row)
             for row in rows
         ])
-
 
     # ========================================================
     # SOHBETLER
@@ -268,15 +267,12 @@ def register_routes(app):
             "normal"
         )
 
-        rows = get_chats(
-            chat_type
-        )
+        rows = get_chats(chat_type)
 
         return jsonify([
             dict(row)
             for row in rows
         ])
-
 
     # ========================================================
     # CHAT HISTORY
@@ -291,16 +287,13 @@ def register_routes(app):
             "normal"
         )
 
-        rows = get_chat_messages(
-            chat_type
-        )
+        rows = get_chat_messages(chat_type)
 
         return render_template(
             "mavigpt.html",
             messages=rows,
             user=current_user()
         )
-
 
     # ========================================================
     # TEK SOHBET
@@ -310,11 +303,10 @@ def register_routes(app):
     @login_required
     def single_chat(chat_id):
 
-        chat = get_chat(
-            chat_id
-        )
+        chat = get_chat(chat_id)
 
         if not chat:
+
             return jsonify({
                 "success": False,
                 "error": "Sohbet bulunamadı."
@@ -323,7 +315,6 @@ def register_routes(app):
         return jsonify(
             dict(chat)
         )
-
 
     # ========================================================
     # SOHBET BAŞLIĞI
@@ -352,10 +343,7 @@ def register_routes(app):
                 "error": "Başlık boş olamaz."
             }), 400
 
-
-        chat = get_chat(
-            chat_id
-        )
+        chat = get_chat(chat_id)
 
         if not chat:
 
@@ -363,7 +351,6 @@ def register_routes(app):
                 "success": False,
                 "error": "Sohbet bulunamadı."
             }), 404
-
 
         update_chat_title(
             chat_id,
@@ -373,7 +360,6 @@ def register_routes(app):
         return jsonify({
             "success": True
         })
-
 
     # ========================================================
     # SOHBET SİL
@@ -386,9 +372,7 @@ def register_routes(app):
     @login_required
     def remove_chat(chat_id):
 
-        chat = get_chat(
-            chat_id
-        )
+        chat = get_chat(chat_id)
 
         if not chat:
 
@@ -397,15 +381,11 @@ def register_routes(app):
                 "error": "Sohbet bulunamadı."
             }), 404
 
-
-        delete_chat(
-            chat_id
-        )
+        delete_chat(chat_id)
 
         return jsonify({
             "success": True
         })
-
 
     # ========================================================
     # GİRİŞ
@@ -423,7 +403,6 @@ def register_routes(app):
                 url_for("home")
             )
 
-
         if request.method == "POST":
 
             username = (
@@ -436,7 +415,6 @@ def register_routes(app):
                 or ""
             )
 
-
             if not username or not password:
 
                 flash(
@@ -448,12 +426,10 @@ def register_routes(app):
                     "login.html"
                 )
 
-
             user = check_user_password(
                 username,
                 password
             )
-
 
             if user:
 
@@ -468,22 +444,18 @@ def register_routes(app):
                     or user["username"]
                 )
 
-
                 return redirect(
                     url_for("home")
                 )
-
 
             flash(
                 "Kullanıcı adı veya şifre hatalı.",
                 "error"
             )
 
-
         return render_template(
             "login.html"
         )
-
 
     # ========================================================
     # KAYIT
@@ -500,7 +472,6 @@ def register_routes(app):
             return redirect(
                 url_for("home")
             )
-
 
         if request.method == "POST":
 
@@ -519,7 +490,6 @@ def register_routes(app):
                 or ""
             ).strip()
 
-
             if not username or not password:
 
                 flash(
@@ -530,7 +500,6 @@ def register_routes(app):
                 return render_template(
                     "register.html"
                 )
-
 
             if len(username) < 3:
 
@@ -543,7 +512,6 @@ def register_routes(app):
                     "register.html"
                 )
 
-
             if len(password) < 4:
 
                 flash(
@@ -555,13 +523,11 @@ def register_routes(app):
                     "register.html"
                 )
 
-
             user_id = create_user(
                 username=username,
                 password=password,
                 display_name=display_name or username
             )
-
 
             if not user_id:
 
@@ -574,7 +540,6 @@ def register_routes(app):
                     "register.html"
                 )
 
-
             session.clear()
 
             session["user_id"] = user_id
@@ -586,16 +551,13 @@ def register_routes(app):
                 or username
             )
 
-
             return redirect(
                 url_for("home")
             )
 
-
         return render_template(
             "register.html"
         )
-
 
     # ========================================================
     # ÇIKIŞ
@@ -609,7 +571,6 @@ def register_routes(app):
         return redirect(
             url_for("login")
         )
-
 
     # ========================================================
     # PROFİL
@@ -625,7 +586,6 @@ def register_routes(app):
             "profile.html",
             user=user
         )
-
 
     # ========================================================
     # SAĞLIK / CEBİMDEKİ DOKTOR
@@ -644,7 +604,6 @@ def register_routes(app):
             health_records=records,
             user=current_user()
         )
-
 
     # ========================================================
     # SAĞLIK KAYDI
@@ -672,18 +631,15 @@ def register_routes(app):
             or ""
         ).strip()
 
-
         save_health_record(
             symptom,
             medicine,
             note
         )
 
-
         return redirect(
             url_for("doctor")
         )
-
 
     # ========================================================
     # SAĞLIK KAYITLARI API
@@ -699,7 +655,6 @@ def register_routes(app):
             dict(row)
             for row in rows
         ])
-
 
     # ========================================================
     # REGL TAKİBİ
@@ -719,7 +674,6 @@ def register_routes(app):
             period_records=records,
             user=current_user()
         )
-
 
     # ========================================================
     # REGL KAYDET
@@ -751,18 +705,15 @@ def register_routes(app):
             or ""
         ).strip()
 
-
         save_period_record(
             start_date,
             end_date,
             note
         )
 
-
         return redirect(
             url_for("period")
         )
-
 
     # ========================================================
     # SİNDİRİM TAKİBİ
@@ -783,7 +734,6 @@ def register_routes(app):
             diarrhea_records=records,
             user=current_user()
         )
-
 
     # ========================================================
     # SİNDİRİM KAYDET
@@ -820,7 +770,6 @@ def register_routes(app):
             or ""
         ).strip()
 
-
         save_diarrhea_record(
             date,
             count,
@@ -828,11 +777,9 @@ def register_routes(app):
             note
         )
 
-
         return redirect(
             url_for("diarrhea")
         )
-
 
     # ========================================================
     # İLAÇLAR
@@ -851,7 +798,6 @@ def register_routes(app):
             medicines=medicines,
             user=current_user()
         )
-
 
     # ========================================================
     # İLAÇ KAYDET
@@ -888,7 +834,6 @@ def register_routes(app):
             or ""
         ).strip()
 
-
         if not name:
 
             flash(
@@ -900,7 +845,6 @@ def register_routes(app):
                 url_for("medicine")
             )
 
-
         save_medicine(
             name,
             dose,
@@ -908,11 +852,9 @@ def register_routes(app):
             start_date
         )
 
-
         return redirect(
             url_for("medicine")
         )
-
 
     # ========================================================
     # İLAÇ SİL
@@ -933,18 +875,15 @@ def register_routes(app):
             medicine_id
         )
 
-
         if request.is_json:
 
             return jsonify({
                 "success": True
             })
 
-
         return redirect(
             url_for("medicine")
         )
-
 
     # ========================================================
     # AYARLAR
@@ -961,7 +900,6 @@ def register_routes(app):
             settings=settings_data,
             user=current_user()
         )
-
 
     # ========================================================
     # AYARLARI KAYDET
@@ -984,55 +922,54 @@ def register_routes(app):
             or "friendly"
         ).strip()
 
-
         save_settings(
             mode,
             personality
         )
 
-
         return redirect(
             url_for("settings")
         )
 
-# ========================================================
-# ARKADAŞLAR SAYFASI
-# ========================================================
+    # ========================================================
+    # ========================================================
+    # ARKADAŞ SİSTEMİ
+    # ========================================================
+    # ========================================================
 
-@app.route("/friends")
-@login_required
-def friends():
+    # ========================================================
+    # ARKADAŞLAR SAYFASI
+    # ========================================================
 
-    user_id = session["user_id"]
+    @app.route("/friends")
+    @login_required
+    def friends():
 
-    # Arkadaşlar
-    friends_list = get_friends(
-        user_id
-    )
+        user_id = session["user_id"]
 
-    # Gelen arkadaşlık istekleri
-    pending_requests = (
-        get_pending_friend_requests(
+        friends_list = get_friends(
             user_id
         )
-    )
 
-    # Kullanıcının katıldığı / oluşturduğu odalar
-    rooms = get_user_friend_rooms(
-        user_id
-    )
+        pending_requests = (
+            get_pending_friend_requests(
+                user_id
+            )
+        )
 
-    return render_template(
-        "friends.html",
-        friends=friends_list,
-        pending_friend_requests=pending_requests,
-        pending_requests=pending_requests,
-        requests=pending_requests,
-        rooms=rooms,
-        user=current_user()
-    )
-  
+        rooms = get_user_friend_rooms(
+            user_id
+        )
 
+        return render_template(
+            "friends.html",
+            friends=friends_list,
+            pending_friend_requests=pending_requests,
+            pending_requests=pending_requests,
+            requests=pending_requests,
+            rooms=rooms,
+            user=current_user()
+        )
 
     # ========================================================
     # KULLANICI ARA
@@ -1048,7 +985,6 @@ def friends():
             or ""
         ).strip()
 
-
         if not username:
 
             return jsonify({
@@ -1056,13 +992,11 @@ def friends():
                 "users": []
             })
 
-
         user_id = session["user_id"]
 
         user = get_user_by_username(
             username
         )
-
 
         if not user:
 
@@ -1071,14 +1005,12 @@ def friends():
                 "users": []
             })
 
-
         if user["id"] == user_id:
 
             return jsonify({
                 "success": True,
                 "users": []
             })
-
 
         return jsonify({
             "success": True,
@@ -1091,7 +1023,6 @@ def friends():
                 )
             }]
         })
-
 
     # ========================================================
     # ARKADAŞLIK İSTEĞİ GÖNDER
@@ -1108,12 +1039,10 @@ def friends():
             silent=True
         ) or request.form
 
-
         receiver_id = safe_int(
             data.get("receiver_id")
             or data.get("user_id")
         )
-
 
         if not receiver_id:
 
@@ -1122,12 +1051,10 @@ def friends():
                 "error": "Kullanıcı bulunamadı."
             }), 400
 
-
         success = send_friend_request(
             session["user_id"],
             receiver_id
         )
-
 
         if not success:
 
@@ -1140,11 +1067,9 @@ def friends():
                 )
             }), 400
 
-
         return jsonify({
             "success": True
         })
-
 
     # ========================================================
     # ARKADAŞLIK İSTEĞİ KABUL
@@ -1162,11 +1087,9 @@ def friends():
             session["user_id"]
         )
 
-
         return jsonify({
             "success": success
         })
-
 
     # ========================================================
     # ARKADAŞLIK İSTEĞİ REDDET
@@ -1184,11 +1107,9 @@ def friends():
             session["user_id"]
         )
 
-
         return jsonify({
             "success": success
         })
-
 
     # ========================================================
     # ARKADAŞLARI API
@@ -1202,7 +1123,6 @@ def friends():
             session["user_id"]
         )
 
-
         return jsonify([
             {
                 "id": row["id"],
@@ -1214,7 +1134,6 @@ def friends():
             }
             for row in rows
         ])
-
 
     # ========================================================
     # BEKLEYEN İSTEKLER API
@@ -1228,12 +1147,27 @@ def friends():
             session["user_id"]
         )
 
-
         return jsonify([
             dict(row)
             for row in rows
         ])
 
+    # ========================================================
+    # KULLANICININ ODALARI API
+    # ========================================================
+
+    @app.route("/api/friend-rooms")
+    @login_required
+    def friend_rooms_api():
+
+        rooms = get_user_friend_rooms(
+            session["user_id"]
+        )
+
+        return jsonify([
+            dict(room)
+            for room in rooms
+        ])
 
     # ========================================================
     # ARKADAŞ ODASI OLUŞTUR
@@ -1250,19 +1184,19 @@ def friends():
             silent=True
         ) or request.form
 
-
         room_name = (
             data.get("name")
             or data.get("room_name")
             or "Arkadaş Sohbeti"
         ).strip()
 
+        if len(room_name) > 50:
+            room_name = room_name[:50]
 
         room_code = create_friend_room(
             room_name=room_name,
             owner_id=session["user_id"]
         )
-
 
         if not room_code:
 
@@ -1270,7 +1204,6 @@ def friends():
                 "success": False,
                 "error": "Oda oluşturulamadı."
             }), 500
-
 
         return jsonify({
             "success": True,
@@ -1280,7 +1213,6 @@ def friends():
                 room_code=room_code
             )
         })
-
 
     # ========================================================
     # ARKADAŞ ODASINA KATIL
@@ -1297,13 +1229,11 @@ def friends():
             silent=True
         ) or request.form
 
-
         room_code = (
             data.get("room_code")
             or data.get("code")
             or ""
         ).strip().upper()
-
 
         if not room_code:
 
@@ -1312,11 +1242,9 @@ def friends():
                 "error": "Oda kodu gerekli."
             }), 400
 
-
         room = get_friend_room(
             room_code
         )
-
 
         if not room:
 
@@ -1325,12 +1253,10 @@ def friends():
                 "error": "Oda bulunamadı."
             }), 404
 
-
         success = join_friend_room(
             room_code,
             session["user_id"]
         )
-
 
         if not success:
 
@@ -1338,7 +1264,6 @@ def friends():
                 "success": False,
                 "error": "Odaya katılınamadı."
             }), 400
-
 
         return jsonify({
             "success": True,
@@ -1348,7 +1273,6 @@ def friends():
                 room_code=room_code
             )
         })
-
 
     # ========================================================
     # ARKADAŞ ODASI
@@ -1365,11 +1289,9 @@ def friends():
             or ""
         ).strip().upper()
 
-
         room = get_friend_room(
             room_code
         )
-
 
         if not room:
 
@@ -1378,26 +1300,21 @@ def friends():
                 404
             )
 
-
         user_id = session["user_id"]
 
-
-        # ----------------------------------------------------
-        # Güvenlik:
-        # Oda sahibi değilse ve üye değilse otomatik
-        # olarak odaya alınır.
-        # ----------------------------------------------------
+        # ====================================================
+        # GÜVENLİK
+        # ====================================================
 
         if not is_room_member(
             room_code,
             user_id
         ):
 
-            join_friend_room(
-                room_code,
-                user_id
+            return (
+                "Bu odanın üyesi değilsiniz.",
+                403
             )
-
 
         messages = get_friend_messages(
             room_code
@@ -1407,7 +1324,6 @@ def friends():
             room_code
         )
 
-
         return render_template(
             "friend_room.html",
             room=room,
@@ -1416,7 +1332,6 @@ def friends():
             members=members,
             user=current_user()
         )
-
 
     # ========================================================
     # ODA ÜYELERİ API
@@ -1428,6 +1343,11 @@ def friends():
     @login_required
     def room_members(room_code):
 
+        room_code = (
+            room_code
+            or ""
+        ).strip().upper()
+
         if not is_room_member(
             room_code,
             session["user_id"]
@@ -1438,11 +1358,9 @@ def friends():
                 "error": "Bu odanın üyesi değilsiniz."
             }), 403
 
-
         members = get_friend_room_members(
             room_code
         )
-
 
         return jsonify([
             {
@@ -1456,7 +1374,6 @@ def friends():
             }
             for member in members
         ])
-
 
     # ========================================================
     # ARKADAŞ ODASI MESAJLARI
@@ -1474,7 +1391,6 @@ def friends():
             or ""
         ).strip().upper()
 
-
         if not is_room_member(
             room_code,
             session["user_id"]
@@ -1485,10 +1401,9 @@ def friends():
                 "error": "Bu odanın üyesi değilsiniz."
             }), 403
 
-
-        # ----------------------------------------------------
+        # ====================================================
         # GET
-        # ----------------------------------------------------
+        # ====================================================
 
         if request.method == "GET":
 
@@ -1500,34 +1415,29 @@ def friends():
                 200
             )
 
-
             if limit <= 0:
                 limit = 200
 
             if limit > 500:
                 limit = 500
 
-
             rows = get_friend_messages(
                 room_code,
                 limit
             )
-
 
             return jsonify([
                 dict(row)
                 for row in rows
             ])
 
-
-        # ----------------------------------------------------
+        # ====================================================
         # POST
-        # ----------------------------------------------------
+        # ====================================================
 
         data = request.get_json(
             silent=True
         ) or request.form
-
 
         message = (
             data.get("message")
@@ -1535,15 +1445,12 @@ def friends():
             or ""
         ).strip()
 
-
         user = current_user()
-
 
         username = (
             user["display_name"]
             or user["username"]
         )
-
 
         if not message:
 
@@ -1552,14 +1459,12 @@ def friends():
                 "error": "Mesaj boş olamaz."
             }), 400
 
-
         success = save_friend_message(
             room_code=room_code,
             username=username,
             message=message,
             user_id=session["user_id"]
         )
-
 
         if not success:
 
@@ -1568,11 +1473,9 @@ def friends():
                 "error": "Mesaj kaydedilemedi."
             }), 500
 
-
         return jsonify({
             "success": True
         })
-
 
     # ========================================================
     # ARKADAŞ ODASINA FOTOĞRAF
@@ -1590,7 +1493,6 @@ def friends():
             or ""
         ).strip().upper()
 
-
         if not is_room_member(
             room_code,
             session["user_id"]
@@ -1601,11 +1503,9 @@ def friends():
                 "error": "Bu odanın üyesi değilsiniz."
             }), 403
 
-
         photo = request.files.get(
             "photo"
         )
-
 
         if not photo:
 
@@ -1614,9 +1514,7 @@ def friends():
                 "error": "Fotoğraf seçilmedi."
             }), 400
 
-
         filename = photo.filename or ""
-
 
         if not filename:
 
@@ -1625,15 +1523,9 @@ def friends():
                 "error": "Geçersiz dosya."
             }), 400
 
-
-        # ----------------------------------------------------
-        # Güvenli ve benzersiz dosya adı
-        # ----------------------------------------------------
-
         extension = os.path.splitext(
             filename
         )[1].lower()
-
 
         allowed_extensions = {
             ".jpg",
@@ -1643,7 +1535,6 @@ def friends():
             ".webp"
         }
 
-
         if extension not in allowed_extensions:
 
             return jsonify({
@@ -1651,36 +1542,30 @@ def friends():
                 "error": "Bu dosya türüne izin verilmiyor."
             }), 400
 
-
         upload_folder = os.path.join(
             app.root_path,
             "uploads",
             "friends"
         )
 
-
         os.makedirs(
             upload_folder,
             exist_ok=True
         )
-
 
         new_filename = (
             uuid.uuid4().hex
             + extension
         )
 
-
         file_path = os.path.join(
             upload_folder,
             new_filename
         )
 
-
         photo.save(
             file_path
         )
-
 
         relative_path = os.path.join(
             "friends",
@@ -1690,15 +1575,12 @@ def friends():
             "/"
         )
 
-
         user = current_user()
-
 
         username = (
             user["display_name"]
             or user["username"]
         )
-
 
         success = save_friend_photo_message(
             room_code=room_code,
@@ -1707,7 +1589,6 @@ def friends():
             user_id=session["user_id"]
         )
 
-
         if not success:
 
             try:
@@ -1715,18 +1596,15 @@ def friends():
             except OSError:
                 pass
 
-
             return jsonify({
                 "success": False,
                 "error": "Fotoğraf mesajı kaydedilemedi."
             }), 500
 
-
         return jsonify({
             "success": True,
             "photo_path": relative_path
         })
-
 
     # ========================================================
     # ARKADAŞ FOTOĞRAFLARI
@@ -1747,7 +1625,6 @@ def friends():
             filename
         )
 
-
     # ========================================================
     # ARKADAŞ ODASI SİL
     # ========================================================
@@ -1759,11 +1636,15 @@ def friends():
     @login_required
     def remove_friend_room(room_code):
 
+        room_code = (
+            room_code
+            or ""
+        ).strip().upper()
+
         success = delete_friend_room(
             room_code,
             session["user_id"]
         )
-
 
         if not success:
 
@@ -1772,11 +1653,9 @@ def friends():
                 "error": "Oda silinemedi."
             }), 403
 
-
         return jsonify({
             "success": True
         })
-
 
     # ========================================================
     # PUSH BİLDİRİM ABONELİĞİ
@@ -1793,17 +1672,14 @@ def friends():
             silent=True
         ) or {}
 
-
         endpoint = (
             data.get("endpoint")
             or ""
         ).strip()
 
-
         keys = data.get(
             "keys"
         ) or {}
-
 
         p256dh = (
             keys.get("p256dh")
@@ -1811,13 +1687,11 @@ def friends():
             or ""
         ).strip()
 
-
         auth = (
             keys.get("auth")
             or data.get("auth")
             or ""
         ).strip()
-
 
         success = save_push_subscription(
             endpoint=endpoint,
@@ -1826,7 +1700,6 @@ def friends():
             user_id=session["user_id"]
         )
 
-
         if not success:
 
             return jsonify({
@@ -1834,11 +1707,9 @@ def friends():
                 "error": "Push aboneliği kaydedilemedi."
             }), 400
 
-
         return jsonify({
             "success": True
         })
-
 
     # ========================================================
     # PUSH ABONELİĞİ SİL
@@ -1855,22 +1726,18 @@ def friends():
             silent=True
         ) or {}
 
-
         endpoint = (
             data.get("endpoint")
             or ""
         ).strip()
 
-
         success = delete_push_subscription(
             endpoint
         )
 
-
         return jsonify({
             "success": success
         })
-
 
     # ========================================================
     # PUSH ABONELİKLERİ
@@ -1886,12 +1753,10 @@ def friends():
             session["user_id"]
         )
 
-
         return jsonify([
             dict(row)
             for row in rows
         ])
-
 
     # ========================================================
     # API: OTURUM BİLGİSİ
@@ -1905,7 +1770,6 @@ def friends():
 
         user = current_user()
 
-
         if not user:
 
             session.clear()
@@ -1914,7 +1778,6 @@ def friends():
                 "success": False,
                 "error": "Oturum bulunamadı."
             }), 401
-
 
         return jsonify({
             "success": True,
@@ -1929,7 +1792,6 @@ def friends():
             }
         })
 
-
     # ========================================================
     # TEST ROUTE
     # ========================================================
@@ -1942,7 +1804,6 @@ def friends():
             "message": "MaviGPT çalışıyor.",
             "database": "connected"
         })
-
 
     # ========================================================
     # 404
@@ -1958,12 +1819,10 @@ def friends():
                 "error": "İstek bulunamadı."
             }), 404
 
-
         return (
             "Sayfa bulunamadı.",
             404
         )
-
 
     # ========================================================
     # 500
@@ -1977,14 +1836,12 @@ def friends():
             repr(error)
         )
 
-
         if request.path.startswith("/api/"):
 
             return jsonify({
                 "success": False,
                 "error": "Sunucu hatası oluştu."
             }), 500
-
 
         return (
             "Sunucuda bir hata oluştu.",
