@@ -207,4 +207,131 @@ def register_routes(app):
                 "500.html"
             ),
             500
-        )
+        )    # ========================================================
+    # MAVİGPT CHAT API
+    # ========================================================
+
+    @app.route(
+        "/chat",
+        methods=["POST"]
+    )
+    def chat():
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+        message = data.get(
+            "message",
+            ""
+        ).strip()
+
+        if not message:
+
+            return jsonify({
+                "success": False,
+                "error": "Mesaj boş olamaz."
+            }), 400
+
+        # ----------------------------------------------------
+        # MAVİGPT CEVABI
+        # ----------------------------------------------------
+
+        try:
+
+            response = ask_mavigpt(
+                message
+            )
+
+        except Exception as e:
+
+            print(
+                "CHAT API HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "MaviGPT şu anda cevap veremiyor."
+            }), 500
+
+        # ----------------------------------------------------
+        # DATABASE'E KAYDET
+        # ----------------------------------------------------
+
+        try:
+
+            save_chat(
+                "normal",
+                message,
+                response
+            )
+
+        except Exception as e:
+
+            print(
+                "CHAT KAYIT HATASI:",
+                repr(e)
+            )
+
+        # ----------------------------------------------------
+        # CEVAP
+        # ----------------------------------------------------
+
+        return jsonify({
+            "success": True,
+            "message": message,
+            "response": response
+        })
+
+
+    # ========================================================
+    # SOHBET MESAJLARI
+    # ========================================================
+
+    @app.route(
+        "/messages",
+        methods=["GET"]
+    )
+    def messages():
+
+        chat_type = request.args.get(
+            "chat_type",
+            "normal"
+        ).strip()
+
+        try:
+
+            rows = get_chat_messages(
+                chat_type
+            )
+
+            result = []
+
+            for row in rows:
+
+                result.append({
+                    "id": row["id"],
+                    "chat_type": row["chat_type"],
+                    "message": row["message"],
+                    "response": row["response"],
+                    "created_at": row["created_at"]
+                })
+
+            return jsonify({
+                "success": True,
+                "messages": result
+            })
+
+        except Exception as e:
+
+            print(
+                "MESAJLARI GETİRME HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "messages": []
+            }), 500
+
