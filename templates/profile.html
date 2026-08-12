@@ -1,1 +1,248 @@
+```html
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profilim | MaviGPT</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4fbff;
+            color: #24495a;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 68px;
+            background: white;
+            border-bottom: 1px solid #dceff6;
+            display: flex;
+            align-items: center;
+            padding: 0 18px;
+            gap: 14px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #35a9d6;
+            font-size: 28px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #238db7;
+        }
+
+        .container {
+            width: min(600px, 94%);
+            margin: 28px auto 50px;
+        }
+
+        .profile-card {
+            background: white;
+            border: 1px solid #dceff6;
+            border-radius: 22px;
+            padding: 25px;
+            box-shadow: 0 7px 25px rgba(70, 160, 190, 0.08);
+        }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: #dff5fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+        }
+
+        .welcome {
+            text-align: center;
+            color: #238db7;
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background: #f8fdff;
+            border: 1px solid #e0f0f5;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .label {
+            color: #8aa3ad;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .value {
+            color: #2b6073;
+            font-size: 17px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+
+        .username-box {
+            background: #eefaff;
+            border: 1px solid #cfeaf4;
+        }
+
+        .username-value {
+            color: #238db7;
+            font-size: 20px;
+        }
+
+        .hint {
+            margin-top: 18px;
+            background: #eefaff;
+            border-radius: 14px;
+            padding: 14px;
+            color: #648895;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .logout {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            border-radius: 13px;
+            background: #ef9a9a;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #e77f7f;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                margin-top: 18px;
+            }
+
+            .profile-card {
+                padding: 19px;
+                border-radius: 18px;
+            }
+
+            .title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a href="/" class="back">←</a>
+
+    <div class="title">
+        👤 Profilim
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="profile-card">
+
+        <div class="avatar">
+            👤
+        </div>
+
+        <div class="welcome">
+            Merhaba, {{ user["display_name"] or user["username"] }}! 🩵
+        </div>
+
+
+        <!-- GÖRÜNEN AD -->
+
+        <div class="info-box">
+
+            <div class="label">
+                Görünen ad
+            </div>
+
+            <div class="value">
+                {{ user["display_name"] or user["username"] }}
+            </div>
+
+        </div>
+
+
+        <!-- KULLANICI ADI -->
+
+        <div class="info-box username-box">
+
+            <div class="label">
+                Kullanıcı adın
+            </div>
+
+            <div class="value username-value">
+                @{{ user["username"] }}
+            </div>
+
+        </div>
+
+
+        <!-- HESAP ID -->
+
+        <div class="info-box">
+
+            <div class="label">
+                Hesap numaran
+            </div>
+
+            <div class="value">
+                #{{ user["id"] }}
+            </div>
+
+        </div>
+
+
+        <div class="hint">
+            💡 Arkadaşların seni bulmak için
+            <b>@{{ user["username"] }}</b>
+            kullanıcı adını Arkadaşlar bölümündeki
+            <b>Arkadaş Ara</b> kısmına yazabilir.
+        </div>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout"
+        >
+            🚪 Çıkış Yap
+        </a>
+
+    </section>
+
+</main>
+
+</body>
+</html>
+```
 
