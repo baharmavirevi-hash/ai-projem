@@ -1612,6 +1612,40 @@ def get_friend_room_members(
     conn.close()
 
     return rows
+    # ============================================================
+# KULLANICININ ARKADAŞ ODALARINI GETİR
+# ============================================================
+
+def get_user_friend_rooms(user_id):
+
+    if not user_id:
+        return []
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT DISTINCT
+            r.id,
+            r.room_code,
+            r.name,
+            r.owner_id,
+            r.created_at
+
+        FROM friend_rooms r
+
+        INNER JOIN friend_room_members m
+            ON m.room_id = r.id
+
+        WHERE m.user_id = ?
+
+        ORDER BY r.id DESC
+    """, (
+        user_id,
+    )).fetchall()
+
+    conn.close()
+
+    return rows
 
 
 # ============================================================
