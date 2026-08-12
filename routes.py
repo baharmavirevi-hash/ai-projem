@@ -1,2512 +1,2030 @@
-from flask import (
-    render_template,
-    request,
-    redirect,
-    url_for,
-    jsonify,
-    send_from_directory,
-    current_app
-)
-
+import sqlite3
 import os
-import uuid
-import time
+import secrets
+import string
 
-
-# ============================================================
-# DATABASE
-# ============================================================
-
-from database import (
-    init_db,
-
-    # MaviGPT
-    save_chat,
-    get_chat_messages,
-    get_chats,
-    get_chat,
-    get_chat_by_id,
-    update_chat_title,
-    delete_chat,
-
-    # Sağlık
-    save_health_record,
-    get_health_records,
-
-    # Regl
-    save_period_record,
-    get_period_records,
-
-    # Sindirim
-    save_diarrhea_record,
-    get_diarrhea_records,
-
-    # İlaç
-    save_medicine,
-    get_medicines,
-    delete_medicine,
-
-    # Ayarlar
-    get_settings,
-    save_settings,
-
-    # Arkadaş sistemi
-    create_friend_room,
-    get_friend_room,
-    save_friend_message,
-    get_friend_messages
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
 )
 
 
 # ============================================================
-# GEÇİCİ GÖRÜNTÜLÜ KONUŞMA ODALARI
+# DATABASE AYARLARI
 # ============================================================
 
-VIDEO_ROOMS = {}
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
-
-# ============================================================
-# GÖRÜNTÜLÜ ARAMA DURUMLARI
-# ============================================================
-
-CALLS = {}
-
-
-# ============================================================
-# YARDIMCI FONKSİYONLAR
-# ============================================================
-
-def get_upload_folder(app):
-    folder = app.config.get("UPLOAD_FOLDER")
-
-    if not folder:
-        folder = os.path.join(
-            app.root_path,
-            "uploads"
-        )
-
-        app.config["UPLOAD_FOLDER"] = folder
-
-    os.makedirs(
-        folder,
-        exist_ok=True
-    )
-
-    return folder
-
-
-def save_uploaded_file(
-    app,
-    uploaded_file
-):
-    if not uploaded_file:
-        return None
-
-    if not uploaded_file.filename:
-        return None
-
-    original_name = uploaded_file.filename
-
-    extension = os.path.splitext(
-        original_name
-    )[1].lower()
-
-    allowed_extensions = {
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".webp"
-    }
-
-    if extension not in allowed_extensions:
-        return None
-
-    filename = (
-        uuid.uuid4().hex
-        + extension
-    )
-
-    folder = get_upload_folder(
-        app
-    )
-
-    path = os.path.join(
-        folder,
-        filename
-    )
-
-    uploaded_file.save(
-        path
-    )
-
-    return filename
-
-
-def uploaded_url(filename):
-    if not filename:
-        return None
-
-    return url_for(
-        "uploaded_file",
-        filename=filename
-    )
-
-
-def row_to_dict(row):
-    if row is None:
-        return None
-
-    try:
-        return dict(row)
-
-    except Exception:
-        return row
-
-
-def friend_messages_to_list(messages):
-    result = []
-
-    for message in messages or []:
-
-        try:
-            item = dict(message)
-
-        except Exception:
-            item = {
-                "message": str(message)
-            }
-
-        result.append(item)
-
-    return result
+DB_NAME = os.path.join(
+    BASE_DIR,
+    "chat.db"
+)
 
 
 # ============================================================
-# MAVİGPT CEVAP FONKSİYONU
+# DATABASE BAĞLANTISI
 # ============================================================
 
-def call_mavigpt(
-    message,
-    photo_path=None,
-    history=None
-):
+def get_db():
 
-    function = current_app.config.get(
-        "MAVIGPT_FUNCTION"
+    conn = sqlite3.connect(
+        DB_NAME,
+        timeout=10
     )
 
-    if function is None:
+    conn.row_factory = sqlite3.Row
 
-        return (
-            "MaviGPT bağlantısı şu anda "
-            "yapılandırılmamış."
-        )
+    # Foreign key'leri aktif et
+    conn.execute("PRAGMA foreign_keys = ON")
 
-    try:
-
-        if history is not None:
-
-            try:
-                return function(
-                    message,
-                    photo_path,
-                    history
-                )
-
-            except TypeError:
-                pass
-
-
-        if photo_path is not None:
-
-            try:
-                return function(
-                    message,
-                    photo_path
-                )
-
-            except TypeError:
-                pass
-
-
-        return function(
-            message
-        )
-
-    except Exception as e:
-
-        print(
-            "MAVİGPT HATASI:",
-            repr(e)
-        )
-
-        return (
-            "Üzgünüm, şu anda cevap "
-            "oluştururken bir hata oluştu."
-        )
+    return conn
 
 
 # ============================================================
-# GÖRÜNTÜLÜ ARAMA YARDIMCI FONKSİYONU
+# DATABASE OLUŞTUR
 # ============================================================
 
-def create_call(
-    room_code,
-    caller
-):
+def init_db():
 
-    call_id = uuid.uuid4().hex
+    conn = get_db()
+    cursor = conn.cursor()
 
-    CALLS[room_code] = {
-        "call_id": call_id,
-        "caller": caller,
-        "status": "ringing",
-        "created_at": time.time()
-    }
-
-    return call_id
-
-
-# ============================================================
-# ROUTES
-# ============================================================
-
-def register_routes(app):
 
     # ========================================================
-    # DATABASE BAŞLAT
+    # MAVİGPT SOHBETLERİ
     # ========================================================
 
-    try:
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS chats (
 
-        init_db()
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        print(
-            "DATABASE AKTİF"
+            chat_type TEXT DEFAULT 'normal',
+
+            message TEXT,
+
+            response TEXT,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
+    """)
 
-    except Exception as e:
 
-        print(
-            "DATABASE BAŞLATMA HATASI:",
-            repr(e)
+    # ========================================================
+    # SAĞLIK
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS health_records (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            symptom TEXT,
+
+            medicine TEXT,
+
+            note TEXT,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
-
-
-    # ========================================================
-    # UPLOAD KLASÖRÜ
-    # ========================================================
-
-    app.config.setdefault(
-        "UPLOAD_FOLDER",
-        os.path.join(
-            app.root_path,
-            "uploads"
-        )
-    )
-
-    get_upload_folder(
-        app
-    )
-
-
-    # ========================================================
-    # FOTOĞRAF DOSYASI
-    # ========================================================
-
-    @app.route(
-        "/uploads/<path:filename>"
-    )
-    def uploaded_file(filename):
-
-        return send_from_directory(
-            app.config["UPLOAD_FOLDER"],
-            filename
-        )
-
-
-    # ========================================================
-    # 404
-    # ========================================================
-
-    @app.errorhandler(404)
-    def page_not_found(error):
-
-        try:
-
-            return (
-                render_template(
-                    "404.html"
-                ),
-                404
-            )
-
-        except Exception:
-
-            return (
-                "Sayfa bulunamadı.",
-                404
-            )
-
-
-    # ========================================================
-    # 500
-    # ========================================================
-
-    @app.errorhandler(500)
-    def internal_server_error(error):
-
-        try:
-
-            return (
-                render_template(
-                    "500.html"
-                ),
-                500
-            )
-
-        except Exception:
-
-            return (
-                "Sunucu hatası.",
-                500
-            )
-
-
-    # ========================================================
-    # ANA SAYFA / MAVİGPT
-    # ========================================================
-
-    @app.route(
-        "/",
-        methods=["GET", "POST"]
-    )
-    def home():
-
-        mesaj = ""
-        cevap = ""
-        filename = None
-
-
-        # ----------------------------------------------------
-        # SOHBETLER
-        # ----------------------------------------------------
-
-        try:
-
-            sohbetler = get_chats(
-                "normal"
-            )
-
-        except Exception as e:
-
-            print(
-                "SOHBET OKUMA HATASI:",
-                repr(e)
-            )
-
-            sohbetler = []
-
-
-        # ----------------------------------------------------
-        # MESAJLAR
-        # ----------------------------------------------------
-
-        try:
-
-            mesajlar = get_chat_messages(
-                "normal"
-            )
-
-        except Exception as e:
-
-            print(
-                "MESAJ OKUMA HATASI:",
-                repr(e)
-            )
-
-            mesajlar = []
-
-
-        # ----------------------------------------------------
-        # POST
-        # ----------------------------------------------------
-
-        if request.method == "POST":
-
-            mesaj = request.form.get(
-                "mesaj",
-                request.form.get(
-                    "message",
-                    ""
-                )
-            ).strip()
-
-
-            # ------------------------------------------------
-            # FOTOĞRAF
-            # ------------------------------------------------
-
-            foto = request.files.get(
-                "photo"
-            )
-
-            if not foto:
-
-                foto = request.files.get(
-                    "foto"
-                )
-
-
-            if foto and foto.filename:
-
-                try:
-
-                    filename = save_uploaded_file(
-                        app,
-                        foto
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "FOTOĞRAF KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    filename = None
-
-
-            # ------------------------------------------------
-            # MESAJ VEYA FOTOĞRAF
-            # ------------------------------------------------
-
-            if mesaj or filename:
-
-                ai_mesaj = mesaj
-
-                if not ai_mesaj:
-
-                    ai_mesaj = (
-                        "Bu fotoğrafı incele ve "
-                        "genel, güvenli bilgi ver."
-                    )
-
-
-                # --------------------------------------------
-                # GEÇMİŞ
-                # --------------------------------------------
-
-                try:
-
-                    history = get_chat_messages(
-                        "normal"
-                    )
-
-                except Exception:
-
-                    history = []
-
-
-                # --------------------------------------------
-                # FOTOĞRAF YOLU
-                # --------------------------------------------
-
-                photo_path = None
-
-                if filename:
-
-                    photo_path = os.path.join(
-                        app.config[
-                            "UPLOAD_FOLDER"
-                        ],
-                        filename
-                    )
-
-
-                # --------------------------------------------
-                # MAVİGPT
-                # --------------------------------------------
-
-                cevap = call_mavigpt(
-                    ai_mesaj,
-                    photo_path,
-                    history
-                )
-
-
-                # --------------------------------------------
-                # KAYDET
-                # --------------------------------------------
-
-                try:
-
-                    save_chat(
-                        "normal",
-                        mesaj if mesaj else "Fotoğraf",
-                        cevap
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "SOHBET KAYIT HATASI:",
-                        repr(e)
-                    )
-
-
-                # --------------------------------------------
-                # YENİLE
-                # --------------------------------------------
-
-                try:
-
-                    mesajlar = get_chat_messages(
-                        "normal"
-                    )
-
-                    sohbetler = get_chats(
-                        "normal"
-                    )
-
-                except Exception:
-
-                    pass
-
-
-        return render_template(
-            "mavigpt.html",
-            mesaj=mesaj,
-            cevap=cevap,
-            filename=filename,
-            foto_url=uploaded_url(
-                filename
-            ),
-            mesajlar=mesajlar,
-            sohbetler=sohbetler
-        )
-
-
-    # ========================================================
-    # MAVİGPT CHAT API
-    # ========================================================
-
-    @app.route(
-        "/chat",
-        methods=["POST"]
-    )
-    def chat_api():
-
-        data = request.get_json(
-            silent=True
-        ) or {}
-
-        message = data.get(
-            "message",
-            ""
-        ).strip()
-
-
-        if not message:
-
-            return jsonify({
-                "success": False,
-                "error": "Mesaj boş olamaz."
-            }), 400
-
-
-        try:
-
-            history = get_chat_messages(
-                "normal"
-            )
-
-        except Exception:
-
-            history = []
-
-
-        response = call_mavigpt(
-            message,
-            None,
-            history
-        )
-
-
-        try:
-
-            save_chat(
-                "normal",
-                message,
-                response
-            )
-
-        except Exception as e:
-
-            print(
-                "CHAT KAYIT HATASI:",
-                repr(e)
-            )
-
-
-        return jsonify({
-            "success": True,
-            "message": message,
-            "response": response
-        })
-
-
-    # ========================================================
-    # MESAJLAR API
-    # ========================================================
-
-    @app.route(
-        "/messages",
-        methods=["GET"]
-    )
-    def messages():
-
-        chat_type = request.args.get(
-            "chat_type",
-            "normal"
-        ).strip()
-
-
-        try:
-
-            rows = get_chat_messages(
-                chat_type
-            )
-
-            result = [
-                row_to_dict(row)
-                for row in rows
-            ]
-
-            return jsonify({
-                "success": True,
-                "messages": result
-            })
-
-        except Exception as e:
-
-            print(
-                "MESAJLARI GETİRME HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "messages": []
-            }), 500
-
-
-    # ========================================================
-    # SOHBETLER API
-    # ========================================================
-
-    @app.route(
-        "/chats",
-        methods=["GET"]
-    )
-    def chats():
-
-        chat_type = request.args.get(
-            "chat_type",
-            "normal"
-        ).strip()
-
-
-        try:
-
-            rows = get_chats(
-                chat_type
-            )
-
-            result = [
-                row_to_dict(row)
-                for row in rows
-            ]
-
-            return jsonify({
-                "success": True,
-                "chats": result
-            })
-
-        except Exception as e:
-
-            print(
-                "SOHBETLER HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "chats": []
-            }), 500
-
-
-    # ========================================================
-    # TEK SOHBET
-    # ========================================================
-
-    @app.route(
-        "/history/<int:chat_id>",
-        methods=["GET"]
-    )
-    def history(chat_id):
-
-        try:
-
-            sohbet = get_chat(
-                chat_id
-            )
-
-            if not sohbet:
-
-                return jsonify({
-                    "success": False,
-                    "error": "Sohbet bulunamadı."
-                }), 404
-
-
-            return jsonify({
-                "success": True,
-                "chat": row_to_dict(
-                    sohbet
-                )
-            })
-
-        except Exception as e:
-
-            print(
-                "GEÇMİŞ HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "error": "Sohbet yüklenemedi."
-            }), 500
-
-
-    # ========================================================
-    # SOHBET BAŞLIĞI DÜZENLE
-    # ========================================================
-
-    @app.route(
-        "/chat/edit/<int:chat_id>",
-        methods=["POST"]
-    )
-    def chat_edit(chat_id):
-
-        data = request.get_json(
-            silent=True
-        )
-
-        if data:
-
-            title = data.get(
-                "title",
-                ""
-            ).strip()
-
-        else:
-
-            title = request.form.get(
-                "title",
-                ""
-            ).strip()
-
-
-        if not title:
-
-            return jsonify({
-                "success": False,
-                "error": "Başlık boş olamaz."
-            }), 400
-
-
-        try:
-
-            update_chat_title(
-                chat_id,
-                title
-            )
-
-            return jsonify({
-                "success": True
-            })
-
-        except Exception as e:
-
-            print(
-                "SOHBET DÜZENLEME HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "error": "Sohbet düzenlenemedi."
-            }), 500
-
-
-    # ========================================================
-    # SOHBET SİL
-    # ========================================================
-
-    @app.route(
-        "/chat/delete/<int:chat_id>",
-        methods=["POST", "DELETE"]
-    )
-    def chat_delete(chat_id):
-
-        try:
-
-            delete_chat(
-                chat_id
-            )
-
-            return jsonify({
-                "success": True
-            })
-
-        except Exception as e:
-
-            print(
-                "SOHBET SİLME HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "error": "Sohbet silinemedi."
-            }), 500
-
-
-    # ========================================================
-    # CEBİMDEKİ DOKTOR
-    # ========================================================
-
-    @app.route(
-        "/doctor",
-        methods=["GET", "POST"]
-    )
-    def doctor():
-
-        kayit_mesaji = None
-        mesaj = None
-        cevap = None
-        filename = None
-
-
-        if request.method == "POST":
-
-            mesaj = request.form.get(
-                "mesaj",
-                ""
-            ).strip()
-
-            symptom = request.form.get(
-                "symptom",
-                ""
-            ).strip()
-
-            medicine = request.form.get(
-                "medicine",
-                ""
-            ).strip()
-
-            note = request.form.get(
-                "note",
-                ""
-            ).strip()
-
-
-            # ----------------------------------------------
-            # SAĞLIK KAYDI
-            # ----------------------------------------------
-
-            if symptom or medicine or note:
-
-                try:
-
-                    save_health_record(
-                        symptom,
-                        medicine,
-                        note
-                    )
-
-                    kayit_mesaji = (
-                        "✅ Sağlık kaydın kaydedildi."
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "SAĞLIK KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    kayit_mesaji = (
-                        "❌ Sağlık kaydı kaydedilemedi."
-                    )
-
-
-            # ----------------------------------------------
-            # FOTOĞRAF
-            # ----------------------------------------------
-
-            foto = request.files.get(
-                "photo"
-            )
-
-            if foto and foto.filename:
-
-                filename = save_uploaded_file(
-                    app,
-                    foto
-                )
-
-
-            # ----------------------------------------------
-            # MAVİGPT
-            # ----------------------------------------------
-
-            if mesaj or filename:
-
-                ai_mesaj = mesaj or (
-                    "Bu sağlık fotoğrafı hakkında "
-                    "genel ve güvenli bilgi ver. "
-                    "Kesin tanı koyma."
-                )
-
-                photo_path = None
-
-                if filename:
-
-                    photo_path = os.path.join(
-                        app.config[
-                            "UPLOAD_FOLDER"
-                        ],
-                        filename
-                    )
-
-                cevap = call_mavigpt(
-                    ai_mesaj,
-                    photo_path
-                )
-
-
-        try:
-
-            kayitlar = get_health_records()
-
-        except Exception as e:
-
-            print(
-                "SAĞLIK OKUMA HATASI:",
-                repr(e)
-            )
-
-            kayitlar = []
-
-
-        return render_template(
-            "doctor.html",
-            mesaj=mesaj,
-            cevap=cevap,
-            kayitlar=kayitlar,
-            kayit_mesaji=kayit_mesaji,
-            foto_url=uploaded_url(
-                filename
-            )
-        )
+    """)
 
 
     # ========================================================
     # REGL
     # ========================================================
 
-    @app.route(
-        "/period",
-        methods=["GET", "POST"]
-    )
-    def period():
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS period_records (
 
-        kayit_mesaji = None
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
+            start_date TEXT,
 
-        if request.method == "POST":
+            end_date TEXT,
 
-            start_date = request.form.get(
-                "start_date",
-                ""
-            ).strip()
+            note TEXT,
 
-            end_date = request.form.get(
-                "end_date",
-                ""
-            ).strip()
-
-            note = request.form.get(
-                "note",
-                ""
-            ).strip()
-
-
-            if start_date:
-
-                try:
-
-                    save_period_record(
-                        start_date,
-                        end_date,
-                        note
-                    )
-
-                    kayit_mesaji = (
-                        "✅ Regl kaydın kaydedildi."
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "REGL KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    kayit_mesaji = (
-                        "❌ Regl kaydı kaydedilemedi."
-                    )
-
-
-        try:
-
-            kayitlar = get_period_records()
-
-        except Exception as e:
-
-            print(
-                "REGL OKUMA HATASI:",
-                repr(e)
-            )
-
-            kayitlar = []
-
-
-        return render_template(
-            "period.html",
-            kayitlar=kayitlar,
-            kayit_mesaji=kayit_mesaji
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
+    """)
 
 
     # ========================================================
     # SİNDİRİM
     # ========================================================
 
-    @app.route(
-        "/diarrhea",
-        methods=["GET", "POST"]
-    )
-    def diarrhea():
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS diarrhea_records (
 
-        kayit_mesaji = None
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
+            date TEXT,
 
-        if request.method == "POST":
+            count INTEGER DEFAULT 0,
 
-            date = request.form.get(
-                "date",
-                ""
-            ).strip()
+            condition TEXT,
 
-            count_raw = request.form.get(
-                "count",
-                "0"
-            ).strip()
+            note TEXT,
 
-            condition = request.form.get(
-                "condition",
-                ""
-            ).strip()
-
-            note = request.form.get(
-                "note",
-                ""
-            ).strip()
-
-
-            try:
-
-                count = max(
-                    0,
-                    int(
-                        count_raw or 0
-                    )
-                )
-
-            except (
-                ValueError,
-                TypeError
-            ):
-
-                count = 0
-
-
-            if (
-                date
-                or count
-                or condition
-                or note
-            ):
-
-                try:
-
-                    save_diarrhea_record(
-                        date,
-                        count,
-                        condition,
-                        note
-                    )
-
-                    kayit_mesaji = (
-                        "✅ Sindirim kaydın kaydedildi."
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "SİNDİRİM KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    kayit_mesaji = (
-                        "❌ Sindirim kaydı kaydedilemedi."
-                    )
-
-
-        try:
-
-            kayitlar = get_diarrhea_records()
-
-        except Exception as e:
-
-            print(
-                "SİNDİRİM OKUMA HATASI:",
-                repr(e)
-            )
-
-            kayitlar = []
-
-
-        return render_template(
-            "diarrhea.html",
-            kayitlar=kayitlar,
-            kayit_mesaji=kayit_mesaji
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
+    """)
 
 
     # ========================================================
-    # İLAÇ
+    # İLAÇLAR
     # ========================================================
 
-    @app.route(
-        "/medicine",
-        methods=["GET", "POST"]
-    )
-    def medicine():
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS medicines (
 
-        kayit_mesaji = None
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
+            name TEXT NOT NULL,
 
-        if request.method == "POST":
+            dose TEXT,
 
-            name = request.form.get(
-                "name",
-                ""
-            ).strip()
+            hour TEXT,
 
-            dose = request.form.get(
-                "dose",
-                ""
-            ).strip()
+            start_date TEXT,
 
-            hour = request.form.get(
-                "hour",
-                ""
-            ).strip()
-
-            start_date = request.form.get(
-                "start_date",
-                ""
-            ).strip()
-
-
-            if name:
-
-                try:
-
-                    save_medicine(
-                        name,
-                        dose,
-                        hour,
-                        start_date
-                    )
-
-                    kayit_mesaji = (
-                        "✅ İlaç kaydın kaydedildi."
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "İLAÇ KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    kayit_mesaji = (
-                        "❌ İlaç kaydı kaydedilemedi."
-                    )
-
-
-        try:
-
-            kayitlar = get_medicines()
-
-        except Exception as e:
-
-            print(
-                "İLAÇ OKUMA HATASI:",
-                repr(e)
-            )
-
-            kayitlar = []
-
-
-        return render_template(
-            "medicine.html",
-            kayitlar=kayitlar,
-            kayit_mesaji=kayit_mesaji
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
-
-
-    # ========================================================
-    # İLAÇ SİL
-    # ========================================================
-
-    @app.route(
-        "/medicine/delete/<int:medicine_id>",
-        methods=["POST"]
-    )
-    def medicine_delete(
-        medicine_id
-    ):
-
-        try:
-
-            delete_medicine(
-                medicine_id
-            )
-
-        except Exception as e:
-
-            print(
-                "İLAÇ SİLME HATASI:",
-                repr(e)
-            )
-
-
-        return redirect(
-            url_for(
-                "medicine"
-            )
-        )
+    """)
 
 
     # ========================================================
     # AYARLAR
     # ========================================================
 
-    @app.route(
-        "/settings",
-        methods=["GET", "POST"]
-    )
-    def settings():
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
 
-        kayit_mesaji = None
+            id INTEGER PRIMARY KEY CHECK (id = 1),
 
+            mode TEXT DEFAULT 'normal',
 
-        if request.method == "POST":
-
-            mode = request.form.get(
-                "mode",
-                "normal"
-            ).strip()
-
-            personality = request.form.get(
-                "personality",
-                "friendly"
-            ).strip()
+            personality TEXT DEFAULT 'friendly'
+        )
+    """)
 
 
-            try:
-
-                save_settings(
-                    mode,
-                    personality
-                )
-
-                kayit_mesaji = (
-                    "✅ Ayarların kaydedildi."
-                )
-
-            except Exception as e:
-
-                print(
-                    "AYAR KAYIT HATASI:",
-                    repr(e)
-                )
-
-                kayit_mesaji = (
-                    "❌ Ayarlar kaydedilemedi."
-                )
-
-
-        try:
-
-            settings_data = get_settings()
-
-        except Exception as e:
-
-            print(
-                "AYAR OKUMA HATASI:",
-                repr(e)
-            )
-
-            settings_data = {
-                "mode": "normal",
-                "personality": "friendly"
-            }
-
-
-        return render_template(
-            "settings.html",
-            settings=settings_data,
-            kayit_mesaji=kayit_mesaji
+    cursor.execute("""
+        INSERT OR IGNORE INTO settings
+        (
+            id,
+            mode,
+            personality
         )
 
-
-    # ========================================================
-    # ARKADAŞLAR ANA SAYFA
-    # ========================================================
-
-    @app.route(
-        "/friends",
-        methods=["GET", "POST"]
-    )
-    def friends():
-
-        error = None
-        room = None
-        room_code = ""
-
-
-        if request.method == "POST":
-
-            action = request.form.get(
-                "action",
-                ""
-            ).strip()
-
-
-            # ------------------------------------------------
-            # ODA OLUŞTUR
-            # ------------------------------------------------
-
-            if action == "create":
-
-                room_name = request.form.get(
-                    "room_name",
-                    "Arkadaş Sohbeti"
-                ).strip()
-
-
-                if not room_name:
-
-                    room_name = (
-                        "Arkadaş Sohbeti"
-                    )
-
-
-                try:
-
-                    room_code = create_friend_room(
-                        room_name
-                    )
-
-                    return redirect(
-                        url_for(
-                            "friend_room",
-                            room_code=room_code
-                        )
-                    )
-
-                except Exception as e:
-
-                    print(
-                        "ARKADAŞ ODASI OLUŞTURMA HATASI:",
-                        repr(e)
-                    )
-
-                    error = (
-                        "Sohbet odası oluşturulamadı."
-                    )
-
-
-            # ------------------------------------------------
-            # ODAYA KATIL
-            # ------------------------------------------------
-
-            elif action == "join":
-
-                room_code = request.form.get(
-                    "room_code",
-                    ""
-                ).strip().upper()
-
-
-                if not room_code:
-
-                    error = (
-                        "Lütfen sohbet kodunu gir."
-                    )
-
-                else:
-
-                    try:
-
-                        room = get_friend_room(
-                            room_code
-                        )
-
-
-                        if not room:
-
-                            error = (
-                                "Bu sohbet koduna ait "
-                                "oda bulunamadı."
-                            )
-
-                        else:
-
-                            return redirect(
-                                url_for(
-                                    "friend_room",
-                                    room_code=room_code
-                                )
-                            )
-
-                    except Exception as e:
-
-                        print(
-                            "ARKADAŞ ODASI ARAMA HATASI:",
-                            repr(e)
-                        )
-
-                        error = (
-                            "Sohbet kodu aranırken "
-                            "bir hata oluştu."
-                        )
-
-
-        return render_template(
-            "friends.html",
-            room=room,
-            room_code=room_code,
-            error=error
+        VALUES
+        (
+            1,
+            'normal',
+            'friendly'
         )
+    """)
 
 
     # ========================================================
-    # ARKADAŞ SOHBET ODASI
+    # KULLANICILAR
     # ========================================================
 
-    @app.route(
-        "/friends/<room_code>",
-        methods=["GET", "POST"]
-    )
-    def friend_room(
-        room_code
-    ):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
 
-        room_code = (
-            room_code or ""
-        ).strip().upper()
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
+            username TEXT NOT NULL UNIQUE,
 
-        try:
+            password_hash TEXT NOT NULL,
 
-            room = get_friend_room(
-                room_code
-            )
+            display_name TEXT,
 
-        except Exception as e:
-
-            print(
-                "ARKADAŞ ODASI OKUMA HATASI:",
-                repr(e)
-            )
-
-            return redirect(
-                url_for(
-                    "friends"
-                )
-            )
-
-
-        if not room:
-
-            return redirect(
-                url_for(
-                    "friends"
-                )
-            )
-
-
-        error = None
-
-
-        # ----------------------------------------------------
-        # MESAJ GÖNDER
-        # ----------------------------------------------------
-
-        if request.method == "POST":
-
-            username = request.form.get(
-                "username",
-                ""
-            ).strip()
-
-            message = request.form.get(
-                "message",
-                ""
-            ).strip()
-
-
-            if not username:
-
-                username = "Misafir"
-
-
-            if message:
-
-                try:
-
-                    success = save_friend_message(
-                        room_code,
-                        username,
-                        message
-                    )
-
-
-                    if not success:
-
-                        error = (
-                            "Mesaj gönderilemedi."
-                        )
-
-                except Exception as e:
-
-                    print(
-                        "ARKADAŞ MESAJI KAYIT HATASI:",
-                        repr(e)
-                    )
-
-                    error = (
-                        "Mesaj gönderilirken "
-                        "bir hata oluştu."
-                    )
-
-
-        # ----------------------------------------------------
-        # MESAJLAR
-        # ----------------------------------------------------
-
-        try:
-
-            messages = get_friend_messages(
-                room_code
-            )
-
-        except Exception as e:
-
-            print(
-                "ARKADAŞ MESAJLARI OKUMA HATASI:",
-                repr(e)
-            )
-
-            messages = []
-
-            error = (
-                "Mesajlar yüklenemedi."
-            )
-
-
-        return render_template(
-            "friend_room.html",
-            room=room,
-            room_code=room_code,
-            messages=messages,
-            error=error
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP
         )
+    """)
 
 
     # ========================================================
-    # ARKADAŞ MESAJLARI API
+    # ARKADAŞLIKLAR
     # ========================================================
 
-    @app.route(
-        "/friends/<room_code>/messages",
-        methods=["GET"]
-    )
-    def friend_messages_api(
-        room_code
-    ):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friendships (
 
-        room_code = (
-            room_code or ""
-        ).strip().upper()
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
+            sender_id INTEGER NOT NULL,
 
-        try:
+            receiver_id INTEGER NOT NULL,
 
-            room = get_friend_room(
-                room_code
-            )
+            status TEXT DEFAULT 'pending',
 
-            if not room:
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
 
-                return jsonify({
-                    "success": False,
-                    "error": "Oda bulunamadı.",
-                    "messages": []
-                }), 404
+            UNIQUE(sender_id, receiver_id),
 
+            FOREIGN KEY(sender_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE,
 
-            messages = get_friend_messages(
-                room_code
-            )
-
-
-            return jsonify({
-                "success": True,
-                "messages": friend_messages_to_list(
-                    messages
-                )
-            })
-
-
-        except Exception as e:
-
-            print(
-                "ARKADAŞ MESAJ API HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "error": "Mesajlar alınamadı.",
-                "messages": []
-            }), 500
-
-
-    # ========================================================
-    # ARKADAŞ FOTOĞRAF YÜKLEME
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/upload",
-        methods=["POST"]
-    )
-    def friend_upload(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        try:
-
-            room = get_friend_room(
-                room_code
-            )
-
-            if not room:
-
-                return jsonify({
-                    "success": False,
-                    "error": "Oda bulunamadı."
-                }), 404
-
-
-        except Exception as e:
-
-            print(
-                "ARKADAŞ ODA KONTROL HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "error": "Oda kontrol edilemedi."
-            }), 500
-
-
-        photo = request.files.get(
-            "photo"
+            FOREIGN KEY(receiver_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
         )
-
-        if not photo:
-
-            photo = request.files.get(
-                "foto"
-            )
+    """)
 
 
-        if not photo or not photo.filename:
+    # ========================================================
+    # ARKADAŞ SOHBET ODALARI
+    # ========================================================
 
-            return jsonify({
-                "success": False,
-                "error": "Fotoğraf seçilmedi."
-            }), 400
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_rooms (
 
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        try:
+            room_code TEXT NOT NULL UNIQUE,
 
-            filename = save_uploaded_file(
-                app,
-                photo
-            )
+            name TEXT DEFAULT 'Arkadaş Sohbeti',
 
+            owner_id INTEGER,
 
-            if not filename:
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
 
-                return jsonify({
-                    "success": False,
-                    "error": (
-                        "Desteklenmeyen fotoğraf "
-                        "formatı."
-                    )
-                }), 400
-
-
-            photo_url = uploaded_url(
-                filename
-            )
+            FOREIGN KEY(owner_id)
+                REFERENCES users(id)
+                ON DELETE SET NULL
+        )
+    """)
 
 
-            username = request.form.get(
-                "username",
-                "Misafir"
-            ).strip()
+    # ========================================================
+    # ODA ÜYELERİ
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_room_members (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_id INTEGER NOT NULL,
+
+            user_id INTEGER NOT NULL,
+
+            joined_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            UNIQUE(room_id, user_id),
+
+            FOREIGN KEY(room_id)
+                REFERENCES friend_rooms(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY(user_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
+        )
+    """)
 
 
-            if not username:
+    # ========================================================
+    # ARKADAŞ MESAJLARI
+    # ========================================================
 
-                username = "Misafir"
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friend_messages (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            room_id INTEGER NOT NULL,
+
+            user_id INTEGER,
+
+            username TEXT,
+
+            message TEXT,
+
+            photo_path TEXT,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY(room_id)
+                REFERENCES friend_rooms(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY(user_id)
+                REFERENCES users(id)
+                ON DELETE SET NULL
+        )
+    """)
 
 
-            photo_message = (
-                "📷 FOTOĞRAF|"
-                + photo_url
-            )
+    # ========================================================
+    # BİLDİRİM ABONELİKLERİ
+    #
+    # Uygulama kapalıyken push bildirimi gönderebilmek
+    # için tarayıcı/telefon abonelik bilgilerini saklarız.
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS push_subscriptions (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            user_id INTEGER,
+
+            endpoint TEXT NOT NULL UNIQUE,
+
+            p256dh TEXT NOT NULL,
+
+            auth TEXT NOT NULL,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY(user_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
+        )
+    """)
 
 
-            save_friend_message(
-                room_code,
+    # ========================================================
+    # INDEXLER
+    # ========================================================
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_chats_type
+        ON chats(chat_type)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friend_messages_room
+        ON friend_messages(room_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friendships_sender
+        ON friendships(sender_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_friendships_receiver
+        ON friendships(receiver_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_room_members_room
+        ON friend_room_members(room_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_room_members_user
+        ON friend_room_members(user_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_push_subscriptions_user
+        ON push_subscriptions(user_id)
+    """)
+
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# KULLANICI HESABI
+# ============================================================
+
+def create_user(
+    username,
+    password,
+    display_name=None
+):
+
+    username = (
+        username or ""
+    ).strip()
+
+    password = password or ""
+
+
+    if not username or not password:
+        return None
+
+
+    if display_name is None:
+        display_name = username
+
+
+    display_name = (
+        display_name.strip()
+        if display_name
+        else username
+    )
+
+
+    password_hash = generate_password_hash(
+        password
+    )
+
+
+    conn = get_db()
+
+    try:
+
+        cursor = conn.execute("""
+            INSERT INTO users
+            (
                 username,
-                photo_message
+                password_hash,
+                display_name
             )
 
+            VALUES (?, ?, ?)
+        """, (
+            username,
+            password_hash,
+            display_name
+        ))
 
-            return jsonify({
-                "success": True,
-                "url": photo_url
-            })
+        conn.commit()
+
+        return cursor.lastrowid
+
+    except sqlite3.IntegrityError:
+
+        return None
+
+    finally:
+
+        conn.close()
 
 
-        except Exception as e:
+# ============================================================
+# KULLANICI ADIYLE KULLANICI BUL
+# ============================================================
 
-            print(
-                "ARKADAŞ FOTOĞRAF HATASI:",
-                repr(e)
-            )
+def get_user_by_username(
+    username
+):
 
-            return jsonify({
-                "success": False,
-                "error": "Fotoğraf yüklenemedi."
-            }), 500
+    username = (
+        username or ""
+    ).strip()
 
 
-    # ========================================================
-    # GÖRÜNTÜLÜ KONUŞMA ODASI
-    # ========================================================
+    conn = get_db()
 
-    @app.route(
-        "/friends/<room_code>/video",
-        methods=["GET"]
+    row = conn.execute("""
+        SELECT
+            id,
+            username,
+            password_hash,
+            display_name,
+            created_at
+
+        FROM users
+
+        WHERE username = ?
+
+        LIMIT 1
+    """, (
+        username,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ID İLE KULLANICI BUL
+# ============================================================
+
+def get_user_by_id(
+    user_id
+):
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            username,
+            display_name,
+            created_at
+
+        FROM users
+
+        WHERE id = ?
+
+        LIMIT 1
+    """, (
+        user_id,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ŞİFRE KONTROL
+# ============================================================
+
+def check_user_password(
+    username,
+    password
+):
+
+    user = get_user_by_username(
+        username
     )
-    def video_room(
-        room_code
+
+
+    if not user:
+        return None
+
+
+    if check_password_hash(
+        user["password_hash"],
+        password
     ):
 
-        room_code = (
-            room_code or ""
-        ).strip().upper()
+        return user
 
 
-        try:
-
-            room = get_friend_room(
-                room_code
-            )
-
-        except Exception:
-
-            room = None
+    return None
 
 
-        if not room:
+# ============================================================
+# MAVİGPT SOHBET KAYDET
+# ============================================================
 
-            return redirect(
-                url_for(
-                    "friends"
+def save_chat(
+    chat_type,
+    message,
+    response
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO chats
+        (
+            chat_type,
+            message,
+            response
+        )
+
+        VALUES (?, ?, ?)
+    """, (
+        chat_type,
+        message,
+        response
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# MAVİGPT MESAJLARINI GETİR
+# ============================================================
+
+def get_chat_messages(
+    chat_type="normal"
+):
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            id,
+            chat_type,
+            message,
+            response,
+            created_at
+
+        FROM chats
+
+        WHERE chat_type = ?
+
+        ORDER BY id ASC
+    """, (
+        chat_type,
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# SON SOHBETLER
+# ============================================================
+
+def get_chats(
+    chat_type="normal"
+):
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            id,
+            chat_type,
+            message,
+            response,
+            created_at
+
+        FROM chats
+
+        WHERE chat_type = ?
+
+        ORDER BY id DESC
+    """, (
+        chat_type,
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# TEK SOHBET
+# ============================================================
+
+def get_chat(
+    chat_id
+):
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            chat_type,
+            message,
+            response,
+            created_at
+
+        FROM chats
+
+        WHERE id = ?
+
+        LIMIT 1
+    """, (
+        chat_id,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# ID İLE SOHBET
+# ============================================================
+
+def get_chat_by_id(
+    chat_id
+):
+
+    return get_chat(
+        chat_id
+    )
+
+
+# ============================================================
+# SOHBET BAŞLIĞI DÜZENLE
+# ============================================================
+
+def update_chat_title(
+    chat_id,
+    title
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        UPDATE chats
+
+        SET message = ?
+
+        WHERE id = ?
+    """, (
+        title,
+        chat_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# SOHBET SİL
+# ============================================================
+
+def delete_chat(
+    chat_id
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM chats
+
+        WHERE id = ?
+    """, (
+        chat_id,
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# SAĞLIK KAYDI KAYDET
+# ============================================================
+
+def save_health_record(
+    symptom,
+    medicine,
+    note
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO health_records
+        (
+            symptom,
+            medicine,
+            note
+        )
+
+        VALUES (?, ?, ?)
+    """, (
+        symptom,
+        medicine,
+        note
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# SAĞLIK KAYITLARINI GETİR
+# ============================================================
+
+def get_health_records():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM health_records
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# REGL KAYDI KAYDET
+# ============================================================
+
+def save_period_record(
+    start_date,
+    end_date,
+    note
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO period_records
+        (
+            start_date,
+            end_date,
+            note
+        )
+
+        VALUES (?, ?, ?)
+    """, (
+        start_date,
+        end_date,
+        note
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# REGL KAYITLARINI GETİR
+# ============================================================
+
+def get_period_records():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM period_records
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# SİNDİRİM KAYDI KAYDET
+# ============================================================
+
+def save_diarrhea_record(
+    date,
+    count,
+    condition,
+    note
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO diarrhea_records
+        (
+            date,
+            count,
+            condition,
+            note
+        )
+
+        VALUES (?, ?, ?, ?)
+    """, (
+        date,
+        count,
+        condition,
+        note
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# SİNDİRİM KAYITLARINI GETİR
+# ============================================================
+
+def get_diarrhea_records():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM diarrhea_records
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# İLAÇ KAYDET
+# ============================================================
+
+def save_medicine(
+    name,
+    dose,
+    hour,
+    start_date
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO medicines
+        (
+            name,
+            dose,
+            hour,
+            start_date
+        )
+
+        VALUES (?, ?, ?, ?)
+    """, (
+        name,
+        dose,
+        hour,
+        start_date
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# İLAÇLARI GETİR
+# ============================================================
+
+def get_medicines():
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT *
+        FROM medicines
+        ORDER BY id DESC
+    """).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# İLAÇ SİL
+# ============================================================
+
+def delete_medicine(
+    medicine_id
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM medicines
+
+        WHERE id = ?
+    """, (
+        medicine_id,
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# AYARLARI KAYDET
+# ============================================================
+
+def save_settings(
+    mode,
+    personality
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT OR REPLACE INTO settings
+        (
+            id,
+            mode,
+            personality
+        )
+
+        VALUES
+        (
+            1,
+            ?,
+            ?
+        )
+    """, (
+        mode,
+        personality
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+# ============================================================
+# AYARLARI GETİR
+# ============================================================
+
+def get_settings():
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            mode,
+            personality
+
+        FROM settings
+
+        WHERE id = 1
+
+        LIMIT 1
+    """).fetchone()
+
+    conn.close()
+
+
+    if not row:
+
+        return {
+            "mode": "normal",
+            "personality": "friendly"
+        }
+
+
+    return row
+
+
+# ============================================================
+# ARKADAŞLIK İSTEĞİ GÖNDER
+# ============================================================
+
+def send_friend_request(
+    sender_id,
+    receiver_id
+):
+
+    if not sender_id or not receiver_id:
+        return False
+
+
+    if sender_id == receiver_id:
+        return False
+
+
+    conn = get_db()
+
+    try:
+
+        existing = conn.execute("""
+            SELECT
+                id,
+                status
+
+            FROM friendships
+
+            WHERE
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
                 )
-            )
-
-
-        if room_code not in VIDEO_ROOMS:
-
-            VIDEO_ROOMS[
-                room_code
-            ] = {
-                "offer": None,
-                "answer": None,
-                "candidates": [],
-                "created_at": time.time()
-            }
-
-
-        return render_template(
-            "friend_room.html",
-            room=room,
-            room_code=room_code,
-            messages=[],
-            video_mode=True
-        )
-
-
-    # ========================================================
-    # VIDEO SIGNALING GET
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/video/state",
-        methods=["GET"]
-    )
-    def video_state(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        state = VIDEO_ROOMS.get(
-            room_code
-        )
-
-
-        if not state:
-
-            return jsonify({
-                "success": True,
-                "offer": None,
-                "answer": None,
-                "candidates": []
-            })
-
-
-        return jsonify({
-            "success": True,
-            "offer": state.get(
-                "offer"
-            ),
-            "answer": state.get(
-                "answer"
-            ),
-            "candidates": state.get(
-                "candidates",
-                []
-            )
-        })
-
-
-    # ========================================================
-    # VIDEO SIGNALING POST
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/video/signal",
-        methods=["POST"]
-    )
-    def video_signal(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        data = request.get_json(
-            silent=True
-        ) or {}
-
-
-        signal_type = data.get(
-            "type"
-        )
-
-        signal_data = data.get(
-            "data"
-        )
-
-
-        if room_code not in VIDEO_ROOMS:
-
-            VIDEO_ROOMS[
-                room_code
-            ] = {
-                "offer": None,
-                "answer": None,
-                "candidates": [],
-                "created_at": time.time()
-            }
-
-
-        state = VIDEO_ROOMS[
-            room_code
-        ]
-
-
-        # ----------------------------------------------------
-        # OFFER
-        # ----------------------------------------------------
-
-        if signal_type == "offer":
-
-            state["offer"] = signal_data
-
-            return jsonify({
-                "success": True,
-                "type": "offer"
-            })
-
-
-        # ----------------------------------------------------
-        # ANSWER
-        # ----------------------------------------------------
-
-        if signal_type == "answer":
-
-            state["answer"] = signal_data
-
-            return jsonify({
-                "success": True,
-                "type": "answer"
-            })
-
-
-        # ----------------------------------------------------
-        # ICE CANDIDATE
-        # ----------------------------------------------------
-
-        if signal_type == "candidate":
-
-            if signal_data:
-
-                state.setdefault(
-                    "candidates",
-                    []
-                ).append(
-                    signal_data
+                OR
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
                 )
 
-
-            return jsonify({
-                "success": True,
-                "type": "candidate"
-            })
-
-
-        # ----------------------------------------------------
-        # RESET
-        # ----------------------------------------------------
-
-        if signal_type == "reset":
-
-            VIDEO_ROOMS[
-                room_code
-            ] = {
-                "offer": None,
-                "answer": None,
-                "candidates": [],
-                "created_at": time.time()
-            }
-
-
-            return jsonify({
-                "success": True,
-                "type": "reset"
-            })
-
-
-        return jsonify({
-            "success": False,
-            "error": "Geçersiz sinyal türü."
-        }), 400
-
-
-    # ========================================================
-    # VIDEO ODASI TEMİZLE
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/video/leave",
-        methods=["POST"]
-    )
-    def video_leave(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        VIDEO_ROOMS.pop(
-            room_code,
-            None
-        )
-
-
-        return jsonify({
-            "success": True
-        })
-
-
-    # ========================================================
-    # GÖRÜNTÜLÜ ARAMA BAŞLAT
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/call/start",
-        methods=["POST"]
-    )
-    def start_friend_call(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        # ----------------------------------------------------
-        # ODAYI KONTROL ET
-        # ----------------------------------------------------
-
-        try:
-
-            room = get_friend_room(
-                room_code
-            )
-
-            if not room:
-
-                return jsonify({
-                    "success": False,
-                    "error": "Oda bulunamadı."
-                }), 404
-
-        except Exception as e:
-
-            print(
-                "ARAMA ODA KONTROL HATASI:",
-                repr(e)
-            )
-
-            return jsonify({
-                "success": False,
-                "error": "Oda kontrol edilemedi."
-            }), 500
-
-
-        # ----------------------------------------------------
-        # ARAYAN KİŞİ
-        # ----------------------------------------------------
-
-        data = request.get_json(
-            silent=True
-        ) or {}
-
-
-        caller = data.get(
-            "caller",
-            "Arkadaşın"
-        ).strip()
-
-
-        if not caller:
-
-            caller = "Arkadaşın"
-
-
-        # ----------------------------------------------------
-        # AKTİF ARAMA VAR MI?
-        # ----------------------------------------------------
-
-        existing = CALLS.get(
-            room_code
-        )
+            LIMIT 1
+        """, (
+            sender_id,
+            receiver_id,
+            receiver_id,
+            sender_id
+        )).fetchone()
 
 
         if existing:
 
-            if existing.get(
-                "status"
-            ) in [
-                "ringing",
-                "accepted"
-            ]:
-
-                return jsonify({
-                    "success": False,
-                    "error": (
-                        "Bu odada zaten "
-                        "aktif bir arama var."
-                    )
-                }), 409
+            return False
 
 
-        # ----------------------------------------------------
-        # ARAMAYI OLUŞTUR
-        # ----------------------------------------------------
-
-        call_id = create_call(
-            room_code,
-            caller
-        )
-
-
-        # ----------------------------------------------------
-        # YENİ VIDEO SIGNALING ODASI
-        # ----------------------------------------------------
-
-        VIDEO_ROOMS[
-            room_code
-        ] = {
-            "offer": None,
-            "answer": None,
-            "candidates": [],
-            "created_at": time.time()
-        }
-
-
-        return jsonify({
-            "success": True,
-            "call_id": call_id,
-            "caller": caller,
-            "status": "ringing"
-        })
-
-
-    # ========================================================
-    # GELEN ARAMAYI KONTROL ET
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/call",
-        methods=["GET"]
-    )
-    def get_friend_call(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        call = CALLS.get(
-            room_code
-        )
-
-
-        if not call:
-
-            return jsonify({
-                "success": True,
-                "call": None
-            })
-
-
-        # ----------------------------------------------------
-        # 60 SANİYEDEN ESKİ ARAMA
-        # ----------------------------------------------------
-
-        if (
-            time.time()
-            - call.get(
-                "created_at",
-                time.time()
+        conn.execute("""
+            INSERT INTO friendships
+            (
+                sender_id,
+                receiver_id,
+                status
             )
-            > 60
-        ):
 
-            CALLS.pop(
+            VALUES (?, ?, 'pending')
+        """, (
+            sender_id,
+            receiver_id
+        ))
+
+
+        conn.commit()
+
+        return True
+
+    except sqlite3.IntegrityError:
+
+        return False
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# ARKADAŞLIK İSTEĞİNİ KABUL ET
+# ============================================================
+
+def accept_friend_request(
+    request_id,
+    user_id
+):
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        UPDATE friendships
+
+        SET status = 'accepted'
+
+        WHERE
+            id = ?
+            AND receiver_id = ?
+            AND status = 'pending'
+    """, (
+        request_id,
+        user_id
+    ))
+
+    conn.commit()
+
+    success = cursor.rowcount > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# ARKADAŞLIK İSTEĞİNİ REDDET
+# ============================================================
+
+def reject_friend_request(
+    request_id,
+    user_id
+):
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        UPDATE friendships
+
+        SET status = 'rejected'
+
+        WHERE
+            id = ?
+            AND receiver_id = ?
+            AND status = 'pending'
+    """, (
+        request_id,
+        user_id
+    ))
+
+    conn.commit()
+
+    success = cursor.rowcount > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# ARKADAŞLARI GETİR
+# ============================================================
+
+def get_friends(
+    user_id
+):
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            u.id,
+            u.username,
+            u.display_name
+
+        FROM users u
+
+        INNER JOIN friendships f
+            ON
+            (
+                f.sender_id = ?
+                AND f.receiver_id = u.id
+            )
+            OR
+            (
+                f.receiver_id = ?
+                AND f.sender_id = u.id
+            )
+
+        WHERE f.status = 'accepted'
+
+        ORDER BY
+            COALESCE(
+                u.display_name,
+                u.username
+            ) ASC
+    """, (
+        user_id,
+        user_id
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# GELEN ARKADAŞLIK İSTEKLERİ
+# ============================================================
+
+def get_pending_friend_requests(
+    user_id
+):
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            f.id,
+            f.sender_id,
+            f.receiver_id,
+            f.status,
+            f.created_at,
+
+            u.username,
+            u.display_name
+
+        FROM friendships f
+
+        INNER JOIN users u
+            ON u.id = f.sender_id
+
+        WHERE
+            f.receiver_id = ?
+            AND f.status = 'pending'
+
+        ORDER BY f.id DESC
+    """, (
+        user_id,
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# ARKADAŞLIK KONTROL
+# ============================================================
+
+def are_friends(
+    user_a,
+    user_b
+):
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT id
+
+        FROM friendships
+
+        WHERE
+            status = 'accepted'
+            AND
+            (
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+                OR
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+            )
+
+        LIMIT 1
+    """, (
+        user_a,
+        user_b,
+        user_b,
+        user_a
+    )).fetchone()
+
+    conn.close()
+
+    return row is not None
+
+
+# ============================================================
+# ARKADAŞ ODASI KODU ÜRET
+# ============================================================
+
+def generate_room_code(
+    length=6
+):
+
+    alphabet = (
+        string.ascii_uppercase
+        + string.digits
+    )
+
+    return "".join(
+        secrets.choice(alphabet)
+        for _ in range(length)
+    )
+
+
+# ============================================================
+# ARKADAŞ ODASI OLUŞTUR
+# ============================================================
+
+def create_friend_room(
+    room_name="Arkadaş Sohbeti",
+    owner_id=None
+):
+
+    conn = get_db()
+
+    for _ in range(20):
+
+        room_code = generate_room_code()
+
+        try:
+
+            cursor = conn.execute("""
+                INSERT INTO friend_rooms
+                (
+                    room_code,
+                    name,
+                    owner_id
+                )
+
+                VALUES (?, ?, ?)
+            """, (
                 room_code,
-                None
+                room_name or "Arkadaş Sohbeti",
+                owner_id
+            ))
+
+
+            room_id = cursor.lastrowid
+
+
+            if owner_id:
+
+                conn.execute("""
+                    INSERT OR IGNORE INTO
+                    friend_room_members
+                    (
+                        room_id,
+                        user_id
+                    )
+
+                    VALUES (?, ?)
+                """, (
+                    room_id,
+                    owner_id
+                ))
+
+
+            conn.commit()
+
+            conn.close()
+
+            return room_code
+
+        except sqlite3.IntegrityError:
+
+            continue
+
+
+    conn.close()
+
+    return None
+
+
+# ============================================================
+# ARKADAŞ ODASI BUL
+# ============================================================
+
+def get_friend_room(
+    room_code
+):
+
+    room_code = (
+        room_code or ""
+    ).strip().upper()
+
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT
+            id,
+            room_code,
+            name,
+            owner_id,
+            created_at
+
+        FROM friend_rooms
+
+        WHERE room_code = ?
+
+        LIMIT 1
+    """, (
+        room_code,
+    )).fetchone()
+
+    conn.close()
+
+    return row
+
+
+# ============================================================
+# KULLANICIYI ODAYA EKLE
+# ============================================================
+
+def join_friend_room(
+    room_code,
+    user_id
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+
+    if not room or not user_id:
+        return False
+
+
+    conn = get_db()
+
+    try:
+
+        conn.execute("""
+            INSERT OR IGNORE INTO
+            friend_room_members
+            (
+                room_id,
+                user_id
             )
 
-            return jsonify({
-                "success": True,
-                "call": None
-            })
+            VALUES (?, ?)
+        """, (
+            room["id"],
+            user_id
+        ))
+
+        conn.commit()
+
+        return True
+
+    finally:
+
+        conn.close()
 
 
-        return jsonify({
-            "success": True,
-            "call": call
-        })
+# ============================================================
+# KULLANICI ODADA MI?
+# ============================================================
 
+def is_room_member(
+    room_code,
+    user_id
+):
 
-    # ========================================================
-    # ARAMAYI KABUL ET
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/call/answer",
-        methods=["POST"]
-    )
-    def answer_friend_call(
+    room = get_friend_room(
         room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        data = request.get_json(
-            silent=True
-        ) or {}
-
-
-        call_id = data.get(
-            "call_id"
-        )
-
-
-        call = CALLS.get(
-            room_code
-        )
-
-
-        if not call:
-
-            return jsonify({
-                "success": False,
-                "error": "Aktif arama bulunamadı."
-            }), 404
-
-
-        if (
-            call_id
-            and call.get("call_id")
-            != call_id
-        ):
-
-            return jsonify({
-                "success": False,
-                "error": "Arama artık geçerli değil."
-            }), 400
-
-
-        call["status"] = "accepted"
-
-
-        return jsonify({
-            "success": True,
-            "call": call
-        })
-
-
-    # ========================================================
-    # ARAMAYI REDDET
-    # ========================================================
-
-    @app.route(
-        "/friends/<room_code>/call/reject",
-        methods=["POST"]
     )
-    def reject_friend_call(
+
+
+    if not room:
+        return False
+
+
+    conn = get_db()
+
+    row = conn.execute("""
+        SELECT id
+
+        FROM friend_room_members
+
+        WHERE
+            room_id = ?
+            AND user_id = ?
+
+        LIMIT 1
+    """, (
+        room["id"],
+        user_id
+    )).fetchone()
+
+    conn.close()
+
+    return row is not None
+
+
+# ============================================================
+# ODA ÜYELERİ
+# ============================================================
+
+def get_friend_room_members(
+    room_code
+):
+
+    room = get_friend_room(
         room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
+    )
 
 
-        data = request.get_json(
-            silent=True
-        ) or {}
+    if not room:
+        return []
 
 
-        call_id = data.get(
-            "call_id"
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            u.id,
+            u.username,
+            u.display_name,
+            m.joined_at
+
+        FROM friend_room_members m
+
+        INNER JOIN users u
+            ON u.id = m.user_id
+
+        WHERE m.room_id = ?
+
+        ORDER BY m.joined_at ASC
+    """, (
+        room["id"],
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# ARKADAŞ MESAJI KAYDET
+# ============================================================
+
+def save_friend_message(
+    room_code,
+    username,
+    message,
+    user_id=None,
+    photo_path=None
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+
+    if not room:
+        return False
+
+
+    if not message and not photo_path:
+        return False
+
+
+    conn = get_db()
+
+    try:
+
+        if user_id:
+
+            member = conn.execute("""
+                SELECT id
+
+                FROM friend_room_members
+
+                WHERE
+                    room_id = ?
+                    AND user_id = ?
+
+                LIMIT 1
+            """, (
+                room["id"],
+                user_id
+            )).fetchone()
+
+
+            if not member:
+
+                conn.execute("""
+                    INSERT OR IGNORE INTO
+                    friend_room_members
+                    (
+                        room_id,
+                        user_id
+                    )
+
+                    VALUES (?, ?)
+                """, (
+                    room["id"],
+                    user_id
+                ))
+
+
+        conn.execute("""
+            INSERT INTO friend_messages
+            (
+                room_id,
+                user_id,
+                username,
+                message,
+                photo_path
+            )
+
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            room["id"],
+            user_id,
+            username or "Misafir",
+            message or "",
+            photo_path
+        ))
+
+
+        conn.commit()
+
+        return True
+
+    except Exception as e:
+
+        print(
+            "ARKADAŞ MESAJI DATABASE HATASI:",
+            repr(e)
         )
 
+        return False
 
-        call = CALLS.get(
-            room_code
-        )
+    finally:
+
+        conn.close()
 
 
-        if call:
+# ============================================================
+# ARKADAŞ MESAJLARINI GETİR
+# ============================================================
 
-            if (
-                not call_id
-                or call.get("call_id")
-                == call_id
-            ):
+def get_friend_messages(
+    room_code,
+    limit=200
+):
 
-                CALLS.pop(
-                    room_code,
-                    None
+    room = get_friend_room(
+        room_code
+    )
+
+
+    if not room:
+        return []
+
+
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            fm.id,
+            fm.room_id,
+            fm.user_id,
+            fm.username,
+            fm.message,
+            fm.photo_path,
+            fm.created_at,
+
+            u.display_name
+
+        FROM friend_messages fm
+
+        LEFT JOIN users u
+            ON u.id = fm.user_id
+
+        WHERE fm.room_id = ?
+
+        ORDER BY fm.id ASC
+
+        LIMIT ?
+    """, (
+        room["id"],
+        limit
+    )).fetchall()
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# FOTOĞRAFLI MESAJ KAYDET
+# ============================================================
+
+def save_friend_photo_message(
+    room_code,
+    username,
+    photo_path,
+    user_id=None
+):
+
+    return save_friend_message(
+        room_code=room_code,
+        username=username,
+        message="",
+        user_id=user_id,
+        photo_path=photo_path
+    )
+
+
+# ============================================================
+# ARKADAŞ ODASI SİL
+# ============================================================
+
+def delete_friend_room(
+    room_code,
+    user_id=None
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+
+    if not room:
+        return False
+
+
+    if user_id:
+
+        if room["owner_id"] != user_id:
+            return False
+
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        DELETE FROM friend_rooms
+
+        WHERE id = ?
+    """, (
+        room["id"],
+    ))
+
+
+    conn.commit()
+
+    success = cursor.rowcount > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# PUSH BİLDİRİM ABONELİĞİ KAYDET
+# ============================================================
+
+def save_push_subscription(
+    endpoint,
+    p256dh,
+    auth,
+    user_id=None
+):
+
+    endpoint = (
+        endpoint or ""
+    ).strip()
+
+    p256dh = (
+        p256dh or ""
+    ).strip()
+
+    auth = (
+        auth or ""
+    ).strip()
+
+
+    if not endpoint or not p256dh or not auth:
+        return False
+
+
+    conn = get_db()
+
+    try:
+
+        existing = conn.execute("""
+            SELECT id
+
+            FROM push_subscriptions
+
+            WHERE endpoint = ?
+
+            LIMIT 1
+        """, (
+            endpoint,
+        )).fetchone()
+
+
+        if existing:
+
+            conn.execute("""
+                UPDATE push_subscriptions
+
+                SET
+                    user_id = ?,
+                    p256dh = ?,
+                    auth = ?
+
+                WHERE endpoint = ?
+            """, (
+                user_id,
+                p256dh,
+                auth,
+                endpoint
+            ))
+
+        else:
+
+            conn.execute("""
+                INSERT INTO push_subscriptions
+                (
+                    user_id,
+                    endpoint,
+                    p256dh,
+                    auth
                 )
 
-                VIDEO_ROOMS.pop(
-                    room_code,
-                    None
-                )
+                VALUES (?, ?, ?, ?)
+            """, (
+                user_id,
+                endpoint,
+                p256dh,
+                auth
+            ))
 
 
-        return jsonify({
-            "success": True
-        })
+        conn.commit()
 
+        return True
 
-    # ========================================================
-    # GÖRÜŞMEYİ BİTİR
-    # ========================================================
+    except Exception as e:
 
-    @app.route(
-        "/friends/<room_code>/call/end",
-        methods=["POST"]
-    )
-    def end_friend_call(
-        room_code
-    ):
-
-        room_code = (
-            room_code or ""
-        ).strip().upper()
-
-
-        CALLS.pop(
-            room_code,
-            None
+        print(
+            "PUSH ABONELİĞİ KAYIT HATASI:",
+            repr(e)
         )
 
+        return False
 
-        VIDEO_ROOMS.pop(
-            room_code,
-            None
-        )
+    finally:
 
-
-        return jsonify({
-            "success": True
-        })
+        conn.close()
 
 
-    # ========================================================
-    # ARKADAŞ SİSTEMİ TEST
-    # ========================================================
+# ============================================================
+# PUSH BİLDİRİM ABONELİKLERİNİ GETİR
+# ============================================================
 
-    @app.route(
-        "/api/friends/test",
-        methods=["GET"]
-    )
-    def friends_test():
+def get_push_subscriptions(
+    user_id=None
+):
 
-        return jsonify({
-            "success": True,
-            "message": "Arkadaş sistemi çalışıyor."
-        })
+    conn = get_db()
 
 
-    # ========================================================
-    # VIDEO TEST
-    # ========================================================
+    if user_id is None:
 
-    @app.route(
-        "/api/video/test",
-        methods=["GET"]
-    )
-    def video_test():
+        rows = conn.execute("""
+            SELECT
+                id,
+                user_id,
+                endpoint,
+                p256dh,
+                auth,
+                created_at
 
-        return jsonify({
-            "success": True,
-            "message": (
-                "Görüntülü konuşma signaling "
-                "sistemi çalışıyor."
-            )
-        })
+            FROM push_subscriptions
+
+            ORDER BY id DESC
+        """).fetchall()
+
+    else:
+
+        rows = conn.execute("""
+            SELECT
+                id,
+                user_id,
+                endpoint,
+                p256dh,
+                auth,
+                created_at
+
+            FROM push_subscriptions
+
+            WHERE user_id = ?
+
+            ORDER BY id DESC
+        """, (
+            user_id,
+        )).fetchall()
 
 
-    # ========================================================
-    # CALL TEST
-    # ========================================================
+    conn.close()
 
-    @app.route(
-        "/api/call/test",
-        methods=["GET"]
-    )
-    def call_test():
-
-        return jsonify({
-            "success": True,
-            "message": (
-                "Görüntülü arama sistemi çalışıyor."
-            )
-        })
+    return rows
 
 
-    # ========================================================
-    # ROUTES HAZIR
-    # ========================================================
+# ============================================================
+# PUSH ABONELİĞİ SİL
+# ============================================================
 
-    print(
-        "✅ TÜM ROUTES BAŞARIYLA KAYDEDİLDİ"
-    )
+def delete_push_subscription(
+    endpoint
+):
 
+    endpoint = (
+        endpoint or ""
+    ).strip()
+
+
+    if not endpoint:
+        return False
+
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        DELETE FROM push_subscriptions
+
+        WHERE endpoint = ?
+    """, (
+        endpoint,
+    ))
+
+
+    conn.commit()
+
+    success = cursor.rowcount > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# DATABASE BAŞLAT
+# ============================================================
+
+init_db()
