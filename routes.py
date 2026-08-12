@@ -53,6 +53,7 @@ def register_routes(app):
     # ========================================================
 
     try:
+
         init_db()
 
     except Exception as e:
@@ -105,7 +106,11 @@ def register_routes(app):
 
         return (
             render_template(
-                    # ========================================================
+                "500.html"
+            ),
+            500
+        )
+    # ========================================================
     # ANA SAYFA / MAVİGPT
     # ========================================================
 
@@ -512,5 +517,275 @@ def register_routes(app):
                 "success": False,
                 "error": "Sohbet silinemedi."
             }), 500
+                # ========================================================
+    # CEBİMDEKİ DOKTOR
+    # ========================================================
+
+    @app.route(
+        "/doctor",
+        methods=["GET", "POST"]
+    )
+    def doctor():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # YENİ SAĞLIK KAYDI
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            symptom = request.form.get(
+                "symptom",
+                ""
+            ).strip()
+
+            medicine = request.form.get(
+                "medicine",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            if symptom or medicine or note:
+
+                try:
+
+                    save_health_record(
+                        symptom,
+                        medicine,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Sağlık kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SAĞLIK KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Sağlık kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # KAYITLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_health_records()
+
+        except Exception as e:
+
+            print(
+                "SAĞLIK KAYITLARI OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "doctor.html",
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # REGL TAKİBİ
+    # ========================================================
+
+    @app.route(
+        "/period",
+        methods=["GET", "POST"]
+    )
+    def period():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # KAYIT
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            start_date = request.form.get(
+                "start_date",
+                ""
+            ).strip()
+
+            end_date = request.form.get(
+                "end_date",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            if start_date:
+
+                try:
+
+                    save_period_record(
+                        start_date,
+                        end_date,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Regl kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "REGL KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Regl kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # KAYITLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_period_records()
+
+        except Exception as e:
+
+            print(
+                "REGL KAYITLARI OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        return render_template(
+            "period.html",
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji
+        )
+
+
+    # ========================================================
+    # SİNDİRİM TAKİBİ
+    # ========================================================
+
+    @app.route(
+        "/diarrhea",
+        methods=["GET", "POST"]
+    )
+    def diarrhea():
+
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # KAYIT
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            date = request.form.get(
+                "date",
+                ""
+            ).strip()
+
+            count = request.form.get(
+                "count",
+                "0"
+            ).strip()
+
+            condition = request.form.get(
+                "condition",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            try:
+
+                count = int(
+                    count or 0
+                )
+
+            except ValueError:
+
+                count = 0
+
+            if date:
+
+                try:
+
+                    save_diarrhea_record(
+                        date,
+                        count,
+                        condition,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Sindirim kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SİNDİRİM KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Sindirim kaydı kaydedilemedi."
+                    )
+
+        # ----------------------------------------------------
+        # KAYITLARI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_diarrhea_records()
+
+        except Exception as e:
+
+            print(
+                "SİNDİRİM KAYITLARI OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        return render_template(
+            "diarrhea.html",
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji
+        )
             
 
