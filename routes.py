@@ -602,4 +602,225 @@ def register_routes(app):
             mesajlar=mesajlar,
 
             sohbetler=sohbetler
+        )# ============================================================
+# TEK SOHBET
+# ============================================================
+
+    @app.route(
+        "/chat/<int:chat_id>"
+    )
+    def chat(chat_id):
+
+        sohbet = get_chat(
+            chat_id
         )
+
+        if not sohbet:
+
+            return redirect(
+                url_for("home")
+            )
+
+        return render_template(
+            "chat.html",
+            sohbet=sohbet
+        )
+
+
+# ============================================================
+# SOHBET BAŞLIĞI / MESAJI DÜZENLE
+# ============================================================
+
+    @app.route(
+        "/chat/edit/<int:chat_id>",
+        methods=["POST"]
+    )
+    def chat_edit(chat_id):
+
+        title = request.form.get(
+            "title",
+            ""
+        ).strip()
+
+        if title:
+
+            try:
+
+                update_chat_title(
+                    chat_id,
+                    title
+                )
+
+            except Exception as e:
+
+                print(
+                    "SOHBET DÜZENLEME HATASI:",
+                    repr(e)
+                )
+
+        return redirect(
+            url_for(
+                "chat",
+                chat_id=chat_id
+            )
+        )
+
+
+# ============================================================
+# SOHBET SİL
+# ============================================================
+
+    @app.route(
+        "/chat/delete/<int:chat_id>",
+        methods=["POST"]
+    )
+    def chat_delete(chat_id):
+
+        try:
+
+            delete_chat(
+                chat_id
+            )
+
+        except Exception as e:
+
+            print(
+                "SOHBET SİLME HATASI:",
+                repr(e)
+            )
+
+        return redirect(
+            url_for("home")
+        )
+        # ============================================================
+# DOKTOR / CEBİMDEKİ DOKTOR
+# ============================================================
+
+    @app.route(
+        "/doctor",
+        methods=["GET", "POST"]
+    )
+    def doctor():
+
+        mesaj = None
+        cevap = None
+        filename = None
+        kayit_mesaji = None
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            mesaj = request.form.get(
+                "mesaj",
+                ""
+            ).strip()
+
+            symptom = request.form.get(
+                "symptom",
+                ""
+            ).strip()
+
+            medicine = request.form.get(
+                "medicine",
+                ""
+            ).strip()
+
+            note = request.form.get(
+                "note",
+                ""
+            ).strip()
+
+            # ------------------------------------------------
+            # SAĞLIK KAYDI
+            # ------------------------------------------------
+
+            if symptom or medicine or note:
+
+                try:
+
+                    save_health_record(
+                        symptom,
+                        medicine,
+                        note
+                    )
+
+                    kayit_mesaji = (
+                        "✅ Sağlık kaydın kaydedildi."
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SAĞLIK KAYIT HATASI:",
+                        repr(e)
+                    )
+
+                    kayit_mesaji = (
+                        "❌ Sağlık kaydı kaydedilemedi."
+                    )
+
+            # ------------------------------------------------
+            # FOTOĞRAF
+            # ------------------------------------------------
+
+            foto, filename = upload_photo(
+                app
+            )
+
+            # ------------------------------------------------
+            # MAVİGPT
+            # ------------------------------------------------
+
+            if mesaj or foto:
+
+                ai_mesaj = mesaj or (
+                    "Bu sağlık fotoğrafı hakkında "
+                    "genel ve güvenli bilgi ver. "
+                    "Kesin tanı koyma."
+                )
+
+                cevap = ask_mavigpt(
+                    ai_mesaj,
+                    foto
+                )
+
+        # ----------------------------------------------------
+        # SAĞLIK KAYITLARINI GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            kayitlar = get_health_records()
+
+        except Exception as e:
+
+            print(
+                "SAĞLIK OKUMA HATASI:",
+                repr(e)
+            )
+
+            kayitlar = []
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "doctor.html",
+
+            mesaj=mesaj,
+
+            cevap=cevap,
+
+            kayitlar=kayitlar,
+
+            kayit_mesaji=kayit_mesaji,
+
+            foto_url=get_photo_url(
+                filename
+            )
+        )
+        
