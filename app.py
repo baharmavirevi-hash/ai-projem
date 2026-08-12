@@ -1,4 +1,3 @@
-```python
 import os
 
 from flask import Flask
@@ -123,4 +122,3 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
-```
