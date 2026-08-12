@@ -1,1197 +1,605 @@
-import sqlite3
+from flask import render_template, request, redirect, url_for, Response
 import os
+import uuid
 
+from werkzeug.utils import secure_filename
+from PIL import Image
+from google import genai
 
-# ============================================================
-# DATABASE AYARLARI
-# ============================================================
-
-BASE_DIR = os.path.dirname(
-    os.path.abspath(__file__)
-)
-
-DB_NAME = os.path.join(
-    BASE_DIR,
-    "chat.db"
-)
-
-
-# ============================================================
-# DATABASE BAĞLANTISI
-# ============================================================
-
-def get_db():
-
-    conn = sqlite3.connect(
-        DB_NAME
-    )
-
-    conn.row_factory = sqlite3.Row
-
-    return conn
-
-
-# ============================================================
-# DATABASE OLUŞTUR
-# ============================================================
-
-def init_db():
-
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-
+from database import (
     # ========================================================
-    # MAVİGPT SOHBETLERİ
+    # MAVİGPT
     # ========================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS chats (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            chat_type TEXT DEFAULT 'normal',
-
-            message TEXT,
-
-            response TEXT,
-
-            created_at
-                TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
-        )
-    """)
-
+    save_chat,
+    get_chats,
+    get_chat,
+    get_chat_messages,
+    update_chat_title,
+    delete_chat,
 
     # ========================================================
     # SAĞLIK
     # ========================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS health_records (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            symptom TEXT,
-
-            medicine TEXT,
-
-            note TEXT,
-
-            created_at
-                TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
-        )
-    """)
-
+    save_health_record,
+    get_health_records,
 
     # ========================================================
     # REGL
     # ========================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS period_records (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            start_date TEXT,
-
-            end_date TEXT,
-
-            note TEXT,
-
-            created_at
-                TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
-        )
-    """)
-
+    save_period_record,
+    get_period_records,
 
     # ========================================================
     # SİNDİRİM
     # ========================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS diarrhea_records (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            date TEXT,
-
-            count INTEGER DEFAULT 0,
-
-            condition TEXT,
-
-            note TEXT,
-
-            created_at
-                TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
-        )
-    """)
-
+    save_diarrhea_record,
+    get_diarrhea_records,
 
     # ========================================================
-    # İLAÇLAR
+    # İLAÇ
     # ========================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS medicines (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            name TEXT NOT NULL,
-
-            dose TEXT,
-
-            hour TEXT,
-
-            start_date TEXT,
-
-            created_at
-                TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
-        )
-    """)
-
+    save_medicine,
+    get_medicines,
+    delete_medicine,
 
     # ========================================================
     # AYARLAR
     # ========================================================
+    get_settings,
+    save_settings,
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS settings (
-
-            id INTEGER PRIMARY KEY CHECK (id = 1),
-
-            mode TEXT DEFAULT 'normal',
-
-            personality TEXT DEFAULT 'friendly'
-
-        )
-    """)
-
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO settings
-        (
-            id,
-            mode,
-            personality
-        )
-
-        VALUES
-        (
-            1,
-            'normal',
-            'friendly'
-        )
-    """)
-
-
-    conn.commit()
-
-    conn.close()
-    # ============================================================
-# 2. BÖLÜM — MAVİGPT SOHBET İŞLEMLERİ
-# ============================================================
-
-
-# ============================================================
-# SOHBET KAYDET
-# ============================================================
-
-def save_chat(
-    chat_type,
-    message,
-    response
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO chats
-        (
-            chat_type,
-            message,
-            response
-        )
-
-        VALUES (?, ?, ?)
-    """, (
-        chat_type,
-        message,
-        response
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-
-# ============================================================
-# TÜM MAVİGPT MESAJLARINI GETİR
-# ============================================================
-
-def get_chat_messages(
-    chat_type="normal"
-):
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT
-            id,
-            chat_type,
-            message,
-            response,
-            created_at
-
-        FROM chats
-
-        WHERE chat_type = ?
-
-        ORDER BY id ASC
-    """, (
-        chat_type,
-    )).fetchall()
-
-    conn.close()
-
-    return rows
-
-
-# ============================================================
-# SON SOHBETLER
-# ============================================================
-
-def get_chats(
-    chat_type="normal"
-):
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT
-            id,
-            chat_type,
-            message,
-            response,
-            created_at
-
-        FROM chats
-
-        WHERE chat_type = ?
-
-        ORDER BY id DESC
-    """, (
-        chat_type,
-    )).fetchall()
-
-    conn.close()
-
-    return rows
-
-
-# ============================================================
-# TEK SOHBET
-# ============================================================
-
-def get_chat(
-    chat_id
-):
-
-    conn = get_db()
-
-    row = conn.execute("""
-        SELECT
-            id,
-            chat_type,
-            message,
-            response,
-            created_at
-
-        FROM chats
-
-        WHERE id = ?
-
-        LIMIT 1
-    """, (
-        chat_id,
-    )).fetchone()
-
-    conn.close()
-
-    return row
-
-
-# ============================================================
-# ID İLE SOHBET
-# ============================================================
-
-def get_chat_by_id(
-    chat_id
-):
-
-    return get_chat(
-        chat_id
-    )
-
-
-# ============================================================
-# SOHBET BAŞLIĞINI / MESAJINI DÜZENLE
-# ============================================================
-
-def update_chat_title(
-    chat_id,
-    title
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        UPDATE chats
-
-        SET message = ?
-
-        WHERE id = ?
-    """, (
-        title,
-        chat_id
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-
-# ============================================================
-# SOHBET SİL
-# ============================================================
-
-def delete_chat(
-    chat_id
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        DELETE FROM chats
-
-        WHERE id = ?
-    """, (
-        chat_id,
-    ))
-
-    conn.commit()
-
-    conn.close()
-    # ============================================================
-# 3. BÖLÜM — SAĞLIK KAYITLARI
-# ============================================================
-
-
-# ============================================================
-# SAĞLIK KAYDI KAYDET
-# ============================================================
-
-def save_health_record(
-    symptom,
-    medicine,
-    note
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO health_records
-        (
-            symptom,
-            medicine,
-            note
-        )
-
-        VALUES (?, ?, ?)
-    """, (
-        symptom,
-        medicine,
-        note
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-
-# ============================================================
-# SAĞLIK KAYITLARINI GETİR
-# ============================================================
-
-def get_health_records():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT
-            id,
-            symptom,
-            medicine,
-            note,
-            created_at
-
-        FROM health_records
-
-        ORDER BY id DESC
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-    # ============================================================
-# 4. BÖLÜM — REGL KAYITLARI
-# ============================================================
-
-
-# ============================================================
-# REGL KAYDI KAYDET
-# ============================================================
-
-def save_period_record(
-    start_date,
-    end_date,
-    note
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO period_records
-        (
-            start_date,
-            end_date,
-            note
-        )
-
-        VALUES (?, ?, ?)
-    """, (
-        start_date,
-        end_date,
-        note
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-
-# ============================================================
-# REGL KAYITLARINI GETİR
-# ============================================================
-
-def get_period_records():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT
-            id,
-            start_date,
-            end_date,
-            note,
-            created_at
-
-        FROM period_records
-
-        ORDER BY id DESC
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-    # ============================================================
-# 5. BÖLÜM — SİNDİRİM KAYITLARI
-# ============================================================
-
-
-# ============================================================
-# SİNDİRİM KAYDI KAYDET
-# ============================================================
-
-def save_diarrhea_record(
-    date,
-    count,
-    condition,
-    note
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO diarrhea_records
-        (
-            date,
-            count,
-            condition,
-            note
-        )
-
-        VALUES (?, ?, ?, ?)
-    """, (
-        date,
-        count,
-        condition,
-        note
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-
-# ============================================================
-# SİNDİRİM KAYITLARINI GETİR
-# ============================================================
-
-def get_diarrhea_records():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT
-            id,
-            date,
-            count,
-            condition,
-            note,
-            created_at
-
-        FROM diarrhea_records
-
-        ORDER BY id DESC
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-    # ============================================================
-# 6. BÖLÜM — İLAÇ SİSTEMİ
-# ============================================================
-
-
-# ============================================================
-# İLAÇ KAYDET
-# ============================================================
-
-def save_medicine(
-    name,
-    dose,
-    hour,
-    start_date
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        INSERT INTO medicines
-        (
-            name,
-            dose,
-            hour,
-            start_date
-        )
-
-        VALUES (?, ?, ?, ?)
-    """, (
-        name,
-        dose,
-        hour,
-        start_date
-    ))
-
-    conn.commit()
-
-    conn.close()
-
-
-# ============================================================
-# İLAÇLARI GETİR
-# ============================================================
-
-def get_medicines():
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT
-            id,
-            name,
-            dose,
-            hour,
-            start_date,
-            created_at
-
-        FROM medicines
-
-        ORDER BY
-
-            CASE
-
-                WHEN hour IS NULL
-                     OR hour = ''
-
-                THEN 1
-
-                ELSE 0
-
-            END,
-
-            hour ASC,
-
-            id DESC
-
-    """).fetchall()
-
-    conn.close()
-
-    return rows
-
-
-# ============================================================
-# İLAÇ SİL
-# ============================================================
-
-def delete_medicine(
-    medicine_id
-):
-
-    conn = get_db()
-
-    conn.execute("""
-        DELETE FROM medicines
-
-        WHERE id = ?
-    """, (
-        medicine_id,
-    ))
-
-    conn.commit()
-
-    conn.close()
-    # ============================================================
-# 7. BÖLÜM — AYARLAR SİSTEMİ
-# ============================================================
-
-
-# ============================================================
-# AYARLARI GETİR
-# ============================================================
-
-def get_settings():
-
-    conn = get_db()
-
-    row = conn.execute("""
-        SELECT
-            id,
-            mode,
-            personality
-
-        FROM settings
-
-        WHERE id = 1
-
-        LIMIT 1
-    """).fetchone()
-
-    conn.close()
-
-    if row:
-
-        return row
-
-    return {
-        "mode": "normal",
-        "personality": "friendly"
-    }
-
-
-# ============================================================
-# AYARLARI KAYDET
-# ============================================================
-
-def save_settings(
-    mode,
-    personality
-):
-
-    allowed_modes = {
-        "normal",
-        "creative",
-        "study",
-        "concise"
-    }
-
-    allowed_personalities = {
-        "friendly",
-        "funny",
-        "serious",
-        "teacher"
-    }
-
-    # --------------------------------------------------------
-    # GEÇERSİZ MODU ENGELLE
-    # --------------------------------------------------------
-
-    if mode not in allowed_modes:
-
-        mode = "normal"
-
-    # --------------------------------------------------------
-    # GEÇERSİZ KİŞİLİĞİ ENGELLE
-    # --------------------------------------------------------
-
-    if personality not in allowed_personalities:
-
-        personality = "friendly"
-
-    # --------------------------------------------------------
-    # DATABASE
-    # --------------------------------------------------------
-
-    conn = get_db()
-
-    conn.execute("""
-        UPDATE settings
-
-        SET
-            mode = ?,
-            personality = ?
-
-        WHERE id = 1
-    """, (
-        mode,
-        personality
-    ))
-
-    conn.commit()
-
-    conn.close()
     # ========================================================
-# İLAÇ
-# ========================================================
-
-@app.route(
-    "/medicine",
-    methods=["GET", "POST"]
+    # ARKADAŞ SİSTEMİ
+    # ========================================================
+    create_friend_room,
+    get_friend_room,
+    save_friend_message,
+    get_friend_messages,
 )
-def medicine():
 
-    kayit_mesaji = None
 
-    if request.method == "POST":
+# ============================================================
+# MAVİGPT CEVAP FONKSİYONU
+# ============================================================
 
-        name = request.form.get(
-            "name",
-            ""
-        ).strip()
+def ask_mavigpt(message, image_path=None, history=None):
 
-        dose = request.form.get(
-            "dose",
-            ""
-        ).strip()
+    try:
 
-        hour = request.form.get(
-            "hour",
-            ""
-        ).strip()
+        if not message:
+            message = "Merhaba!"
 
-        start_date = request.form.get(
-            "start_date",
-            ""
-        ).strip()
+        # ----------------------------------------------------
+        # GEMINI API ANAHTARI
+        # ----------------------------------------------------
 
-        if name:
+        api_key = os.environ.get("GEMINI_API_KEY")
+
+        if not api_key:
+            return "GEMINI_API_KEY ayarı bulunamadı."
+
+        # ----------------------------------------------------
+        # AYARLARI AL
+        # ----------------------------------------------------
+
+        settings = get_settings()
+
+        mode = settings["mode"]
+        personality = settings["personality"]
+
+        # ----------------------------------------------------
+        # MOD
+        # ----------------------------------------------------
+
+        mode_text = {
+
+            "normal":
+                "Normal ve dengeli şekilde cevap ver.",
+
+            "creative":
+                "Daha yaratıcı, eğlenceli ve örneklerle cevap ver.",
+
+            "study":
+                "Bir öğretmen gibi açıkla. Konuyu anlaşılır şekilde öğret.",
+
+            "concise":
+                "Kısa, doğrudan ve gereksiz uzatmadan cevap ver."
+
+        }.get(
+            mode,
+            "Normal ve dengeli şekilde cevap ver."
+        )
+
+        # ----------------------------------------------------
+        # KİŞİLİK
+        # ----------------------------------------------------
+
+        personality_text = {
+
+            "friendly":
+                "Samimi, nazik ve arkadaşça konuş.",
+
+            "funny":
+                "Uygun yerlerde hafif mizah kullan.",
+
+            "serious":
+                "Sakin, ciddi ve düzenli konuş.",
+
+            "teacher":
+                "Sabırlı ve öğretici bir öğretmen gibi konuş."
+
+        }.get(
+            personality,
+            "Samimi, nazik ve arkadaşça konuş."
+        )
+
+        # ----------------------------------------------------
+        # SİSTEM TALİMATI
+        # ----------------------------------------------------
+
+        system_instruction = f"""
+Sen MaviGPT'sin.
+
+{mode_text}
+
+{personality_text}
+
+Türkçe konuş.
+
+Kullanıcıya saygılı, doğal ve anlaşılır şekilde cevap ver.
+
+Bilmediğin bilgileri uydurma.
+
+Sağlık konularında kesin tanı koyma.
+Tehlikeli veya zararlı öneriler verme.
+
+Kullanıcı kısa bir mesaj yazarsa önceki konuşmanın
+bağlamını dikkate al.
+
+Konuşmanın konusu değişirse yeni konuya uyum sağla.
+
+Kullanıcı öğrenci ise anlatımı anlaşılır ve destekleyici yap.
+
+Samimi ol ama aşırı resmi konuşma.
+
+Kullanıcı Türkçe konuşuyorsa Türkçe cevap ver.
+"""
+
+        # ----------------------------------------------------
+        # GEMINI CLIENT
+        # ----------------------------------------------------
+
+        client = genai.Client(
+            api_key=api_key
+        )
+
+        # ----------------------------------------------------
+        # KONUŞMA HAFIZASI
+        # ----------------------------------------------------
+
+        history_text = ""
+
+        if history:
+
+            recent_history = history[-12:]
+
+            history_text = (
+                "\n\nÖNCEKİ KONUŞMA BAĞLAMI:\n"
+            )
+
+            for item in recent_history:
+
+                try:
+
+                    old_message = (
+                        item["message"]
+                        or ""
+                    )
+
+                    old_response = (
+                        item["response"]
+                        or ""
+                    )
+
+                    old_message = old_message[:3000]
+                    old_response = old_response[:5000]
+
+                    history_text += (
+                        "\nKullanıcı: "
+                        + old_message
+                        + "\nMaviGPT: "
+                        + old_response
+                        + "\n"
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "HAFIZA ÖĞESİ OKUMA HATASI:",
+                        repr(e)
+                    )
+
+        # ----------------------------------------------------
+        # GEMINI MESAJI
+        # ----------------------------------------------------
+
+        full_message = (
+            system_instruction
+            + history_text
+            + "\n\nYENİ KULLANICI MESAJI:\n"
+            + message
+        )
+
+        # ----------------------------------------------------
+        # FOTOĞRAFLI MESAJ
+        # ----------------------------------------------------
+
+        if image_path:
 
             try:
 
-                save_medicine(
-                    name,
-                    dose,
-                    hour,
-                    start_date
+                image = Image.open(
+                    image_path
                 )
 
-                kayit_mesaji = (
-                    "✅ İlaç kaydın kaydedildi."
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=[
+                        full_message,
+                        image
+                    ]
                 )
 
             except Exception as e:
 
                 print(
-                    "İLAÇ KAYIT HATASI:",
+                    "FOTOĞRAF OKUMA HATASI:",
                     repr(e)
                 )
 
-                kayit_mesaji = (
-                    "❌ İlaç kaydı kaydedilemedi."
+                return (
+                    "Fotoğrafı şu anda okuyamadım. "
+                    "Lütfen tekrar dene."
                 )
 
-    try:
+        # ----------------------------------------------------
+        # NORMAL MESAJ
+        # ----------------------------------------------------
 
-        kayitlar = get_medicines()
+        else:
 
-    except Exception as e:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=full_message
+            )
 
-        print(
-            "İLAÇ OKUMA HATASI:",
-            repr(e)
-        )
+        # ----------------------------------------------------
+        # CEVAP
+        # ----------------------------------------------------
 
-        kayitlar = []
+        if response and response.text:
 
-    return render_template(
-        "medicine.html",
+            return response.text.strip()
 
-        kayitlar=kayitlar,
-
-        kayit_mesaji=kayit_mesaji
-    )
-
-
-# ========================================================
-# İLAÇ SİL
-# ========================================================
-
-@app.route(
-    "/medicine/delete/<int:medicine_id>",
-    methods=["POST"]
-)
-def medicine_delete(
-    medicine_id
-):
-
-    try:
-
-        delete_medicine(
-            medicine_id
-        )
+        return "Şu anda cevap oluşturamadım."
 
     except Exception as e:
 
         print(
-            "İLAÇ SİLME HATASI:",
+            "GEMINI HATASI:",
             repr(e)
         )
 
-    return redirect(
-        url_for("medicine")
+        return (
+            "MaviGPT cevap oluştururken bir sorun yaşadı."
+        )
+        # ============================================================
+# FOTOĞRAF YÜKLEME
+# ============================================================
+
+def upload_photo(app):
+
+    if "foto" not in request.files:
+        return None, None
+
+    file = request.files["foto"]
+
+    if not file or not file.filename:
+        return None, None
+
+    original_name = secure_filename(
+        file.filename
     )
+
+    if not original_name:
+        return None, None
+
+    extension = os.path.splitext(
+        original_name
+    )[1].lower()
+
+    allowed_extensions = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif"
+    }
+
+    if extension not in allowed_extensions:
+        return None, None
+
+    filename = (
+        uuid.uuid4().hex
+        + extension
+    )
+
+    upload_folder = app.config.get(
+        "UPLOAD_FOLDER"
+    )
+
+    if not upload_folder:
+
+        upload_folder = os.path.join(
+            app.root_path,
+            "static",
+            "uploads"
+        )
+
+    os.makedirs(
+        upload_folder,
+        exist_ok=True
+    )
+
+    path = os.path.join(
+        upload_folder,
+        filename
+    )
+
+    try:
+
+        file.save(path)
+
+        if os.path.exists(path):
+            return path, filename
+
+    except Exception as e:
+
+        print(
+            "FOTOĞRAF KAYDETME HATASI:",
+            repr(e)
+        )
+
+    return None, None
+
+
+# ============================================================
+# FOTOĞRAF URL
+# ============================================================
+
+def get_photo_url(filename):
+
+    if not filename:
+        return None
+
+    return (
+        "/static/uploads/"
+        + filename
+    )
+    # ============================================================
+# ROUTES
+# ============================================================
+
+def register_routes(app):
+
     # ========================================================
-# AYARLAR
-# ========================================================
+    # SERVICE WORKER
+    # ========================================================
 
-@app.route(
-    "/settings",
-    methods=["GET", "POST"]
-)
-def settings():
+    @app.route("/service-worker.js")
+    def service_worker():
 
-    kayit_mesaji = None
-
-    if request.method == "POST":
-
-        mode = request.form.get(
-            "mode",
-            "normal"
-        ).strip()
-
-        personality = request.form.get(
-            "personality",
-            "friendly"
-        ).strip()
+        service_worker_path = os.path.join(
+            app.root_path,
+            "static",
+            "service-worker.js"
+        )
 
         try:
 
-            save_settings(
-                mode,
-                personality
+            with open(
+                service_worker_path,
+                "r",
+                encoding="utf-8"
+            ) as file:
+
+                javascript = file.read()
+
+            return Response(
+                javascript,
+                mimetype="application/javascript",
+                headers={
+                    "Cache-Control": "no-cache"
+                }
             )
 
-            kayit_mesaji = (
-                "✅ Ayarların kaydedildi."
+        except FileNotFoundError:
+
+            return (
+                "service-worker.js bulunamadı.",
+                404
+            )
+
+
+    # ========================================================
+    # ANA SAYFA / MAVİGPT
+    # ========================================================
+
+    @app.route(
+        "/",
+        methods=["GET", "POST"]
+    )
+    def home():
+
+        mesaj = ""
+        cevap = ""
+        filename = None
+
+        # ----------------------------------------------------
+        # SOHBETLER
+        # ----------------------------------------------------
+
+        try:
+
+            sohbetler = get_chats(
+                "normal"
             )
 
         except Exception as e:
 
             print(
-                "AYAR KAYIT HATASI:",
+                "SOHBET OKUMA HATASI:",
                 repr(e)
             )
 
-            kayit_mesaji = (
-                "❌ Ayarlar kaydedilemedi."
+            sohbetler = []
+
+        # ----------------------------------------------------
+        # MESAJ GEÇMİŞİ
+        # ----------------------------------------------------
+
+        try:
+
+            mesajlar = get_chat_messages(
+                "normal"
             )
 
-    try:
+        except Exception as e:
 
-        settings_data = get_settings()
+            print(
+                "MESAJ GEÇMİŞİ HATASI:",
+                repr(e)
+            )
 
-    except Exception as e:
+            mesajlar = []
 
-        print(
-            "AYAR OKUMA HATASI:",
-            repr(e)
-        )
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
 
-        settings_data = {
-            "mode": "normal",
-            "personality": "friendly"
-        }
+        if request.method == "POST":
 
-    return render_template(
-        "settings.html",
-
-        settings=settings_data,
-
-        kayit_mesaji=kayit_mesaji
-    )
-    # ========================================================
-# ARKADAŞ SOHBETİ ANA SAYFA
-# ========================================================
-
-@app.route(
-    "/friends",
-    methods=["GET", "POST"]
-)
-def friends():
-
-    error = None
-    room = None
-    room_code = ""
-
-    # ----------------------------------------------------
-    # POST
-    # ----------------------------------------------------
-
-    if request.method == "POST":
-
-        action = request.form.get(
-            "action",
-            ""
-        ).strip()
-
-        # =================================================
-        # YENİ ODA OLUŞTUR
-        # =================================================
-
-        if action == "create":
-
-            room_name = request.form.get(
-                "room_name",
-                "Arkadaş Sohbeti"
+            mesaj = request.form.get(
+                "mesaj",
+                ""
             ).strip()
 
-            if not room_name:
+            foto, filename = upload_photo(
+                app
+            )
 
-                room_name = "Arkadaş Sohbeti"
+            # ------------------------------------------------
+            # MESAJ VEYA FOTOĞRAF VARSA
+            # ------------------------------------------------
 
-            try:
+            if mesaj or foto:
 
-                room_code = create_friend_room(
-                    room_name
-                )
+                if mesaj:
 
-                return redirect(
-                    url_for(
-                        "friend_room",
-                        room_code=room_code
+                    ai_mesaj = mesaj
+
+                else:
+
+                    ai_mesaj = (
+                        "Bu fotoğrafı incele ve "
+                        "genel, güvenli bilgi ver."
                     )
-                )
 
-            except Exception as e:
-
-                print(
-                    "ARKADAŞ ODASI OLUŞTURMA HATASI:",
-                    repr(e)
-                )
-
-                error = (
-                    "Sohbet odası oluşturulamadı."
-                )
-
-        # =================================================
-        # ODAYA KATIL
-        # =================================================
-
-        elif action == "join":
-
-            room_code = request.form.get(
-                "room_code",
-                ""
-            ).strip().upper()
-
-            if not room_code:
-
-                error = (
-                    "Lütfen sohbet kodunu gir."
-                )
-
-            else:
+                # --------------------------------------------
+                # HAFIZA
+                # --------------------------------------------
 
                 try:
 
-                    room = get_friend_room(
-                        room_code
+                    history = get_chat_messages(
+                        "normal"
                     )
-
-                    if not room:
-
-                        error = (
-                            "Bu sohbet koduna ait oda bulunamadı."
-                        )
-
-                    else:
-
-                        return redirect(
-                            url_for(
-                                "friend_room",
-                                room_code=room_code
-                            )
-                        )
 
                 except Exception as e:
 
                     print(
-                        "ARKADAŞ ODASI ARAMA HATASI:",
+                        "HAFIZA OKUMA HATASI:",
                         repr(e)
                     )
 
-                    error = (
-                        "Sohbet odası bulunurken bir hata oluştu."
+                    history = []
+
+                # --------------------------------------------
+                # MAVİGPT
+                # --------------------------------------------
+
+                cevap = ask_mavigpt(
+                    ai_mesaj,
+                    foto,
+                    history
+                )
+
+                # --------------------------------------------
+                # SOHBETİ KAYDET
+                # --------------------------------------------
+
+                try:
+
+                    save_chat(
+                        "normal",
+                        mesaj if mesaj else "Fotoğraf",
+                        cevap
                     )
 
-    return render_template(
-        "friends.html",
+                except Exception as e:
 
-        room=room,
-
-        room_code=room_code,
-
-        error=error
-    )
-    # ========================================================
-# ARKADAŞ SOHBET ODASI
-# ========================================================
-
-@app.route(
-    "/friends/<room_code>",
-    methods=["GET", "POST"]
-)
-def friend_room(
-    room_code
-):
-
-    room_code = (
-        room_code
-        or ""
-    ).strip().upper()
-
-    room = get_friend_room(
-        room_code
-    )
-
-    if not room:
-
-        return redirect(
-            url_for("friends")
-        )
-
-    error = None
-
-    # ----------------------------------------------------
-    # MESAJ GÖNDER
-    # ----------------------------------------------------
-
-    if request.method == "POST":
-
-        username = request.form.get(
-            "username",
-            ""
-        ).strip()
-
-        message = request.form.get(
-            "message",
-            ""
-        ).strip()
-
-        if not username:
-
-            username = "Misafir"
-
-        if message:
-
-            try:
-
-                success = save_friend_message(
-                    room_code,
-                    username,
-                    message
-                )
-
-                if not success:
-
-                    error = (
-                        "Mesaj gönderilemedi."
+                    print(
+                        "SOHBET KAYIT HATASI:",
+                        repr(e)
                     )
 
-            except Exception as e:
+                # --------------------------------------------
+                # LİSTELERİ YENİLE
+                # --------------------------------------------
 
-                print(
-                    "ARKADAŞ MESAJI KAYIT HATASI:",
-                    repr(e)
-                )
+                try:
 
-                error = (
-                    "Mesaj gönderilirken bir hata oluştu."
-                )
+                    mesajlar = get_chat_messages(
+                        "normal"
+                    )
 
-    # ----------------------------------------------------
-    # MESAJLAR
-    # ----------------------------------------------------
+                    sohbetler = get_chats(
+                        "normal"
+                    )
 
-    try:
+                except Exception as e:
 
-        messages = get_friend_messages(
-            room_code
+                    print(
+                        "SOHBET YENİLEME HATASI:",
+                        repr(e)
+                    )
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "mavigpt.html",
+
+            mesaj=mesaj,
+
+            cevap=cevap,
+
+            foto_url=get_photo_url(
+                filename
+            ),
+
+            mesajlar=mesajlar,
+
+            sohbetler=sohbetler
         )
-
-    except Exception as e:
-
-        print(
-            "ARKADAŞ MESAJLARI OKUMA HATASI:",
-            repr(e)
-        )
-
-        messages = []
-
-        error = (
-            "Mesajlar yüklenemedi."
-        )
-
-    return render_template(
-        "friend_room.html",
-
-        room=room,
-
-        room_code=room_code,
-
-        messages=messages,
-
-        error=error
-    )
