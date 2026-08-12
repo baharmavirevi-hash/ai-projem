@@ -4,232 +4,186 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>💬 Arkadaş Sohbeti</title>
+    <title>Arkadaş Sohbeti | MaviGPT</title>
 
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #f4fbff;
-            height: 100vh;
-            overflow: hidden;
-            color: #24495a;
+            background: #eefaff;
+            color: #234;
         }
 
         .app {
+            max-width: 900px;
+            margin: auto;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background: white;
         }
 
-        /* =========================
-           ÜST BAR
-        ========================= */
-
-        .topbar {
-            height: 68px;
-            flex-shrink: 0;
-            background: white;
-            border-bottom: 1px solid #dceff6;
+        .header {
+            background: #98daf5;
+            padding: 15px;
             display: flex;
             align-items: center;
-            padding: 0 16px;
-            gap: 13px;
+            justify-content: space-between;
+            color: #123;
         }
 
-        .back {
-            text-decoration: none;
-            color: #35a9d6;
-            font-size: 26px;
-        }
-
-        .room-icon {
-            font-size: 24px;
-        }
-
-        .room-info {
-            min-width: 0;
-        }
-
-        .room-title {
-            font-size: 17px;
-            font-weight: bold;
-            color: #238db7;
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
         }
 
         .room-code {
-            font-size: 12px;
-            color: #8aa7b4;
-            margin-top: 3px;
+            font-size: 13px;
+            background: rgba(255,255,255,.7);
+            padding: 7px 10px;
+            border-radius: 10px;
         }
-
-        /* =========================
-           MESAJ ALANI
-        ========================= */
 
         .messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 15px;
-        }
-
-        .message-list {
-            width: min(800px, 100%);
-            margin: auto;
-        }
-
-        .empty {
-            text-align: center;
-            margin-top: 80px;
-            color: #8aa7b4;
-        }
-
-        .empty-icon {
-            font-size: 50px;
-            margin-bottom: 12px;
+            padding: 15px;
+            background: #f7fcff;
         }
 
         .message {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
+            padding: 10px 13px;
+            border-radius: 15px;
+            background: #e2f6ff;
+            max-width: 80%;
         }
 
         .username {
             font-size: 12px;
-            color: #6f95a4;
-            margin-bottom: 5px;
-            padding-left: 5px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #1684ad;
         }
 
-        .bubble {
-            display: inline-block;
-            max-width: 82%;
+        .message-text {
+            word-wrap: break-word;
+        }
+
+        .bottom {
+            padding: 10px;
+            border-top: 1px solid #ddd;
             background: white;
-            border: 1px solid #dceff6;
-            border-radius: 16px;
-            padding: 11px 14px;
-            line-height: 1.5;
-            word-break: break-word;
         }
 
-        .time {
-            font-size: 10px;
-            color: #9ab0b9;
-            margin-top: 4px;
-            padding-left: 5px;
-        }
-
-        /* =========================
-           HATA
-        ========================= */
-
-        .error {
-            width: min(800px, calc(100% - 30px));
-            margin: 10px auto;
-            padding: 11px;
-            border-radius: 12px;
-            background: #fff0f0;
-            color: #c45d5d;
-            font-size: 13px;
-        }
-
-        /* =========================
-           INPUT
-        ========================= */
-
-        .input-area {
-            flex-shrink: 0;
-            background: white;
-            border-top: 1px solid #dceff6;
-            padding: 10px 12px;
-        }
-
-        .input-wrapper {
-            width: min(800px, 100%);
-            margin: auto;
-        }
-
-        .username-input {
-            width: 100%;
-            border: none;
-            outline: none;
-            background: #f4fbff;
-            border-radius: 10px;
-            padding: 8px 11px;
-            font-size: 13px;
-            margin-bottom: 7px;
-        }
-
-        .send-form {
+        .input-row {
             display: flex;
             gap: 8px;
         }
 
-        .message-input {
+        input[type="text"] {
             flex: 1;
-            min-width: 0;
-            border: 1px solid #cfe7f1;
-            outline: none;
-            border-radius: 15px;
             padding: 12px;
-            font-family: inherit;
-            font-size: 15px;
-            resize: none;
-            min-height: 45px;
-            max-height: 100px;
-        }
-
-        .message-input:focus {
-            border-color: #8fdaf5;
-        }
-
-        .send-button {
-            width: 48px;
-            height: 45px;
-            flex-shrink: 0;
-            border: none;
+            border: 1px solid #c8dfe8;
             border-radius: 14px;
-            background: #8fdaf5;
-            color: white;
-            font-size: 19px;
+            outline: none;
+        }
+
+        button {
+            border: none;
+            border-radius: 13px;
+            padding: 11px 15px;
             cursor: pointer;
+            font-weight: bold;
         }
 
-        .send-button:hover {
-            background: #65c7eb;
+        .send-btn {
+            background: #98daf5;
         }
 
-        .note {
+        .photo-btn {
+            background: #e8f7ff;
+        }
+
+        .video-btn {
+            width: 100%;
+            margin-bottom: 9px;
+            background: #d9f5e5;
+            color: #176b3a;
+        }
+
+        /* =====================================================
+           GÖRÜNTÜLÜ KONUŞMA
+        ===================================================== */
+
+        .video-panel {
+            display: none;
+            background: #111;
+            padding: 10px;
+            position: relative;
+        }
+
+        .video-panel.active {
+            display: block;
+        }
+
+        .videos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        video {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #222;
+            border-radius: 12px;
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .video-controls button {
+            background: white;
+        }
+
+        .end-call {
+            background: #ff6969 !important;
+            color: white;
+        }
+
+        .status {
+            color: white;
             text-align: center;
-            font-size: 10px;
-            color: #9ab0b9;
-            margin-top: 6px;
+            font-size: 13px;
+            margin-bottom: 7px;
         }
 
         @media (max-width: 600px) {
 
-            .topbar {
-                height: 62px;
+            .app {
+                width: 100%;
             }
 
-            .messages {
-                padding: 15px 10px;
+            video {
+                height: 170px;
             }
 
-            .bubble {
-                max-width: 88%;
+            .videos {
+                grid-template-columns: 1fr;
             }
 
-            .input-area {
-                padding: 8px;
-            }
-
-            .room-title {
-                font-size: 15px;
+            .message {
+                max-width: 90%;
             }
         }
     </style>
@@ -239,239 +193,380 @@
 
 <div class="app">
 
-    <!-- =========================
+    <!-- =====================================================
          ÜST BAR
-    ========================= -->
+    ====================================================== -->
 
-    <header class="topbar">
+    <div class="header">
 
-        <a
-            href="/friends"
-            class="back"
-        >
-            ←
-        </a>
+        <h2>👥 Arkadaş Sohbeti</h2>
 
-        <div class="room-icon">
-            👥
+        <div class="room-code">
+            Kod: {{ room_code }}
         </div>
 
-        <div class="room-info">
+    </div>
 
-            <div class="room-title">
-                Arkadaş Sohbeti
-            </div>
 
-            <div class="room-code">
-                Oda kodu:
-                <strong>{{ room_code }}</strong>
-            </div>
+    <!-- =====================================================
+         GÖRÜNTÜLÜ KONUŞMA ALANI
+    ====================================================== -->
+
+    <div id="videoPanel" class="video-panel">
+
+        <div id="callStatus" class="status">
+            Görüntülü konuşma hazırlanıyor...
+        </div>
+
+        <div class="videos">
+
+            <video
+                id="localVideo"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+            <video
+                id="remoteVideo"
+                autoplay
+                playsinline>
+            </video>
 
         </div>
 
-    </header>
+        <div class="video-controls">
 
+            <button onclick="toggleMicrophone()">
+                🎤 Mikrofon
+            </button>
 
-    <!-- =========================
-         HATA
-    ========================= -->
+            <button onclick="toggleCamera()">
+                📷 Kamera
+            </button>
 
-    {% if error %}
+            <button
+                class="end-call"
+                onclick="endCall()">
+                🔴 Bitir
+            </button>
 
-        <div class="error">
-            {{ error }}
         </div>
 
-    {% endif %}
+    </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          MESAJLAR
-    ========================= -->
+    ====================================================== -->
 
-    <main
-        class="messages"
-        id="messages"
-    >
+    <div id="messages" class="messages">
 
-        <div class="message-list">
+        {% if messages %}
 
-            {% if messages %}
+            {% for msg in messages %}
 
-                {% for message in messages %}
+                <div class="message">
 
-                    <div class="message">
-
-                        <div class="username">
-                            👤
-                            {{ message["username"] }}
-                        </div>
-
-                        <div class="bubble">
-                            {{ message["message"] }}
-                        </div>
-
-                        {% if message["created_at"] %}
-
-                            <div class="time">
-                                {{ message["created_at"] }}
-                            </div>
-
-                        {% endif %}
-
+                    <div class="username">
+                        {{ msg.username }}
                     </div>
 
-                {% endfor %}
-
-            {% else %}
-
-                <div class="empty">
-
-                    <div class="empty-icon">
-                        💬
-                    </div>
-
-                    <div>
-                        Henüz mesaj yok.
-                    </div>
-
-                    <div style="margin-top:6px;">
-                        İlk mesajı sen gönder! 🩵
+                    <div class="message-text">
+                        {{ msg.message }}
                     </div>
 
                 </div>
 
-            {% endif %}
+            {% endfor %}
 
-        </div>
+        {% else %}
 
-    </main>
+            <div style="text-align:center; margin-top:40px;">
+                💬 Henüz mesaj yok.
+                <br>
+                İlk mesajı sen gönder!
+            </div>
+
+        {% endif %}
+
+    </div>
 
 
-    <!-- =========================
-         MESAJ GÖNDER
-    ========================= -->
+    <!-- =====================================================
+         ALT ALAN
+    ====================================================== -->
 
-    <footer class="input-area">
+    <div class="bottom">
 
-        <div class="input-wrapper">
+        <!-- GÖRÜNTÜLÜ KONUŞMA BUTONU -->
 
-            <form method="POST">
+        <button
+            id="videoCallButton"
+            class="video-btn"
+            onclick="startCall()">
+
+            🎥 Görüntülü Konuş
+
+        </button>
+
+
+        <!-- MESAJ FORMU -->
+
+        <form
+            method="POST"
+            enctype="multipart/form-data">
+
+            <div class="input-row">
 
                 <input
                     type="text"
                     name="username"
-                    class="username-input"
                     placeholder="Adın"
-                    maxlength="30"
-                    required
-                >
+                    required>
 
-                <div class="send-form">
+                <input
+                    type="text"
+                    name="message"
+                    placeholder="Mesaj yaz..."
+                    autocomplete="off"
+                    required>
 
-                    <textarea
-                        name="message"
-                        id="messageInput"
-                        class="message-input"
-                        placeholder="Mesaj yaz..."
-                        maxlength="1000"
-                        required
-                    ></textarea>
+                <button
+                    type="submit"
+                    class="send-btn">
 
-                    <button
-                        type="submit"
-                        class="send-button"
-                        title="Gönder"
-                    >
-                        ➤
-                    </button>
+                    Gönder
 
-                </div>
+                </button>
 
-            </form>
-
-            <div class="note">
-                Mesajlarını göndermeden önce kişisel bilgilerini paylaşmamaya dikkat et.
             </div>
 
-        </div>
+        </form>
 
-    </footer>
+    </div>
 
 </div>
 
 
 <script>
 
-    /* =========================
-       EN ALTA KAYDIR
-    ========================= */
+/* =========================================================
+   GÖRÜNTÜLÜ KONUŞMA DEĞİŞKENLERİ
+========================================================= */
 
-    window.addEventListener(
-        "load",
-        function () {
+let localStream = null;
+let peerConnection = null;
 
-            const messages =
-                document.getElementById(
-                    "messages"
+const videoPanel =
+    document.getElementById("videoPanel");
+
+const localVideo =
+    document.getElementById("localVideo");
+
+const remoteVideo =
+    document.getElementById("remoteVideo");
+
+const callStatus =
+    document.getElementById("callStatus");
+
+
+/* =========================================================
+   WEBRTC AYARLARI
+========================================================= */
+
+const rtcConfig = {
+
+    iceServers: [
+
+        {
+            urls: "stun:stun.l.google.com:19302"
+        },
+
+        {
+            urls: "stun:stun1.l.google.com:19302"
+        }
+
+    ]
+
+};
+
+
+/* =========================================================
+   GÖRÜNTÜLÜ KONUŞMAYI BAŞLAT
+========================================================= */
+
+async function startCall() {
+
+    try {
+
+        videoPanel.classList.add("active");
+
+        callStatus.textContent =
+            "📷 Kamera ve mikrofon açılıyor...";
+
+        localStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: true,
+                audio: true
+
+            });
+
+        localVideo.srcObject =
+            localStream;
+
+
+        peerConnection =
+            new RTCPeerConnection(
+                rtcConfig
+            );
+
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                peerConnection.addTrack(
+                    track,
+                    localStream
                 );
 
-            if (messages) {
-
-                messages.scrollTop =
-                    messages.scrollHeight;
-
-            }
-
-        }
-    );
+            });
 
 
-    /* =========================
-       ENTER İLE GÖNDER
-    ========================= */
+        peerConnection.ontrack =
+            event => {
 
-    const input =
-        document.getElementById(
-            "messageInput"
-        );
+                remoteVideo.srcObject =
+                    event.streams[0];
 
-    if (input) {
+            };
 
-        input.addEventListener(
-            "keydown",
-            function(event) {
 
-                if (
-                    event.key === "Enter"
-                    && !event.shiftKey
-                ) {
+        callStatus.textContent =
+            "🟢 Kamera açık. Arkadaşın bağlanması bekleniyor.";
 
-                    event.preventDefault();
+    }
 
-                    this.form.submit();
-                }
+    catch (error) {
 
-            }
-        );
+        console.error(error);
 
-        input.addEventListener(
-            "input",
-            function() {
+        callStatus.textContent =
+            "❌ Kamera veya mikrofon açılamadı.";
 
-                this.style.height =
-                    "auto";
-
-                this.style.height =
-                    Math.min(
-                        this.scrollHeight,
-                        100
-                    ) + "px";
-
-            }
+        alert(
+            "Kamera ve mikrofon izni vermen gerekiyor."
         );
 
     }
+
+}
+
+
+/* =========================================================
+   MİKROFON
+========================================================= */
+
+function toggleMicrophone() {
+
+    if (!localStream) {
+        return;
+    }
+
+    const audioTracks =
+        localStream.getAudioTracks();
+
+    audioTracks.forEach(track => {
+
+        track.enabled =
+            !track.enabled;
+
+    });
+
+}
+
+
+/* =========================================================
+   KAMERA
+========================================================= */
+
+function toggleCamera() {
+
+    if (!localStream) {
+        return;
+    }
+
+    const videoTracks =
+        localStream.getVideoTracks();
+
+    videoTracks.forEach(track => {
+
+        track.enabled =
+            !track.enabled;
+
+    });
+
+}
+
+
+/* =========================================================
+   GÖRÜŞMEYİ BİTİR
+========================================================= */
+
+function endCall() {
+
+    if (localStream) {
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                track.stop();
+
+            });
+
+        localStream = null;
+
+    }
+
+
+    if (peerConnection) {
+
+        peerConnection.close();
+
+        peerConnection = null;
+
+    }
+
+
+    localVideo.srcObject = null;
+    remoteVideo.srcObject = null;
+
+    videoPanel.classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   SAYFAYI OTOMATİK YENİLEME
+========================================================= */
+
+setInterval(() => {
+
+    if (
+        !document.activeElement ||
+        document.activeElement.tagName !== "INPUT"
+    ) {
+
+        location.reload();
+
+    }
+
+}, 5000);
 
 </script>
 
