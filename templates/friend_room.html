@@ -1,1 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>{{ friend["name"] }}</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#eef8fc;
+    margin:0;
+}
+
+.header{
+    background:#5cb8d8;
+    color:white;
+    padding:15px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.chat{
+    padding:15px;
+}
+
+.message{
+    background:white;
+    padding:12px;
+    border-radius:15px;
+    margin-bottom:10px;
+}
+
+form{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:white;
+    padding:10px;
+    display:flex;
+    gap:10px;
+}
+
+input{
+    flex:1;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #ccc;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    background:#5cb8d8;
+    color:white;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="header">
+
+💬 {{ friend["name"] }}
+
+</div>
+
+<div class="chat">
+
+{% for msg in messages %}
+
+<div class="message">
+
+{{ msg["message"] }}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<form method="POST">
+
+<input
+name="message"
+placeholder="Mesaj yaz..."
+required>
+
+<button>
+
+Gönder
+
+</button>
+
+</form>
+
+</body>
+</html>
