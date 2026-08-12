@@ -18,6 +18,9 @@
     <meta name="mobile-web-app-capable"
           content="yes">
 
+    <meta name="apple-mobile-web-app-capable"
+          content="yes">
+
     <title>MaviGPT</title>
 
 
@@ -44,23 +47,26 @@
 
 
         /* =====================================================
-           AÇILIŞ EKRANI
+           SPLASH
         ===================================================== */
 
         .splash-screen {
 
             position: fixed;
+
             inset: 0;
 
             z-index: 99999;
 
             background: #98daf5;
 
-            display: flex;
+            display: none;
+
             align-items: center;
             justify-content: center;
 
             opacity: 1;
+
             visibility: visible;
 
             transition:
@@ -68,10 +74,16 @@
                 visibility .5s ease;
         }
 
+        .splash-screen.show {
+            display: flex;
+        }
+
         .splash-screen.hide {
 
             opacity: 0;
+
             visibility: hidden;
+
             pointer-events: none;
         }
 
@@ -80,28 +92,30 @@
             text-align: center;
 
             animation:
-                splashAppear .8s ease;
+                splashAppear .7s ease;
         }
 
         .splash-logo {
 
-            width: 105px;
-            height: 105px;
+            width: 100px;
+            height: 100px;
 
-            margin: 0 auto 20px;
+            margin: 0 auto 18px;
 
-            border-radius: 32px;
+            border-radius: 30px;
 
             background: white;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
-            font-size: 55px;
+            font-size: 52px;
 
             box-shadow:
-                0 10px 30px rgba(0,0,0,.12);
+                0 10px 30px
+                rgba(0, 0, 0, .12);
         }
 
         .splash-title {
@@ -110,14 +124,14 @@
 
             color: white;
 
-            font-size: 31px;
+            font-size: 30px;
 
             font-weight: bold;
         }
 
         .splash-subtitle {
 
-            margin-top: 9px;
+            margin-top: 8px;
 
             color:
                 rgba(255,255,255,.9);
@@ -127,14 +141,14 @@
 
         .splash-loading {
 
-            width: 35px;
-            height: 35px;
+            width: 34px;
+            height: 34px;
 
-            margin: 25px auto 0;
+            margin: 23px auto 0;
 
             border:
                 3px solid
-                rgba(255,255,255,.45);
+                rgba(255,255,255,.4);
 
             border-top-color: white;
 
@@ -147,31 +161,40 @@
         @keyframes splashAppear {
 
             from {
+
                 opacity: 0;
-                transform: scale(.85);
+
+                transform:
+                    scale(.85);
             }
 
             to {
+
                 opacity: 1;
-                transform: scale(1);
+
+                transform:
+                    scale(1);
             }
         }
 
         @keyframes splashSpin {
 
             to {
-                transform: rotate(360deg);
+
+                transform:
+                    rotate(360deg);
             }
         }
 
 
         /* =====================================================
-           ANA UYGULAMA
+           APP
         ===================================================== */
 
         .app {
 
             width: 100%;
+
             height: 100vh;
 
             position: relative;
@@ -190,6 +213,7 @@
             left: 0;
 
             width: 285px;
+
             max-width: 82vw;
 
             height: 100vh;
@@ -205,6 +229,7 @@
                 transform .25s ease;
 
             display: flex;
+
             flex-direction: column;
 
             border-right:
@@ -229,13 +254,17 @@
         .sidebar-header {
 
             height: 68px;
+
             min-height: 68px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
-            padding: 0 14px;
+            padding:
+                0 14px;
 
             border-bottom:
                 1px solid #edf2f5;
@@ -244,6 +273,7 @@
         .sidebar-title {
 
             font-size: 19px;
+
             font-weight: bold;
 
             color: #0782a8;
@@ -252,6 +282,7 @@
         .close-button {
 
             width: 44px;
+
             height: 44px;
 
             border: none;
@@ -260,16 +291,16 @@
 
             background: #f1f7fa;
 
-            font-size: 27px;
-
             color: #53646d;
+
+            font-size: 27px;
 
             cursor: pointer;
         }
 
 
         /* =====================================================
-           YENİ SOHBET
+           NEW CHAT
         ===================================================== */
 
         .new-chat {
@@ -288,6 +319,7 @@
             color: #087c9f;
 
             font-size: 15px;
+
             font-weight: bold;
 
             cursor: pointer;
@@ -295,12 +327,13 @@
 
         .new-chat:active {
 
-            transform: scale(.98);
+            transform:
+                scale(.98);
         }
 
 
         /* =====================================================
-           MENÜ
+           MENU
         ===================================================== */
 
         .menu-title {
@@ -311,6 +344,7 @@
             color: #8a98a1;
 
             font-size: 11px;
+
             font-weight: bold;
         }
 
@@ -322,7 +356,8 @@
 
             gap: 12px;
 
-            margin: 3px 10px;
+            margin:
+                3px 10px;
 
             padding:
                 13px 11px;
@@ -336,16 +371,27 @@
             font-size: 14px;
 
             cursor: pointer;
+
+            transition:
+                background .15s ease;
         }
 
         .menu-item:hover {
 
-            background: #f1f8fb;
+            background:
+                #f1f8fb;
+        }
+
+        .menu-item:active {
+
+            transform:
+                scale(.99);
         }
 
         .menu-icon {
 
             width: 28px;
+
             min-width: 28px;
 
             text-align: center;
@@ -355,7 +401,7 @@
 
 
         /* =====================================================
-           GEÇMİŞ
+           HISTORY
         ===================================================== */
 
         .history {
@@ -374,6 +420,7 @@
             color: #8997a1;
 
             font-size: 12px;
+
             font-weight: bold;
         }
 
@@ -402,7 +449,8 @@
 
         .history-item:hover {
 
-            background: #eef8fb;
+            background:
+                #eef8fb;
         }
 
         .history-empty {
@@ -416,7 +464,7 @@
 
 
         /* =====================================================
-           KARARTMA
+           BACKDROP
         ===================================================== */
 
         .backdrop {
@@ -434,26 +482,31 @@
 
             visibility: hidden;
 
-            transition: .25s;
+            transition:
+                opacity .25s ease,
+                visibility .25s ease;
         }
 
         .backdrop.show {
 
             opacity: 1;
+
             visibility: visible;
         }
 
 
         /* =====================================================
-           ANA ALAN
+           MAIN
         ===================================================== */
 
         .main {
 
             width: 100%;
+
             height: 100vh;
 
             display: flex;
+
             flex-direction: column;
         }
 
@@ -465,6 +518,7 @@
         .header {
 
             height: 65px;
+
             min-height: 65px;
 
             background: white;
@@ -476,34 +530,39 @@
 
             align-items: center;
 
-            padding: 0 12px;
+            padding:
+                0 12px;
 
             gap: 10px;
         }
 
 
         /* =====================================================
-           HAMBURGER
+           MENU BUTTON
         ===================================================== */
 
         .menu-button {
 
             width: 45px;
+
             height: 45px;
 
             border: none;
 
             border-radius: 14px;
 
-            background: #eef8fb;
+            background:
+                #eef8fb;
 
-            color: #14728d;
+            color:
+                #14728d;
 
             font-size: 27px;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             cursor: pointer;
@@ -511,7 +570,8 @@
 
         .menu-button:active {
 
-            transform: scale(.94);
+            transform:
+                scale(.94);
         }
 
 
@@ -522,15 +582,18 @@
         .logo {
 
             width: 43px;
+
             height: 43px;
 
             border-radius: 14px;
 
-            background: #d9f5ff;
+            background:
+                #d9f5ff;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 23px;
@@ -544,6 +607,7 @@
         .title {
 
             font-size: 17px;
+
             font-weight: bold;
         }
 
@@ -551,7 +615,8 @@
 
             margin-top: 3px;
 
-            color: #29a56f;
+            color:
+                #29a56f;
 
             font-size: 11px;
         }
@@ -572,6 +637,9 @@
 
             -webkit-overflow-scrolling:
                 touch;
+
+            scroll-behavior:
+                smooth;
         }
 
         .chat-inner {
@@ -580,12 +648,13 @@
 
             max-width: 850px;
 
-            margin: auto;
+            margin:
+                auto;
         }
 
 
         /* =====================================================
-           HOŞ GELDİN
+           WELCOME
         ===================================================== */
 
         .welcome {
@@ -601,17 +670,21 @@
         .welcome-logo {
 
             width: 75px;
+
             height: 75px;
 
-            margin: auto;
+            margin:
+                auto;
 
             border-radius: 24px;
 
-            background: #d9f5ff;
+            background:
+                #d9f5ff;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 42px;
@@ -629,7 +702,8 @@
 
             margin: 0;
 
-            color: #72808a;
+            color:
+                #72808a;
 
             line-height: 1.6;
 
@@ -638,7 +712,7 @@
 
 
         /* =====================================================
-           MESAJ
+           MESSAGE
         ===================================================== */
 
         .message {
@@ -655,6 +729,7 @@
         .avatar {
 
             width: 36px;
+
             min-width: 36px;
 
             height: 36px;
@@ -664,6 +739,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 18px;
@@ -671,12 +747,14 @@
 
         .user-avatar {
 
-            background: #e2eaff;
+            background:
+                #e2eaff;
         }
 
         .bot-avatar {
 
-            background: #d9f5ff;
+            background:
+                #d9f5ff;
         }
 
         .message-content {
@@ -692,7 +770,8 @@
             margin:
                 0 0 5px 3px;
 
-            color: #84919a;
+            color:
+                #84919a;
 
             font-size: 11px;
         }
@@ -711,23 +790,29 @@
             word-break: break-word;
 
             white-space: pre-wrap;
+
+            overflow-wrap: anywhere;
         }
 
         .user-bubble {
 
-            background: #dcecff;
+            background:
+                #dcecff;
 
-            border-top-left-radius: 5px;
+            border-top-left-radius:
+                5px;
         }
 
         .bot-bubble {
 
-            background: white;
+            background:
+                white;
 
             border:
                 1px solid #dfe7eb;
 
-            border-top-left-radius: 5px;
+            border-top-left-radius:
+                5px;
 
             box-shadow:
                 0 2px 7px
@@ -736,7 +821,7 @@
 
 
         /* =====================================================
-           FOTOĞRAF
+           PHOTO
         ===================================================== */
 
         .photo-preview {
@@ -746,6 +831,7 @@
             margin-top: 8px;
 
             max-width: 260px;
+
             max-height: 300px;
 
             border-radius: 14px;
@@ -756,7 +842,7 @@
 
 
         /* =====================================================
-           INPUT
+           INPUT AREA
         ===================================================== */
 
         .input-area {
@@ -764,13 +850,16 @@
             position: fixed;
 
             left: 0;
+
             right: 0;
+
             bottom: 0;
 
             padding:
                 9px 10px 12px;
 
-            background: #f4f9fc;
+            background:
+                #f4f9fc;
 
             z-index: 500;
         }
@@ -781,7 +870,8 @@
 
             max-width: 850px;
 
-            margin: auto;
+            margin:
+                auto;
         }
 
         .file-name {
@@ -791,7 +881,8 @@
             padding:
                 5px 10px;
 
-            color: #087c9f;
+            color:
+                #087c9f;
 
             font-size: 12px;
         }
@@ -816,7 +907,8 @@
 
             align-items: center;
 
-            padding: 5px 6px;
+            padding:
+                5px 6px;
 
             box-shadow:
                 0 4px 18px
@@ -826,6 +918,7 @@
         .plus {
 
             width: 42px;
+
             min-width: 42px;
 
             height: 42px;
@@ -833,13 +926,23 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 27px;
 
-            color: #60717c;
+            color:
+                #60717c;
 
             cursor: pointer;
+
+            border-radius: 12px;
+        }
+
+        .plus:active {
+
+            background:
+                #eef5f8;
         }
 
         #foto {
@@ -859,16 +962,25 @@
 
             outline: none;
 
-            padding: 8px;
+            padding:
+                8px;
 
-            background: transparent;
+            background:
+                transparent;
 
             font-size: 15px;
+        }
+
+        #mesaj::placeholder {
+
+            color:
+                #9aa7ae;
         }
 
         .send {
 
             width: 43px;
+
             min-width: 43px;
 
             height: 43px;
@@ -877,7 +989,8 @@
 
             border-radius: 14px;
 
-            background: #0782a8;
+            background:
+                #0782a8;
 
             color: white;
 
@@ -888,12 +1001,13 @@
 
         .send:active {
 
-            transform: scale(.94);
+            transform:
+                scale(.94);
         }
 
 
         /* =====================================================
-           YÜKLENİYOR
+           LOADING
         ===================================================== */
 
         .loading-message {
@@ -904,7 +1018,8 @@
 
             gap: 8px;
 
-            color: #71808a;
+            color:
+                #71808a;
 
             font-size: 13px;
         }
@@ -919,9 +1034,11 @@
         .loading-dots span {
 
             width: 6px;
+
             height: 6px;
 
-            background: #7bbdd1;
+            background:
+                #7bbdd1;
 
             border-radius: 50%;
 
@@ -931,24 +1048,34 @@
 
         .loading-dots span:nth-child(2) {
 
-            animation-delay: .2s;
+            animation-delay:
+                .2s;
         }
 
         .loading-dots span:nth-child(3) {
 
-            animation-delay: .4s;
+            animation-delay:
+                .4s;
         }
 
         @keyframes dotPulse {
 
-            0%, 80%, 100% {
+            0%,
+            80%,
+            100% {
+
                 opacity: .35;
-                transform: scale(.8);
+
+                transform:
+                    scale(.8);
             }
 
             40% {
+
                 opacity: 1;
-                transform: scale(1);
+
+                transform:
+                    scale(1);
             }
         }
 
@@ -962,12 +1089,15 @@
             .sidebar {
 
                 width: 285px;
-                max-width: 82vw;
+
+                max-width:
+                    82vw;
             }
 
             .header {
 
                 height: 62px;
+
                 min-height: 62px;
             }
 
@@ -979,12 +1109,14 @@
 
             .welcome {
 
-                margin-top: 50px;
+                margin-top:
+                    50px;
             }
 
             .welcome-logo {
 
                 width: 68px;
+
                 height: 68px;
 
                 font-size: 38px;
@@ -1002,12 +1134,14 @@
 
             .input-area {
 
-                padding: 7px;
+                padding:
+                    7px;
             }
 
             .splash-logo {
 
                 width: 90px;
+
                 height: 90px;
 
                 font-size: 48px;
@@ -1016,6 +1150,26 @@
             .splash-title {
 
                 font-size: 27px;
+            }
+
+            .message {
+
+                gap: 7px;
+            }
+
+            .avatar {
+
+                width: 34px;
+
+                min-width: 34px;
+
+                height: 34px;
+            }
+
+            .message-content {
+
+                max-width:
+                    calc(100% - 41px);
             }
         }
 
@@ -1028,14 +1182,12 @@
 
 
 <!-- =========================================================
-     AÇILIŞ EKRANI
-     SADECE BÖLÜM GEÇİŞLERİNDE GÖSTERİLİR
+     SPLASH
 ========================================================== -->
 
 <div
     class="splash-screen"
-    id="splashScreen"
-    style="display:none;">
+    id="splashScreen">
 
     <div class="splash-content">
 
@@ -1079,7 +1231,8 @@
             <button
                 class="close-button"
                 id="closeButton"
-                type="button">
+                type="button"
+                aria-label="Menüyü kapat">
 
                 ×
 
@@ -1087,6 +1240,8 @@
 
         </div>
 
+
+        <!-- YENİ SOHBET -->
 
         <button
             class="new-chat"
@@ -1103,7 +1258,7 @@
         </div>
 
 
-        <!-- YENİ SOHBET -->
+        <!-- ANA SOHBET -->
 
         <a
             href="/"
@@ -1171,7 +1326,7 @@
         </a>
 
 
-        <!-- İLAÇLAR -->
+        <!-- İLAÇ -->
 
         <a
             href="/medicine"
@@ -1244,7 +1399,9 @@
     </aside>
 
 
-    <!-- KARARTMA -->
+    <!-- =====================================================
+         BACKDROP
+    ====================================================== -->
 
     <div
         class="backdrop"
@@ -1253,13 +1410,15 @@
 
 
     <!-- =====================================================
-         ANA
+         MAIN
     ====================================================== -->
 
     <main class="main">
 
 
-        <!-- HEADER -->
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
         <header class="header">
 
@@ -1267,7 +1426,8 @@
             <button
                 class="menu-button"
                 id="menuButton"
-                type="button">
+                type="button"
+                aria-label="Menüyü aç">
 
                 ☰
 
@@ -1306,9 +1466,9 @@
             <div class="chat-inner">
 
 
-                <!-- =========================================
-                     HİÇ MESAJ YOKSA HOŞ GELDİN
-                ========================================== -->
+                <!-- =================================================
+                     HOŞ GELDİN
+                ================================================== -->
 
                 {% if not mesajlar %}
 
@@ -1333,16 +1493,16 @@
                 {% endif %}
 
 
-                <!-- =========================================
-                     TÜM KONUŞMA GEÇMİŞİ
-                ========================================== -->
+                <!-- =================================================
+                     MESAJLAR
+                ================================================== -->
 
                 {% if mesajlar %}
 
                     {% for item in mesajlar %}
 
 
-                        <!-- KULLANICI MESAJI -->
+                        <!-- KULLANICI -->
 
                         <div class="message">
 
@@ -1356,11 +1516,8 @@
                                     Sen
                                 </div>
 
-
                                 <div class="bubble user-bubble">
-
                                     {{ item['message'] }}
-
                                 </div>
 
                             </div>
@@ -1368,7 +1525,7 @@
                         </div>
 
 
-                        <!-- MAVİGPT CEVABI -->
+                        <!-- MAVİGPT -->
 
                         {% if item['response'] %}
 
@@ -1385,9 +1542,7 @@
                                     </div>
 
                                     <div class="bubble bot-bubble">
-
                                         {{ item['response'] }}
-
                                     </div>
 
                                 </div>
@@ -1408,7 +1563,7 @@
 
 
         <!-- =================================================
-             MESAJ GÖNDERME
+             INPUT
         ================================================== -->
 
         <div class="input-area">
@@ -1424,14 +1579,16 @@
 
                 <form
                     class="input-box"
-                    action="/"
+                    id="messageForm"
+                    action="{{ url_for('home') }}"
                     method="POST"
                     enctype="multipart/form-data">
 
 
                     <label
                         class="plus"
-                        for="foto">
+                        for="foto"
+                        title="Fotoğraf ekle">
 
                         ＋
 
@@ -1450,12 +1607,14 @@
                         id="mesaj"
                         name="mesaj"
                         placeholder="Mesajını yaz..."
-                        autocomplete="off">
+                        autocomplete="off"
+                        maxlength="5000">
 
 
                     <button
                         class="send"
-                        type="submit">
+                        type="submit"
+                        aria-label="Mesaj gönder">
 
                         ➤
 
@@ -1482,63 +1641,45 @@
 
 (function () {
 
+    "use strict";
+
 
     /* =====================================================
        ELEMENTLER
     ====================================================== */
 
     const sidebar =
-        document.getElementById(
-            "sidebar"
-        );
-
+        document.getElementById("sidebar");
 
     const menuButton =
-        document.getElementById(
-            "menuButton"
-        );
-
+        document.getElementById("menuButton");
 
     const closeButton =
-        document.getElementById(
-            "closeButton"
-        );
-
+        document.getElementById("closeButton");
 
     const backdrop =
-        document.getElementById(
-            "backdrop"
-        );
-
+        document.getElementById("backdrop");
 
     const newChatButton =
-        document.getElementById(
-            "newChatButton"
-        );
-
+        document.getElementById("newChatButton");
 
     const foto =
-        document.getElementById(
-            "foto"
-        );
-
+        document.getElementById("foto");
 
     const fileName =
-        document.getElementById(
-            "fileName"
-        );
-
+        document.getElementById("fileName");
 
     const chat =
-        document.getElementById(
-            "chat"
-        );
+        document.getElementById("chat");
 
+    const form =
+        document.getElementById("messageForm");
+
+    const messageInput =
+        document.getElementById("mesaj");
 
     const splashScreen =
-        document.getElementById(
-            "splashScreen"
-        );
+        document.getElementById("splashScreen");
 
 
     /* =====================================================
@@ -1548,19 +1689,11 @@
     function openMenu() {
 
         if (sidebar) {
-
-            sidebar.classList.add(
-                "open"
-            );
-
+            sidebar.classList.add("open");
         }
 
         if (backdrop) {
-
-            backdrop.classList.add(
-                "show"
-            );
-
+            backdrop.classList.add("show");
         }
 
     }
@@ -1573,19 +1706,11 @@
     function closeMenu() {
 
         if (sidebar) {
-
-            sidebar.classList.remove(
-                "open"
-            );
-
+            sidebar.classList.remove("open");
         }
 
         if (backdrop) {
-
-            backdrop.classList.remove(
-                "show"
-            );
-
+            backdrop.classList.remove("show");
         }
 
     }
@@ -1602,8 +1727,6 @@
             function (event) {
 
                 event.preventDefault();
-
-                event.stopPropagation();
 
                 openMenu();
 
@@ -1625,8 +1748,6 @@
 
                 event.preventDefault();
 
-                event.stopPropagation();
-
                 closeMenu();
 
             }
@@ -1636,7 +1757,7 @@
 
 
     /* =====================================================
-       KARARTMA
+       BACKDROP
     ====================================================== */
 
     if (backdrop) {
@@ -1654,6 +1775,24 @@
 
 
     /* =====================================================
+       ESC
+    ====================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Escape") {
+
+                closeMenu();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
        YENİ SOHBET
     ====================================================== */
 
@@ -1663,9 +1802,11 @@
             "click",
             function () {
 
+                closeMenu();
+
                 /*
-                 * Ana sayfaya gider.
-                 * Splash GÖSTERİLMEZ.
+                 * Şimdilik ana sohbet ekranına dönüyoruz.
+                 * Mevcut sohbet veritabanından silinmez.
                  */
 
                 window.location.href = "/";
@@ -1677,13 +1818,11 @@
 
 
     /* =====================================================
-       MENÜ LİNKLERİ
+       MENÜDEKİ BÖLÜMLER
     ====================================================== */
 
     document
-        .querySelectorAll(
-            ".menu-item"
-        )
+        .querySelectorAll(".section-link")
         .forEach(
             function (item) {
 
@@ -1692,49 +1831,30 @@
                     function (event) {
 
                         const target =
-                            item.getAttribute(
-                                "href"
-                            );
+                            item.getAttribute("href");
 
 
-                        /*
-                         * Ana sayfaya geçerken
-                         * splash YOK.
-                         */
-
-                        if (
-                            target === "/"
-                        ) {
-
-                            closeMenu();
-
+                        if (!target) {
                             return;
-
                         }
 
 
                         /*
-                         * Diğer bölümlere geçerken
-                         * splash GÖSTER.
+                         * Menü kapanır.
                          */
 
-                        if (
-                            target === "/doctor"
-                            ||
-                            target === "/period"
-                            ||
-                            target === "/diarrhea"
-                            ||
-                            target === "/medicine"
-                            ||
-                            target === "/settings"
-                        ) {
+                        closeMenu();
+
+
+                        /*
+                         * Splash göster.
+                         */
+
+                        if (splashScreen) {
 
                             event.preventDefault();
 
-                            closeMenu();
-
-                            showSplash(
+                            showSplashAndNavigate(
                                 target
                             );
 
@@ -1748,10 +1868,19 @@
 
 
     /* =====================================================
-       SPLASH GÖSTER
+       SPLASH + GEÇİŞ
     ====================================================== */
 
-    function showSplash(target) {
+    let navigating = false;
+
+    function showSplashAndNavigate(target) {
+
+        if (navigating) {
+            return;
+        }
+
+        navigating = true;
+
 
         if (!splashScreen) {
 
@@ -1759,24 +1888,22 @@
                 target;
 
             return;
-
         }
 
 
-        splashScreen.style.display =
-            "flex";
+        splashScreen.classList.add("show");
 
-        splashScreen.classList.remove(
-            "hide"
-        );
+        splashScreen.classList.remove("hide");
 
+
+        /*
+         * Yaklaşık 1 saniye göster.
+         */
 
         setTimeout(
             function () {
 
-                splashScreen.classList.add(
-                    "hide"
-                );
+                splashScreen.classList.add("hide");
 
 
                 setTimeout(
@@ -1797,10 +1924,10 @@
 
 
     /* =====================================================
-       FOTOĞRAF
+       FOTOĞRAF SEÇİMİ
     ====================================================== */
 
-    if (foto && fileName) {
+    if (foto) {
 
         foto.addEventListener(
             "change",
@@ -1811,23 +1938,35 @@
                     foto.files.length > 0
                 ) {
 
-                    fileName.textContent =
-                        "📷 " +
-                        foto.files[0].name;
+                    const selectedFile =
+                        foto.files[0];
 
-                    fileName.classList.add(
-                        "show"
-                    );
+
+                    if (fileName) {
+
+                        fileName.textContent =
+                            "📷 " +
+                            selectedFile.name;
+
+                        fileName.classList.add(
+                            "show"
+                        );
+
+                    }
 
                 }
                 else {
 
-                    fileName.textContent =
-                        "";
+                    if (fileName) {
 
-                    fileName.classList.remove(
-                        "show"
-                    );
+                        fileName.textContent =
+                            "";
+
+                        fileName.classList.remove(
+                            "show"
+                        );
+
+                    }
 
                 }
 
@@ -1838,15 +1977,8 @@
 
 
     /* =====================================================
-       FORM GÖNDERİLİRKEN
-       SPLASH ASLA ÇIKMAZ
+       FORM GÖNDERME
     ====================================================== */
-
-    const form =
-        document.querySelector(
-            ".input-box"
-        );
-
 
     if (form) {
 
@@ -1855,14 +1987,37 @@
             function () {
 
                 /*
-                 * Yeni mesaj gönderilirken
-                 * splash kesinlikle gösterilmez.
+                 * Mesaj gönderirken splash yok.
                  */
 
                 if (splashScreen) {
 
-                    splashScreen.style.display =
-                        "none";
+                    splashScreen.classList.remove(
+                        "show"
+                    );
+
+                    splashScreen.classList.add(
+                        "hide"
+                    );
+
+                }
+
+
+                /*
+                 * Gönder butonunu kısa süreli pasifleştir.
+                 */
+
+                const sendButton =
+                    form.querySelector(".send");
+
+
+                if (sendButton) {
+
+                    sendButton.disabled =
+                        true;
+
+                    sendButton.style.opacity =
+                        ".65";
 
                 }
 
@@ -1873,14 +2028,8 @@
 
 
     /* =====================================================
-       ENTER İLE MESAJ
+       ENTER İLE GÖNDER
     ====================================================== */
-
-    const messageInput =
-        document.getElementById(
-            "mesaj"
-        );
-
 
     if (messageInput) {
 
@@ -1896,9 +2045,22 @@
 
                     event.preventDefault();
 
-                    if (form) {
 
-                        form.requestSubmit();
+                    if (
+                        messageInput.value.trim()
+                        ||
+                        (
+                            foto &&
+                            foto.files &&
+                            foto.files.length
+                        )
+                    ) {
+
+                        if (form) {
+
+                            form.requestSubmit();
+
+                        }
 
                     }
 
@@ -1911,39 +2073,59 @@
 
 
     /* =====================================================
-       ESC
+       SAYFA AÇILDIĞINDA EN ALTA
     ====================================================== */
 
-    document.addEventListener(
-        "keydown",
-        function (event) {
+    function scrollToBottom() {
 
-            if (
-                event.key === "Escape"
-            ) {
+        if (!chat) {
+            return;
+        }
 
-                closeMenu();
+        chat.scrollTop =
+            chat.scrollHeight;
 
-            }
+    }
+
+
+    window.addEventListener(
+        "load",
+        function () {
+
+            setTimeout(
+                scrollToBottom,
+                100
+            );
+
+            setTimeout(
+                scrollToBottom,
+                400
+            );
 
         }
     );
 
 
     /* =====================================================
-       SAYFA AÇILINCA EN SON MESAJI GÖSTER
+       MOBİLDE KLAVYE AÇILINCA INPUT
     ====================================================== */
 
-    if (chat) {
+    if (messageInput) {
 
-        setTimeout(
+        messageInput.addEventListener(
+            "focus",
             function () {
 
-                chat.scrollTop =
-                    chat.scrollHeight;
+                setTimeout(
+                    function () {
 
-            },
-            100
+                        scrollToBottom();
+
+                    },
+                    250
+                );
+
+            }
         );
 
     }
@@ -1960,19 +2142,14 @@
 
 <script>
 
-if (
-    "serviceWorker"
-    in navigator
-) {
+if ("serviceWorker" in navigator) {
 
     window.addEventListener(
         "load",
         function () {
 
             navigator.serviceWorker
-                .register(
-                    "/service-worker.js"
-                )
+                .register("/service-worker.js")
                 .then(
                     function (registration) {
 
