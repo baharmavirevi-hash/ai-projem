@@ -1,874 +1,1945 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Arkadaş Sohbeti | MaviGPT</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ room.name if room.name else "Arkadaş Odası" }} | MaviGPT</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #eefaff;
-            color: #234;
-        }
-
-        .header {
-            background: #98daf5;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .back {
-            text-decoration: none;
-            color: white;
-            font-size: 28px;
-        }
-
-        .title {
-            color: white;
-            font-size: 19px;
-            font-weight: bold;
-        }
-
-        .room-code {
-            background: rgba(255,255,255,.3);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        button {
-            border: none;
-            border-radius: 12px;
-            padding: 11px 15px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .video-btn {
-            background: #70c8e9;
-            color: white;
-        }
-
-        .hangup {
-            background: #e86f7a;
-            color: white;
-        }
-
-        .mute {
-            background: white;
-            color: #456;
-        }
-
-        /* ==================================================
-           GELEN ARAMA
-        ================================================== */
-
-        .incoming-call {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: min(90%, 380px);
-            background: white;
-            border-radius: 25px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 15px 50px rgba(0,0,0,.25);
-        }
-
-        .incoming-call.active {
-            display: block;
-        }
-
-        .call-icon {
-            font-size: 55px;
-            margin-bottom: 10px;
-        }
-
-        .incoming-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .incoming-text {
-            color: #687b85;
-            margin-bottom: 20px;
-        }
-
-        .incoming-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .answer-btn {
-            background: #55c98a;
-            color: white;
-            flex: 1;
-        }
-
-        .reject-btn {
-            background: #e86f7a;
-            color: white;
-            flex: 1;
-        }
-
-        .call-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9998;
-            background: rgba(20, 50, 65, .45);
-        }
-
-        .call-overlay.active {
-            display: block;
-        }
-
-        /* ==================================================
-           VIDEO
-        ================================================== */
-
-        .video-panel {
-            display: none;
-            padding: 12px;
-            background: #dff6ff;
-        }
-
-        .video-panel.active {
-            display: block;
-        }
-
-        .videos {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        video {
+            padding: 0;
             width: 100%;
-            height: 220px;
-            background: #111;
-            border-radius: 15px;
-            object-fit: cover;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #eefaff;
         }
 
-        .video-label {
-            font-size: 12px;
-            margin: 5px 0;
-            color: #567;
-            font-weight: bold;
+        body {
+            overflow: hidden;
         }
 
-        .video-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
+        /* =====================================================
+           ANA ALAN
+        ===================================================== */
 
-        .status {
-            margin-top: 8px;
-            font-size: 13px;
-            color: #527;
-        }
-
-        /* ==================================================
-           CHAT
-        ================================================== */
-
-        .chat {
-            height: calc(100vh - 80px);
-            min-height: 400px;
+        .app {
+            width: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
+        /* =====================================================
+           ÜST BAR
+        ===================================================== */
+
+        .topbar {
+            height: 70px;
+            min-height: 70px;
+            background: linear-gradient(
+                135deg,
+                #8edcf7,
+                #b8ecff
+            );
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 18px;
+
+            box-shadow:
+                0 2px 12px rgba(50, 150, 190, 0.18);
+
+            z-index: 10;
         }
 
-        .message {
-            max-width: 80%;
-            margin-bottom: 10px;
-            padding: 10px 13px;
-            border-radius: 15px;
+        .room-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .back-button {
+            width: 42px;
+            height: 42px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.75);
+
+            font-size: 22px;
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+            color: #15566e;
+        }
+
+        .room-avatar {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
             background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .username {
+        .room-text {
+            min-width: 0;
+        }
+
+        .room-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #15566e;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .room-code {
+            margin-top: 3px;
+
             font-size: 12px;
-            color: #68aeca;
-            font-weight: bold;
+            color: #39778b;
+        }
+
+        .video-call-button {
+            border: none;
+
+            min-width: 46px;
+            height: 46px;
+
+            padding: 0 14px;
+
+            border-radius: 24px;
+
+            background: white;
+
+            color: #17637c;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.10);
+
+            transition: 0.2s;
+        }
+
+        .video-call-button:hover {
+            transform: scale(1.04);
+        }
+
+        .video-call-button.active {
+            background: #ffdfdf;
+            color: #d93636;
+        }
+
+        /* =====================================================
+           CHAT
+        ===================================================== */
+
+        .chat-area {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 18px 14px 100px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(174,235,255,0.35),
+                    transparent 35%
+                ),
+                #f4fcff;
+        }
+
+        .empty-message {
+            margin: auto;
+
+            text-align: center;
+
+            color: #7c9ba8;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .empty-message h3 {
+            margin: 0 0 6px;
+            color: #4d7b89;
+        }
+
+        .empty-message p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .message-row {
+            width: 100%;
+
+            display: flex;
+
+            justify-content: flex-start;
+        }
+
+        .message-row.mine {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: min(78%, 600px);
+
+            padding: 10px 13px;
+
+            border-radius: 17px;
+
+            background: white;
+
+            box-shadow:
+                0 2px 7px rgba(0,0,0,0.07);
+        }
+
+        .message-row.mine .message-bubble {
+            background: #c7f0ff;
+        }
+
+        .message-user {
+            font-size: 11px;
+
+            color: #568494;
+
+            font-weight: 700;
+
             margin-bottom: 4px;
         }
 
         .message-text {
-            word-wrap: break-word;
+            font-size: 15px;
+
+            line-height: 1.45;
+
+            color: #244d5a;
+
+            word-break: break-word;
         }
 
-        .message-time {
-            font-size: 10px;
-            color: #999;
-            margin-top: 5px;
-        }
+        .message-photo {
+            max-width: 260px;
 
-        .photo-message {
-            max-width: 100%;
+            width: 100%;
+
             border-radius: 12px;
-            margin-top: 5px;
+
+            display: block;
+
+            cursor: pointer;
         }
+
+        /* =====================================================
+           ALT MESAJ ALANI
+        ===================================================== */
 
         .composer {
-            background: white;
-            padding: 10px;
-            display: flex;
-            gap: 8px;
-            border-top: 1px solid #dceff5;
-        }
+            position: fixed;
 
-        .composer input[type="text"] {
-            flex: 1;
-            border: 1px solid #c9e7ef;
-            border-radius: 20px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            min-height: 76px;
+
             padding: 12px;
+
+            background: rgba(255,255,255,0.95);
+
+            backdrop-filter: blur(12px);
+
+            border-top: 1px solid #dceff5;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            z-index: 20;
+        }
+
+        .username-input {
+            display: none;
+        }
+
+        .message-input {
+            flex: 1;
+
+            min-width: 0;
+
+            height: 48px;
+
+            border: 1px solid #cbe8f1;
+
+            border-radius: 24px;
+
+            padding: 0 17px;
+
             outline: none;
+
+            font-size: 15px;
+
+            color: #315d6b;
+
+            background: #f8fdff;
         }
 
-        .send {
-            background: #98daf5;
-            color: white;
+        .message-input:focus {
+            border-color: #8dd8f2;
+
+            box-shadow:
+                0 0 0 3px rgba(141,216,242,0.16);
         }
 
-        .photo-button {
+        .icon-button {
+            width: 46px;
+            height: 46px;
+
+            border: none;
+
+            border-radius: 50%;
+
             background: #e7f8ff;
-            color: #4386a0;
-            padding: 11px;
+
+            color: #32758b;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            flex-shrink: 0;
         }
 
-        .error {
-            margin: 10px;
-            background: #ffe2e5;
-            color: #a33;
-            padding: 10px;
-            border-radius: 12px;
+        .send-button {
+            width: 48px;
+            height: 48px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #8edcf7;
+
+            color: white;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            flex-shrink: 0;
+        }
+
+        .send-button:active,
+        .icon-button:active {
+            transform: scale(0.94);
         }
 
         #photoInput {
             display: none;
         }
 
-        @media (max-width: 700px) {
+        /* =====================================================
+           FOTOĞRAF YÜKLEME DURUMU
+        ===================================================== */
+
+        .upload-status {
+            position: fixed;
+
+            left: 50%;
+            bottom: 88px;
+
+            transform: translateX(-50%);
+
+            background: #315d6b;
+
+            color: white;
+
+            padding: 9px 16px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            display: none;
+
+            z-index: 30;
+        }
+
+        /* =====================================================
+           ARAMA MODALI
+        ===================================================== */
+
+        .call-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(18, 53, 66, 0.72);
+
+            backdrop-filter: blur(7px);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 100;
+        }
+
+        .call-overlay.show {
+            display: flex;
+        }
+
+        .call-card {
+            width: min(94%, 720px);
+
+            max-height: 92vh;
+
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 26px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .call-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 14px;
+        }
+
+        .call-title {
+            font-size: 19px;
+
+            font-weight: 700;
+
+            color: #245b6c;
+        }
+
+        .close-call {
+            border: none;
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: #edf9fc;
+
+            cursor: pointer;
+
+            font-size: 18px;
+
+            color: #477685;
+        }
+
+        .videos {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+        .video-box {
+            position: relative;
+
+            min-height: 220px;
+
+            background: #122d36;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+        }
+
+        .video-box video {
+            width: 100%;
+            height: 100%;
+
+            min-height: 220px;
+
+            object-fit: cover;
+
+            display: block;
+        }
+
+        .video-label {
+            position: absolute;
+
+            left: 10px;
+            bottom: 10px;
+
+            padding: 5px 9px;
+
+            border-radius: 12px;
+
+            background: rgba(0,0,0,0.45);
+
+            color: white;
+
+            font-size: 12px;
+        }
+
+        .call-status {
+            text-align: center;
+
+            margin: 14px 0;
+
+            font-size: 14px;
+
+            color: #557784;
+        }
+
+        .call-actions {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin-top: 12px;
+        }
+
+        .call-action {
+            border: none;
+
+            min-height: 46px;
+
+            padding: 0 20px;
+
+            border-radius: 23px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+        .accept-button {
+            background: #9de5ba;
+
+            color: #23633d;
+        }
+
+        .reject-button,
+        .end-button {
+            background: #ffd0d0;
+
+            color: #9b3030;
+        }
+
+        .mute-button {
+            background: #e4f6fc;
+
+            color: #356f7f;
+        }
+
+        /* =====================================================
+           GELEN ARAMA
+        ===================================================== */
+
+        .incoming-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(14,43,53,0.65);
+
+            backdrop-filter: blur(8px);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 200;
+        }
+
+        .incoming-overlay.show {
+            display: flex;
+        }
+
+        .incoming-card {
+            width: min(90%, 380px);
+
+            background: white;
+
+            border-radius: 28px;
+
+            padding: 28px 22px;
+
+            text-align: center;
+
+            box-shadow:
+                0 20px 70px rgba(0,0,0,0.28);
+        }
+
+        .incoming-icon {
+            width: 76px;
+            height: 76px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            background: #dff6ff;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 35px;
+
+            animation: ringPulse 1.2s infinite;
+        }
+
+        @keyframes ringPulse {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .incoming-card h2 {
+            margin: 0 0 8px;
+
+            color: #245b6c;
+
+            font-size: 21px;
+        }
+
+        .incoming-card p {
+            margin: 0 0 20px;
+
+            color: #688995;
+
+            font-size: 14px;
+        }
+
+        .incoming-actions {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .incoming-actions button {
+            flex: 1;
+
+            height: 48px;
+
+            border: none;
+
+            border-radius: 24px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           HATA
+        ===================================================== */
+
+        .error-box {
+            margin: 10px;
+
+            padding: 10px 14px;
+
+            border-radius: 12px;
+
+            background: #ffe8e8;
+
+            color: #9a3d3d;
+
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           MOBİL
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                height: 64px;
+                min-height: 64px;
+
+                padding: 0 10px;
+            }
+
+            .room-title {
+                font-size: 15px;
+            }
+
+            .room-code {
+                font-size: 11px;
+            }
+
+            .back-button {
+                width: 38px;
+                height: 38px;
+            }
+
+            .room-avatar {
+                width: 38px;
+                height: 38px;
+            }
+
+            .video-call-button {
+                width: 44px;
+                min-width: 44px;
+
+                padding: 0;
+            }
+
+            .chat-area {
+                padding:
+                    12px 9px 92px;
+            }
+
+            .message-bubble {
+                max-width: 85%;
+            }
+
+            .composer {
+                padding: 9px;
+
+                min-height: 68px;
+            }
+
+            .message-input {
+                height: 44px;
+            }
+
+            .icon-button,
+            .send-button {
+                width: 43px;
+                height: 43px;
+            }
 
             .videos {
                 grid-template-columns: 1fr;
             }
 
-            video {
-                height: 190px;
+            .video-box,
+            .video-box video {
+                min-height: 190px;
             }
 
-            .title {
-                font-size: 16px;
-            }
+            .call-card {
+                width: 96%;
 
-            .room-code {
-                font-size: 10px;
-            }
+                border-radius: 22px;
 
-            .header {
-                padding: 11px;
-            }
-
-            .video-btn {
-                padding: 9px;
-                font-size: 12px;
-            }
-
-            .composer {
-                padding: 8px;
+                padding: 14px;
             }
         }
+
     </style>
 </head>
 
+
 <body>
 
-<header class="header">
+<div class="app">
 
-    <div class="header-left">
+    <!-- =====================================================
+         ÜST BAR
+    ====================================================== -->
 
-        <a
-            href="{{ url_for('friends') }}"
-            class="back"
-        >
-            ‹
-        </a>
+    <header class="topbar">
 
-        <div>
+        <div class="room-info">
 
-            <div class="title">
-                💬 {{ room["name"] if room else "Arkadaş Sohbeti" }}
+            <a href="{{ url_for('friends') }}"
+               class="back-button"
+               title="Arkadaşlara dön">
+                ←
+            </a>
+
+            <div class="room-avatar">
+                👥
             </div>
 
-            <div class="room-code">
-                Oda: {{ room_code }}
-            </div>
+            <div class="room-text">
 
-        </div>
-
-    </div>
-
-    <button
-        class="video-btn"
-        onclick="startOutgoingCall()"
-    >
-        🎥 Görüntülü Ara
-    </button>
-
-</header>
-
-
-{% if error %}
-
-<div class="error">
-    {{ error }}
-</div>
-
-{% endif %}
-
-
-<!-- ======================================================
-     GELEN ARAMA EKRANI
-====================================================== -->
-
-<div
-    id="callOverlay"
-    class="call-overlay"
-></div>
-
-<div
-    id="incomingCall"
-    class="incoming-call"
->
-
-    <div class="call-icon">
-        📹
-    </div>
-
-    <div
-        id="incomingCaller"
-        class="incoming-title"
-    >
-        Görüntülü arama
-    </div>
-
-    <div class="incoming-text">
-        Seni görüntülü arıyor.
-    </div>
-
-    <div class="incoming-buttons">
-
-        <button
-            class="answer-btn"
-            onclick="answerIncomingCall()"
-        >
-            ✅ Aç
-        </button>
-
-        <button
-            class="reject-btn"
-            onclick="rejectIncomingCall()"
-        >
-            ❌ Reddet
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- ======================================================
-     VIDEO PANEL
-====================================================== -->
-
-<section
-    id="videoPanel"
-    class="video-panel"
->
-
-    <div class="videos">
-
-        <div>
-
-            <div class="video-label">
-                📹 Sen
-            </div>
-
-            <video
-                id="localVideo"
-                autoplay
-                muted
-                playsinline
-            ></video>
-
-        </div>
-
-
-        <div>
-
-            <div class="video-label">
-                👤 Arkadaşın
-            </div>
-
-            <video
-                id="remoteVideo"
-                autoplay
-                playsinline
-            ></video>
-
-        </div>
-
-    </div>
-
-
-    <div class="video-buttons">
-
-        <button
-            class="mute"
-            onclick="toggleMicrophone()"
-        >
-            🎤 Mikrofon
-        </button>
-
-        <button
-            class="mute"
-            onclick="toggleCamera()"
-        >
-            📷 Kamera
-        </button>
-
-        <button
-            class="hangup"
-            onclick="hangUp()"
-        >
-            📞 Görüşmeyi Bitir
-        </button>
-
-    </div>
-
-
-    <div
-        id="callStatus"
-        class="status"
-    >
-        Görüşme başlatılmadı.
-    </div>
-
-</section>
-
-
-<!-- ======================================================
-     MESAJLAR
-====================================================== -->
-
-<main class="chat">
-
-    <div
-        id="messages"
-        class="messages"
-    >
-
-        {% for message in messages %}
-
-        <div class="message">
-
-            <div class="username">
-                {{ message["username"] }}
-            </div>
-
-            {% set text = message["message"]|string %}
-
-            {% if text.startswith("📷 FOTOĞRAF|") %}
-
-                {% set photo_url = text.split("|", 1)[1] %}
-
-                <img
-                    src="{{ photo_url }}"
-                    class="photo-message"
-                    alt="Gönderilen fotoğraf"
-                >
-
-            {% else %}
-
-                <div class="message-text">
-                    {{ message["message"] }}
+                <div class="room-title">
+                    {{ room.name if room.name else "Arkadaş Sohbeti" }}
                 </div>
 
-            {% endif %}
+                <div class="room-code">
+                    Kod: {{ room_code }}
+                </div>
 
-
-            {% if message["created_at"] %}
-
-            <div class="message-time">
-                {{ message["created_at"] }}
             </div>
-
-            {% endif %}
 
         </div>
 
-        {% endfor %}
 
+        <button
+            class="video-call-button"
+            id="videoCallButton"
+            onclick="startVideoCall()"
+            title="Görüntülü ara">
+
+            📹
+
+        </button>
+
+    </header>
+
+
+    <!-- =====================================================
+         HATA
+    ====================================================== -->
+
+    {% if error %}
+
+    <div class="error-box">
+        {{ error }}
     </div>
 
+    {% endif %}
 
-    <!-- ==================================================
-         MESAJ GÖNDER
-    ================================================== -->
+
+    <!-- =====================================================
+         MESAJLAR
+    ====================================================== -->
+
+    <main
+        class="chat-area"
+        id="chatArea">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+            <div class="message-row"
+                 data-message-id="{{ message.id if message.id is defined else loop.index }}">
+
+                <div class="message-bubble">
+
+                    <div class="message-user">
+                        {{ message.username if message.username is defined else "Misafir" }}
+                    </div>
+
+                    {% set text = message.message if message.message is defined else message.get("message", "") %}
+
+                    {% if text.startswith("📷 FOTOĞRAF|") %}
+
+                        {% set image_url = text.replace("📷 FOTOĞRAF|", "", 1) %}
+
+                        <img
+                            src="{{ image_url }}"
+                            class="message-photo"
+                            alt="Gönderilen fotoğraf"
+                            onclick="window.open(this.src, '_blank')">
+
+                    {% else %}
+
+                        <div class="message-text">
+                            {{ text }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-message"
+                 id="emptyMessage">
+
+                <div class="empty-icon">
+                    💬
+                </div>
+
+                <h3>Sohbet burada başlayacak</h3>
+
+                <p>Arkadaşına ilk mesajı sen gönder! 🩵</p>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+
+    <!-- =====================================================
+         MESAJ GÖNDERME
+    ====================================================== -->
 
     <form
         class="composer"
+        id="messageForm"
         method="POST"
-    >
+        action="{{ url_for('friend_room', room_code=room_code) }}">
 
         <input
             type="text"
             name="username"
             id="username"
-            placeholder="Adın"
-            value="{{ request.form.get('username', '') }}"
-            required
-        >
-
-
-        <input
-            type="text"
-            name="message"
-            placeholder="Mesaj yaz..."
-            autocomplete="off"
-        >
-
-
-        <button
-            type="button"
-            class="photo-button"
-            onclick="document.getElementById('photoInput').click()"
-        >
-            📷
-        </button>
-
+            class="username-input"
+            value="{{ request.form.get('username', 'Misafir') }}">
 
         <input
             type="file"
             id="photoInput"
-            accept="image/*"
-            onchange="uploadPhoto()"
-        >
-
+            accept="image/jpeg,image/png,image/gif,image/webp">
 
         <button
-            class="send"
+            type="button"
+            class="icon-button"
+            onclick="document.getElementById('photoInput').click()"
+            title="Fotoğraf gönder">
+
+            📎
+
+        </button>
+
+        <input
+            type="text"
+            name="message"
+            id="messageInput"
+            class="message-input"
+            autocomplete="off"
+            placeholder="Mesaj yaz...">
+
+        <button
             type="submit"
-        >
-            Gönder
+            class="send-button"
+            title="Gönder">
+
+            ➤
+
         </button>
 
     </form>
 
-</main>
+</div>
+
+
+<!-- =========================================================
+     YÜKLEME DURUMU
+========================================================== -->
+
+<div
+    class="upload-status"
+    id="uploadStatus">
+    Fotoğraf gönderiliyor...
+</div>
+
+
+<!-- =========================================================
+     GELEN ARAMA
+========================================================== -->
+
+<div
+    class="incoming-overlay"
+    id="incomingOverlay">
+
+    <div class="incoming-card">
+
+        <div class="incoming-icon">
+            📹
+        </div>
+
+        <h2>Gelen görüntülü arama</h2>
+
+        <p id="incomingCaller">
+            Arkadaşın seni görüntülü arıyor.
+        </p>
+
+        <div class="incoming-actions">
+
+            <button
+                class="reject-button"
+                onclick="rejectIncomingCall()">
+
+                ❌ Reddet
+
+            </button>
+
+            <button
+                class="accept-button"
+                onclick="acceptIncomingCall()">
+
+                📹 Aç
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     GÖRÜNTÜLÜ KONUŞMA
+========================================================== -->
+
+<div
+    class="call-overlay"
+    id="callOverlay">
+
+    <div class="call-card">
+
+        <div class="call-header">
+
+            <div
+                class="call-title"
+                id="callTitle">
+                Görüntülü konuşma
+            </div>
+
+            <button
+                class="close-call"
+                onclick="endCall()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+
+        <div class="videos">
+
+            <div class="video-box">
+
+                <video
+                    id="localVideo"
+                    autoplay
+                    muted
+                    playsinline>
+                </video>
+
+                <div class="video-label">
+                    Sen
+                </div>
+
+            </div>
+
+
+            <div class="video-box">
+
+                <video
+                    id="remoteVideo"
+                    autoplay
+                    playsinline>
+                </video>
+
+                <div class="video-label">
+                    Arkadaşın
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="call-status"
+            id="callStatus">
+            Bağlantı hazırlanıyor...
+        </div>
+
+
+        <div class="call-actions">
+
+            <button
+                class="call-action mute-button"
+                id="muteButton"
+                onclick="toggleMute()">
+
+                🎤 Mikrofon
+
+            </button>
+
+            <button
+                class="call-action end-button"
+                onclick="endCall()">
+
+                📞 Görüşmeyi bitir
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <script>
 
-const ROOM_CODE = {{ room_code|tojson }};
+    /* =========================================================
+       TEMEL AYARLAR
+    ========================================================= */
 
-let localStream = null;
-let peerConnection = null;
+    const ROOM_CODE = {{ room_code|tojson }};
 
-let callActive = false;
-let microphoneEnabled = true;
-let cameraEnabled = true;
+    let USERNAME =
+        localStorage.getItem("friend_username") || "";
 
-let lastSignalId = 0;
+    if (!USERNAME) {
 
-let currentCallId = null;
-
-let currentMessageCount =
-    document.querySelectorAll(".message").length;
-
-
-const configuration = {
-
-    iceServers: [
-
-        {
-            urls: "stun:stun.l.google.com:19302"
-        },
-
-        {
-            urls: "stun:stun1.l.google.com:19302"
-        }
-
-    ]
-
-};
-
-
-/* ======================================================
-   YARDIMCI
-====================================================== */
-
-function setStatus(text) {
-
-    const status =
-        document.getElementById("callStatus");
-
-    if (status) {
-        status.textContent = text;
-    }
-
-}
-
-
-function openVideoPanel() {
-
-    document
-        .getElementById("videoPanel")
-        .classList.add("active");
-
-}
-
-
-function closeIncomingCall() {
-
-    document
-        .getElementById("incomingCall")
-        .classList.remove("active");
-
-    document
-        .getElementById("callOverlay")
-        .classList.remove("active");
-
-}
-
-
-function showIncomingCall(caller) {
-
-    document
-        .getElementById("incomingCaller")
-        .textContent =
-            "📹 " +
-            (caller || "Arkadaşın") +
-            " seni arıyor";
-
-    document
-        .getElementById("incomingCall")
-        .classList.add("active");
-
-    document
-        .getElementById("callOverlay")
-        .classList.add("active");
-
-}
-
-
-/* ======================================================
-   WEBRTC PEER
-====================================================== */
-
-function createPeerConnection() {
-
-    peerConnection =
-        new RTCPeerConnection(
-            configuration
+        USERNAME = prompt(
+            "Sohbette kullanacağın isim:",
+            "Misafir"
         );
 
+        if (!USERNAME) {
+            USERNAME = "Misafir";
+        }
 
-    peerConnection.onicecandidate =
-        function(event) {
+        localStorage.setItem(
+            "friend_username",
+            USERNAME
+        );
+    }
 
-            if (event.candidate) {
 
-                sendSignal(
-                    "candidate",
-                    event.candidate
-                );
+    document.getElementById("username").value =
+        USERNAME;
+
+
+    /* =========================================================
+       ELEMENTLER
+    ========================================================= */
+
+    const chatArea =
+        document.getElementById("chatArea");
+
+    const messageForm =
+        document.getElementById("messageForm");
+
+    const messageInput =
+        document.getElementById("messageInput");
+
+    const photoInput =
+        document.getElementById("photoInput");
+
+    const uploadStatus =
+        document.getElementById("uploadStatus");
+
+    const callOverlay =
+        document.getElementById("callOverlay");
+
+    const incomingOverlay =
+        document.getElementById("incomingOverlay");
+
+    const callStatus =
+        document.getElementById("callStatus");
+
+    const incomingCaller =
+        document.getElementById("incomingCaller");
+
+    const localVideo =
+        document.getElementById("localVideo");
+
+    const remoteVideo =
+        document.getElementById("remoteVideo");
+
+    const videoCallButton =
+        document.getElementById("videoCallButton");
+
+
+    /* =========================================================
+       MESAJ GÖNDERME
+    ========================================================= */
+
+    messageForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const message =
+                messageInput.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "username",
+                USERNAME
+            );
+
+            formData.append(
+                "message",
+                message
+            );
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{{ url_for('friend_room', room_code=room_code) }}",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    alert(
+                        "Mesaj gönderilemedi."
+                    );
+
+                    return;
+                }
+
+
+                messageInput.value = "";
+
+                await loadMessages(true);
 
             }
 
-        };
+            catch (error) {
 
-
-    peerConnection.ontrack =
-        function(event) {
-
-            const remoteVideo =
-                document.getElementById(
-                    "remoteVideo"
+                console.error(
+                    "Mesaj gönderme hatası:",
+                    error
                 );
 
+                alert(
+                    "Mesaj gönderilirken hata oluştu."
+                );
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       ENTER
+    ========================================================= */
+
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
 
             if (
-                event.streams &&
-                event.streams[0]
+                event.key === "Enter"
+                && !event.shiftKey
             ) {
 
-                remoteVideo.srcObject =
-                    event.streams[0];
+                event.preventDefault();
 
+                messageForm.requestSubmit();
             }
 
-        };
+        }
+    );
 
 
-    peerConnection.onconnectionstatechange =
-        function() {
+    /* =========================================================
+       FOTOĞRAF
+    ========================================================= */
 
-            if (!peerConnection) {
+    photoInput.addEventListener(
+        "change",
+        async function() {
+
+            const file =
+                photoInput.files[0];
+
+            if (!file) {
                 return;
             }
 
 
-            const state =
-                peerConnection.connectionState;
+            const allowed = [
+                "image/jpeg",
+                "image/png",
+                "image/gif",
+                "image/webp"
+            ];
 
 
-            if (state === "connected") {
+            if (!allowed.includes(file.type)) {
 
-                callActive = true;
+                alert(
+                    "Bu fotoğraf formatı desteklenmiyor."
+                );
 
-                setStatus(
-                    "🟢 Görüşme bağlantısı kuruldu."
+                photoInput.value = "";
+
+                return;
+            }
+
+
+            uploadStatus.style.display =
+                "block";
+
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "photo",
+                file
+            );
+
+            formData.append(
+                "username",
+                USERNAME
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/friends/${encodeURIComponent(ROOM_CODE)}/upload`,
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    alert(
+                        data.error ||
+                        "Fotoğraf gönderilemedi."
+                    );
+
+                    return;
+                }
+
+
+                await loadMessages(true);
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Fotoğraf gönderme hatası:",
+                    error
+                );
+
+                alert(
+                    "Fotoğraf gönderilirken hata oluştu."
                 );
 
             }
 
+            finally {
 
-            if (state === "connecting") {
+                uploadStatus.style.display =
+                    "none";
 
-                setStatus(
-                    "🟡 Arkadaşına bağlanılıyor..."
+                photoInput.value = "";
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       MESAJLARI GETİR
+    ========================================================= */
+
+    let lastMessagesJson = "";
+
+
+    async function loadMessages(forceScroll = false) {
+
+        try {
+
+            const response =
+                await fetch(
+                    `/friends/${encodeURIComponent(ROOM_CODE)}/messages`,
+                    {
+                        cache: "no-store"
+                    }
                 );
 
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+                return;
             }
+
+
+            const messages =
+                data.messages || [];
+
+
+            const json =
+                JSON.stringify(messages);
 
 
             if (
-                state === "disconnected" ||
-                state === "failed"
+                json === lastMessagesJson
+                && !forceScroll
             ) {
 
-                setStatus(
-                    "🔴 Görüşme bağlantısı kesildi."
+                return;
+            }
+
+
+            lastMessagesJson =
+                json;
+
+
+            renderMessages(
+                messages
+            );
+
+
+            if (forceScroll) {
+
+                scrollToBottom();
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Mesaj yenileme hatası:",
+                error
+            );
+        }
+
+    }
+
+
+    /* =========================================================
+       MESAJLARI ÇİZ
+    ========================================================= */
+
+    function renderMessages(messages) {
+
+        chatArea.innerHTML = "";
+
+
+        if (!messages.length) {
+
+            chatArea.innerHTML = `
+                <div class="empty-message">
+                    <div class="empty-icon">💬</div>
+                    <h3>Sohbet burada başlayacak</h3>
+                    <p>Arkadaşına ilk mesajı sen gönder! 🩵</p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        messages.forEach(
+            function(message) {
+
+                const username =
+                    message.username ||
+                    "Misafir";
+
+                const text =
+                    message.message ||
+                    "";
+
+
+                const row =
+                    document.createElement("div");
+
+                row.className =
+                    "message-row";
+
+
+                if (
+                    username === USERNAME
+                ) {
+
+                    row.classList.add(
+                        "mine"
+                    );
+                }
+
+
+                const bubble =
+                    document.createElement("div");
+
+                bubble.className =
+                    "message-bubble";
+
+
+                const user =
+                    document.createElement("div");
+
+                user.className =
+                    "message-user";
+
+                user.textContent =
+                    username;
+
+
+                bubble.appendChild(
+                    user
+                );
+
+
+                if (
+                    text.startsWith(
+                        "📷 FOTOĞRAF|"
+                    )
+                ) {
+
+                    const imageUrl =
+                        text.substring(
+                            "📷 FOTOĞRAF|".length
+                        );
+
+
+                    const image =
+                        document.createElement("img");
+
+                    image.className =
+                        "message-photo";
+
+                    image.src =
+                        imageUrl;
+
+                    image.alt =
+                        "Gönderilen fotoğraf";
+
+
+                    image.onclick =
+                        function() {
+
+                            window.open(
+                                imageUrl,
+                                "_blank"
+                            );
+
+                        };
+
+
+                    bubble.appendChild(
+                        image
+                    );
+
+                }
+
+                else {
+
+                    const content =
+                        document.createElement("div");
+
+                    content.className =
+                        "message-text";
+
+                    content.textContent =
+                        text;
+
+                    bubble.appendChild(
+                        content
+                    );
+                }
+
+
+                row.appendChild(
+                    bubble
+                );
+
+                chatArea.appendChild(
+                    row
                 );
 
             }
-
-        };
-
-
-    if (localStream) {
-
-        localStream
-            .getTracks()
-            .forEach(function(track) {
-
-                peerConnection.addTrack(
-                    track,
-                    localStream
-                );
-
-            });
-
-    }
-
-}
-
-
-/* ======================================================
-   KAMERA
-====================================================== */
-
-async function getLocalMedia() {
-
-    if (localStream) {
-        return localStream;
-    }
-
-
-    localStream =
-        await navigator.mediaDevices.getUserMedia({
-
-            video: true,
-            audio: true
-
-        });
-
-
-    document
-        .getElementById("localVideo")
-        .srcObject =
-            localStream;
-
-
-    return localStream;
-
-}
-
-
-/* ======================================================
-   GİDEN ARAMA
-====================================================== */
-
-async function startOutgoingCall() {
-
-    try {
-
-        openVideoPanel();
-
-        setStatus(
-            "📞 Arkadaşına arama gönderiliyor..."
         );
 
+    }
 
-        const username =
-            document
-                .getElementById("username")
-                .value
-                .trim() ||
-            "Misafir";
 
+    /* =========================================================
+       AŞAĞI KAYDIR
+    ========================================================= */
+
+    function scrollToBottom() {
+
+        chatArea.scrollTop =
+            chatArea.scrollHeight;
+    }
+
+
+    /* =========================================================
+       İLK MESAJLAR
+    ========================================================= */
+
+    loadMessages(true);
+
+
+    /* =========================================================
+       HER 2 SANİYEDE MESAJLARI KONTROL ET
+    ========================================================= */
+
+    setInterval(
+        function() {
+
+            loadMessages(false);
+
+        },
+        2000
+    );
+
+
+    /* =========================================================
+       WEBRTC
+    ========================================================= */
+
+    let peerConnection = null;
+
+    let localStream = null;
+
+    let currentCallId = null;
+
+    let isCaller = false;
+
+    let callAccepted = false;
+
+    let knownCandidates = new Set();
+
+    let callPollingTimer = null;
+
+    let signalingTimer = null;
+
+
+    const rtcConfiguration = {
+
+        iceServers: [
+
+            {
+                urls:
+                    "stun:stun.l.google.com:19302"
+            },
+
+            {
+                urls:
+                    "stun:stun1.l.google.com:19302"
+            }
+
+        ]
+
+    };
+
+
+    /* =========================================================
+       VIDEO MODALINI AÇ
+    ========================================================= */
+
+    function showCallScreen(
+        title
+    ) {
+
+        callOverlay.classList.add(
+            "show"
+        );
+
+        document.getElementById(
+            "callTitle"
+        ).textContent =
+            title || "Görüntülü konuşma";
+
+    }
+
+
+    /* =========================================================
+       MEDIA
+    ========================================================= */
+
+    async function getMedia() {
+
+        if (localStream) {
+            return localStream;
+        }
+
+
+        try {
+
+            localStream =
+                await navigator.mediaDevices
+                    .getUserMedia({
+                        video: true,
+                        audio: true
+                    });
+
+
+            localVideo.srcObject =
+                localStream;
+
+
+            return localStream;
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Kamera/mikrofon hatası:",
+                error
+            );
+
+            alert(
+                "Kamera ve mikrofon izni gerekli. Tarayıcıdan izin vermeyi unutma."
+            );
+
+            throw error;
+        }
+
+    }
+
+
+    /* =========================================================
+       PEER OLUŞTUR
+    ========================================================= */
+
+    function createPeerConnection() {
+
+        if (peerConnection) {
+            return peerConnection;
+        }
+
+
+        peerConnection =
+            new RTCPeerConnection(
+                rtcConfiguration
+            );
+
+
+        peerConnection.onicecandidate =
+            async function(event) {
+
+                if (
+                    !event.candidate
+                ) {
+                    return;
+                }
+
+
+                try {
+
+                    await sendSignal(
+                        "candidate",
+                        event.candidate
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "ICE gönderme hatası:",
+                        error
+                    );
+                }
+
+            };
+
+
+        peerConnection.ontrack =
+            function(event) {
+
+                if (
+                    event.streams
+                    && event.streams[0]
+                ) {
+
+                    remoteVideo.srcObject =
+                        event.streams[0];
+                }
+
+            };
+
+
+        peerConnection.onconnectionstatechange =
+            function() {
+
+                const state =
+                    peerConnection.connectionState;
+
+
+                if (
+                    state === "connected"
+                ) {
+
+                    callStatus.textContent =
+                        "Bağlantı kuruldu 🩵";
+
+                }
+
+                else if (
+                    state === "connecting"
+                ) {
+
+                    callStatus.textContent =
+                        "Bağlanıyor...";
+
+                }
+
+                else if (
+                    state === "disconnected"
+                    || state === "failed"
+                ) {
+
+                    callStatus.textContent =
+                        "Bağlantı kesildi.";
+
+                }
+
+            };
+
+
+        return peerConnection;
+    }
+
+
+    /* =========================================================
+       LOCAL TRACK'LER
+    ========================================================= */
+
+    async function addLocalTracks() {
+
+        const stream =
+            await getMedia();
+
+        const pc =
+            createPeerConnection();
+
+
+        const existingTracks =
+            pc.getSenders().map(
+                sender =>
+                    sender.track
+            );
+
+
+        stream.getTracks().forEach(
+            function(track) {
+
+                if (
+                    !existingTracks.includes(
+                        track
+                    )
+                ) {
+
+                    pc.addTrack(
+                        track,
+                        stream
+                    );
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       SİNYAL GÖNDER
+    ========================================================= */
+
+    async function sendSignal(
+        type,
+        data
+    ) {
 
         const response =
             await fetch(
-                `/friends/${ROOM_CODE}/call/start`,
+                `/friends/${encodeURIComponent(ROOM_CODE)}/video/signal`,
                 {
-
                     method: "POST",
 
                     headers: {
@@ -877,43 +1948,581 @@ async function startOutgoingCall() {
                     },
 
                     body: JSON.stringify({
-                        caller: username
+                        type: type,
+                        data: data
                     })
-
                 }
             );
 
 
-        const data =
-            await response.json();
+        return response.json();
+    }
 
 
-        if (!data.success) {
+    /* =========================================================
+       SIGNALING STATE OKU
+    ========================================================= */
 
-            setStatus(
-                "❌ Arama başlatılamadı."
-            );
+    async function getVideoState() {
 
-            return;
+        try {
+
+            const response =
+                await fetch(
+                    `/friends/${encodeURIComponent(ROOM_CODE)}/video/state`,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            return await response.json();
 
         }
 
+        catch (error) {
 
-        currentCallId =
-            data.call_id;
+            console.error(
+                "Video state hatası:",
+                error
+            );
+
+            return null;
+        }
+
+    }
 
 
-        await getLocalMedia();
+    /* =========================================================
+       ICE KONTROL
+    ========================================================= */
+
+    async function processCandidates(
+        candidates
+    ) {
+
+        if (!peerConnection) {
+            return;
+        }
 
 
-        createPeerConnection();
+        for (
+            const candidate
+            of candidates || []
+        ) {
+
+            try {
+
+                const key =
+                    JSON.stringify(
+                        candidate
+                    );
+
+
+                if (
+                    knownCandidates.has(
+                        key
+                    )
+                ) {
+
+                    continue;
+                }
+
+
+                knownCandidates.add(
+                    key
+                );
+
+
+                await peerConnection
+                    .addIceCandidate(
+                        new RTCIceCandidate(
+                            candidate
+                        )
+                    );
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "ICE candidate eklenemedi:",
+                    error
+                );
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       GÖRÜNTÜLÜ ARAMA BAŞLAT
+    ========================================================= */
+
+    async function startVideoCall() {
+
+        if (
+            currentCallId
+        ) {
+
+            return;
+        }
+
+
+        isCaller = true;
+
+        callAccepted = false;
+
+
+        videoCallButton.classList.add(
+            "active"
+        );
+
+
+        showCallScreen(
+            "Görüntülü arama"
+        );
+
+
+        callStatus.textContent =
+            "Arama başlatılıyor...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/friends/${encodeURIComponent(ROOM_CODE)}/call/start`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            caller: USERNAME
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                alert(
+                    data.error ||
+                    "Arama başlatılamadı."
+                );
+
+                closeCallScreen();
+
+                return;
+            }
+
+
+            currentCallId =
+                data.call_id;
+
+
+            await addLocalTracks();
+
+
+            callStatus.textContent =
+                "Arkadaşının aramayı açması bekleniyor...";
+
+
+            startCallStatusPolling();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Arama başlatma hatası:",
+                error
+            );
+
+            alert(
+                "Görüntülü arama başlatılamadı."
+            );
+
+            closeCallScreen();
+        }
+
+    }
+
+
+    /* =========================================================
+       GELEN ARAMALARI KONTROL ET
+    ========================================================= */
+
+    async function checkIncomingCall() {
+
+        if (
+            currentCallId
+            || isCaller
+        ) {
+
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/friends/${encodeURIComponent(ROOM_CODE)}/call`,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            const call =
+                data.call;
+
+
+            if (!call) {
+                return;
+            }
+
+
+            if (
+                call.status !== "ringing"
+            ) {
+
+                return;
+            }
+
+
+            if (
+                call.caller === USERNAME
+            ) {
+
+                return;
+            }
+
+
+            currentCallId =
+                call.call_id;
+
+
+            incomingCaller.textContent =
+                `${call.caller || "Arkadaşın"} seni görüntülü arıyor.`;
+
+
+            incomingOverlay.classList.add(
+                "show"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Gelen arama kontrol hatası:",
+                error
+            );
+        }
+
+    }
+
+
+    /* =========================================================
+       GELEN ARAMA KABUL
+    ========================================================= */
+
+    async function acceptIncomingCall() {
+
+        const callId =
+            currentCallId;
+
+
+        if (!callId) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/friends/${encodeURIComponent(ROOM_CODE)}/call/answer`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            call_id: callId
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                alert(
+                    data.error ||
+                    "Arama kabul edilemedi."
+                );
+
+                currentCallId = null;
+
+                incomingOverlay.classList.remove(
+                    "show"
+                );
+
+                return;
+            }
+
+
+            incomingOverlay.classList.remove(
+                "show"
+            );
+
+
+            isCaller = false;
+
+            callAccepted = true;
+
+
+            showCallScreen(
+                "Görüntülü konuşma"
+            );
+
+
+            callStatus.textContent =
+                "Bağlanıyor...";
+
+
+            await addLocalTracks();
+
+
+            startVideoSignaling();
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Arama kabul hatası:",
+                error
+            );
+
+            alert(
+                "Arama kabul edilemedi."
+            );
+        }
+
+    }
+
+
+    /* =========================================================
+       GELEN ARAMA REDDET
+    ========================================================= */
+
+    async function rejectIncomingCall() {
+
+        const callId =
+            currentCallId;
+
+
+        incomingOverlay.classList.remove(
+            "show"
+        );
+
+
+        try {
+
+            await fetch(
+                `/friends/${encodeURIComponent(ROOM_CODE)}/call/reject`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        call_id: callId
+                    })
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Arama reddetme hatası:",
+                error
+            );
+        }
+
+
+        currentCallId = null;
+    }
+
+
+    /* =========================================================
+       ARAMA DURUMU POLLING
+    ========================================================= */
+
+    function startCallStatusPolling() {
+
+        clearInterval(
+            callPollingTimer
+        );
+
+
+        callPollingTimer =
+            setInterval(
+                async function() {
+
+                    if (!currentCallId) {
+                        return;
+                    }
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                `/friends/${encodeURIComponent(ROOM_CODE)}/call`,
+                                {
+                                    cache: "no-store"
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        const call =
+                            data.call;
+
+
+                        if (!call) {
+
+                            if (
+                                isCaller
+                            ) {
+
+                                callStatus.textContent =
+                                    "Arama sonlandırıldı.";
+
+                            }
+
+                            clearInterval(
+                                callPollingTimer
+                            );
+
+                            return;
+                        }
+
+
+                        if (
+                            call.call_id
+                            !== currentCallId
+                        ) {
+
+                            return;
+                        }
+
+
+                        if (
+                            call.status
+                            === "ringing"
+                        ) {
+
+                            callStatus.textContent =
+                                "Arkadaşının aramayı açması bekleniyor...";
+
+                        }
+
+
+                        if (
+                            call.status
+                            === "accepted"
+                        ) {
+
+                            callAccepted =
+                                true;
+
+
+                            clearInterval(
+                                callPollingTimer
+                            );
+
+
+                            callStatus.textContent =
+                                "Arama kabul edildi. Bağlanıyor...";
+
+
+                            await startCallerWebRTC();
+
+                        }
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Arama durumu hatası:",
+                            error
+                        );
+                    }
+
+                },
+                1000
+            );
+    }
+
+
+    /* =========================================================
+       ARAYAN TARAF WEBRTC
+    ========================================================= */
+
+    async function startCallerWebRTC() {
+
+        if (!isCaller) {
+            return;
+        }
+
+
+        await addLocalTracks();
+
+
+        const pc =
+            createPeerConnection();
 
 
         const offer =
-            await peerConnection.createOffer();
+            await pc.createOffer();
 
 
-        await peerConnection.setLocalDescription(
+        await pc.setLocalDescription(
             offer
         );
 
@@ -924,100 +2533,248 @@ async function startOutgoingCall() {
         );
 
 
-        setStatus(
-            "📞 Arkadaşının aramayı kabul etmesi bekleniyor..."
-        );
+        callStatus.textContent =
+            "Karşı tarafla bağlantı kuruluyor...";
 
 
-    } catch (error) {
-
-        console.error(error);
-
-        setStatus(
-            "❌ Kamera veya mikrofon açılamadı."
-        );
+        startVideoSignaling();
 
     }
 
-}
+
+    /* =========================================================
+       WEBRTC SIGNALING
+    ========================================================= */
+
+    function startVideoSignaling() {
+
+        clearInterval(
+            signalingTimer
+        );
 
 
-/* ======================================================
-   GELEN ARAMAYI KONTROL
-====================================================== */
-
-async function checkIncomingCall() {
-
-    try {
-
-        const response =
-            await fetch(
-                `/friends/${ROOM_CODE}/call`
+        signalingTimer =
+            setInterval(
+                processVideoState,
+                1000
             );
 
 
-        if (!response.ok) {
+        processVideoState();
+    }
+
+
+    let processedOffer = false;
+
+    let processedAnswer = false;
+
+
+    async function processVideoState() {
+
+        if (
+            !currentCallId
+            || !callAccepted
+        ) {
+
             return;
         }
 
 
-        const data =
-            await response.json();
+        try {
+
+            const state =
+                await getVideoState();
 
 
-        if (
-            data.success &&
-            data.call &&
-            data.call.status === "ringing"
-        ) {
+            if (!state) {
+                return;
+            }
+
+
+            const pc =
+                createPeerConnection();
+
+
+            /* -------------------------------------------------
+               ARAYAN TARAF: ANSWER AL
+            ------------------------------------------------- */
 
             if (
-                currentCallId !==
-                data.call.call_id
+                isCaller
+                && state.answer
+                && !processedAnswer
             ) {
 
-                currentCallId =
-                    data.call.call_id;
+                processedAnswer = true;
 
 
-                showIncomingCall(
-                    data.call.caller
-                );
+                try {
+
+                    await pc.setRemoteDescription(
+                        new RTCSessionDescription(
+                            state.answer
+                        )
+                    );
+
+
+                    callStatus.textContent =
+                        "Bağlantı kuruluyor...";
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Answer ekleme hatası:",
+                        error
+                    );
+                }
 
             }
 
+
+            /* -------------------------------------------------
+               ARANAN TARAF: OFFER AL
+            ------------------------------------------------- */
+
+            if (
+                !isCaller
+                && state.offer
+                && !processedOffer
+            ) {
+
+                processedOffer = true;
+
+
+                try {
+
+                    await pc.setRemoteDescription(
+                        new RTCSessionDescription(
+                            state.offer
+                        )
+                    );
+
+
+                    const answer =
+                        await pc.createAnswer();
+
+
+                    await pc.setLocalDescription(
+                        answer
+                    );
+
+
+                    await sendSignal(
+                        "answer",
+                        answer
+                    );
+
+
+                    callStatus.textContent =
+                        "Bağlantı kuruluyor...";
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Offer işleme hatası:",
+                        error
+                    );
+                }
+
+            }
+
+
+            /* -------------------------------------------------
+               ICE
+            ------------------------------------------------- */
+
+            await processCandidates(
+                state.candidates || []
+            );
+
         }
 
-    } catch (error) {
+        catch (error) {
 
-        console.error(
-            "Arama kontrol hatası:",
-            error
-        );
+            console.error(
+                "WebRTC signaling hatası:",
+                error
+            );
+        }
 
     }
 
-}
+
+    /* =========================================================
+       MİKROFONU KAPAT / AÇ
+    ========================================================= */
+
+    function toggleMute() {
+
+        if (!localStream) {
+            return;
+        }
 
 
-/* ======================================================
-   ARAMAYI KABUL
-====================================================== */
-
-async function answerIncomingCall() {
-
-    try {
-
-        closeIncomingCall();
-
-        openVideoPanel();
+        const audioTracks =
+            localStream.getAudioTracks();
 
 
-        const response =
+        if (!audioTracks.length) {
+            return;
+        }
+
+
+        const enabled =
+            audioTracks[0].enabled;
+
+
+        audioTracks.forEach(
+            function(track) {
+
+                track.enabled =
+                    !enabled;
+
+            }
+        );
+
+
+        document.getElementById(
+            "muteButton"
+        ).textContent =
+            enabled
+                ? "🔇 Mikrofon kapalı"
+                : "🎤 Mikrofon";
+
+    }
+
+
+    /* =========================================================
+       ARAMAYI BİTİR
+    ========================================================= */
+
+    async function endCall() {
+
+        const callId =
+            currentCallId;
+
+
+        clearInterval(
+            callPollingTimer
+        );
+
+        clearInterval(
+            signalingTimer
+        );
+
+
+        try {
+
             await fetch(
-                `/friends/${ROOM_CODE}/call/answer`,
+                `/friends/${encodeURIComponent(ROOM_CODE)}/call/end`,
                 {
-
                     method: "POST",
 
                     headers: {
@@ -1026,630 +2783,182 @@ async function answerIncomingCall() {
                     },
 
                     body: JSON.stringify({
-                        call_id:
-                            currentCallId
+                        call_id: callId
                     })
-
                 }
             );
 
+        }
 
-        const data =
-            await response.json();
+        catch (error) {
 
-
-        if (!data.success) {
-
-            setStatus(
-                "❌ Arama kabul edilemedi."
+            console.error(
+                "Arama bitirme hatası:",
+                error
             );
-
-            return;
-
         }
 
 
-        await getLocalMedia();
-
-
-        if (!peerConnection) {
-
-            createPeerConnection();
-
-        }
-
-
-        setStatus(
-            "🟡 Aramaya bağlanılıyor..."
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        setStatus(
-            "❌ Arama sırasında hata oluştu."
-        );
+        closeCallScreen();
 
     }
 
-}
+
+    /* =========================================================
+       CALL SCREEN KAPAT
+    ========================================================= */
+
+    function closeCallScreen() {
+
+        clearInterval(
+            callPollingTimer
+        );
+
+        clearInterval(
+            signalingTimer
+        );
 
 
-/* ======================================================
-   ARAMAYI REDDET
-====================================================== */
+        if (peerConnection) {
 
-async function rejectIncomingCall() {
-
-    try {
-
-        await fetch(
-            `/friends/${ROOM_CODE}/call/reject`,
-            {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-                    call_id:
-                        currentCallId
-                })
-
+            try {
+                peerConnection.close();
             }
-        );
 
-    } catch (error) {
-
-        console.error(error);
-
-    }
-
-
-    closeIncomingCall();
-
-    currentCallId = null;
-
-}
-
-
-/* ======================================================
-   SIGNALING
-====================================================== */
-
-async function sendSignal(type, data) {
-
-    try {
-
-        await fetch(
-            `/friends/${ROOM_CODE}/video/signal`,
-            {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    type: type,
-
-                    data: data
-
-                })
-
+            catch (error) {
+                console.warn(error);
             }
+
+        }
+
+
+        peerConnection =
+            null;
+
+
+        if (localStream) {
+
+            localStream
+                .getTracks()
+                .forEach(
+                    function(track) {
+                        track.stop();
+                    }
+                );
+
+        }
+
+
+        localStream =
+            null;
+
+
+        localVideo.srcObject =
+            null;
+
+        remoteVideo.srcObject =
+            null;
+
+
+        callOverlay.classList.remove(
+            "show"
         );
 
-    } catch (error) {
 
-        console.error(
-            "Signal gönderilemedi:",
-            error
+        incomingOverlay.classList.remove(
+            "show"
         );
+
+
+        videoCallButton.classList.remove(
+            "active"
+        );
+
+
+        currentCallId =
+            null;
+
+
+        isCaller =
+            false;
+
+
+        callAccepted =
+            false;
+
+
+        processedOffer =
+            false;
+
+
+        processedAnswer =
+            false;
+
+
+        knownCandidates.clear();
+
+
+        callStatus.textContent =
+            "Bağlantı hazırlanıyor...";
 
     }
 
-}
 
+    /* =========================================================
+       KAPATMA BUTONU
+    ========================================================= */
 
-/* ======================================================
-   SIGNAL KONTROL
-====================================================== */
+    window.addEventListener(
+        "beforeunload",
+        function() {
 
-async function checkSignals() {
+            if (
+                currentCallId
+            ) {
 
-    try {
-
-        const response =
-            await fetch(
-                `/friends/${ROOM_CODE}/video/state`
-            );
-
-
-        if (!response.ok) {
-            return;
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.success) {
-            return;
-        }
-
-
-        /* ----------------------------------------------
-           OFFER
-        ---------------------------------------------- */
-
-        if (
-            data.offer &&
-            data.offer.sdp &&
-            peerConnection
-        ) {
-
-            const remoteDescription =
-                peerConnection
-                    .remoteDescription;
-
-
-            if (!remoteDescription) {
-
-                await peerConnection
-                    .setRemoteDescription(
-                        new RTCSessionDescription(
-                            data.offer
-                        )
-                    );
-
-
-                const answer =
-                    await peerConnection
-                        .createAnswer();
-
-
-                await peerConnection
-                    .setLocalDescription(
-                        answer
-                    );
-
-
-                await sendSignal(
-                    "answer",
-                    answer
+                navigator.sendBeacon(
+                    `/friends/${encodeURIComponent(ROOM_CODE)}/call/end`
                 );
 
             }
 
         }
-
-
-        /* ----------------------------------------------
-           ANSWER
-        ---------------------------------------------- */
-
-        if (
-            data.answer &&
-            data.answer.sdp &&
-            peerConnection
-        ) {
-
-            const remoteDescription =
-                peerConnection
-                    .remoteDescription;
-
-
-            if (!remoteDescription) {
-
-                await peerConnection
-                    .setRemoteDescription(
-                        new RTCSessionDescription(
-                            data.answer
-                        )
-                    );
-
-            }
-
-        }
-
-
-        /* ----------------------------------------------
-           ICE
-        ---------------------------------------------- */
-
-        if (
-            data.candidates &&
-            peerConnection
-        ) {
-
-            for (
-                const candidate
-                of data.candidates
-            ) {
-
-                try {
-
-                    await peerConnection
-                        .addIceCandidate(
-                            new RTCIceCandidate(
-                                candidate
-                            )
-                        );
-
-                } catch (error) {
-
-                    console.log(
-                        "ICE bekliyor:",
-                        error
-                    );
-
-                }
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Signal kontrol hatası:",
-            error
-        );
-
-    }
-
-}
-
-
-/* ======================================================
-   MİKROFON
-====================================================== */
-
-function toggleMicrophone() {
-
-    if (!localStream) {
-        return;
-    }
-
-
-    microphoneEnabled =
-        !microphoneEnabled;
-
-
-    localStream
-        .getAudioTracks()
-        .forEach(function(track) {
-
-            track.enabled =
-                microphoneEnabled;
-
-        });
-
-
-    setStatus(
-        microphoneEnabled
-            ? "🎤 Mikrofon açık."
-            : "🔇 Mikrofon kapalı."
     );
 
-}
 
+    /* =========================================================
+       GELEN ARAMA KONTROLÜ
+    ========================================================= */
 
-/* ======================================================
-   KAMERA
-====================================================== */
-
-function toggleCamera() {
-
-    if (!localStream) {
-        return;
-    }
-
-
-    cameraEnabled =
-        !cameraEnabled;
-
-
-    localStream
-        .getVideoTracks()
-        .forEach(function(track) {
-
-            track.enabled =
-                cameraEnabled;
-
-        });
-
-
-    setStatus(
-        cameraEnabled
-            ? "📷 Kamera açık."
-            : "📷 Kamera kapalı."
+    setInterval(
+        checkIncomingCall,
+        1000
     );
 
-}
+
+    checkIncomingCall();
 
 
-/* ======================================================
-   GÖRÜŞMEYİ BİTİR
-====================================================== */
+    /* =========================================================
+       MOBİLDE KLAVYE AÇILINCA
+    ========================================================= */
 
-async function hangUp() {
+    messageInput.addEventListener(
+        "focus",
+        function() {
 
-    try {
-
-        await fetch(
-            `/friends/${ROOM_CODE}/call/end`,
-            {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
+            setTimeout(
+                function() {
+                    scrollToBottom();
                 },
+                300
+            );
 
-                body: JSON.stringify({
-                    call_id:
-                        currentCallId
-                })
-
-            }
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-    }
-
-
-    callActive = false;
-
-
-    if (peerConnection) {
-
-        peerConnection.close();
-
-        peerConnection = null;
-
-    }
-
-
-    if (localStream) {
-
-        localStream
-            .getTracks()
-            .forEach(function(track) {
-
-                track.stop();
-
-            });
-
-        localStream = null;
-
-    }
-
-
-    document
-        .getElementById("localVideo")
-        .srcObject = null;
-
-
-    document
-        .getElementById("remoteVideo")
-        .srcObject = null;
-
-
-    currentCallId = null;
-
-
-    setStatus(
-        "📞 Görüşme sonlandırıldı."
+        }
     );
-
-}
-
-
-/* ======================================================
-   FOTOĞRAF YÜKLE
-====================================================== */
-
-async function uploadPhoto() {
-
-    const input =
-        document.getElementById(
-            "photoInput"
-        );
-
-
-    if (
-        !input.files ||
-        !input.files.length
-    ) {
-        return;
-    }
-
-
-    const username =
-        document
-            .getElementById("username")
-            .value
-            .trim() ||
-        "Misafir";
-
-
-    const formData =
-        new FormData();
-
-
-    formData.append(
-        "photo",
-        input.files[0]
-    );
-
-
-    formData.append(
-        "username",
-        username
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                `/friends/${ROOM_CODE}/upload`,
-                {
-
-                    method: "POST",
-
-                    body: formData
-
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (data.success) {
-
-            await refreshMessages();
-
-        } else {
-
-            alert(
-                data.error ||
-                "Fotoğraf yüklenemedi."
-            );
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Fotoğraf yüklenirken hata oluştu."
-        );
-
-    }
-
-
-    input.value = "";
-
-}
-
-
-/* ======================================================
-   MESAJLARI YENİLE
-====================================================== */
-
-async function refreshMessages() {
-
-    try {
-
-        const response =
-            await fetch(
-                `/friends/${ROOM_CODE}/messages`
-            );
-
-
-        if (!response.ok) {
-            return;
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            data.success &&
-            data.messages
-        ) {
-
-            if (
-                data.messages.length !==
-                currentMessageCount
-            ) {
-
-                location.reload();
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Mesaj yenileme hatası:",
-            error
-        );
-
-    }
-
-}
-
-
-/* ======================================================
-   BAŞLANGIÇ
-====================================================== */
-
-window.addEventListener(
-    "load",
-    function() {
-
-        const box =
-            document.getElementById(
-                "messages"
-            );
-
-
-        if (box) {
-
-            box.scrollTop =
-                box.scrollHeight;
-
-        }
-
-    }
-);
-
-
-/* ======================================================
-   OTOMATİK KONTROLLER
-====================================================== */
-
-setInterval(
-    checkIncomingCall,
-    1000
-);
-
-
-setInterval(
-    checkSignals,
-    1000
-);
-
-
-setInterval(
-    refreshMessages,
-    3000
-);
 
 </script>
 
 </body>
 </html>
+```
