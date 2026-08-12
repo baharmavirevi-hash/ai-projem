@@ -2,7 +2,11 @@ import sqlite3
 import os
 import secrets
 import string
-from werkzeug.security import generate_password_hash, check_password_hash
+
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 
 
 # ============================================================
@@ -32,6 +36,9 @@ def get_db():
 
     conn.row_factory = sqlite3.Row
 
+    # Foreign key'leri aktif et
+    conn.execute("PRAGMA foreign_keys = ON")
+
     return conn
 
 
@@ -43,6 +50,7 @@ def init_db():
 
     conn = get_db()
     cursor = conn.cursor()
+
 
     # ========================================================
     # MAVİGPT SOHBETLERİ
@@ -65,6 +73,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # SAĞLIK
     # ========================================================
@@ -86,6 +95,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # REGL
     # ========================================================
@@ -106,6 +116,7 @@ def init_db():
                 DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
 
     # ========================================================
     # SİNDİRİM
@@ -130,6 +141,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # İLAÇLAR
     # ========================================================
@@ -153,6 +165,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # AYARLAR
     # ========================================================
@@ -167,6 +180,7 @@ def init_db():
             personality TEXT DEFAULT 'friendly'
         )
     """)
+
 
     cursor.execute("""
         INSERT OR IGNORE INTO settings
@@ -183,6 +197,7 @@ def init_db():
             'friendly'
         )
     """)
+
 
     # ========================================================
     # KULLANICILAR
@@ -205,13 +220,9 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # ARKADAŞLIKLAR
-    #
-    # status:
-    # pending  = bekliyor
-    # accepted = kabul edildi
-    # rejected = reddedildi
     # ========================================================
 
     cursor.execute("""
@@ -241,6 +252,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # ARKADAŞ SOHBET ODALARI
     # ========================================================
@@ -265,6 +277,7 @@ def init_db():
                 ON DELETE SET NULL
         )
     """)
+
 
     # ========================================================
     # ODA ÜYELERİ
@@ -294,6 +307,7 @@ def init_db():
                 ON DELETE CASCADE
         )
     """)
+
 
     # ========================================================
     # ARKADAŞ MESAJLARI
@@ -328,9 +342,48 @@ def init_db():
         )
     """)
 
+
+    # ========================================================
+    # BİLDİRİM ABONELİKLERİ
+    #
+    # Uygulama kapalıyken push bildirimi gönderebilmek
+    # için tarayıcı/telefon abonelik bilgilerini saklarız.
+    # ========================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS push_subscriptions (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            user_id INTEGER,
+
+            endpoint TEXT NOT NULL UNIQUE,
+
+            p256dh TEXT NOT NULL,
+
+            auth TEXT NOT NULL,
+
+            created_at
+                TIMESTAMP
+                DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY(user_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
+        )
+    """)
+
+
     # ========================================================
     # INDEXLER
     # ========================================================
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_chats_type
+        ON chats(chat_type)
+    """)
+
 
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
@@ -338,17 +391,41 @@ def init_db():
         ON friend_messages(room_id)
     """)
 
+
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
         idx_friendships_sender
         ON friendships(sender_id)
     """)
 
+
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
         idx_friendships_receiver
         ON friendships(receiver_id)
     """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_room_members_room
+        ON friend_room_members(room_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_room_members_user
+        ON friend_room_members(user_id)
+    """)
+
+
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS
+        idx_push_subscriptions_user
+        ON push_subscriptions(user_id)
+    """)
+
 
     conn.commit()
     conn.close()
@@ -364,14 +441,20 @@ def create_user(
     display_name=None
 ):
 
-    username = (username or "").strip()
+    username = (
+        username or ""
+    ).strip()
+
     password = password or ""
+
 
     if not username or not password:
         return None
 
+
     if display_name is None:
         display_name = username
+
 
     display_name = (
         display_name.strip()
@@ -379,9 +462,11 @@ def create_user(
         else username
     )
 
+
     password_hash = generate_password_hash(
         password
     )
+
 
     conn = get_db()
 
@@ -404,9 +489,7 @@ def create_user(
 
         conn.commit()
 
-        user_id = cursor.lastrowid
-
-        return user_id
+        return cursor.lastrowid
 
     except sqlite3.IntegrityError:
 
@@ -425,7 +508,10 @@ def get_user_by_username(
     username
 ):
 
-    username = (username or "").strip()
+    username = (
+        username or ""
+    ).strip()
+
 
     conn = get_db()
 
@@ -495,8 +581,10 @@ def check_user_password(
         username
     )
 
+
     if not user:
         return None
+
 
     if check_password_hash(
         user["password_hash"],
@@ -504,6 +592,7 @@ def check_user_password(
     ):
 
         return user
+
 
     return None
 
@@ -914,6 +1003,7 @@ def delete_medicine(
 
     conn.execute("""
         DELETE FROM medicines
+
         WHERE id = ?
     """, (
         medicine_id,
@@ -979,12 +1069,14 @@ def get_settings():
 
     conn.close()
 
+
     if not row:
 
         return {
             "mode": "normal",
             "personality": "friendly"
         }
+
 
     return row
 
@@ -1001,16 +1093,20 @@ def send_friend_request(
     if not sender_id or not receiver_id:
         return False
 
+
     if sender_id == receiver_id:
         return False
+
 
     conn = get_db()
 
     try:
 
-        # Zaten arkadaşlar mı?
         existing = conn.execute("""
-            SELECT id
+            SELECT
+                id,
+                status
+
             FROM friendships
 
             WHERE
@@ -1032,8 +1128,11 @@ def send_friend_request(
             sender_id
         )).fetchone()
 
+
         if existing:
+
             return False
+
 
         conn.execute("""
             INSERT INTO friendships
@@ -1048,6 +1147,7 @@ def send_friend_request(
             sender_id,
             receiver_id
         ))
+
 
         conn.commit()
 
@@ -1162,7 +1262,11 @@ def get_friends(
 
         WHERE f.status = 'accepted'
 
-        ORDER BY u.display_name ASC
+        ORDER BY
+            COALESCE(
+                u.display_name,
+                u.username
+            ) ASC
     """, (
         user_id,
         user_id
@@ -1308,9 +1412,10 @@ def create_friend_room(
                 owner_id
             ))
 
+
             room_id = cursor.lastrowid
 
-            # Odayı oluşturan kullanıcı otomatik katılır.
+
             if owner_id:
 
                 conn.execute("""
@@ -1327,6 +1432,7 @@ def create_friend_room(
                     owner_id
                 ))
 
+
             conn.commit()
 
             conn.close()
@@ -1336,6 +1442,7 @@ def create_friend_room(
         except sqlite3.IntegrityError:
 
             continue
+
 
     conn.close()
 
@@ -1353,6 +1460,7 @@ def get_friend_room(
     room_code = (
         room_code or ""
     ).strip().upper()
+
 
     conn = get_db()
 
@@ -1391,8 +1499,10 @@ def join_friend_room(
         room_code
     )
 
+
     if not room or not user_id:
         return False
+
 
     conn = get_db()
 
@@ -1434,8 +1544,10 @@ def is_room_member(
         room_code
     )
 
+
     if not room:
         return False
+
 
     conn = get_db()
 
@@ -1471,8 +1583,10 @@ def get_friend_room_members(
         room_code
     )
 
+
     if not room:
         return []
+
 
     conn = get_db()
 
@@ -1516,18 +1630,19 @@ def save_friend_message(
         room_code
     )
 
+
     if not room:
         return False
 
-    # En az mesaj veya fotoğraf olmalı.
+
     if not message and not photo_path:
         return False
+
 
     conn = get_db()
 
     try:
 
-        # Kullanıcı verilmişse odanın üyesi olmalı.
         if user_id:
 
             member = conn.execute("""
@@ -1545,6 +1660,7 @@ def save_friend_message(
                 user_id
             )).fetchone()
 
+
             if not member:
 
                 conn.execute("""
@@ -1560,6 +1676,7 @@ def save_friend_message(
                     room["id"],
                     user_id
                 ))
+
 
         conn.execute("""
             INSERT INTO friend_messages
@@ -1579,6 +1696,7 @@ def save_friend_message(
             message or "",
             photo_path
         ))
+
 
         conn.commit()
 
@@ -1611,8 +1729,10 @@ def get_friend_messages(
         room_code
     )
 
+
     if not room:
         return []
+
 
     conn = get_db()
 
@@ -1649,7 +1769,7 @@ def get_friend_messages(
 
 
 # ============================================================
-# FOTOĞRAFLI MESAJ KAYDETME KOLAY FONKSİYONU
+# FOTOĞRAFLI MESAJ KAYDET
 # ============================================================
 
 def save_friend_photo_message(
@@ -1681,26 +1801,222 @@ def delete_friend_room(
         room_code
     )
 
+
     if not room:
         return False
+
 
     if user_id:
 
         if room["owner_id"] != user_id:
             return False
 
+
     conn = get_db()
 
-    conn.execute("""
+    cursor = conn.execute("""
         DELETE FROM friend_rooms
+
         WHERE id = ?
     """, (
         room["id"],
     ))
 
+
     conn.commit()
 
-    success = conn.total_changes > 0
+    success = cursor.rowcount > 0
+
+    conn.close()
+
+    return success
+
+
+# ============================================================
+# PUSH BİLDİRİM ABONELİĞİ KAYDET
+# ============================================================
+
+def save_push_subscription(
+    endpoint,
+    p256dh,
+    auth,
+    user_id=None
+):
+
+    endpoint = (
+        endpoint or ""
+    ).strip()
+
+    p256dh = (
+        p256dh or ""
+    ).strip()
+
+    auth = (
+        auth or ""
+    ).strip()
+
+
+    if not endpoint or not p256dh or not auth:
+        return False
+
+
+    conn = get_db()
+
+    try:
+
+        existing = conn.execute("""
+            SELECT id
+
+            FROM push_subscriptions
+
+            WHERE endpoint = ?
+
+            LIMIT 1
+        """, (
+            endpoint,
+        )).fetchone()
+
+
+        if existing:
+
+            conn.execute("""
+                UPDATE push_subscriptions
+
+                SET
+                    user_id = ?,
+                    p256dh = ?,
+                    auth = ?
+
+                WHERE endpoint = ?
+            """, (
+                user_id,
+                p256dh,
+                auth,
+                endpoint
+            ))
+
+        else:
+
+            conn.execute("""
+                INSERT INTO push_subscriptions
+                (
+                    user_id,
+                    endpoint,
+                    p256dh,
+                    auth
+                )
+
+                VALUES (?, ?, ?, ?)
+            """, (
+                user_id,
+                endpoint,
+                p256dh,
+                auth
+            ))
+
+
+        conn.commit()
+
+        return True
+
+    except Exception as e:
+
+        print(
+            "PUSH ABONELİĞİ KAYIT HATASI:",
+            repr(e)
+        )
+
+        return False
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# PUSH BİLDİRİM ABONELİKLERİNİ GETİR
+# ============================================================
+
+def get_push_subscriptions(
+    user_id=None
+):
+
+    conn = get_db()
+
+
+    if user_id is None:
+
+        rows = conn.execute("""
+            SELECT
+                id,
+                user_id,
+                endpoint,
+                p256dh,
+                auth,
+                created_at
+
+            FROM push_subscriptions
+
+            ORDER BY id DESC
+        """).fetchall()
+
+    else:
+
+        rows = conn.execute("""
+            SELECT
+                id,
+                user_id,
+                endpoint,
+                p256dh,
+                auth,
+                created_at
+
+            FROM push_subscriptions
+
+            WHERE user_id = ?
+
+            ORDER BY id DESC
+        """, (
+            user_id,
+        )).fetchall()
+
+
+    conn.close()
+
+    return rows
+
+
+# ============================================================
+# PUSH ABONELİĞİ SİL
+# ============================================================
+
+def delete_push_subscription(
+    endpoint
+):
+
+    endpoint = (
+        endpoint or ""
+    ).strip()
+
+
+    if not endpoint:
+        return False
+
+
+    conn = get_db()
+
+    cursor = conn.execute("""
+        DELETE FROM push_subscriptions
+
+        WHERE endpoint = ?
+    """, (
+        endpoint,
+    ))
+
+
+    conn.commit()
+
+    success = cursor.rowcount > 0
 
     conn.close()
 
@@ -1712,4 +2028,3 @@ def delete_friend_room(
 # ============================================================
 
 init_db()
-
