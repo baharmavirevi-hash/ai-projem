@@ -1,5 +1,4 @@
 Flask
 gunicorn
-Pillow
 google-genai
-Werkzeug
+Pillow
