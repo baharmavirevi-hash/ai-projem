@@ -41,6 +41,7 @@ def init_db():
 
     cursor = conn.cursor()
 
+
     # ========================================================
     # MAVİGPT SOHBETLERİ
     # ========================================================
@@ -62,6 +63,7 @@ def init_db():
 
         )
     """)
+
 
     # ========================================================
     # SAĞLIK
@@ -85,6 +87,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # REGL
     # ========================================================
@@ -106,6 +109,7 @@ def init_db():
 
         )
     """)
+
 
     # ========================================================
     # SİNDİRİM
@@ -131,6 +135,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # İLAÇLAR
     # ========================================================
@@ -155,6 +160,7 @@ def init_db():
         )
     """)
 
+
     # ========================================================
     # AYARLAR
     # ========================================================
@@ -170,6 +176,7 @@ def init_db():
 
         )
     """)
+
 
     cursor.execute("""
         INSERT OR IGNORE INTO settings
@@ -187,18 +194,27 @@ def init_db():
         )
     """)
 
+
     # ========================================================
-    # KULLANICILAR
+    # ARKADAŞLAR
+    # ========================================================
+    #
+    # Şimdilik basit bir arkadaş listesi sistemi.
+    #
+    # name:
+    # Arkadaşın görünen adı
+    #
+    # created_at:
+    # Arkadaşın eklenme zamanı
+    #
     # ========================================================
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS friends (
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            username TEXT UNIQUE NOT NULL,
-
-            display_name TEXT,
+            name TEXT NOT NULL,
 
             created_at
                 TIMESTAMP
@@ -207,38 +223,17 @@ def init_db():
         )
     """)
 
-    # ========================================================
-    # ARKADAŞLIKLAR
-    # ========================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS friendships (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            user_id INTEGER NOT NULL,
-
-            friend_id INTEGER NOT NULL,
-
-            status TEXT DEFAULT 'accepted',
-
-            created_at
-                TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP,
-
-            UNIQUE(user_id, friend_id),
-
-            FOREIGN KEY(user_id)
-                REFERENCES users(id),
-
-            FOREIGN KEY(friend_id)
-                REFERENCES users(id)
-
-        )
-    """)
 
     # ========================================================
     # ARKADAŞ MESAJLARI
+    # ========================================================
+    #
+    # friend_id:
+    # Mesajın hangi arkadaşla olan sohbete ait olduğunu tutar.
+    #
+    # message:
+    # Gönderilen mesaj.
+    #
     # ========================================================
 
     cursor.execute("""
@@ -246,9 +241,7 @@ def init_db():
 
             id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            sender_id INTEGER NOT NULL,
-
-            receiver_id INTEGER NOT NULL,
+            friend_id INTEGER NOT NULL,
 
             message TEXT NOT NULL,
 
@@ -256,14 +249,17 @@ def init_db():
                 TIMESTAMP
                 DEFAULT CURRENT_TIMESTAMP,
 
-            FOREIGN KEY(sender_id)
-                REFERENCES users(id),
-
-            FOREIGN KEY(receiver_id)
-                REFERENCES users(id)
+            FOREIGN KEY (friend_id)
+                REFERENCES friends(id)
+                ON DELETE CASCADE
 
         )
     """)
+
+
+    # ========================================================
+    # DATABASE DEĞİŞİKLİKLERİNİ KAYDET
+    # ========================================================
 
     conn.commit()
 
@@ -303,7 +299,7 @@ def save_chat(
 
 
 # ============================================================
-# TÜM SOHBET MESAJLARINI GETİR
+# TÜM MAVİGPT MESAJLARINI GETİR
 # ============================================================
 
 def get_chat_messages(
@@ -412,7 +408,7 @@ def get_chat_by_id(
 
 
 # ============================================================
-# SOHBET BAŞLIĞINI DÜZENLE
+# SOHBET BAŞLIĞINI / MESAJINI DÜZENLE
 # ============================================================
 
 def update_chat_title(
@@ -734,6 +730,7 @@ def save_settings(
         "concise"
     }
 
+
     allowed_personalities = {
         "friendly",
         "funny",
@@ -741,13 +738,16 @@ def save_settings(
         "teacher"
     }
 
+
     if mode not in allowed_modes:
 
         mode = "normal"
 
+
     if personality not in allowed_personalities:
 
         personality = "friendly"
+
 
     conn = get_db()
 
@@ -770,219 +770,63 @@ def save_settings(
 
 
 # ============================================================
-# KULLANICI OLUŞTUR
-# ============================================================
-
-def create_user(
-    username,
-    display_name=None
-):
-
-    username = (
-        username or ""
-    ).strip().lower()
-
-    display_name = (
-        display_name or username
-    ).strip()
-
-    if not username:
-
-        return None
-
-    conn = get_db()
-
-    try:
-
-        cursor = conn.execute("""
-            INSERT INTO users
-            (
-                username,
-                display_name
-            )
-
-            VALUES (?, ?)
-        """, (
-            username,
-            display_name
-        ))
-
-        conn.commit()
-
-        user_id = cursor.lastrowid
-
-        conn.close()
-
-        return user_id
-
-    except sqlite3.IntegrityError:
-
-        conn.close()
-
-        return None
-
-
-# ============================================================
-# KULLANICI BUL
-# ============================================================
-
-def get_user_by_id(
-    user_id
-):
-
-    conn = get_db()
-
-    row = conn.execute("""
-        SELECT
-            id,
-            username,
-            display_name,
-            created_at
-
-        FROM users
-
-        WHERE id = ?
-
-        LIMIT 1
-    """, (
-        user_id,
-    )).fetchone()
-
-    conn.close()
-
-    return row
-
-
-def get_user_by_username(
-    username
-):
-
-    username = (
-        username or ""
-    ).strip().lower()
-
-    conn = get_db()
-
-    row = conn.execute("""
-        SELECT
-            id,
-            username,
-            display_name,
-            created_at
-
-        FROM users
-
-        WHERE username = ?
-
-        LIMIT 1
-    """, (
-        username,
-    )).fetchone()
-
-    conn.close()
-
-    return row
-
-
-# ============================================================
 # ARKADAŞ EKLE
 # ============================================================
 
 def add_friend(
-    user_id,
-    friend_id
+    name
 ):
 
-    if not user_id or not friend_id:
+    name = (
+        name
+        or ""
+    ).strip()
 
-        return False
+    if not name:
 
-    if int(user_id) == int(friend_id):
+        return None
 
-        return False
 
     conn = get_db()
 
-    try:
-
-        conn.execute("""
-            INSERT OR IGNORE INTO friendships
-            (
-                user_id,
-                friend_id,
-                status
-            )
-
-            VALUES (?, ?, 'accepted')
-        """, (
-            user_id,
-            friend_id
-        ))
-
-        conn.execute("""
-            INSERT OR IGNORE INTO friendships
-            (
-                user_id,
-                friend_id,
-                status
-            )
-
-            VALUES (?, ?, 'accepted')
-        """, (
-            friend_id,
-            user_id
-        ))
-
-        conn.commit()
-
-        conn.close()
-
-        return True
-
-    except Exception as e:
-
-        print(
-            "ARKADAŞ EKLEME HATASI:",
-            repr(e)
+    cursor = conn.execute("""
+        INSERT INTO friends
+        (
+            name
         )
 
-        conn.close()
+        VALUES (?)
+    """, (
+        name,
+    ))
 
-        return False
+    friend_id = cursor.lastrowid
+
+    conn.commit()
+
+    conn.close()
+
+    return friend_id
 
 
 # ============================================================
-# ARKADAŞLARI GETİR
+# TÜM ARKADAŞLARI GETİR
 # ============================================================
 
-def get_friends(
-    user_id
-):
+def get_friends():
 
     conn = get_db()
 
     rows = conn.execute("""
         SELECT
-            u.id,
-            u.username,
-            u.display_name,
-            u.created_at
+            id,
+            name,
+            created_at
 
-        FROM users u
+        FROM friends
 
-        INNER JOIN friendships f
-            ON f.friend_id = u.id
-
-        WHERE
-            f.user_id = ?
-
-            AND f.status = 'accepted'
-
-        ORDER BY
-            u.display_name COLLATE NOCASE ASC
-    """, (
-        user_id,
-    )).fetchall()
+        ORDER BY id DESC
+    """).fetchall()
 
     conn.close()
 
@@ -990,77 +834,103 @@ def get_friends(
 
 
 # ============================================================
-# ARKADAŞLIK KONTROL
+# TEK ARKADAŞ
 # ============================================================
 
-def are_friends(
-    user_id,
+def get_friend(
     friend_id
 ):
 
     conn = get_db()
 
     row = conn.execute("""
-        SELECT id
+        SELECT
+            id,
+            name,
+            created_at
 
-        FROM friendships
+        FROM friends
 
-        WHERE
-            user_id = ?
-
-            AND friend_id = ?
-
-            AND status = 'accepted'
+        WHERE id = ?
 
         LIMIT 1
     """, (
-        user_id,
-        friend_id
+        friend_id,
     )).fetchone()
 
     conn.close()
 
-    return row is not None
+    return row
 
 
 # ============================================================
-# ARKADAŞ MESAJI KAYDET
+# ARKADAŞ SİL
+# ============================================================
+
+def delete_friend(
+    friend_id
+):
+
+    conn = get_db()
+
+    conn.execute("""
+        DELETE FROM friend_messages
+
+        WHERE friend_id = ?
+    """, (
+        friend_id,
+    ))
+
+    conn.execute("""
+        DELETE FROM friends
+
+        WHERE id = ?
+    """, (
+        friend_id,
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+
+# ============================================================
+# ARKADAŞA MESAJ KAYDET
 # ============================================================
 
 def save_friend_message(
-    sender_id,
-    receiver_id,
+    friend_id,
     message
 ):
 
     message = (
-        message or ""
+        message
+        or ""
     ).strip()
 
     if not message:
 
         return None
 
+
     conn = get_db()
 
     cursor = conn.execute("""
         INSERT INTO friend_messages
         (
-            sender_id,
-            receiver_id,
+            friend_id,
             message
         )
 
-        VALUES (?, ?, ?)
+        VALUES (?, ?)
     """, (
-        sender_id,
-        receiver_id,
+        friend_id,
         message
     ))
 
-    conn.commit()
-
     message_id = cursor.lastrowid
+
+    conn.commit()
 
     conn.close()
 
@@ -1068,11 +938,10 @@ def save_friend_message(
 
 
 # ============================================================
-# ARKADAŞLA MESAJLARI GETİR
+# ARKADAŞ MESAJLARINI GETİR
 # ============================================================
 
 def get_friend_messages(
-    user_id,
     friend_id
 ):
 
@@ -1080,43 +949,18 @@ def get_friend_messages(
 
     rows = conn.execute("""
         SELECT
-            fm.id,
-            fm.sender_id,
-            fm.receiver_id,
-            fm.message,
-            fm.created_at,
+            id,
+            friend_id,
+            message,
+            created_at
 
-            sender.username
-                AS sender_username,
+        FROM friend_messages
 
-            sender.display_name
-                AS sender_name
+        WHERE friend_id = ?
 
-        FROM friend_messages fm
-
-        LEFT JOIN users sender
-            ON sender.id = fm.sender_id
-
-        WHERE
-            (
-                fm.sender_id = ?
-                AND fm.receiver_id = ?
-            )
-
-            OR
-
-            (
-                fm.sender_id = ?
-                AND fm.receiver_id = ?
-            )
-
-        ORDER BY
-            fm.id ASC
+        ORDER BY id ASC
     """, (
-        user_id,
         friend_id,
-        friend_id,
-        user_id
     )).fetchall()
 
     conn.close()
@@ -1125,53 +969,64 @@ def get_friend_messages(
 
 
 # ============================================================
-# ARKADAŞ MESAJLARINI SON MESAJDAN BAŞLATMA
+# SON ARKADAŞ MESAJLARI
 # ============================================================
 
-def get_last_friend_message(
-    user_id,
-    friend_id
+def get_recent_friend_messages(
+    friend_id,
+    limit=50
 ):
+
+    try:
+
+        limit = int(limit)
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
+        limit = 50
+
+
+    if limit < 1:
+
+        limit = 50
+
+
+    if limit > 200:
+
+        limit = 200
+
 
     conn = get_db()
 
-    row = conn.execute("""
+    rows = conn.execute("""
         SELECT
             id,
-            sender_id,
-            receiver_id,
+            friend_id,
             message,
             created_at
 
         FROM friend_messages
 
-        WHERE
-            (
-                sender_id = ?
-                AND receiver_id = ?
-            )
+        WHERE friend_id = ?
 
-            OR
+        ORDER BY id DESC
 
-            (
-                sender_id = ?
-                AND receiver_id = ?
-            )
-
-        ORDER BY
-            id DESC
-
-        LIMIT 1
+        LIMIT ?
     """, (
-        user_id,
         friend_id,
-        friend_id,
-        user_id
-    )).fetchone()
+        limit
+    )).fetchall()
 
     conn.close()
 
-    return row
+    # En eskiden yeniye çevir
+
+    return list(
+        reversed(rows)
+    )
 
 
 # ============================================================
