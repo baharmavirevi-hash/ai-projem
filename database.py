@@ -1,4 +1,3 @@
-```python
 import sqlite3
 import os
 import secrets
@@ -1713,4 +1712,4 @@ def delete_friend_room(
 # ============================================================
 
 init_db()
-```
+
