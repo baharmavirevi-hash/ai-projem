@@ -1,3 +1,4 @@
+```python
 from flask import (
     render_template,
     request,
@@ -10,7 +11,6 @@ from flask import (
 
 import os
 import uuid
-import json
 import time
 
 
@@ -62,16 +62,15 @@ from database import (
 # ============================================================
 # GEÇİCİ GÖRÜNTÜLÜ KONUŞMA ODALARI
 # ============================================================
-#
-# WebRTC bağlantısında tarayıcılar birbirleriyle bağlantı
-# kurarken offer / answer / ICE bilgilerini paylaşır.
-#
-# Bu sözlük sunucu yeniden başlatılırsa temizlenir.
-# Gerçek video sunucu üzerinden aktarılmaz.
-#
-# ============================================================
 
 VIDEO_ROOMS = {}
+
+
+# ============================================================
+# GÖRÜNTÜLÜ ARAMA DURUMLARI
+# ============================================================
+
+CALLS = {}
 
 
 # ============================================================
@@ -79,13 +78,9 @@ VIDEO_ROOMS = {}
 # ============================================================
 
 def get_upload_folder(app):
-
-    folder = app.config.get(
-        "UPLOAD_FOLDER"
-    )
+    folder = app.config.get("UPLOAD_FOLDER")
 
     if not folder:
-
         folder = os.path.join(
             app.root_path,
             "uploads"
@@ -105,7 +100,6 @@ def save_uploaded_file(
     app,
     uploaded_file
 ):
-
     if not uploaded_file:
         return None
 
@@ -127,7 +121,6 @@ def save_uploaded_file(
     }
 
     if extension not in allowed_extensions:
-
         return None
 
     filename = (
@@ -151,10 +144,7 @@ def save_uploaded_file(
     return filename
 
 
-def uploaded_url(
-    filename
-):
-
+def uploaded_url(filename):
     if not filename:
         return None
 
@@ -165,59 +155,36 @@ def uploaded_url(
 
 
 def row_to_dict(row):
-
     if row is None:
         return None
 
     try:
-
         return dict(row)
 
     except Exception:
-
         return row
 
 
-def friend_messages_to_list(
-    messages
-):
-
+def friend_messages_to_list(messages):
     result = []
 
     for message in messages or []:
 
         try:
-
             item = dict(message)
 
         except Exception:
-
             item = {
                 "message": str(message)
             }
 
-        result.append(
-            item
-        )
+        result.append(item)
 
     return result
 
 
 # ============================================================
 # MAVİGPT CEVAP FONKSİYONU
-# ============================================================
-#
-# routes.py'nin app.py ile birbirine import olarak bağlanmasını
-# engellemek için doğrudan app.py import etmiyoruz.
-#
-# app.py içinde:
-#
-#     app.config["MAVIGPT_FUNCTION"] = ask_mavigpt
-#
-# şeklinde tanımlanırsa onu kullanır.
-#
-# Eğer tanımlı değilse kullanıcıya güvenli bir hata mesajı döner.
-#
 # ============================================================
 
 def call_mavigpt(
@@ -242,7 +209,6 @@ def call_mavigpt(
         if history is not None:
 
             try:
-
                 return function(
                     message,
                     photo_path,
@@ -250,21 +216,20 @@ def call_mavigpt(
                 )
 
             except TypeError:
-
                 pass
+
 
         if photo_path is not None:
 
             try:
-
                 return function(
                     message,
                     photo_path
                 )
 
             except TypeError:
-
                 pass
+
 
         return function(
             message
@@ -281,6 +246,27 @@ def call_mavigpt(
             "Üzgünüm, şu anda cevap "
             "oluştururken bir hata oluştu."
         )
+
+
+# ============================================================
+# GÖRÜNTÜLÜ ARAMA YARDIMCI FONKSİYONU
+# ============================================================
+
+def create_call(
+    room_code,
+    caller
+):
+
+    call_id = uuid.uuid4().hex
+
+    CALLS[room_code] = {
+        "call_id": call_id,
+        "caller": caller,
+        "status": "ringing",
+        "created_at": time.time()
+    }
+
+    return call_id
 
 
 # ============================================================
@@ -403,6 +389,7 @@ def register_routes(app):
         cevap = ""
         filename = None
 
+
         # ----------------------------------------------------
         # SOHBETLER
         # ----------------------------------------------------
@@ -524,7 +511,7 @@ def register_routes(app):
 
 
                 # --------------------------------------------
-                # MAVİGPT
+                # FOTOĞRAF YOLU
                 # --------------------------------------------
 
                 photo_path = None
@@ -538,6 +525,10 @@ def register_routes(app):
                         filename
                     )
 
+
+                # --------------------------------------------
+                # MAVİGPT
+                # --------------------------------------------
 
                 cevap = call_mavigpt(
                     ai_mesaj,
@@ -587,19 +578,13 @@ def register_routes(app):
 
         return render_template(
             "mavigpt.html",
-
             mesaj=mesaj,
-
             cevap=cevap,
-
             filename=filename,
-
             foto_url=uploaded_url(
                 filename
             ),
-
             mesajlar=mesajlar,
-
             sohbetler=sohbetler
         )
 
@@ -1031,15 +1016,10 @@ def register_routes(app):
 
         return render_template(
             "doctor.html",
-
             mesaj=mesaj,
-
             cevap=cevap,
-
             kayitlar=kayitlar,
-
             kayit_mesaji=kayit_mesaji,
-
             foto_url=uploaded_url(
                 filename
             )
@@ -1119,9 +1099,7 @@ def register_routes(app):
 
         return render_template(
             "period.html",
-
             kayitlar=kayitlar,
-
             kayit_mesaji=kayit_mesaji
         )
 
@@ -1227,9 +1205,7 @@ def register_routes(app):
 
         return render_template(
             "diarrhea.html",
-
             kayitlar=kayitlar,
-
             kayit_mesaji=kayit_mesaji
         )
 
@@ -1313,9 +1289,7 @@ def register_routes(app):
 
         return render_template(
             "medicine.html",
-
             kayitlar=kayitlar,
-
             kayit_mesaji=kayit_mesaji
         )
 
@@ -1421,9 +1395,7 @@ def register_routes(app):
 
         return render_template(
             "settings.html",
-
             settings=settings_data,
-
             kayit_mesaji=kayit_mesaji
         )
 
@@ -1546,18 +1518,15 @@ def register_routes(app):
                         )
 
                         error = (
-                            "Sohbet odası bulunurken "
+                            "Sohbet kodu aranırken "
                             "bir hata oluştu."
                         )
 
 
         return render_template(
             "friends.html",
-
             room=room,
-
             room_code=room_code,
-
             error=error
         )
 
@@ -1575,14 +1544,9 @@ def register_routes(app):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
-
-        # ----------------------------------------------------
-        # ODAYI BUL
-        # ----------------------------------------------------
 
         try:
 
@@ -1694,24 +1658,15 @@ def register_routes(app):
 
         return render_template(
             "friend_room.html",
-
             room=room,
-
             room_code=room_code,
-
             messages=messages,
-
             error=error
         )
 
 
     # ========================================================
     # ARKADAŞ MESAJLARI API
-    # ========================================================
-    #
-    # friend_room.html bunu belirli aralıklarla çağırarak
-    # sayfayı tamamen yenilemeden yeni mesajları alabilir.
-    #
     # ========================================================
 
     @app.route(
@@ -1723,8 +1678,7 @@ def register_routes(app):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
 
@@ -1783,8 +1737,7 @@ def register_routes(app):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
 
@@ -1869,8 +1822,6 @@ def register_routes(app):
                 username = "Misafir"
 
 
-            # Fotoğrafı arkadaş mesaj sisteminde
-            # normal mesaj olarak URL ile kaydediyoruz.
             photo_message = (
                 "📷 FOTOĞRAF|"
                 + photo_url
@@ -1904,20 +1855,7 @@ def register_routes(app):
 
 
     # ========================================================
-    # GÖRÜNTÜLÜ KONUŞMA
-    # ========================================================
-    #
-    # Bu bölüm WebRTC için SIGNALING sunar.
-    #
-    # Video görüntüsü Flask'a gelmez.
-    # Tarayıcılar mümkün olduğunda birbirlerine doğrudan
-    # WebRTC bağlantısı kurar.
-    #
-    # ========================================================
-
-
-    # ========================================================
-    # VIDEO ODASINI OLUŞTUR / KONTROL ET
+    # GÖRÜNTÜLÜ KONUŞMA ODASI
     # ========================================================
 
     @app.route(
@@ -1929,8 +1867,7 @@ def register_routes(app):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
 
@@ -1968,13 +1905,9 @@ def register_routes(app):
 
         return render_template(
             "friend_room.html",
-
             room=room,
-
             room_code=room_code,
-
             messages=[],
-
             video_mode=True
         )
 
@@ -1992,8 +1925,7 @@ def register_routes(app):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
 
@@ -2040,8 +1972,7 @@ def register_routes(app):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
 
@@ -2053,7 +1984,6 @@ def register_routes(app):
         signal_type = data.get(
             "type"
         )
-
 
         signal_data = data.get(
             "data"
@@ -2073,307 +2003,7 @@ def register_routes(app):
 
 
         state = VIDEO_ROOMS[
-            room_code# ============================================================
-# GÖRÜNTÜLÜ ARAMA SİSTEMİ
-# ============================================================
-
-CALLS = {}
-
-
-def create_call(room_code, caller):
-    call_id = uuid.uuid4().hex
-
-    CALLS[room_code] = {
-        "call_id": call_id,
-        "caller": caller,
-        "status": "ringing",
-        "created_at": time.time()
-    }
-
-    return call_id
-
-
-# ============================================================
-# ARAMA BAŞLAT
-# ============================================================
-
-@app.route(
-    "/friends/<room_code>/call/start",
-    methods=["POST"]
-)
-def start_friend_call(room_code):
-
-    room_code = (
-        room_code or ""
-    ).strip().upper()
-
-    try:
-        room = get_friend_room(room_code)
-
-        if not room:
-            return jsonify({
-                "success": False,
-                "error": "Oda bulunamadı."
-            }), 404
-
-    except Exception as e:
-
-        print(
-            "ARAMA ODA KONTROL HATASI:",
-            repr(e)
-        )
-
-        return jsonify({
-            "success": False,
-            "error": "Oda kontrol edilemedi."
-        }), 500
-
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    caller = data.get(
-        "caller",
-        "Arkadaşın"
-    ).strip()
-
-
-    if not caller:
-        caller = "Arkadaşın"
-
-
-    # Aynı odada aktif arama varsa
-    existing = CALLS.get(room_code)
-
-    if existing:
-
-        if existing.get("status") in [
-            "ringing",
-            "accepted"
-        ]:
-
-            return jsonify({
-                "success": False,
-                "error": "Bu odada zaten aktif bir arama var."
-            }), 409
-
-
-    call_id = create_call(
-        room_code,
-        caller
-    )
-
-
-    # Yeni video signaling odası
-    VIDEO_ROOMS[room_code] = {
-        "offer": None,
-        "answer": None,
-        "candidates": [],
-        "created_at": time.time()
-    }
-
-
-    return jsonify({
-        "success": True,
-        "call_id": call_id,
-        "caller": caller
-    })
-
-
-# ============================================================
-# GELEN ARAMAYI KONTROL ET
-# ============================================================
-
-@app.route(
-    "/friends/<room_code>/call",
-    methods=["GET"]
-)
-def get_friend_call(room_code):
-
-    room_code = (
-        room_code or ""
-    ).strip().upper()
-
-
-    call = CALLS.get(
-        room_code
-    )
-
-
-    if not call:
-
-        return jsonify({
-            "success": True,
-            "call": None
-        })
-
-
-    # Çok eski aramaları temizle
-    if (
-        time.time()
-        - call.get("created_at", time.time())
-        > 60
-    ):
-
-        CALLS.pop(
-            room_code,
-            None
-        )
-
-        return jsonify({
-            "success": True,
-            "call": None
-        })
-
-
-    return jsonify({
-        "success": True,
-        "call": call
-    })
-
-
-# ============================================================
-# ARAMAYI KABUL ET
-# ============================================================
-
-@app.route(
-    "/friends/<room_code>/call/answer",
-    methods=["POST"]
-)
-def answer_friend_call(room_code):
-
-    room_code = (
-        room_code or ""
-    ).strip().upper()
-
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    call_id = data.get(
-        "call_id"
-    )
-
-
-    call = CALLS.get(
-        room_code
-    )
-
-
-    if not call:
-
-        return jsonify({
-            "success": False,
-            "error": "Aktif arama bulunamadı."
-        }), 404
-
-
-    if (
-        call_id
-        and call.get("call_id")
-        != call_id
-    ):
-
-        return jsonify({
-            "success": False,
-            "error": "Arama artık geçerli değil."
-        }), 400
-
-
-    call["status"] = "accepted"
-
-
-    return jsonify({
-        "success": True,
-        "call": call
-    })
-
-
-# ============================================================
-# ARAMAYI REDDET
-# ============================================================
-
-@app.route(
-    "/friends/<room_code>/call/reject",
-    methods=["POST"]
-)
-def reject_friend_call(room_code):
-
-    room_code = (
-        room_code or ""
-    ).strip().upper()
-
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    call_id = data.get(
-        "call_id"
-    )
-
-
-    call = CALLS.get(
-        room_code
-    )
-
-
-    if call:
-
-        if (
-            not call_id
-            or call.get("call_id")
-            == call_id
-        ):
-
-            CALLS.pop(
-                room_code,
-                None
-            )
-
-            VIDEO_ROOMS.pop(
-                room_code,
-                None
-            )
-
-
-    return jsonify({
-        "success": True
-    })
-
-
-# ============================================================
-# GÖRÜŞMEYİ BİTİR
-# ============================================================
-
-@app.route(
-    "/friends/<room_code>/call/end",
-    methods=["POST"]
-)
-def end_friend_call(room_code):
-
-    room_code = (
-        room_code or ""
-    ).strip().upper()
-
-
-    CALLS.pop(
-        room_code,
-        None
-    )
-
-    VIDEO_ROOMS.pop(
-        room_code,
-        None
-    )
-
-
-    return jsonify({
-        "success": True
-    })
-        
+            room_code
         ]
 
 
@@ -2468,9 +2098,345 @@ def end_friend_call(room_code):
     ):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
+
+
+        VIDEO_ROOMS.pop(
+            room_code,
+            None
+        )
+
+
+        return jsonify({
+            "success": True
+        })
+
+
+    # ========================================================
+    # GÖRÜNTÜLÜ ARAMA BAŞLAT
+    # ========================================================
+
+    @app.route(
+        "/friends/<room_code>/call/start",
+        methods=["POST"]
+    )
+    def start_friend_call(
+        room_code
+    ):
+
+        room_code = (
+            room_code or ""
+        ).strip().upper()
+
+
+        # ----------------------------------------------------
+        # ODAYI KONTROL ET
+        # ----------------------------------------------------
+
+        try:
+
+            room = get_friend_room(
+                room_code
+            )
+
+            if not room:
+
+                return jsonify({
+                    "success": False,
+                    "error": "Oda bulunamadı."
+                }), 404
+
+        except Exception as e:
+
+            print(
+                "ARAMA ODA KONTROL HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "Oda kontrol edilemedi."
+            }), 500
+
+
+        # ----------------------------------------------------
+        # ARAYAN KİŞİ
+        # ----------------------------------------------------
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+
+        caller = data.get(
+            "caller",
+            "Arkadaşın"
+        ).strip()
+
+
+        if not caller:
+
+            caller = "Arkadaşın"
+
+
+        # ----------------------------------------------------
+        # AKTİF ARAMA VAR MI?
+        # ----------------------------------------------------
+
+        existing = CALLS.get(
+            room_code
+        )
+
+
+        if existing:
+
+            if existing.get(
+                "status"
+            ) in [
+                "ringing",
+                "accepted"
+            ]:
+
+                return jsonify({
+                    "success": False,
+                    "error": (
+                        "Bu odada zaten "
+                        "aktif bir arama var."
+                    )
+                }), 409
+
+
+        # ----------------------------------------------------
+        # ARAMAYI OLUŞTUR
+        # ----------------------------------------------------
+
+        call_id = create_call(
+            room_code,
+            caller
+        )
+
+
+        # ----------------------------------------------------
+        # YENİ VIDEO SIGNALING ODASI
+        # ----------------------------------------------------
+
+        VIDEO_ROOMS[
+            room_code
+        ] = {
+            "offer": None,
+            "answer": None,
+            "candidates": [],
+            "created_at": time.time()
+        }
+
+
+        return jsonify({
+            "success": True,
+            "call_id": call_id,
+            "caller": caller,
+            "status": "ringing"
+        })
+
+
+    # ========================================================
+    # GELEN ARAMAYI KONTROL ET
+    # ========================================================
+
+    @app.route(
+        "/friends/<room_code>/call",
+        methods=["GET"]
+    )
+    def get_friend_call(
+        room_code
+    ):
+
+        room_code = (
+            room_code or ""
+        ).strip().upper()
+
+
+        call = CALLS.get(
+            room_code
+        )
+
+
+        if not call:
+
+            return jsonify({
+                "success": True,
+                "call": None
+            })
+
+
+        # ----------------------------------------------------
+        # 60 SANİYEDEN ESKİ ARAMA
+        # ----------------------------------------------------
+
+        if (
+            time.time()
+            - call.get(
+                "created_at",
+                time.time()
+            )
+            > 60
+        ):
+
+            CALLS.pop(
+                room_code,
+                None
+            )
+
+            return jsonify({
+                "success": True,
+                "call": None
+            })
+
+
+        return jsonify({
+            "success": True,
+            "call": call
+        })
+
+
+    # ========================================================
+    # ARAMAYI KABUL ET
+    # ========================================================
+
+    @app.route(
+        "/friends/<room_code>/call/answer",
+        methods=["POST"]
+    )
+    def answer_friend_call(
+        room_code
+    ):
+
+        room_code = (
+            room_code or ""
+        ).strip().upper()
+
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+
+        call_id = data.get(
+            "call_id"
+        )
+
+
+        call = CALLS.get(
+            room_code
+        )
+
+
+        if not call:
+
+            return jsonify({
+                "success": False,
+                "error": "Aktif arama bulunamadı."
+            }), 404
+
+
+        if (
+            call_id
+            and call.get("call_id")
+            != call_id
+        ):
+
+            return jsonify({
+                "success": False,
+                "error": "Arama artık geçerli değil."
+            }), 400
+
+
+        call["status"] = "accepted"
+
+
+        return jsonify({
+            "success": True,
+            "call": call
+        })
+
+
+    # ========================================================
+    # ARAMAYI REDDET
+    # ========================================================
+
+    @app.route(
+        "/friends/<room_code>/call/reject",
+        methods=["POST"]
+    )
+    def reject_friend_call(
+        room_code
+    ):
+
+        room_code = (
+            room_code or ""
+        ).strip().upper()
+
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+
+        call_id = data.get(
+            "call_id"
+        )
+
+
+        call = CALLS.get(
+            room_code
+        )
+
+
+        if call:
+
+            if (
+                not call_id
+                or call.get("call_id")
+                == call_id
+            ):
+
+                CALLS.pop(
+                    room_code,
+                    None
+                )
+
+                VIDEO_ROOMS.pop(
+                    room_code,
+                    None
+                )
+
+
+        return jsonify({
+            "success": True
+        })
+
+
+    # ========================================================
+    # GÖRÜŞMEYİ BİTİR
+    # ========================================================
+
+    @app.route(
+        "/friends/<room_code>/call/end",
+        methods=["POST"]
+    )
+    def end_friend_call(
+        room_code
+    ):
+
+        room_code = (
+            room_code or ""
+        ).strip().upper()
+
+
+        CALLS.pop(
+            room_code,
+            None
+        )
 
 
         VIDEO_ROOMS.pop(
@@ -2520,10 +2486,28 @@ def end_friend_call(room_code):
 
 
     # ========================================================
+    # CALL TEST
+    # ========================================================
+
+    @app.route(
+        "/api/call/test",
+        methods=["GET"]
+    )
+    def call_test():
+
+        return jsonify({
+            "success": True,
+            "message": (
+                "Görüntülü arama sistemi çalışıyor."
+            )
+        })
+
+
+    # ========================================================
     # ROUTES HAZIR
     # ========================================================
 
     print(
         "✅ TÜM ROUTES BAŞARIYLA KAYDEDİLDİ"
     )
-
+```
