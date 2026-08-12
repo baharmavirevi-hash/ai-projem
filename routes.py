@@ -105,6 +105,105 @@ def register_routes(app):
 
         return (
             render_template(
+                    # ========================================================
+    # ANA SAYFA / MAVİGPT
+    # ========================================================
+
+    @app.route(
+        "/",
+        methods=["GET", "POST"]
+    )
+    def home():
+
+        mesaj = ""
+        cevap = ""
+        filename = None
+
+        # ----------------------------------------------------
+        # SOHBETLERİ GETİR
+        # ----------------------------------------------------
+
+        try:
+
+            sohbetler = get_chats(
+                "normal"
+            )
+
+        except Exception as e:
+
+            print(
+                "SOHBETLERİ GETİRME HATASI:",
+                repr(e)
+            )
+
+            sohbetler = []
+
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        if request.method == "POST":
+
+            mesaj = request.form.get(
+                "message",
+                ""
+            ).strip()
+
+            if mesaj:
+
+                try:
+
+                    # MaviGPT cevabı
+                    cevap = ask_mavigpt(
+                        mesaj
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "MAVİGPT HATASI:",
+                        repr(e)
+                    )
+
+                    cevap = (
+                        "Üzgünüm, şu anda "
+                        "bir hata oluştu."
+                    )
+
+                # ------------------------------------------------
+                # SOHBETİ KAYDET
+                # ------------------------------------------------
+
+                try:
+
+                    save_chat(
+                        "normal",
+                        mesaj,
+                        cevap
+                    )
+
+                except Exception as e:
+
+                    print(
+                        "SOHBET KAYIT HATASI:",
+                        repr(e)
+                    )
+
+        # ----------------------------------------------------
+        # SAYFAYI GÖSTER
+        # ----------------------------------------------------
+
+        return render_template(
+            "index.html",
+
+            mesaj=mesaj,
+
+            cevap=cevap,
+
+            filename=filename,
+
+            sohbetler=sohbetler
+        )
                 "500.html"
             ),
             500
