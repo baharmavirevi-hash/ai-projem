@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 
@@ -117,6 +118,14 @@
             background: #ef9a9a;
         }
 
+        .share-button {
+            background: #75cfa0;
+        }
+
+        .copy-button {
+            background: #8bbde0;
+        }
+
         .user-item,
         .request-item,
         .room-item {
@@ -215,6 +224,35 @@
             color: #648895;
             font-size: 13px;
             line-height: 1.5;
+        }
+
+        .invite-box {
+            background: linear-gradient(135deg, #eefaff, #f8fdff);
+            border: 1px solid #cfeaf4;
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .invite-text {
+            background: white;
+            border: 1px solid #dceff6;
+            border-radius: 12px;
+            padding: 13px;
+            color: #527583;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .invite-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .invite-buttons button {
+            flex: 1;
         }
 
         .message {
@@ -323,6 +361,10 @@
             .room-actions button {
                 width: 100%;
             }
+
+            .invite-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -343,6 +385,48 @@
 <main class="container">
 
     <div id="message" class="message"></div>
+
+
+    <!-- ================================================= -->
+    <!-- ARKADAŞ DAVET ET -->
+    <!-- ================================================= -->
+
+    <section class="card">
+
+        <div class="section-title">
+            <span class="section-icon">📤</span>
+            Arkadaşını MaviGPT'ye Davet Et
+        </div>
+
+        <div class="invite-box">
+
+            <div class="invite-text" id="inviteText">
+                🩵 MaviGPT'ye katılsana!
+                Burada arkadaş ekleyebilir, sohbet odaları
+                oluşturabilir ve birlikte sohbet edebiliriz. 😄
+            </div>
+
+            <div class="invite-buttons">
+
+                <button
+                    class="copy-button"
+                    onclick="copyInvite()"
+                >
+                    📋 Mesajı Kopyala
+                </button>
+
+                <button
+                    class="share-button"
+                    onclick="shareInvite()"
+                >
+                    📤 Paylaş
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
     <!-- ================================================= -->
@@ -714,16 +798,112 @@
 
 
     // =====================================================
+    // DAVET MESAJI
+    // =====================================================
+
+    function getInviteText() {
+
+        const registerUrl =
+            window.location.origin + "/register";
+
+        return (
+            "🩵 MaviGPT'ye katılsana! 😄\n\n" +
+            "Buradan hesap oluşturup arkadaş ekleyebilir, " +
+            "sohbet odaları açabilir ve birlikte sohbet edebiliriz. 💬\n\n" +
+            "Hesap oluştur: " +
+            registerUrl
+        );
+    }
+
+
+    // =====================================================
+    // DAVET MESAJINI KOPYALA
+    // =====================================================
+
+    async function copyInvite() {
+
+        const text = getInviteText();
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            showMessage(
+                "Davet mesajı kopyalandı! 📋🩵"
+            );
+
+        } catch (error) {
+
+            const textarea =
+                document.createElement("textarea");
+
+            textarea.value = text;
+
+            document.body.appendChild(textarea);
+
+            textarea.select();
+
+            document.execCommand("copy");
+
+            textarea.remove();
+
+            showMessage(
+                "Davet mesajı kopyalandı! 📋🩵"
+            );
+        }
+    }
+
+
+    // =====================================================
+    // DAVET MESAJINI PAYLAŞ
+    // =====================================================
+
+    async function shareInvite() {
+
+        const text = getInviteText();
+
+        if (navigator.share) {
+
+            try {
+
+                await navigator.share({
+                    title: "MaviGPT",
+                    text: text
+                });
+
+                return;
+
+            } catch (error) {
+
+                if (error.name === "AbortError") {
+                    return;
+                }
+
+            }
+        }
+
+        await copyInvite();
+
+        showMessage(
+            "Paylaşım desteklenmediği için mesaj kopyalandı. 📋🩵"
+        );
+    }
+
+
+    // =====================================================
     // ARKADAŞ ARA
     // =====================================================
 
     async function searchUser() {
 
-        const input = document.getElementById("searchInput");
+        const input =
+            document.getElementById("searchInput");
 
-        const username = input.value.trim();
+        const username =
+            input.value.trim();
 
-        const result = document.getElementById("searchResult");
+        const result =
+            document.getElementById("searchResult");
 
         if (!username) {
 
@@ -749,9 +929,14 @@
                 encodeURIComponent(username)
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
-            if (!data.success || !data.users.length) {
+            if (
+                !data.success ||
+                !data.users ||
+                !data.users.length
+            ) {
 
                 result.innerHTML = `
                     <div class="empty">
@@ -762,7 +947,8 @@
                 return;
             }
 
-            const user = data.users[0];
+            const user =
+                data.users[0];
 
             result.innerHTML = `
                 <div class="user-item">
@@ -840,7 +1026,8 @@
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (data.success) {
 
@@ -884,7 +1071,8 @@
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (data.success) {
 
@@ -915,6 +1103,8 @@
 
         } catch (error) {
 
+            console.error(error);
+
             showMessage(
                 "Sunucuya bağlanılamadı.",
                 "error"
@@ -938,7 +1128,8 @@
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (data.success) {
 
@@ -964,6 +1155,8 @@
             }
 
         } catch (error) {
+
+            console.error(error);
 
             showMessage(
                 "Sunucuya bağlanılamadı.",
@@ -1027,7 +1220,8 @@
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (!data.success) {
 
@@ -1115,7 +1309,8 @@
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (!data.success) {
 
@@ -1170,7 +1365,8 @@
                 }
             );
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             if (data.success) {
 
@@ -1259,6 +1455,26 @@
 
 
     // =====================================================
+    // ENTER İLE ODA OLUŞTUR
+    // =====================================================
+
+    document
+        .getElementById("roomName")
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    createRoom();
+                }
+            }
+        );
+
+
+    // =====================================================
     // MODAL DIŞINA TIKLAYINCA KAPAT
     // =====================================================
 
@@ -1281,3 +1497,4 @@
 
 </body>
 </html>
+```
