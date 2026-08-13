@@ -89,7 +89,7 @@ from database import (
     get_user_friend_rooms,
 
     # ============================================================
-    # PUSH BİLDİRİM
+    # PUSH
     # ============================================================
     save_push_subscription,
     get_push_subscriptions,
@@ -102,10 +102,6 @@ from database import (
 # ============================================================
 
 def current_user():
-    """
-    Oturum açmış kullanıcının bilgilerini döndürür.
-    """
-
     user_id = session.get("user_id")
 
     if not user_id:
@@ -115,9 +111,6 @@ def current_user():
 
 
 def login_required(view):
-    """
-    Giriş yapılmadan erişilmemesi gereken sayfalar için decorator.
-    """
 
     @wraps(view)
     def wrapped_view(*args, **kwargs):
@@ -131,9 +124,6 @@ def login_required(view):
 
 
 def safe_int(value, default=0):
-    """
-    Güvenli integer dönüşümü.
-    """
 
     try:
         return int(value)
@@ -142,7 +132,7 @@ def safe_int(value, default=0):
 
 
 # ============================================================
-# ROUTE KAYIT SİSTEMİ
+# ROUTES
 # ============================================================
 
 def register_routes(app):
@@ -179,7 +169,7 @@ def register_routes(app):
         )
 
     # ========================================================
-    # MAVİGPT MESAJ GÖNDER
+    # MESAJ GÖNDER
     # ========================================================
 
     @app.route("/send", methods=["POST"])
@@ -188,7 +178,9 @@ def register_routes(app):
 
         try:
 
-            data = request.get_json(silent=True)
+            data = request.get_json(
+                silent=True
+            )
 
             if data is None:
                 data = request.form
@@ -206,9 +198,17 @@ def register_routes(app):
                     "error": "Mesaj boş olamaz."
                 }), 400
 
+            # ------------------------------------------------
+            # MaviGPT cevabını al
+            # ------------------------------------------------
+
             from app import ask_mavigpt
 
             response = ask_mavigpt(message)
+
+            # ------------------------------------------------
+            # DATABASE'E KAYDET
+            # ------------------------------------------------
 
             save_chat(
                 "normal",
@@ -235,19 +235,23 @@ def register_routes(app):
             }), 500
 
     # ========================================================
-    # CHAT MESAJLARI
+    # MESAJLAR API
     # ========================================================
 
     @app.route("/messages")
     @login_required
     def messages():
 
-        chat_type = request.args.get(
-            "chat_type",
-            "normal"
+        chat_type = (
+            request.args.get(
+                "chat_type",
+                "normal"
+            )
         )
 
-        rows = get_chat_messages(chat_type)
+        rows = get_chat_messages(
+            chat_type
+        )
 
         return jsonify([
             dict(row)
@@ -255,19 +259,23 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # SOHBETLER
+    # SOHBETLER API
     # ========================================================
 
     @app.route("/chats")
     @login_required
     def chats():
 
-        chat_type = request.args.get(
-            "chat_type",
-            "normal"
+        chat_type = (
+            request.args.get(
+                "chat_type",
+                "normal"
+            )
         )
 
-        rows = get_chats(chat_type)
+        rows = get_chats(
+            chat_type
+        )
 
         return jsonify([
             dict(row)
@@ -275,19 +283,23 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # CHAT HISTORY
+    # GEÇMİŞ
     # ========================================================
 
     @app.route("/history")
     @login_required
     def history():
 
-        chat_type = request.args.get(
-            "chat_type",
-            "normal"
+        chat_type = (
+            request.args.get(
+                "chat_type",
+                "normal"
+            )
         )
 
-        rows = get_chat_messages(chat_type)
+        rows = get_chat_messages(
+            chat_type
+        )
 
         return render_template(
             "mavigpt.html",
@@ -303,7 +315,9 @@ def register_routes(app):
     @login_required
     def single_chat(chat_id):
 
-        chat = get_chat(chat_id)
+        chat = get_chat(
+            chat_id
+        )
 
         if not chat:
 
@@ -327,9 +341,12 @@ def register_routes(app):
     @login_required
     def edit_chat_title(chat_id):
 
-        data = request.get_json(
-            silent=True
-        ) or request.form
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or request.form
+        )
 
         title = (
             data.get("title")
@@ -343,7 +360,9 @@ def register_routes(app):
                 "error": "Başlık boş olamaz."
             }), 400
 
-        chat = get_chat(chat_id)
+        chat = get_chat(
+            chat_id
+        )
 
         if not chat:
 
@@ -372,7 +391,9 @@ def register_routes(app):
     @login_required
     def remove_chat(chat_id):
 
-        chat = get_chat(chat_id)
+        chat = get_chat(
+            chat_id
+        )
 
         if not chat:
 
@@ -381,7 +402,9 @@ def register_routes(app):
                 "error": "Sohbet bulunamadı."
             }), 404
 
-        delete_chat(chat_id)
+        delete_chat(
+            chat_id
+        )
 
         return jsonify({
             "success": True
@@ -437,7 +460,9 @@ def register_routes(app):
 
                 session["user_id"] = user["id"]
 
-                session["username"] = user["username"]
+                session["username"] = (
+                    user["username"]
+                )
 
                 session["display_name"] = (
                     user["display_name"]
@@ -526,7 +551,10 @@ def register_routes(app):
             user_id = create_user(
                 username=username,
                 password=password,
-                display_name=display_name or username
+                display_name=(
+                    display_name
+                    or username
+                )
             )
 
             if not user_id:
@@ -580,15 +608,13 @@ def register_routes(app):
     @login_required
     def profile():
 
-        user = current_user()
-
         return render_template(
             "profile.html",
-            user=user
+            user=current_user()
         )
 
     # ========================================================
-    # SAĞLIK / CEBİMDEKİ DOKTOR
+    # CEBİMDEKİ DOKTOR
     # ========================================================
 
     @app.route("/doctor")
@@ -604,10 +630,6 @@ def register_routes(app):
             health_records=records,
             user=current_user()
         )
-
-    # ========================================================
-    # SAĞLIK KAYDI
-    # ========================================================
 
     @app.route(
         "/doctor/save",
@@ -641,23 +663,17 @@ def register_routes(app):
             url_for("doctor")
         )
 
-    # ========================================================
-    # SAĞLIK KAYITLARI API
-    # ========================================================
-
     @app.route("/health-records")
     @login_required
     def health_records_api():
 
-        rows = get_health_records()
-
         return jsonify([
             dict(row)
-            for row in rows
+            for row in get_health_records()
         ])
 
     # ========================================================
-    # REGL TAKİBİ
+    # REGL
     # ========================================================
 
     @app.route("/period")
@@ -674,10 +690,6 @@ def register_routes(app):
             period_records=records,
             user=current_user()
         )
-
-    # ========================================================
-    # REGL KAYDET
-    # ========================================================
 
     @app.route(
         "/period/save",
@@ -716,7 +728,7 @@ def register_routes(app):
         )
 
     # ========================================================
-    # SİNDİRİM TAKİBİ
+    # SİNDİRİM
     # ========================================================
 
     @app.route("/diarrhea")
@@ -734,10 +746,6 @@ def register_routes(app):
             diarrhea_records=records,
             user=current_user()
         )
-
-    # ========================================================
-    # SİNDİRİM KAYDET
-    # ========================================================
 
     @app.route(
         "/diarrhea/save",
@@ -799,10 +807,6 @@ def register_routes(app):
             user=current_user()
         )
 
-    # ========================================================
-    # İLAÇ KAYDET
-    # ========================================================
-
     @app.route(
         "/medicine/save",
         methods=["POST"]
@@ -856,10 +860,6 @@ def register_routes(app):
             url_for("medicine")
         )
 
-    # ========================================================
-    # İLAÇ SİL
-    # ========================================================
-
     @app.route(
         "/medicine/delete/<int:medicine_id>",
         methods=["POST", "DELETE"]
@@ -893,17 +893,11 @@ def register_routes(app):
     @login_required
     def settings():
 
-        settings_data = get_settings()
-
         return render_template(
             "settings.html",
-            settings=settings_data,
+            settings=get_settings(),
             user=current_user()
         )
-
-    # ========================================================
-    # AYARLARI KAYDET
-    # ========================================================
 
     @app.route(
         "/settings/save",
@@ -932,13 +926,7 @@ def register_routes(app):
         )
 
     # ========================================================
-    # ========================================================
-    # ARKADAŞ SİSTEMİ
-    # ========================================================
-    # ========================================================
-
-    # ========================================================
-    # ARKADAŞLAR SAYFASI
+    # ARKADAŞLAR
     # ========================================================
 
     @app.route("/friends")
@@ -972,7 +960,7 @@ def register_routes(app):
         )
 
     # ========================================================
-    # KULLANICI ARA
+    # ARKADAŞ ARA
     # ========================================================
 
     @app.route("/friends/search")
@@ -992,8 +980,6 @@ def register_routes(app):
                 "users": []
             })
 
-        user_id = session["user_id"]
-
         user = get_user_by_username(
             username
         )
@@ -1005,7 +991,7 @@ def register_routes(app):
                 "users": []
             })
 
-        if user["id"] == user_id:
+        if user["id"] == session["user_id"]:
 
             return jsonify({
                 "success": True,
@@ -1025,7 +1011,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞLIK İSTEĞİ GÖNDER
+    # ARKADAŞLIK İSTEĞİ
     # ========================================================
 
     @app.route(
@@ -1035,9 +1021,12 @@ def register_routes(app):
     @login_required
     def friend_request():
 
-        data = request.get_json(
-            silent=True
-        ) or request.form
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or request.form
+        )
 
         receiver_id = safe_int(
             data.get("receiver_id")
@@ -1061,9 +1050,7 @@ def register_routes(app):
             return jsonify({
                 "success": False,
                 "error": (
-                    "Arkadaşlık isteği gönderilemedi. "
-                    "Zaten arkadaş olabilirsiniz veya "
-                    "bekleyen bir istek olabilir."
+                    "Arkadaşlık isteği gönderilemedi."
                 )
             }), 400
 
@@ -1072,7 +1059,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞLIK İSTEĞİ KABUL
+    # İSTEK KABUL
     # ========================================================
 
     @app.route(
@@ -1092,7 +1079,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞLIK İSTEĞİ REDDET
+    # İSTEK RED
     # ========================================================
 
     @app.route(
@@ -1112,7 +1099,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞLARI API
+    # ARKADAŞ API
     # ========================================================
 
     @app.route("/api/friends")
@@ -1136,7 +1123,7 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # BEKLEYEN İSTEKLER API
+    # BEKLEYEN İSTEKLER
     # ========================================================
 
     @app.route("/api/friend-requests")
@@ -1153,7 +1140,7 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # KULLANICININ ODALARI API
+    # ARKADAŞ ODALARI
     # ========================================================
 
     @app.route("/api/friend-rooms")
@@ -1170,7 +1157,7 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # ARKADAŞ ODASI OLUŞTUR
+    # ODA OLUŞTUR
     # ========================================================
 
     @app.route(
@@ -1180,9 +1167,12 @@ def register_routes(app):
     @login_required
     def create_room():
 
-        data = request.get_json(
-            silent=True
-        ) or request.form
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or request.form
+        )
 
         room_name = (
             data.get("name")
@@ -1215,7 +1205,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞ ODASINA KATIL
+    # ODAYA KATIL
     # ========================================================
 
     @app.route(
@@ -1225,9 +1215,12 @@ def register_routes(app):
     @login_required
     def join_room():
 
-        data = request.get_json(
-            silent=True
-        ) or request.form
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or request.form
+        )
 
         room_code = (
             data.get("room_code")
@@ -1302,10 +1295,6 @@ def register_routes(app):
 
         user_id = session["user_id"]
 
-        # ====================================================
-        # GÜVENLİK
-        # ====================================================
-
         if not is_room_member(
             room_code,
             user_id
@@ -1334,7 +1323,7 @@ def register_routes(app):
         )
 
     # ========================================================
-    # ODA ÜYELERİ API
+    # ODA ÜYELERİ
     # ========================================================
 
     @app.route(
@@ -1376,7 +1365,7 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # ARKADAŞ ODASI MESAJLARI
+    # ODA MESAJLARI
     # ========================================================
 
     @app.route(
@@ -1400,10 +1389,6 @@ def register_routes(app):
                 "success": False,
                 "error": "Bu odanın üyesi değilsiniz."
             }), 403
-
-        # ====================================================
-        # GET
-        # ====================================================
 
         if request.method == "GET":
 
@@ -1431,13 +1416,12 @@ def register_routes(app):
                 for row in rows
             ])
 
-        # ====================================================
-        # POST
-        # ====================================================
-
-        data = request.get_json(
-            silent=True
-        ) or request.form
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or request.form
+        )
 
         message = (
             data.get("message")
@@ -1445,19 +1429,19 @@ def register_routes(app):
             or ""
         ).strip()
 
-        user = current_user()
-
-        username = (
-            user["display_name"]
-            or user["username"]
-        )
-
         if not message:
 
             return jsonify({
                 "success": False,
                 "error": "Mesaj boş olamaz."
             }), 400
+
+        user = current_user()
+
+        username = (
+            user["display_name"]
+            or user["username"]
+        )
 
         success = save_friend_message(
             room_code=room_code,
@@ -1478,7 +1462,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞ ODASINA FOTOĞRAF
+    # ODAYA FOTOĞRAF
     # ========================================================
 
     @app.route(
@@ -1515,13 +1499,6 @@ def register_routes(app):
             }), 400
 
         filename = photo.filename or ""
-
-        if not filename:
-
-            return jsonify({
-                "success": False,
-                "error": "Geçersiz dosya."
-            }), 400
 
         extension = os.path.splitext(
             filename
@@ -1607,7 +1584,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # ARKADAŞ FOTOĞRAFLARI
+    # FOTOĞRAF SERVİSİ
     # ========================================================
 
     @app.route(
@@ -1626,7 +1603,7 @@ def register_routes(app):
         )
 
     # ========================================================
-    # ARKADAŞ ODASI SİL
+    # ODA SİL
     # ========================================================
 
     @app.route(
@@ -1658,7 +1635,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # PUSH BİLDİRİM ABONELİĞİ
+    # PUSH SUBSCRIBE
     # ========================================================
 
     @app.route(
@@ -1668,9 +1645,12 @@ def register_routes(app):
     @login_required
     def push_subscribe():
 
-        data = request.get_json(
-            silent=True
-        ) or {}
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
 
         endpoint = (
             data.get("endpoint")
@@ -1712,7 +1692,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # PUSH ABONELİĞİ SİL
+    # PUSH UNSUBSCRIBE
     # ========================================================
 
     @app.route(
@@ -1722,9 +1702,12 @@ def register_routes(app):
     @login_required
     def push_unsubscribe():
 
-        data = request.get_json(
-            silent=True
-        ) or {}
+        data = (
+            request.get_json(
+                silent=True
+            )
+            or {}
+        )
 
         endpoint = (
             data.get("endpoint")
@@ -1740,7 +1723,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # PUSH ABONELİKLERİ
+    # PUSH SUBSCRIPTIONS
     # ========================================================
 
     @app.route(
@@ -1759,7 +1742,7 @@ def register_routes(app):
         ])
 
     # ========================================================
-    # API: OTURUM BİLGİSİ
+    # BENİM HESABIM
     # ========================================================
 
     @app.route(
@@ -1793,7 +1776,7 @@ def register_routes(app):
         })
 
     # ========================================================
-    # TEST ROUTE
+    # TEST
     # ========================================================
 
     @app.route("/test")
