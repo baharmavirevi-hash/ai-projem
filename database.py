@@ -1,4 +1,3 @@
-```python
 import sqlite3
 import os
 import secrets
@@ -2169,4 +2168,4 @@ def delete_push_subscription(
 # ============================================================
 
 init_db()
-```
+
