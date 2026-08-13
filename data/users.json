@@ -1,1 +1,9 @@
-
+{
+  "users": [
+    {
+      "username": "bahar",
+      "password_hash": "...",
+      "display_name": "Bahar"
+    }
+  ]
+}
