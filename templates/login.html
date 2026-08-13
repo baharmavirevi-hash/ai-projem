@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -11,8 +12,14 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -25,7 +32,7 @@
         .login-card {
             width: 100%;
             max-width: 420px;
-            background: white;
+            background: #ffffff;
             padding: 35px 28px;
             border-radius: 25px;
             box-shadow: 0 15px 45px rgba(70, 160, 195, 0.15);
@@ -58,6 +65,7 @@
         }
 
         input {
+            display: block;
             width: 100%;
             padding: 14px;
             border: 1px solid #d6eaf2;
@@ -74,6 +82,7 @@
         }
 
         button {
+            display: block;
             width: 100%;
             padding: 14px;
             border: none;
@@ -83,10 +92,16 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
 
         button:hover {
             background: #7dcdec;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .register {
@@ -101,16 +116,33 @@
             font-weight: bold;
         }
 
-        .error {
-            background: #fff1f1;
-            color: #c54b4b;
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
             padding: 11px;
             border-radius: 10px;
             margin-bottom: 18px;
             text-align: center;
+            font-size: 14px;
+        }
+
+        .error {
+            background: #fff1f1;
+            color: #c54b4b;
+        }
+
+        .success {
+            background: #effcf5;
+            color: #27865b;
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
             .login-card {
                 padding: 30px 20px;
             }
@@ -130,13 +162,27 @@
         Hesabına giriş yap
     </p>
 
-    {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-    {% endif %}
+    <!-- Flask flash mesajları -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
 
-    <form method="POST">
+            {% for category, message in messages %}
+
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+    {% endwith %}
+
+    <!-- GİRİŞ FORMU -->
+    <form
+        method="POST"
+        action="{{ url_for('login') }}"
+        autocomplete="on"
+    >
 
         <label for="username">
             Kullanıcı adı
@@ -149,6 +195,7 @@
             placeholder="Kullanıcı adın"
             autocomplete="username"
             required
+            autofocus
         >
 
         <label for="password">
@@ -172,7 +219,7 @@
 
     <div class="register">
         Hesabın yok mu?
-        <a href="/register">
+        <a href="{{ url_for('register') }}">
             Kayıt Ol
         </a>
     </div>
@@ -181,3 +228,4 @@
 
 </body>
 </html>
+```
