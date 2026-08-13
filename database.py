@@ -20,7 +20,15 @@ BASE_DIR = os.path.dirname(
 DB_NAME = os.path.join(
     BASE_DIR,
     "chat.db"
+)# ============================================================
+# USERS.JSON AYARLARI
+# ============================================================
+
+USERS_JSON = os.path.join(
+    BASE_DIR,
+    "users.json"
 )
+
 
 
 # ============================================================
@@ -51,6 +59,68 @@ def init_db():
 
     conn = get_db()
     cursor = conn.cursor()
+    # ============================================================
+# USERS.JSON OLUŞTUR / SENKRONİZE ET
+# ============================================================
+
+def sync_users_json():
+
+    conn = get_db()
+
+    try:
+
+        rows = conn.execute("""
+            SELECT
+                username,
+                password_hash,
+                display_name
+            FROM users
+            ORDER BY id ASC
+        """).fetchall()
+
+    finally:
+
+        conn.close()
+
+    users = []
+
+    for row in rows:
+
+        users.append({
+            "username": row["username"],
+            "password_hash": row["password_hash"],
+            "display_name": row["display_name"]
+        })
+
+    import json
+
+    try:
+
+        with open(
+            USERS_JSON,
+            "w",
+            encoding="utf-8"
+        ) as file:
+
+            json.dump(
+                {
+                    "users": users
+                },
+                file,
+                ensure_ascii=False,
+                indent=2
+            )
+
+        return True
+
+    except Exception as e:
+
+        print(
+            "USERS.JSON SENKRONİZASYON HATASI:",
+            repr(e)
+        )
+
+        return False
 
     # ========================================================
     # MAVİGPT SOHBETLERİ
@@ -461,8 +531,13 @@ def create_user(
 
         conn.commit()
 
-        return cursor.lastrowid
+user_id = cursor.lastrowid
 
+# Kullanıcı oluşturulduktan sonra
+# users.json dosyasını güncelle
+sync_users_json()
+
+return user_id
     except sqlite3.IntegrityError:
 
         return None
