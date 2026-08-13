@@ -1,3 +1,4 @@
+```python
 import sqlite3
 import os
 import secrets
@@ -1285,6 +1286,9 @@ def are_friends(
     user_b
 ):
 
+    if not user_a or not user_b:
+        return False
+
     conn = get_db()
 
     row = conn.execute("""
@@ -1441,53 +1445,7 @@ def get_friend_room(
 
 
 # ============================================================
-# KULLANICIYI ODAYA EKLE
-# ============================================================
-
-def join_friend_room(
-    room_code,
-    user_id
-):
-
-    room = get_friend_room(
-        room_code
-    )
-
-    if not room or not user_id:
-        return False
-
-    conn = get_db()
-
-    try:
-
-        cursor = conn.execute("""
-            INSERT OR IGNORE INTO
-            friend_room_members
-            (
-                room_id,
-                user_id
-            )
-
-            VALUES (?, ?)
-        """, (
-            room["id"],
-            user_id
-        ))
-
-        conn.commit()
-
-        return cursor.rowcount > 0 or is_room_member(
-            room_code,
-            user_id
-        )
-
-    finally:
-
-        conn.close()
-
-
-# ============================================================
-# KULLANICI ODADA MI?
+# KULLANICI ODANIN ÜYESİ Mİ?
 # ============================================================
 
 def is_room_member(
@@ -1495,14 +1453,14 @@ def is_room_member(
     user_id
 ):
 
+    if not user_id:
+        return False
+
     room = get_friend_room(
         room_code
     )
 
     if not room:
-        return False
-
-    if not user_id:
         return False
 
     conn = get_db()
@@ -1525,6 +1483,201 @@ def is_room_member(
     conn.close()
 
     return row is not None
+
+
+# ============================================================
+# KULLANICI ARKADAŞ ODASINA KATILABİLİR Mİ?
+# ============================================================
+
+def can_join_friend_room(
+    room_code,
+    user_id
+):
+
+    if not user_id:
+        return False
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room:
+        return False
+
+    # --------------------------------------------------------
+    # Kullanıcı zaten üyeyse tekrar katılmasına gerek yok.
+    # --------------------------------------------------------
+
+    if is_room_member(
+        room_code,
+        user_id
+    ):
+        return True
+
+    conn = get_db()
+
+    try:
+
+        # ----------------------------------------------------
+        # Odanın sahibi kullanıcıysa izin ver.
+        # ----------------------------------------------------
+
+        if room["owner_id"] == user_id:
+            return True
+
+        # ----------------------------------------------------
+        # Odanın sahibiyle arkadaş mı?
+        # ----------------------------------------------------
+
+        owner_id = room["owner_id"]
+
+        if owner_id:
+
+            owner_friend = conn.execute("""
+                SELECT id
+
+                FROM friendships
+
+                WHERE
+                    status = 'accepted'
+                    AND
+                    (
+                        (
+                            sender_id = ?
+                            AND receiver_id = ?
+                        )
+                        OR
+                        (
+                            sender_id = ?
+                            AND receiver_id = ?
+                        )
+                    )
+
+                LIMIT 1
+            """, (
+                user_id,
+                owner_id,
+                owner_id,
+                user_id
+            )).fetchone()
+
+            if owner_friend:
+                return True
+
+        # ----------------------------------------------------
+        # Oda sahibinden başka üyeler varsa, kullanıcı
+        # bu üyelerden en az biriyle arkadaşsa izin ver.
+        # ----------------------------------------------------
+
+        member_friend = conn.execute("""
+            SELECT frm.user_id
+
+            FROM friend_room_members frm
+
+            INNER JOIN friendships f
+                ON
+                f.status = 'accepted'
+                AND
+                (
+                    (
+                        f.sender_id = ?
+                        AND f.receiver_id = frm.user_id
+                    )
+                    OR
+                    (
+                        f.receiver_id = ?
+                        AND f.sender_id = frm.user_id
+                    )
+                )
+
+            WHERE
+                frm.room_id = ?
+
+            LIMIT 1
+        """, (
+            user_id,
+            user_id,
+            room["id"]
+        )).fetchone()
+
+        return member_friend is not None
+
+    finally:
+
+        conn.close()
+
+
+# ============================================================
+# KULLANICIYI ODAYA EKLE
+# ============================================================
+
+def join_friend_room(
+    room_code,
+    user_id
+):
+
+    room = get_friend_room(
+        room_code
+    )
+
+    if not room or not user_id:
+        return False
+
+    # --------------------------------------------------------
+    # Zaten üyeyse başarılı kabul et.
+    # --------------------------------------------------------
+
+    if is_room_member(
+        room_code,
+        user_id
+    ):
+        return True
+
+    # --------------------------------------------------------
+    # ARKADAŞLIK KONTROLÜ
+    # --------------------------------------------------------
+
+    if not can_join_friend_room(
+        room_code,
+        user_id
+    ):
+        return False
+
+    conn = get_db()
+
+    try:
+
+        cursor = conn.execute("""
+            INSERT OR IGNORE INTO
+            friend_room_members
+            (
+                room_id,
+                user_id
+            )
+
+            VALUES (?, ?)
+        """, (
+            room["id"],
+            user_id
+        ))
+
+        conn.commit()
+
+        return (
+            cursor.rowcount > 0
+            or is_room_member(
+                room_code,
+                user_id
+            )
+        )
+
+    except sqlite3.IntegrityError:
+
+        return False
+
+    finally:
+
+        conn.close()
 
 
 # ============================================================
@@ -1636,7 +1789,6 @@ def save_friend_message(
     try:
 
         # ----------------------------------------------------
-        # ÖNEMLİ:
         # Kullanıcı gerçekten odanın üyesi olmalı.
         # ----------------------------------------------------
 
@@ -1656,7 +1808,6 @@ def save_friend_message(
         )).fetchone()
 
         if not member:
-
             return False
 
         # ----------------------------------------------------
@@ -1717,8 +1868,11 @@ def get_friend_messages(
         return []
 
     try:
+
         limit = int(limit)
+
     except (TypeError, ValueError):
+
         limit = 200
 
     if limit <= 0:
@@ -1807,21 +1961,23 @@ def delete_friend_room(
 
     conn = get_db()
 
-    cursor = conn.execute("""
-        DELETE FROM friend_rooms
+    try:
 
-        WHERE id = ?
-    """, (
-        room["id"],
-    ))
+        cursor = conn.execute("""
+            DELETE FROM friend_rooms
 
-    conn.commit()
+            WHERE id = ?
+        """, (
+            room["id"],
+        ))
 
-    success = cursor.rowcount > 0
+        conn.commit()
 
-    conn.close()
+        return cursor.rowcount > 0
 
-    return success
+    finally:
+
+        conn.close()
 
 
 # ============================================================
@@ -1989,21 +2145,23 @@ def delete_push_subscription(
 
     conn = get_db()
 
-    cursor = conn.execute("""
-        DELETE FROM push_subscriptions
+    try:
 
-        WHERE endpoint = ?
-    """, (
-        endpoint,
-    ))
+        cursor = conn.execute("""
+            DELETE FROM push_subscriptions
 
-    conn.commit()
+            WHERE endpoint = ?
+        """, (
+            endpoint,
+        ))
 
-    success = cursor.rowcount > 0
+        conn.commit()
 
-    conn.close()
+        return cursor.rowcount > 0
 
-    return success
+    finally:
+
+        conn.close()
 
 
 # ============================================================
@@ -2011,4 +2169,4 @@ def delete_push_subscription(
 # ============================================================
 
 init_db()
-
+```
