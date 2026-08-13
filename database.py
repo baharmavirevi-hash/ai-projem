@@ -2,6 +2,7 @@ import sqlite3
 import os
 import secrets
 import string
+import json
 
 from werkzeug.security import (
     generate_password_hash,
@@ -20,15 +21,12 @@ BASE_DIR = os.path.dirname(
 DB_NAME = os.path.join(
     BASE_DIR,
     "chat.db"
-)# ============================================================
-# USERS.JSON AYARLARI
-# ============================================================
+)
 
 USERS_JSON = os.path.join(
     BASE_DIR,
     "users.json"
 )
-
 
 
 # ============================================================
@@ -52,47 +50,57 @@ def get_db():
 
 
 # ============================================================
-# DATABASE OLUŞTUR
+# USERS.JSON OKU
 # ============================================================
 
-def init_db():
+def load_users_json():
 
-    conn = get_db()
-    cursor = conn.cursor()
-    # ============================================================
-# USERS.JSON OLUŞTUR / SENKRONİZE ET
-# ============================================================
+    if not os.path.exists(USERS_JSON):
 
-def sync_users_json():
-
-    conn = get_db()
+        return {
+            "users": []
+        }
 
     try:
 
-        rows = conn.execute("""
-            SELECT
-                username,
-                password_hash,
-                display_name
-            FROM users
-            ORDER BY id ASC
-        """).fetchall()
+        with open(
+            USERS_JSON,
+            "r",
+            encoding="utf-8"
+        ) as file:
 
-    finally:
+            data = json.load(file)
 
-        conn.close()
+        if not isinstance(data, dict):
+            return {
+                "users": []
+            }
 
-    users = []
+        if not isinstance(
+            data.get("users"),
+            list
+        ):
+            data["users"] = []
 
-    for row in rows:
+        return data
 
-        users.append({
-            "username": row["username"],
-            "password_hash": row["password_hash"],
-            "display_name": row["display_name"]
-        })
+    except Exception as e:
 
-    import json
+        print(
+            "USERS.JSON OKUMA HATASI:",
+            repr(e)
+        )
+
+        return {
+            "users": []
+        }
+
+
+# ============================================================
+# USERS.JSON YAZ
+# ============================================================
+
+def save_users_json(data):
 
     try:
 
@@ -103,9 +111,7 @@ def sync_users_json():
         ) as file:
 
             json.dump(
-                {
-                    "users": users
-                },
+                data,
                 file,
                 ensure_ascii=False,
                 indent=2
@@ -116,11 +122,145 @@ def sync_users_json():
     except Exception as e:
 
         print(
-            "USERS.JSON SENKRONİZASYON HATASI:",
+            "USERS.JSON YAZMA HATASI:",
             repr(e)
         )
 
         return False
+
+
+# ============================================================
+# CHAT.DB KULLANICILARINI USERS.JSON İLE SENKRONİZE ET
+# ============================================================
+
+def sync_users_json():
+
+    conn = get_db()
+
+    try:
+
+        rows = conn.execute("""
+            SELECT
+                id,
+                username,
+                password_hash,
+                display_name,
+                created_at
+
+            FROM users
+
+            ORDER BY id ASC
+        """).fetchall()
+
+    finally:
+
+        conn.close()
+
+    data = load_users_json()
+
+    json_users = data.get(
+        "users",
+        []
+    )
+
+    # --------------------------------------------------------
+    # JSON'daki mevcut kullanıcıları koru.
+    # --------------------------------------------------------
+
+    existing_users = {}
+
+    for user in json_users:
+
+        if not isinstance(
+            user,
+            dict
+        ):
+            continue
+
+        username = str(
+            user.get(
+                "username",
+                ""
+            )
+        ).strip()
+
+        if username:
+
+            existing_users[
+                username.lower()
+            ] = user
+
+    # --------------------------------------------------------
+    # chat.db'deki kullanıcıları JSON'a ekle/güncelle.
+    #
+    # chat.db ana kullanıcı kaynağı olduğu için mevcut DB
+    # şifre hash'i ve kullanıcı bilgileri korunur.
+    # --------------------------------------------------------
+
+    for row in rows:
+
+        username = (
+            row["username"] or ""
+        ).strip()
+
+        if not username:
+            continue
+
+        key = username.lower()
+
+        if key in existing_users:
+
+            user = existing_users[key]
+
+            # Eksik bilgiler varsa tamamla.
+            if not user.get("username"):
+                user["username"] = username
+
+            if not user.get("password_hash"):
+                user["password_hash"] = (
+                    row["password_hash"]
+                )
+
+            if not user.get("display_name"):
+                user["display_name"] = (
+                    row["display_name"]
+                    or username
+                )
+
+        else:
+
+            user = {
+                "username": username,
+                "password_hash": row[
+                    "password_hash"
+                ],
+                "display_name": (
+                    row["display_name"]
+                    or username
+                )
+            }
+
+            json_users.append(
+                user
+            )
+
+            existing_users[key] = user
+
+    data["users"] = json_users
+
+    return save_users_json(
+        data
+    )
+
+
+# ============================================================
+# DATABASE OLUŞTUR
+# ============================================================
+
+def init_db():
+
+    conn = get_db()
+    cursor = conn.cursor()
 
     # ========================================================
     # MAVİGPT SOHBETLERİ
@@ -477,6 +617,12 @@ def sync_users_json():
     conn.commit()
     conn.close()
 
+    # ========================================================
+    # ESKİ KULLANICILARI USERS.JSON'A AKTAR
+    # ========================================================
+
+    sync_users_json()
+
 
 # ============================================================
 # KULLANICI HESABI
@@ -531,13 +677,8 @@ def create_user(
 
         conn.commit()
 
-user_id = cursor.lastrowid
+        user_id = cursor.lastrowid
 
-# Kullanıcı oluşturulduktan sonra
-# users.json dosyasını güncelle
-sync_users_json()
-
-return user_id
     except sqlite3.IntegrityError:
 
         return None
@@ -545,6 +686,14 @@ return user_id
     finally:
 
         conn.close()
+
+    # --------------------------------------------------------
+    # Yeni kullanıcıyı users.json'a ekle.
+    # --------------------------------------------------------
+
+    sync_users_json()
+
+    return user_id
 
 
 # ============================================================
@@ -1578,10 +1727,6 @@ def can_join_friend_room(
     if not room:
         return False
 
-    # --------------------------------------------------------
-    # Kullanıcı zaten üyeyse tekrar katılmasına gerek yok.
-    # --------------------------------------------------------
-
     if is_room_member(
         room_code,
         user_id
@@ -1592,16 +1737,8 @@ def can_join_friend_room(
 
     try:
 
-        # ----------------------------------------------------
-        # Odanın sahibi kullanıcıysa izin ver.
-        # ----------------------------------------------------
-
         if room["owner_id"] == user_id:
             return True
-
-        # ----------------------------------------------------
-        # Odanın sahibiyle arkadaş mı?
-        # ----------------------------------------------------
 
         owner_id = room["owner_id"]
 
@@ -1637,11 +1774,6 @@ def can_join_friend_room(
 
             if owner_friend:
                 return True
-
-        # ----------------------------------------------------
-        # Oda sahibinden başka üyeler varsa, kullanıcı
-        # bu üyelerden en az biriyle arkadaşsa izin ver.
-        # ----------------------------------------------------
 
         member_friend = conn.execute("""
             SELECT frm.user_id
@@ -1697,19 +1829,11 @@ def join_friend_room(
     if not room or not user_id:
         return False
 
-    # --------------------------------------------------------
-    # Zaten üyeyse başarılı kabul et.
-    # --------------------------------------------------------
-
     if is_room_member(
         room_code,
         user_id
     ):
         return True
-
-    # --------------------------------------------------------
-    # ARKADAŞLIK KONTROLÜ
-    # --------------------------------------------------------
 
     if not can_join_friend_room(
         room_code,
@@ -1862,10 +1986,6 @@ def save_friend_message(
 
     try:
 
-        # ----------------------------------------------------
-        # Kullanıcı gerçekten odanın üyesi olmalı.
-        # ----------------------------------------------------
-
         member = conn.execute("""
             SELECT id
 
@@ -1883,10 +2003,6 @@ def save_friend_message(
 
         if not member:
             return False
-
-        # ----------------------------------------------------
-        # MESAJI KAYDET
-        # ----------------------------------------------------
 
         conn.execute("""
             INSERT INTO friend_messages
@@ -2243,4 +2359,3 @@ def delete_push_subscription(
 # ============================================================
 
 init_db()
-
