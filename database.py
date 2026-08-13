@@ -36,8 +36,9 @@ def get_db():
 
     conn.row_factory = sqlite3.Row
 
-    # Foreign key'leri aktif et
-    conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute(
+        "PRAGMA foreign_keys = ON"
+    )
 
     return conn
 
@@ -50,7 +51,6 @@ def init_db():
 
     conn = get_db()
     cursor = conn.cursor()
-
 
     # ========================================================
     # MAVİGPT SOHBETLERİ
@@ -73,7 +73,6 @@ def init_db():
         )
     """)
 
-
     # ========================================================
     # SAĞLIK
     # ========================================================
@@ -95,7 +94,6 @@ def init_db():
         )
     """)
 
-
     # ========================================================
     # REGL
     # ========================================================
@@ -116,7 +114,6 @@ def init_db():
                 DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
 
     # ========================================================
     # SİNDİRİM
@@ -141,7 +138,6 @@ def init_db():
         )
     """)
 
-
     # ========================================================
     # İLAÇLAR
     # ========================================================
@@ -165,7 +161,6 @@ def init_db():
         )
     """)
 
-
     # ========================================================
     # AYARLAR
     # ========================================================
@@ -180,7 +175,6 @@ def init_db():
             personality TEXT DEFAULT 'friendly'
         )
     """)
-
 
     cursor.execute("""
         INSERT OR IGNORE INTO settings
@@ -197,7 +191,6 @@ def init_db():
             'friendly'
         )
     """)
-
 
     # ========================================================
     # KULLANICILAR
@@ -219,7 +212,6 @@ def init_db():
                 DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
 
     # ========================================================
     # ARKADAŞLIKLAR
@@ -252,7 +244,6 @@ def init_db():
         )
     """)
 
-
     # ========================================================
     # ARKADAŞ SOHBET ODALARI
     # ========================================================
@@ -277,7 +268,6 @@ def init_db():
                 ON DELETE SET NULL
         )
     """)
-
 
     # ========================================================
     # ODA ÜYELERİ
@@ -307,7 +297,6 @@ def init_db():
                 ON DELETE CASCADE
         )
     """)
-
 
     # ========================================================
     # ARKADAŞ MESAJLARI
@@ -342,12 +331,8 @@ def init_db():
         )
     """)
 
-
     # ========================================================
-    # BİLDİRİM ABONELİKLERİ
-    #
-    # Uygulama kapalıyken push bildirimi gönderebilmek
-    # için tarayıcı/telefon abonelik bilgilerini saklarız.
+    # PUSH BİLDİRİM ABONELİKLERİ
     # ========================================================
 
     cursor.execute("""
@@ -373,7 +358,6 @@ def init_db():
         )
     """)
 
-
     # ========================================================
     # INDEXLER
     # ========================================================
@@ -384,13 +368,11 @@ def init_db():
         ON chats(chat_type)
     """)
 
-
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
         idx_friend_messages_room
         ON friend_messages(room_id)
     """)
-
 
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
@@ -398,13 +380,11 @@ def init_db():
         ON friendships(sender_id)
     """)
 
-
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
         idx_friendships_receiver
         ON friendships(receiver_id)
     """)
-
 
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
@@ -412,20 +392,17 @@ def init_db():
         ON friend_room_members(room_id)
     """)
 
-
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
         idx_room_members_user
         ON friend_room_members(user_id)
     """)
 
-
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS
         idx_push_subscriptions_user
         ON push_subscriptions(user_id)
     """)
-
 
     conn.commit()
     conn.close()
@@ -447,14 +424,11 @@ def create_user(
 
     password = password or ""
 
-
     if not username or not password:
         return None
 
-
     if display_name is None:
         display_name = username
-
 
     display_name = (
         display_name.strip()
@@ -462,11 +436,9 @@ def create_user(
         else username
     )
 
-
     password_hash = generate_password_hash(
         password
     )
-
 
     conn = get_db()
 
@@ -511,7 +483,6 @@ def get_user_by_username(
     username = (
         username or ""
     ).strip()
-
 
     conn = get_db()
 
@@ -581,18 +552,14 @@ def check_user_password(
         username
     )
 
-
     if not user:
         return None
-
 
     if check_password_hash(
         user["password_hash"],
         password
     ):
-
         return user
-
 
     return None
 
@@ -1069,14 +1036,12 @@ def get_settings():
 
     conn.close()
 
-
     if not row:
 
         return {
             "mode": "normal",
             "personality": "friendly"
         }
-
 
     return row
 
@@ -1093,10 +1058,8 @@ def send_friend_request(
     if not sender_id or not receiver_id:
         return False
 
-
     if sender_id == receiver_id:
         return False
-
 
     conn = get_db()
 
@@ -1128,11 +1091,8 @@ def send_friend_request(
             sender_id
         )).fetchone()
 
-
         if existing:
-
             return False
-
 
         conn.execute("""
             INSERT INTO friendships
@@ -1147,7 +1107,6 @@ def send_friend_request(
             sender_id,
             receiver_id
         ))
-
 
         conn.commit()
 
@@ -1412,9 +1371,7 @@ def create_friend_room(
                 owner_id
             ))
 
-
             room_id = cursor.lastrowid
-
 
             if owner_id:
 
@@ -1432,7 +1389,6 @@ def create_friend_room(
                     owner_id
                 ))
 
-
             conn.commit()
 
             conn.close()
@@ -1442,7 +1398,6 @@ def create_friend_room(
         except sqlite3.IntegrityError:
 
             continue
-
 
     conn.close()
 
@@ -1460,7 +1415,6 @@ def get_friend_room(
     room_code = (
         room_code or ""
     ).strip().upper()
-
 
     conn = get_db()
 
@@ -1499,16 +1453,14 @@ def join_friend_room(
         room_code
     )
 
-
     if not room or not user_id:
         return False
-
 
     conn = get_db()
 
     try:
 
-        conn.execute("""
+        cursor = conn.execute("""
             INSERT OR IGNORE INTO
             friend_room_members
             (
@@ -1524,7 +1476,10 @@ def join_friend_room(
 
         conn.commit()
 
-        return True
+        return cursor.rowcount > 0 or is_room_member(
+            room_code,
+            user_id
+        )
 
     finally:
 
@@ -1544,10 +1499,11 @@ def is_room_member(
         room_code
     )
 
-
     if not room:
         return False
 
+    if not user_id:
+        return False
 
     conn = get_db()
 
@@ -1583,10 +1539,8 @@ def get_friend_room_members(
         room_code
     )
 
-
     if not room:
         return []
-
 
     conn = get_db()
 
@@ -1612,11 +1566,15 @@ def get_friend_room_members(
     conn.close()
 
     return rows
-    # ============================================================
+
+
+# ============================================================
 # KULLANICININ ARKADAŞ ODALARINI GETİR
 # ============================================================
 
-def get_user_friend_rooms(user_id):
+def get_user_friend_rooms(
+    user_id
+):
 
     if not user_id:
         return []
@@ -1664,53 +1622,46 @@ def save_friend_message(
         room_code
     )
 
-
     if not room:
         return False
-
 
     if not message and not photo_path:
         return False
 
+    if not user_id:
+        return False
 
     conn = get_db()
 
     try:
 
-        if user_id:
+        # ----------------------------------------------------
+        # ÖNEMLİ:
+        # Kullanıcı gerçekten odanın üyesi olmalı.
+        # ----------------------------------------------------
 
-            member = conn.execute("""
-                SELECT id
+        member = conn.execute("""
+            SELECT id
 
-                FROM friend_room_members
+            FROM friend_room_members
 
-                WHERE
-                    room_id = ?
-                    AND user_id = ?
+            WHERE
+                room_id = ?
+                AND user_id = ?
 
-                LIMIT 1
-            """, (
-                room["id"],
-                user_id
-            )).fetchone()
+            LIMIT 1
+        """, (
+            room["id"],
+            user_id
+        )).fetchone()
 
+        if not member:
 
-            if not member:
+            return False
 
-                conn.execute("""
-                    INSERT OR IGNORE INTO
-                    friend_room_members
-                    (
-                        room_id,
-                        user_id
-                    )
-
-                    VALUES (?, ?)
-                """, (
-                    room["id"],
-                    user_id
-                ))
-
+        # ----------------------------------------------------
+        # MESAJI KAYDET
+        # ----------------------------------------------------
 
         conn.execute("""
             INSERT INTO friend_messages
@@ -1730,7 +1681,6 @@ def save_friend_message(
             message or "",
             photo_path
         ))
-
 
         conn.commit()
 
@@ -1763,10 +1713,19 @@ def get_friend_messages(
         room_code
     )
 
-
     if not room:
         return []
 
+    try:
+        limit = int(limit)
+    except (TypeError, ValueError):
+        limit = 200
+
+    if limit <= 0:
+        limit = 200
+
+    if limit > 500:
+        limit = 500
 
     conn = get_db()
 
@@ -1813,6 +1772,9 @@ def save_friend_photo_message(
     user_id=None
 ):
 
+    if not photo_path:
+        return False
+
     return save_friend_message(
         room_code=room_code,
         username=username,
@@ -1835,16 +1797,13 @@ def delete_friend_room(
         room_code
     )
 
-
     if not room:
         return False
-
 
     if user_id:
 
         if room["owner_id"] != user_id:
             return False
-
 
     conn = get_db()
 
@@ -1855,7 +1814,6 @@ def delete_friend_room(
     """, (
         room["id"],
     ))
-
 
     conn.commit()
 
@@ -1889,10 +1847,8 @@ def save_push_subscription(
         auth or ""
     ).strip()
 
-
     if not endpoint or not p256dh or not auth:
         return False
-
 
     conn = get_db()
 
@@ -1909,7 +1865,6 @@ def save_push_subscription(
         """, (
             endpoint,
         )).fetchone()
-
 
         if existing:
 
@@ -1948,7 +1903,6 @@ def save_push_subscription(
                 auth
             ))
 
-
         conn.commit()
 
         return True
@@ -1976,7 +1930,6 @@ def get_push_subscriptions(
 ):
 
     conn = get_db()
-
 
     if user_id is None:
 
@@ -2014,7 +1967,6 @@ def get_push_subscriptions(
             user_id,
         )).fetchall()
 
-
     conn.close()
 
     return rows
@@ -2032,10 +1984,8 @@ def delete_push_subscription(
         endpoint or ""
     ).strip()
 
-
     if not endpoint:
         return False
-
 
     conn = get_db()
 
@@ -2046,7 +1996,6 @@ def delete_push_subscription(
     """, (
         endpoint,
     ))
-
 
     conn.commit()
 
@@ -2062,3 +2011,4 @@ def delete_push_subscription(
 # ============================================================
 
 init_db()
+
