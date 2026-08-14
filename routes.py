@@ -23,7 +23,7 @@ from database import (
     check_user_password,
 
     # ============================================================
-    # MAVİGPT
+    # ESKİ MAVİGPT CHAT SİSTEMİ
     # ============================================================
     save_chat,
     get_chat_messages,
@@ -32,6 +32,17 @@ from database import (
     get_chat_by_id,
     update_chat_title,
     delete_chat,
+
+    # ============================================================
+    # YENİ SOHBET SİSTEMİ
+    # ============================================================
+    create_conversation,
+    get_user_conversations,
+    get_conversation,
+    get_conversation_messages,
+    save_conversation_message,
+    update_conversation_title,
+    delete_conversation,
 
     # ============================================================
     # SAĞLIK
@@ -102,6 +113,10 @@ from database import (
 # ============================================================
 
 def current_user():
+    """
+    Oturumdaki kullanıcıyı döndürür.
+    """
+
     user_id = session.get("user_id")
 
     if not user_id:
@@ -111,11 +126,20 @@ def current_user():
 
 
 def login_required(view):
+    """
+    Giriş yapılmadan sayfalara erişimi engeller.
+    """
 
     @wraps(view)
     def wrapped_view(*args, **kwargs):
 
         if not session.get("user_id"):
+            return redirect(url_for("login"))
+
+        user = current_user()
+
+        if not user:
+            session.clear()
             return redirect(url_for("login"))
 
         return view(*args, **kwargs)
@@ -124,11 +148,28 @@ def login_required(view):
 
 
 def safe_int(value, default=0):
+    """
+    Güvenli integer dönüşümü.
+    """
 
     try:
         return int(value)
+
     except (TypeError, ValueError):
         return default
+
+
+def json_or_form():
+    """
+    JSON veya normal form verisini alır.
+    """
+
+    data = request.get_json(silent=True)
+
+    if data is None:
+        data = request.form
+
+    return data
 
 
 # ============================================================
@@ -151,6 +192,7 @@ def register_routes(app):
             user=user
         )
 
+
     # ========================================================
     # MAVİGPT
     # ========================================================
@@ -160,30 +202,302 @@ def register_routes(app):
     @login_required
     def mavigpt():
 
+        user_id = session["user_id"]
+
+        conversations = get_user_conversations(
+            user_id,
+            "normal"
+        )
+
+        # Eski mesaj sistemiyle de uyumluluk
         messages = get_chat_messages("normal")
 
         return render_template(
             "mavigpt.html",
             messages=messages,
+            conversations=conversations,
+            chats=conversations,
             user=current_user()
         )
 
+
     # ========================================================
-    # MESAJ GÖNDER
+    # YENİ SOHBET OLUŞTUR
     # ========================================================
 
-    @app.route("/send", methods=["POST"])
+    @app.route(
+        "/api/conversations",
+        methods=["POST"]
+    )
+    @login_required
+    def api_create_conversation():
+
+        data = json_or_form()
+
+        title = (
+            data.get("title")
+            or "Yeni sohbet"
+        ).strip()
+
+        if not title:
+            title = "Yeni sohbet"
+
+        conversation_id = create_conversation(
+            user_id=session["user_id"],
+            title=title,
+            chat_type="normal"
+        )
+
+        if not conversation_id:
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet oluşturulamadı."
+            }), 500
+
+        conversation = get_conversation(
+            conversation_id,
+            session["user_id"]
+        )
+
+        return jsonify({
+            "success": True,
+            "conversation": dict(conversation)
+            if conversation
+            else {
+                "id": conversation_id,
+                "title": title,
+                "chat_type": "normal"
+            }
+        })
+
+
+    # ========================================================
+    # KULLANICININ SOHBETLERİ
+    # ========================================================
+
+    @app.route("/api/conversations")
+    @login_required
+    def api_conversations():
+
+        rows = get_user_conversations(
+            session["user_id"],
+            "normal"
+        )
+
+        return jsonify([
+            dict(row)
+            for row in rows
+        ])
+
+
+    # ========================================================
+    # TEK SOHBET MESAJLARI
+    # ========================================================
+
+    @app.route(
+        "/api/conversations/<int:conversation_id>/messages"
+    )
+    @login_required
+    def api_conversation_messages(
+        conversation_id
+    ):
+
+        user_id = session["user_id"]
+
+        conversation = get_conversation(
+            conversation_id,
+            user_id
+        )
+
+        if not conversation:
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet bulunamadı."
+            }), 404
+
+        rows = get_conversation_messages(
+            conversation_id,
+            user_id
+        )
+
+        return jsonify([
+            dict(row)
+            for row in rows
+        ])
+
+
+    # ========================================================
+    # YENİ SOHBETE MESAJ GÖNDER
+    # ========================================================
+
+    @app.route(
+        "/api/conversations/<int:conversation_id>/send",
+        methods=["POST"]
+    )
+    @login_required
+    def api_send_conversation_message(
+        conversation_id
+    ):
+
+        user_id = session["user_id"]
+
+        conversation = get_conversation(
+            conversation_id,
+            user_id
+        )
+
+        if not conversation:
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet bulunamadı."
+            }), 404
+
+        data = json_or_form()
+
+        message = (
+            data.get("message")
+            or data.get("text")
+            or ""
+        ).strip()
+
+        if not message:
+
+            return jsonify({
+                "success": False,
+                "error": "Mesaj boş olamaz."
+            }), 400
+
+        try:
+
+            from app import ask_mavigpt
+
+            response = ask_mavigpt(message)
+
+        except Exception as e:
+
+            print(
+                "MAVİGPT HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "MaviGPT şu anda cevap veremiyor."
+            }), 500
+
+        saved = save_conversation_message(
+            conversation_id=conversation_id,
+            user_id=user_id,
+            message=message,
+            response=response
+        )
+
+        if not saved:
+
+            return jsonify({
+                "success": False,
+                "error": "Mesaj kaydedilemedi."
+            }), 500
+
+        return jsonify({
+            "success": True,
+            "message": message,
+            "response": response
+        })
+
+
+    # ========================================================
+    # YENİ SOHBET BAŞLIĞI
+    # ========================================================
+
+    @app.route(
+        "/api/conversations/<int:conversation_id>/title",
+        methods=["POST"]
+    )
+    @login_required
+    def api_update_conversation_title(
+        conversation_id
+    ):
+
+        data = json_or_form()
+
+        title = (
+            data.get("title")
+            or ""
+        ).strip()
+
+        if not title:
+
+            return jsonify({
+                "success": False,
+                "error": "Başlık boş olamaz."
+            }), 400
+
+        success = update_conversation_title(
+            conversation_id,
+            session["user_id"],
+            title
+        )
+
+        if not success:
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet bulunamadı."
+            }), 404
+
+        return jsonify({
+            "success": True
+        })
+
+
+    # ========================================================
+    # YENİ SOHBET SİL
+    # ========================================================
+
+    @app.route(
+        "/api/conversations/<int:conversation_id>",
+        methods=["DELETE", "POST"]
+    )
+    @login_required
+    def api_delete_conversation(
+        conversation_id
+    ):
+
+        success = delete_conversation(
+            conversation_id,
+            session["user_id"]
+        )
+
+        if not success:
+
+            return jsonify({
+                "success": False,
+                "error": "Sohbet bulunamadı."
+            }), 404
+
+        return jsonify({
+            "success": True
+        })
+
+
+    # ========================================================
+    # ESKİ MESAJ GÖNDERME API
+    # ========================================================
+
+    @app.route(
+        "/send",
+        methods=["POST"]
+    )
     @login_required
     def send_message():
 
         try:
 
-            data = request.get_json(
-                silent=True
-            )
-
-            if data is None:
-                data = request.form
+            data = json_or_form()
 
             message = (
                 data.get("message")
@@ -198,17 +512,9 @@ def register_routes(app):
                     "error": "Mesaj boş olamaz."
                 }), 400
 
-            # ------------------------------------------------
-            # MaviGPT cevabını al
-            # ------------------------------------------------
-
             from app import ask_mavigpt
 
             response = ask_mavigpt(message)
-
-            # ------------------------------------------------
-            # DATABASE'E KAYDET
-            # ------------------------------------------------
 
             save_chat(
                 "normal",
@@ -231,11 +537,12 @@ def register_routes(app):
 
             return jsonify({
                 "success": False,
-                "error": "Mesaj gönderilirken bir hata oluştu."
+                "error": "Mesaj gönderilirken hata oluştu."
             }), 500
 
+
     # ========================================================
-    # MESAJLAR API
+    # ESKİ MESAJLAR API
     # ========================================================
 
     @app.route("/messages")
@@ -258,8 +565,9 @@ def register_routes(app):
             for row in rows
         ])
 
+
     # ========================================================
-    # SOHBETLER API
+    # ESKİ SOHBETLER API
     # ========================================================
 
     @app.route("/chats")
@@ -282,6 +590,7 @@ def register_routes(app):
             for row in rows
         ])
 
+
     # ========================================================
     # GEÇMİŞ
     # ========================================================
@@ -301,17 +610,27 @@ def register_routes(app):
             chat_type
         )
 
+        conversations = get_user_conversations(
+            session["user_id"],
+            chat_type
+        )
+
         return render_template(
             "mavigpt.html",
             messages=rows,
+            conversations=conversations,
+            chats=conversations,
             user=current_user()
         )
 
+
     # ========================================================
-    # TEK SOHBET
+    # ESKİ TEK SOHBET
     # ========================================================
 
-    @app.route("/chat/<int:chat_id>")
+    @app.route(
+        "/chat/<int:chat_id>"
+    )
     @login_required
     def single_chat(chat_id):
 
@@ -330,8 +649,9 @@ def register_routes(app):
             dict(chat)
         )
 
+
     # ========================================================
-    # SOHBET BAŞLIĞI
+    # ESKİ SOHBET BAŞLIĞI
     # ========================================================
 
     @app.route(
@@ -341,12 +661,7 @@ def register_routes(app):
     @login_required
     def edit_chat_title(chat_id):
 
-        data = (
-            request.get_json(
-                silent=True
-            )
-            or request.form
-        )
+        data = json_or_form()
 
         title = (
             data.get("title")
@@ -380,8 +695,9 @@ def register_routes(app):
             "success": True
         })
 
+
     # ========================================================
-    # SOHBET SİL
+    # ESKİ SOHBET SİL
     # ========================================================
 
     @app.route(
@@ -409,6 +725,7 @@ def register_routes(app):
         return jsonify({
             "success": True
         })
+
 
     # ========================================================
     # GİRİŞ
@@ -482,6 +799,7 @@ def register_routes(app):
             "login.html"
         )
 
+
     # ========================================================
     # KAYIT
     # ========================================================
@@ -548,6 +866,21 @@ def register_routes(app):
                     "register.html"
                 )
 
+            existing = get_user_by_username(
+                username
+            )
+
+            if existing:
+
+                flash(
+                    "Bu kullanıcı adı zaten kullanılıyor.",
+                    "error"
+                )
+
+                return render_template(
+                    "register.html"
+                )
+
             user_id = create_user(
                 username=username,
                 password=password,
@@ -560,7 +893,7 @@ def register_routes(app):
             if not user_id:
 
                 flash(
-                    "Bu kullanıcı adı zaten kullanılıyor.",
+                    "Hesap oluşturulamadı.",
                     "error"
                 )
 
@@ -587,6 +920,7 @@ def register_routes(app):
             "register.html"
         )
 
+
     # ========================================================
     # ÇIKIŞ
     # ========================================================
@@ -600,6 +934,7 @@ def register_routes(app):
             url_for("login")
         )
 
+
     # ========================================================
     # PROFİL
     # ========================================================
@@ -612,6 +947,7 @@ def register_routes(app):
             "profile.html",
             user=current_user()
         )
+
 
     # ========================================================
     # CEBİMDEKİ DOKTOR
@@ -630,6 +966,7 @@ def register_routes(app):
             health_records=records,
             user=current_user()
         )
+
 
     @app.route(
         "/doctor/save",
@@ -663,6 +1000,7 @@ def register_routes(app):
             url_for("doctor")
         )
 
+
     @app.route("/health-records")
     @login_required
     def health_records_api():
@@ -671,6 +1009,7 @@ def register_routes(app):
             dict(row)
             for row in get_health_records()
         ])
+
 
     # ========================================================
     # REGL
@@ -690,6 +1029,7 @@ def register_routes(app):
             period_records=records,
             user=current_user()
         )
+
 
     @app.route(
         "/period/save",
@@ -727,6 +1067,7 @@ def register_routes(app):
             url_for("period")
         )
 
+
     # ========================================================
     # SİNDİRİM
     # ========================================================
@@ -746,6 +1087,7 @@ def register_routes(app):
             diarrhea_records=records,
             user=current_user()
         )
+
 
     @app.route(
         "/diarrhea/save",
@@ -789,6 +1131,7 @@ def register_routes(app):
             url_for("diarrhea")
         )
 
+
     # ========================================================
     # İLAÇLAR
     # ========================================================
@@ -806,6 +1149,7 @@ def register_routes(app):
             medicines=medicines,
             user=current_user()
         )
+
 
     @app.route(
         "/medicine/save",
@@ -860,6 +1204,7 @@ def register_routes(app):
             url_for("medicine")
         )
 
+
     @app.route(
         "/medicine/delete/<int:medicine_id>",
         methods=["POST", "DELETE"]
@@ -885,6 +1230,7 @@ def register_routes(app):
             url_for("medicine")
         )
 
+
     # ========================================================
     # AYARLAR
     # ========================================================
@@ -898,6 +1244,7 @@ def register_routes(app):
             settings=get_settings(),
             user=current_user()
         )
+
 
     @app.route(
         "/settings/save",
@@ -924,6 +1271,7 @@ def register_routes(app):
         return redirect(
             url_for("settings")
         )
+
 
     # ========================================================
     # ARKADAŞLAR
@@ -958,6 +1306,7 @@ def register_routes(app):
             rooms=rooms,
             user=current_user()
         )
+
 
     # ========================================================
     # ARKADAŞ ARA
@@ -1010,6 +1359,7 @@ def register_routes(app):
             }]
         })
 
+
     # ========================================================
     # ARKADAŞLIK İSTEĞİ
     # ========================================================
@@ -1021,12 +1371,7 @@ def register_routes(app):
     @login_required
     def friend_request():
 
-        data = (
-            request.get_json(
-                silent=True
-            )
-            or request.form
-        )
+        data = json_or_form()
 
         receiver_id = safe_int(
             data.get("receiver_id")
@@ -1040,6 +1385,13 @@ def register_routes(app):
                 "error": "Kullanıcı bulunamadı."
             }), 400
 
+        if receiver_id == session["user_id"]:
+
+            return jsonify({
+                "success": False,
+                "error": "Kendinize arkadaşlık isteği gönderemezsiniz."
+            }), 400
+
         success = send_friend_request(
             session["user_id"],
             receiver_id
@@ -1049,14 +1401,13 @@ def register_routes(app):
 
             return jsonify({
                 "success": False,
-                "error": (
-                    "Arkadaşlık isteği gönderilemedi."
-                )
+                "error": "Arkadaşlık isteği gönderilemedi."
             }), 400
 
         return jsonify({
             "success": True
         })
+
 
     # ========================================================
     # İSTEK KABUL
@@ -1078,6 +1429,7 @@ def register_routes(app):
             "success": success
         })
 
+
     # ========================================================
     # İSTEK RED
     # ========================================================
@@ -1097,6 +1449,7 @@ def register_routes(app):
         return jsonify({
             "success": success
         })
+
 
     # ========================================================
     # ARKADAŞ API
@@ -1122,6 +1475,7 @@ def register_routes(app):
             for row in rows
         ])
 
+
     # ========================================================
     # BEKLEYEN İSTEKLER
     # ========================================================
@@ -1139,8 +1493,9 @@ def register_routes(app):
             for row in rows
         ])
 
+
     # ========================================================
-    # ARKADAŞ ODALARI
+    # ARKADAŞ ODALARI API
     # ========================================================
 
     @app.route("/api/friend-rooms")
@@ -1156,6 +1511,7 @@ def register_routes(app):
             for room in rooms
         ])
 
+
     # ========================================================
     # ODA OLUŞTUR
     # ========================================================
@@ -1167,12 +1523,7 @@ def register_routes(app):
     @login_required
     def create_room():
 
-        data = (
-            request.get_json(
-                silent=True
-            )
-            or request.form
-        )
+        data = json_or_form()
 
         room_name = (
             data.get("name")
@@ -1204,6 +1555,7 @@ def register_routes(app):
             )
         })
 
+
     # ========================================================
     # ODAYA KATIL
     # ========================================================
@@ -1215,12 +1567,7 @@ def register_routes(app):
     @login_required
     def join_room():
 
-        data = (
-            request.get_json(
-                silent=True
-            )
-            or request.form
-        )
+        data = json_or_form()
 
         room_code = (
             data.get("room_code")
@@ -1255,7 +1602,10 @@ def register_routes(app):
 
             return jsonify({
                 "success": False,
-                "error": "Odaya katılınamadı."
+                "error": (
+                    "Odaya katılamadınız. "
+                    "Bu oda için arkadaş olmanız gerekebilir."
+                )
             }), 400
 
         return jsonify({
@@ -1266,6 +1616,7 @@ def register_routes(app):
                 room_code=room_code
             )
         })
+
 
     # ========================================================
     # ARKADAŞ ODASI
@@ -1278,8 +1629,7 @@ def register_routes(app):
     def friend_room(room_code):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
         room = get_friend_room(
@@ -1322,6 +1672,7 @@ def register_routes(app):
             user=current_user()
         )
 
+
     # ========================================================
     # ODA ÜYELERİ
     # ========================================================
@@ -1333,8 +1684,7 @@ def register_routes(app):
     def room_members(room_code):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
         if not is_room_member(
@@ -1364,6 +1714,7 @@ def register_routes(app):
             for member in members
         ])
 
+
     # ========================================================
     # ODA MESAJLARI
     # ========================================================
@@ -1376,8 +1727,7 @@ def register_routes(app):
     def room_messages(room_code):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
         if not is_room_member(
@@ -1389,6 +1739,10 @@ def register_routes(app):
                 "success": False,
                 "error": "Bu odanın üyesi değilsiniz."
             }), 403
+
+        # ----------------------------------------------------
+        # GET
+        # ----------------------------------------------------
 
         if request.method == "GET":
 
@@ -1416,12 +1770,11 @@ def register_routes(app):
                 for row in rows
             ])
 
-        data = (
-            request.get_json(
-                silent=True
-            )
-            or request.form
-        )
+        # ----------------------------------------------------
+        # POST
+        # ----------------------------------------------------
+
+        data = json_or_form()
 
         message = (
             data.get("message")
@@ -1437,6 +1790,13 @@ def register_routes(app):
             }), 400
 
         user = current_user()
+
+        if not user:
+
+            return jsonify({
+                "success": False,
+                "error": "Oturum bulunamadı."
+            }), 401
 
         username = (
             user["display_name"]
@@ -1461,6 +1821,7 @@ def register_routes(app):
             "success": True
         })
 
+
     # ========================================================
     # ODAYA FOTOĞRAF
     # ========================================================
@@ -1473,8 +1834,7 @@ def register_routes(app):
     def room_photo(room_code):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
         if not is_room_member(
@@ -1540,9 +1900,23 @@ def register_routes(app):
             new_filename
         )
 
-        photo.save(
-            file_path
-        )
+        try:
+
+            photo.save(
+                file_path
+            )
+
+        except Exception as e:
+
+            print(
+                "FOTOĞRAF KAYDETME HATASI:",
+                repr(e)
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "Fotoğraf kaydedilemedi."
+            }), 500
 
         relative_path = os.path.join(
             "friends",
@@ -1580,8 +1954,13 @@ def register_routes(app):
 
         return jsonify({
             "success": True,
-            "photo_path": relative_path
+            "photo_path": relative_path,
+            "url": url_for(
+                "friend_upload",
+                filename=new_filename
+            )
         })
+
 
     # ========================================================
     # FOTOĞRAF SERVİSİ
@@ -1602,6 +1981,7 @@ def register_routes(app):
             filename
         )
 
+
     # ========================================================
     # ODA SİL
     # ========================================================
@@ -1614,8 +1994,7 @@ def register_routes(app):
     def remove_friend_room(room_code):
 
         room_code = (
-            room_code
-            or ""
+            room_code or ""
         ).strip().upper()
 
         success = delete_friend_room(
@@ -1633,6 +2012,7 @@ def register_routes(app):
         return jsonify({
             "success": True
         })
+
 
     # ========================================================
     # PUSH SUBSCRIBE
@@ -1673,6 +2053,13 @@ def register_routes(app):
             or ""
         ).strip()
 
+        if not endpoint or not p256dh or not auth:
+
+            return jsonify({
+                "success": False,
+                "error": "Push bilgileri eksik."
+            }), 400
+
         success = save_push_subscription(
             endpoint=endpoint,
             p256dh=p256dh,
@@ -1690,6 +2077,7 @@ def register_routes(app):
         return jsonify({
             "success": True
         })
+
 
     # ========================================================
     # PUSH UNSUBSCRIBE
@@ -1714,6 +2102,13 @@ def register_routes(app):
             or ""
         ).strip()
 
+        if not endpoint:
+
+            return jsonify({
+                "success": False,
+                "error": "Endpoint bulunamadı."
+            }), 400
+
         success = delete_push_subscription(
             endpoint
         )
@@ -1721,6 +2116,7 @@ def register_routes(app):
         return jsonify({
             "success": success
         })
+
 
     # ========================================================
     # PUSH SUBSCRIPTIONS
@@ -1740,6 +2136,7 @@ def register_routes(app):
             dict(row)
             for row in rows
         ])
+
 
     # ========================================================
     # BENİM HESABIM
@@ -1775,6 +2172,7 @@ def register_routes(app):
             }
         })
 
+
     # ========================================================
     # TEST
     # ========================================================
@@ -1787,6 +2185,7 @@ def register_routes(app):
             "message": "MaviGPT çalışıyor.",
             "database": "connected"
         })
+
 
     # ========================================================
     # 404
@@ -1806,6 +2205,7 @@ def register_routes(app):
             "Sayfa bulunamadı.",
             404
         )
+
 
     # ========================================================
     # 500
