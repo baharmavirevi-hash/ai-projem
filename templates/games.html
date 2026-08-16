@@ -1,611 +1,251 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta charset="UTF-8">
+<title>🐔 Tavuklu Wi-Fi</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<style>
 
-    <title>MaviGPT Oyun Merkezi</title>
+* {
+    box-sizing: border-box;
+}
 
+body {
+    margin: 0;
+    min-height: 100vh;
 
-    <style>
+    font-family: Arial, sans-serif;
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    background:
+        linear-gradient(
+            135deg,
+            #dff7ff,
+            #f5fcff
+        );
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-        body {
+    padding: 20px;
+}
 
-            min-height: 100vh;
+.game {
+    width: 100%;
+    max-width: 750px;
 
-            font-family:
-                Arial,
-                sans-serif;
+    background: white;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #dff7ff,
-                    #f5fcff
-                );
+    border-radius: 25px;
 
-            color: #234;
+    padding: 20px;
 
-            padding: 25px;
-        }
+    text-align: center;
 
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.12);
+}
 
-        .container {
+h1 {
+    margin: 5px 0;
+}
 
-            max-width: 900px;
+.info {
+    display: flex;
+    justify-content: center;
 
-            margin: auto;
-        }
+    gap: 30px;
 
+    margin: 15px 0;
 
-        .header {
+    font-size: 20px;
+    font-weight: bold;
+}
 
-            text-align: center;
+#message {
+    min-height: 30px;
 
-            margin-bottom: 30px;
-        }
+    font-weight: bold;
+}
 
+#farm {
 
-        .header h1 {
+    position: relative;
 
-            font-size: 38px;
+    width: 100%;
+    height: 400px;
 
-            margin-bottom: 8px;
-        }
+    overflow: hidden;
 
+    border-radius: 20px;
 
-        .header p {
+    border: 4px solid white;
 
-            color: #667;
-        }
+    background:
+        linear-gradient(
+            to bottom,
+            #8edfff 0%,
+            #8edfff 40%,
+            #82cf76 40%,
+            #82cf76 100%
+        );
+}
 
+#chicken {
 
-        .games {
+    position: absolute;
 
-            display: grid;
+    width: 65px;
+    height: 65px;
 
-            grid-template-columns:
-                repeat(
-                    auto-fit,
-                    minmax(
-                        240px,
-                        1fr
-                    )
-                );
+    display: flex;
 
-            gap: 20px;
-        }
+    justify-content: center;
+    align-items: center;
 
+    font-size: 55px;
 
-        .game-card {
+    left: 50px;
+    top: 300px;
 
-            background: white;
+    user-select: none;
 
-            border-radius: 25px;
+    z-index: 10;
+}
 
-            padding: 25px;
+.item {
 
-            box-shadow:
-                0 8px 25px
-                rgba(0, 0, 0, 0.08);
+    position: absolute;
 
-            transition: 0.2s;
-        }
+    width: 55px;
+    height: 55px;
 
+    display: flex;
 
-        .game-card:hover {
+    justify-content: center;
+    align-items: center;
 
-            transform:
-                translateY(-5px);
-        }
+    font-size: 42px;
 
+    user-select: none;
 
-        .game-icon {
+    z-index: 5;
+}
 
-            font-size: 55px;
+#controls {
 
-            margin-bottom: 15px;
-        }
+    margin-top: 15px;
 
+    color: #555;
+}
 
-        .game-card h2 {
+button {
 
-            margin-bottom: 10px;
-        }
+    border: none;
 
+    border-radius: 14px;
 
-        .game-card p {
+    padding: 12px 22px;
 
-            color: #667;
+    margin-top: 15px;
 
-            margin-bottom: 20px;
+    background: #78cdea;
 
-            line-height: 1.5;
-        }
+    color: white;
 
+    font-size: 16px;
 
-        button {
+    font-weight: bold;
 
-            width: 100%;
+    cursor: pointer;
+}
 
-            border: none;
+button:hover {
+    background: #54b9df;
+}
 
-            padding: 13px;
-
-            border-radius: 15px;
-
-            background: #78cdea;
-
-            color: white;
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-
-        button:hover {
-
-            background: #54b9df;
-        }
-
-
-        button:disabled {
-
-            background: #aaa;
-
-            cursor: not-allowed;
-        }
-
-
-        .game-screen {
-
-            display: none;
-
-            margin-top: 25px;
-
-            background: white;
-
-            border-radius: 25px;
-
-            padding: 25px;
-
-            text-align: center;
-
-            box-shadow:
-                0 8px 25px
-                rgba(0, 0, 0, 0.08);
-        }
-
-
-        .game-screen h2 {
-
-            margin-bottom: 15px;
-        }
-
-
-        .stats {
-
-            display: flex;
-
-            justify-content: center;
-
-            gap: 30px;
-
-            margin: 15px 0;
-
-            font-size: 20px;
-
-            font-weight: bold;
-        }
-
-
-        .message {
-
-            min-height: 28px;
-
-            margin: 10px;
-
-            font-weight: bold;
-        }
-
-
-        /* =====================================================
-           TAVUK OYUN ALANI
-        ===================================================== */
-
-        #farm {
-
-            position: relative;
-
-            width: 100%;
-
-            max-width: 650px;
-
-            height: 350px;
-
-            margin: 20px auto;
-
-            border-radius: 20px;
-
-            overflow: hidden;
-
-            background:
-                linear-gradient(
-                    #9ee7ff 0 35%,
-                    #8ed081 35% 100%
-                );
-
-            border: 4px solid white;
-        }
-
-
-        /* Güneş */
-
-        #farm::before {
-
-            content: "☀️";
-
-            position: absolute;
-
-            top: 15px;
-
-            right: 25px;
-
-            font-size: 40px;
-        }
-
-
-        /* Tavuk */
-
-        #chicken {
-
-            position: absolute;
-
-            left: 50%;
-
-            bottom: 80px;
-
-            transform:
-                translateX(-50%);
-
-            font-size: 70px;
-
-            cursor: default;
-
-            user-select: none;
-
-            z-index: 10;
-
-            transition:
-                left 0.04s linear,
-                bottom 0.04s linear;
-        }
-
-
-        /* Wi-Fi */
-
-        .wifi {
-
-            position: absolute;
-
-            font-size: 38px;
-
-            cursor: default;
-
-            user-select: none;
-
-            z-index: 5;
-
-            animation:
-                wifiFloat
-                0.8s
-                infinite
-                alternate;
-        }
-
-
-        @keyframes wifiFloat {
-
-            from {
-
-                transform:
-                    translateY(0);
-            }
-
-            to {
-
-                transform:
-                    translateY(-7px);
-            }
-        }
-
-
-        .back {
-
-            background: #999;
-
-            margin-top: 10px;
-        }
-
-
-        /* =====================================================
-           HEDEF OYUNU
-        ===================================================== */
-
-        #targetArea {
-
-            position: relative;
-
-            width: 100%;
-
-            max-width: 650px;
-
-            height: 350px;
-
-            margin: 20px auto;
-
-            border-radius: 20px;
-
-            overflow: hidden;
-
-            background: #eefaff;
-
-            border: 4px solid #d8f5ff;
-        }
-
-
-        #target {
-
-            position: absolute;
-
-            width: 60px;
-
-            height: 60px;
-
-            border-radius: 50%;
-
-            background: #78cdea;
-
-            cursor: pointer;
-
-            display: none;
-        }
-
-    </style>
-
+</style>
 </head>
 
 
 <body>
 
 
-<div class="container">
+<div class="game">
+
+    <h1>
+        🐔📶 Tavuklu Wi-Fi
+    </h1>
+
+    <p>
+        Wi-Fi'ları yakala, altın yumurtaları bul! 🥚
+    </p>
 
 
-    <!-- =====================================================
-         BAŞLIK
-    ====================================================== -->
+    <div class="info">
 
-    <div class="header">
+        <span>
+            📶
+            <span id="score">0</span>
+        </span>
 
-        <h1>
-            🎮 MaviGPT Oyun Merkezi
-        </h1>
+        <span>
+            🥚
+            <span id="eggs">0</span>
+        </span>
 
-        <p>
-            İnternetsiz mini oyunlar 💙
-        </p>
-
-    </div>
-
-
-    <!-- =====================================================
-         OYUN KARTLARI
-    ====================================================== -->
-
-    <div class="games">
-
-
-        <!-- TAVUK OYUNU -->
-
-        <div class="game-card">
-
-            <div class="game-icon">
-                🐔📶
-            </div>
-
-            <h2>
-                Tavuklu Wi-Fi
-            </h2>
-
-            <p>
-                Tavuk interneti kaybetti!
-                Ok tuşlarıyla tavuğu hareket ettir
-                ve Wi-Fi'ları yakala.
-            </p>
-
-            <button
-                onclick="startChickenGame()">
-
-                Oyna 🐔
-
-            </button>
-
-        </div>
-
-
-        <!-- HEDEF OYUNU -->
-
-        <div class="game-card">
-
-            <div class="game-icon">
-                🎯
-            </div>
-
-            <h2>
-                Hedefi Yakala
-            </h2>
-
-            <p>
-                30 saniyede mümkün olduğunca
-                çok hedef yakala!
-            </p>
-
-            <button
-                onclick="startTargetGame()">
-
-                Oyna 🎯
-
-            </button>
-
-        </div>
+        <span>
+            ⏱️
+            <span id="time">30</span>
+        </span>
 
     </div>
 
 
-    <!-- =====================================================
-         TAVUK OYUNU
-    ====================================================== -->
-
-    <div
-        id="chickenGame"
-        class="game-screen"
-    >
-
-        <h2>
-            🐔 Tavuklu Wi-Fi
-        </h2>
-
-        <p>
-            ⬅️ ⬆️ ⬇️ ➡️
-            ok tuşlarıyla tavuğu hareket ettir!
-        </p>
+    <div id="message">
+        🐔 Başla!
+    </div>
 
 
-        <div class="stats">
+    <div id="farm">
 
-            <span>
-                📶
-                <span id="wifiScore">
-                    0
-                </span>
-            </span>
-
-            <span>
-                ⏱️
-                <span id="wifiTime">
-                    30
-                </span>
-            </span>
-
+        <div id="chicken">
+            🐔
         </div>
-
-
-        <div id="farm">
-
-            <div id="chicken">
-                🐔
-            </div>
-
-        </div>
-
 
         <div
-            id="wifiMessage"
-            class="message"
+            id="wifi"
+            class="item"
         >
+            📶
         </div>
 
-
-        <button
-            class="back"
-            onclick="closeGames()"
+        <div
+            id="egg"
+            class="item"
         >
-
-            Oyundan Çık
-
-        </button>
+            🥚
+        </div>
 
     </div>
 
 
-    <!-- =====================================================
-         HEDEF OYUNU
-    ====================================================== -->
+    <div id="controls">
 
-    <div
-        id="targetGame"
-        class="game-screen"
-    >
+        ⬅️ ⬆️ ⬇️ ➡️
 
-        <h2>
-            🎯 Hedefi Yakala
-        </h2>
+        <br>
 
-
-        <div class="stats">
-
-            <span>
-
-                Puan:
-
-                <span id="targetScore">
-                    0
-                </span>
-
-            </span>
-
-
-            <span>
-
-                Süre:
-
-                <span id="targetTime">
-                    30
-                </span>
-
-            </span>
-
-        </div>
-
-
-        <div id="targetArea">
-
-            <div
-                id="target"
-                onclick="hitTarget()"
-            >
-            </div>
-
-        </div>
-
-
-        <button
-            class="back"
-            onclick="closeGames()"
-        >
-
-            Oyundan Çık
-
-        </button>
+        Ok tuşlarıyla tavuğu hareket ettir!
 
     </div>
 
+
+    <button onclick="restartGame()">
+        🔄 Yeniden Başlat
+    </button>
 
 </div>
 
@@ -613,181 +253,157 @@
 <script>
 
 
-/* =========================================================
+/* =====================================================
    DEĞİŞKENLER
-========================================================= */
-
-
-let chickenScore = 0;
-
-let chickenTime = 30;
-
-let chickenTimer = null;
-
-let collisionAnimation = null;
-
+===================================================== */
 
 let chickenX = 50;
+let chickenY = 300;
 
-let chickenBottom = 80;
+let wifiX = 300;
+let wifiY = 150;
 
-const chickenSpeed = 3;
+let eggX = 500;
+let eggY = 200;
 
+let score = 0;
 
-let targetScore = 0;
+let eggScore = 0;
 
-let targetTime = 30;
+let time = 30;
 
-let targetTimer = null;
+let gameRunning = true;
 
-
-/* =========================================================
-   TAVUK OYUNUNU BAŞLAT
-========================================================= */
-
-
-function startChickenGame() {
-
-    closeGames();
+const speed = 8;
 
 
-    chickenScore = 0;
+const chicken =
+    document.getElementById("chicken");
 
-    chickenTime = 30;
+const wifi =
+    document.getElementById("wifi");
+
+const egg =
+    document.getElementById("egg");
+
+const farm =
+    document.getElementById("farm");
+
+const scoreText =
+    document.getElementById("score");
+
+const eggsText =
+    document.getElementById("eggs");
+
+const timeText =
+    document.getElementById("time");
+
+const message =
+    document.getElementById("message");
 
 
-    chickenX = 50;
+/* =====================================================
+   TAVUK
+===================================================== */
 
-    chickenBottom = 80;
-
-
-    const chicken =
-        document.getElementById(
-            "chicken"
-        );
-
+function updateChicken() {
 
     chicken.style.left =
-        chickenX + "%";
+        chickenX + "px";
 
+    chicken.style.top =
+        chickenY + "px";
 
-    chicken.style.bottom =
-        chickenBottom + "px";
-
-
-    document.getElementById(
-        "wifiScore"
-    ).textContent =
-        chickenScore;
-
-
-    document.getElementById(
-        "wifiTime"
-    ).textContent =
-        chickenTime;
-
-
-    document.getElementById(
-        "wifiMessage"
-    ).textContent =
-        "";
-
-
-    document.getElementById(
-        "chickenGame"
-    ).style.display =
-        "block";
-
-
-    spawnWifi();
-
-
-    clearInterval(
-        chickenTimer
-    );
-
-
-    chickenTimer =
-        setInterval(
-            function() {
-
-                chickenTime--;
-
-
-                document.getElementById(
-                    "wifiTime"
-                ).textContent =
-                    chickenTime;
-
-
-                if (
-                    chickenTime <= 0
-                ) {
-
-                    clearInterval(
-                        chickenTimer
-                    );
-
-
-                    chickenTimer =
-                        null;
-
-
-                    clearWifi();
-
-
-                    alert(
-                        "🐔 Oyun bitti!\n\n" +
-                        "Topladığın Wi-Fi: " +
-                        chickenScore
-                    );
-
-                }
-
-            },
-            1000
-        );
-
-
-    startCollisionDetection();
 }
 
 
-/* =========================================================
-   TAVUK HAREKETİ
-========================================================= */
+/* =====================================================
+   RASTGELE KONUM
+===================================================== */
 
+function randomPosition() {
+
+    const maxX =
+        farm.clientWidth - 60;
+
+    const maxY =
+        farm.clientHeight - 60;
+
+    return {
+
+        x: Math.floor(
+            Math.random() * maxX
+        ),
+
+        y: Math.floor(
+            Math.random() * maxY
+        )
+
+    };
+
+}
+
+
+/* =====================================================
+   WI-FI YER DEĞİŞTİR
+===================================================== */
+
+function moveWifi() {
+
+    const position =
+        randomPosition();
+
+    wifiX = position.x;
+    wifiY = position.y;
+
+    wifi.style.left =
+        wifiX + "px";
+
+    wifi.style.top =
+        wifiY + "px";
+
+}
+
+
+/* =====================================================
+   ALTIN YUMURTA YER DEĞİŞTİR
+===================================================== */
+
+function moveEgg() {
+
+    const position =
+        randomPosition();
+
+    eggX = position.x;
+    eggY = position.y;
+
+    egg.style.left =
+        eggX + "px";
+
+    egg.style.top =
+        eggY + "px";
+
+}
+
+
+/* =====================================================
+   OK TUŞLARI
+===================================================== */
 
 document.addEventListener(
     "keydown",
     function(event) {
 
-
-        const game =
-            document.getElementById(
-                "chickenGame"
-            );
-
-
-        if (
-            game.style.display !==
-            "block"
-        ) {
-
+        if (!gameRunning) {
             return;
-
         }
 
 
         if (
-            [
-                "ArrowLeft",
-                "ArrowRight",
-                "ArrowUp",
-                "ArrowDown"
-            ].includes(
-                event.key
-            )
+            event.key === "ArrowLeft" ||
+            event.key === "ArrowRight" ||
+            event.key === "ArrowUp" ||
+            event.key === "ArrowDown"
         ) {
 
             event.preventDefault();
@@ -795,524 +411,270 @@ document.addEventListener(
         }
 
 
-        /* SOL */
-
         if (
-            event.key ===
-            "ArrowLeft"
+            event.key === "ArrowLeft"
         ) {
 
-            chickenX -=
-                chickenSpeed;
+            chickenX -= speed;
 
         }
 
 
-        /* SAĞ */
-
         if (
-            event.key ===
-            "ArrowRight"
+            event.key === "ArrowRight"
         ) {
 
-            chickenX +=
-                chickenSpeed;
+            chickenX += speed;
 
         }
 
 
-        /* YUKARI */
-
         if (
-            event.key ===
-            "ArrowUp"
+            event.key === "ArrowUp"
         ) {
 
-            chickenBottom +=
-                chickenSpeed;
+            chickenY -= speed;
 
         }
 
 
-        /* AŞAĞI */
-
         if (
-            event.key ===
-            "ArrowDown"
+            event.key === "ArrowDown"
         ) {
 
-            chickenBottom -=
-                chickenSpeed;
+            chickenY += speed;
 
         }
 
 
         /* SINIRLAR */
 
+        const maxX =
+            farm.clientWidth -
+            chicken.offsetWidth;
+
+        const maxY =
+            farm.clientHeight -
+            chicken.offsetHeight;
+
+
         chickenX =
             Math.max(
-                5,
+                0,
                 Math.min(
-                    95,
-                    chickenX
+                    chickenX,
+                    maxX
                 )
             );
 
 
-        chickenBottom =
+        chickenY =
             Math.max(
-                10,
+                0,
                 Math.min(
-                    280,
-                    chickenBottom
+                    chickenY,
+                    maxY
                 )
             );
 
 
-        const chicken =
-            document.getElementById(
-                "chicken"
-            );
+        updateChicken();
 
-
-        chicken.style.left =
-            chickenX + "%";
-
-
-        chicken.style.bottom =
-            chickenBottom + "px";
+        checkCollisions();
 
     }
 );
 
 
-/* =========================================================
-   WI-FI OLUŞTUR
-========================================================= */
+/* =====================================================
+   ÇARPIŞMALAR
+===================================================== */
 
+function checkCollisions() {
 
-function spawnWifi() {
 
+    const chickenRect =
+        chicken.getBoundingClientRect();
 
-    clearWifi();
 
+    /* -----------------------------
+       WI-FI
+    ----------------------------- */
 
-    const farm =
-        document.getElementById(
-            "farm"
-        );
+    const wifiRect =
+        wifi.getBoundingClientRect();
 
 
-    const wifi =
-        document.createElement(
-            "div"
-        );
+    const hitWifi =
 
+        chickenRect.left <
+        wifiRect.right &&
 
-    wifi.className =
-        "wifi";
+        chickenRect.right >
+        wifiRect.left &&
 
+        chickenRect.top <
+        wifiRect.bottom &&
 
-    wifi.textContent =
-        "📶";
+        chickenRect.bottom >
+        wifiRect.top;
 
 
-    const maxX =
-        farm.clientWidth - 60;
+    if (hitWifi) {
 
+        score++;
 
-    const maxY =
-        farm.clientHeight - 120;
+        scoreText.textContent =
+            score;
 
+        message.textContent =
+            "📶 WI-FI YAKALANDI! +1";
 
-    const x =
-        Math.random() *
-        maxX;
 
-
-    const y =
-        Math.random() *
-        maxY;
-
-
-    wifi.style.left =
-        x + "px";
-
-
-    wifi.style.top =
-        y + "px";
-
-
-    farm.appendChild(
-        wifi
-    );
-
-}
-
-
-/* =========================================================
-   WI-FI TEMİZLE
-========================================================= */
-
-
-function clearWifi() {
-
-
-    document
-        .querySelectorAll(
-            ".wifi"
-        )
-        .forEach(
-            function(wifi) {
-
-                wifi.remove();
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   ÇARPIŞMA KONTROLÜ
-========================================================= */
-
-
-function startCollisionDetection() {
-
-
-    cancelAnimationFrame(
-        collisionAnimation
-    );
-
-
-    function check() {
-
-
-        const game =
-            document.getElementById(
-                "chickenGame"
-            );
-
-
-        if (
-            game.style.display !==
-            "block"
-        ) {
-
-            return;
-
-        }
-
-
-        const chicken =
-            document.getElementById(
-                "chicken"
-            );
-
-
-        const wifi =
-            document.querySelector(
-                ".wifi"
-            );
-
-
-        if (
-            chicken &&
-            wifi
-        ) {
-
-
-            const chickenRect =
-                chicken.getBoundingClientRect();
-
-
-            const wifiRect =
-                wifi.getBoundingClientRect();
-
-
-            const collision =
-
-                chickenRect.left <
-                wifiRect.right &&
-
-                chickenRect.right >
-                wifiRect.left &&
-
-                chickenRect.top <
-                wifiRect.bottom &&
-
-                chickenRect.bottom >
-                wifiRect.top;
-
-
-            if (
-                collision
-            ) {
-
-
-                chickenScore++;
-
-
-                document.getElementById(
-                    "wifiScore"
-                ).textContent =
-                    chickenScore;
-
-
-                document.getElementById(
-                    "wifiMessage"
-                ).textContent =
-                    "📶 YAKALANDI! +1";
-
-
-                spawnWifi();
-
-            }
-
-        }
-
-
-        collisionAnimation =
-            requestAnimationFrame(
-                check
-            );
+        moveWifi();
 
     }
 
 
-    check();
+    /* -----------------------------
+       ALTIN YUMURTA
+    ----------------------------- */
+
+    const eggRect =
+        egg.getBoundingClientRect();
+
+
+    const hitEgg =
+
+        chickenRect.left <
+        eggRect.right &&
+
+        chickenRect.right >
+        eggRect.left &&
+
+        chickenRect.top <
+        eggRect.bottom &&
+
+        chickenRect.bottom >
+        eggRect.top;
+
+
+    if (hitEgg) {
+
+        score += 5;
+
+        eggScore++;
+
+        scoreText.textContent =
+            score;
+
+        eggsText.textContent =
+            eggScore;
+
+
+        message.textContent =
+            "🥚✨ ALTIN YUMURTA! +5";
+
+
+        moveEgg();
+
+    }
 
 }
 
 
-/* =========================================================
-   HEDEF OYUNU
-========================================================= */
+/* =====================================================
+   OYUNU YENİDEN BAŞLAT
+===================================================== */
+
+function restartGame() {
+
+    score = 0;
+
+    eggScore = 0;
+
+    time = 30;
+
+    gameRunning = true;
 
 
-function startTargetGame() {
+    chickenX = 50;
+
+    chickenY = 300;
 
 
-    closeGames();
+    scoreText.textContent =
+        score;
+
+    eggsText.textContent =
+        eggScore;
+
+    timeText.textContent =
+        time;
 
 
-    targetScore = 0;
-
-    targetTime = 30;
-
-
-    document.getElementById(
-        "targetScore"
-    ).textContent =
-        targetScore;
+    message.textContent =
+        "🐔 Wi-Fi'ları ve altın yumurtaları yakala!";
 
 
-    document.getElementById(
-        "targetTime"
-    ).textContent =
-        targetTime;
+    updateChicken();
 
+    moveWifi();
 
-    document.getElementById(
-        "targetGame"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "target"
-    ).style.display =
-        "block";
-
-
-    moveTarget();
-
-
-    clearInterval(
-        targetTimer
-    );
-
-
-    targetTimer =
-        setInterval(
-            function() {
-
-
-                targetTime--;
-
-
-                document.getElementById(
-                    "targetTime"
-                ).textContent =
-                    targetTime;
-
-
-                if (
-                    targetTime <= 0
-                ) {
-
-
-                    clearInterval(
-                        targetTimer
-                    );
-
-
-                    targetTimer =
-                        null;
-
-
-                    document.getElementById(
-                        "target"
-                    ).style.display =
-                        "none";
-
-
-                    alert(
-                        "🎯 Oyun bitti!\n\n" +
-                        "Puanın: " +
-                        targetScore
-                    );
-
-                }
-
-            },
-            1000
-        );
+    moveEgg();
 
 }
 
 
-/* =========================================================
-   HEDEFİ VUR
-========================================================= */
+/* =====================================================
+   SÜRE
+===================================================== */
+
+setInterval(
+    function() {
+
+        if (!gameRunning) {
+            return;
+        }
 
 
-function hitTarget() {
+        time--;
 
 
-    targetScore++;
+        timeText.textContent =
+            time;
 
 
-    document.getElementById(
-        "targetScore"
-    ).textContent =
-        targetScore;
+        if (time <= 0) {
+
+            gameRunning = false;
 
 
-    moveTarget();
-
-}
-
-
-/* =========================================================
-   HEDEFİ HAREKET ETTİR
-========================================================= */
+            message.textContent =
+                "🏁 OYUN BİTTİ! " +
+                "Toplam skor: " +
+                score +
+                " 🐔";
 
 
-function moveTarget() {
+        }
+
+    },
+    1000
+);
 
 
-    const area =
-        document.getElementById(
-            "targetArea"
-        );
+/* =====================================================
+   BAŞLANGIÇ
+===================================================== */
 
+updateChicken();
 
-    const target =
-        document.getElementById(
-            "target"
-        );
+moveWifi();
 
-
-    const maxX =
-        area.clientWidth - 70;
-
-
-    const maxY =
-        area.clientHeight - 70;
-
-
-    const x =
-        Math.random() *
-        maxX;
-
-
-    const y =
-        Math.random() *
-        maxY;
-
-
-    target.style.left =
-        x + "px";
-
-
-    target.style.top =
-        y + "px";
-
-}
-
-
-/* =========================================================
-   OYUNLARI KAPAT
-========================================================= */
-
-
-function closeGames() {
-
-
-    clearInterval(
-        chickenTimer
-    );
-
-
-    clearInterval(
-        targetTimer
-    );
-
-
-    cancelAnimationFrame(
-        collisionAnimation
-    );
-
-
-    chickenTimer =
-        null;
-
-
-    targetTimer =
-        null;
-
-
-    collisionAnimation =
-        null;
-
-
-    clearWifi();
-
-
-    document.getElementById(
-        "chickenGame"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "targetGame"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "target"
-    ).style.display =
-        "none";
-
-}
-
+moveEgg();
 
 </script>
-
 
 </body>
 </html>
