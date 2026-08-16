@@ -1,697 +1,989 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🐔 Tavuklu Wi-Fi</title>
+    <title>Oyunlar | MaviGPT</title>
 
-<style>
+    <style>
 
-* {
-    box-sizing: border-box;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    margin: 0;
-    min-height: 100vh;
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-    font-family: Arial, sans-serif;
+        body {
+            background: #f5f9fc;
+            color: #17212b;
+        }
 
-    background:
-        linear-gradient(
-            135deg,
-            #dff7ff,
-            #f5fcff
-        );
+        .page {
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+        /* HEADER */
 
-    padding: 20px;
-}
+        .header {
+            height: 65px;
+            background: white;
+            border-bottom: 1px solid #dfe8ee;
 
-.game {
-    width: 100%;
-    max-width: 750px;
+            display: flex;
+            align-items: center;
 
-    background: white;
+            padding: 0 14px;
+            gap: 11px;
 
-    border-radius: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
 
-    padding: 20px;
+        .back {
+            width: 43px;
+            height: 43px;
 
-    text-align: center;
+            border: 0;
+            border-radius: 13px;
 
-    box-shadow:
-        0 10px 35px rgba(0,0,0,.12);
-}
+            background: #f0f8fb;
+            color: #14728d;
 
-h1 {
-    margin: 5px 0;
-}
+            font-size: 23px;
+            cursor: pointer;
+        }
 
-.info {
-    display: flex;
-    justify-content: center;
+        .back:hover {
+            background: #e3f4f9;
+        }
 
-    gap: 30px;
+        .logo {
+            width: 42px;
+            height: 42px;
 
-    margin: 15px 0;
+            border-radius: 14px;
 
-    font-size: 20px;
-    font-weight: bold;
-}
+            background: #d9f5ff;
 
-#message {
-    min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    font-weight: bold;
-}
+            font-size: 22px;
+        }
 
-#farm {
+        .title-area {
+            min-width: 0;
+        }
 
-    position: relative;
+        .title {
+            font-size: 17px;
+            font-weight: 700;
+        }
 
-    width: 100%;
-    height: 400px;
+        .subtitle {
+            color: #8997a1;
+            font-size: 11px;
+            margin-top: 3px;
+        }
 
-    overflow: hidden;
+        /* CONTENT */
 
-    border-radius: 20px;
+        .content {
+            width: 100%;
+            max-width: 950px;
 
-    border: 4px solid white;
+            margin: auto;
 
-    background:
-        linear-gradient(
-            to bottom,
-            #8edfff 0%,
-            #8edfff 40%,
-            #82cf76 40%,
-            #82cf76 100%
-        );
-}
+            padding: 35px 16px;
+        }
 
-#chicken {
+        .welcome {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-    position: absolute;
+        .welcome-icon {
+            width: 78px;
+            height: 78px;
 
-    width: 65px;
-    height: 65px;
+            margin: auto;
 
-    display: flex;
+            border-radius: 25px;
 
-    justify-content: center;
-    align-items: center;
+            background: #d9f5ff;
 
-    font-size: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    left: 50px;
-    top: 300px;
+            font-size: 42px;
 
-    user-select: none;
+            box-shadow:
+                0 8px 25px rgba(0, 130, 170, 0.10);
+        }
 
-    z-index: 10;
-}
+        .welcome h1 {
+            margin: 17px 0 8px;
+            font-size: 26px;
+        }
 
-.item {
+        .welcome p {
+            margin: 0;
+            color: #72808a;
+            font-size: 14px;
+        }
 
-    position: absolute;
+        /* GAMES */
 
-    width: 55px;
-    height: 55px;
+        .games {
+            display: grid;
 
-    display: flex;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
 
-    justify-content: center;
-    align-items: center;
+            gap: 16px;
+        }
 
-    font-size: 42px;
+        .game {
+            background: white;
 
-    user-select: none;
+            border: 1px solid #dfe8ee;
 
-    z-index: 5;
-}
+            border-radius: 20px;
 
-#controls {
+            padding: 20px;
 
-    margin-top: 15px;
+            cursor: pointer;
 
-    color: #555;
-}
+            transition:
+                transform 0.18s ease,
+                box-shadow 0.18s ease,
+                border-color 0.18s ease;
 
-button {
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.035);
+        }
 
-    border: none;
+        .game:hover {
+            transform: translateY(-3px);
 
-    border-radius: 14px;
+            border-color: #b9dfe9;
 
-    padding: 12px 22px;
+            box-shadow:
+                0 8px 22px rgba(0, 0, 0, 0.07);
+        }
 
-    margin-top: 15px;
+        .game-icon {
+            width: 58px;
+            height: 58px;
 
-    background: #78cdea;
+            border-radius: 17px;
 
-    color: white;
+            background: #eefaff;
 
-    font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    font-weight: bold;
+            font-size: 31px;
 
-    cursor: pointer;
-}
+            margin-bottom: 14px;
+        }
 
-button:hover {
-    background: #54b9df;
-}
+        .game h2 {
+            margin: 0 0 7px;
 
-</style>
+            font-size: 18px;
+        }
+
+        .game p {
+            margin: 0;
+
+            color: #77858e;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        .play {
+            display: inline-block;
+
+            margin-top: 15px;
+
+            padding: 8px 13px;
+
+            border-radius: 10px;
+
+            background: #eefaff;
+
+            color: #087c9f;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        /* GAME SCREEN */
+
+        .game-screen {
+            display: none;
+
+            margin-top: 25px;
+
+            background: white;
+
+            border: 1px solid #dfe8ee;
+
+            border-radius: 20px;
+
+            padding: 22px;
+
+            text-align: center;
+        }
+
+        .game-screen.show {
+            display: block;
+        }
+
+        .game-screen h2 {
+            margin-top: 0;
+        }
+
+        .question {
+            font-size: 24px;
+            font-weight: 700;
+
+            margin: 25px 0;
+        }
+
+        .answers {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+            max-width: 500px;
+
+            margin: auto;
+        }
+
+        .answer {
+            border: 1px solid #d5e2e8;
+
+            background: #f8fbfd;
+
+            border-radius: 13px;
+
+            padding: 13px;
+
+            cursor: pointer;
+
+            font-size: 15px;
+        }
+
+        .answer:hover {
+            background: #eefaff;
+            border-color: #9ed2df;
+        }
+
+        .result {
+            margin-top: 18px;
+
+            font-weight: 600;
+
+            min-height: 24px;
+        }
+
+        .close-game {
+            margin-top: 18px;
+
+            border: 0;
+
+            background: #eefaff;
+
+            color: #087c9f;
+
+            padding: 10px 15px;
+
+            border-radius: 11px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .content {
+                padding: 25px 11px;
+            }
+
+            .games {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h1 {
+                font-size: 23px;
+            }
+
+            .answers {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
 </head>
-
 
 <body>
 
+<div class="page">
 
-<div class="game">
+    <!-- HEADER -->
 
-    <h1>
-        🐔📶 Tavuklu Wi-Fi
-    </h1>
+    <header class="header">
 
-    <p>
-        Wi-Fi'ları yakala, altın yumurtaları bul! 🥚
-    </p>
+        <button
+            class="back"
+            onclick="window.location.href='/chat'"
+            aria-label="Geri"
+        >
+            ←
+        </button>
 
-
-   <div class="info">
-
-    <span>
-        📶
-        <span id="score">0</span>
-    </span>
-
-    <span>
-        🥚
-        <span id="eggs">0</span>
-    </span>
-
-    <span>
-        ⏱️
-        <span id="time">30</span>
-    </span>
-
-    <span>
-        🏆
-        <span id="highScore">26</span>
-    </span>
-
-</div>
-
-
-    <div id="message">
-        🐔 Başla!
-    </div>
-
-
-    <div id="farm">
-
-        <div id="chicken">
-            🐔
+        <div class="logo">
+            🩵
         </div>
+
+        <div class="title-area">
+
+            <div class="title">
+                Oyunlar
+            </div>
+
+            <div class="subtitle">
+                MaviGPT eğlence köşesi 🎮
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <main class="content">
+
+        <div class="welcome">
+
+            <div class="welcome-icon">
+                🎮
+            </div>
+
+            <h1>
+                Oyunlar 🎮
+            </h1>
+
+            <p>
+                Bir oyun seç ve biraz eğlenelim! 🩵
+            </p>
+
+        </div>
+
+
+        <!-- GAME CARDS -->
+
+        <div class="games">
+
+            <div
+                class="game"
+                onclick="startQuiz()"
+            >
+
+                <div class="game-icon">
+                    🧠
+                </div>
+
+                <h2>
+                    Mini Quiz
+                </h2>
+
+                <p>
+                    Genel kültür sorularını cevapla
+                    ve kaç puan yapabileceğini gör!
+                </p>
+
+                <span class="play">
+                    Oyna →
+                </span>
+
+            </div>
+
+
+            <div
+                class="game"
+                onclick="numberGuess()"
+            >
+
+                <div class="game-icon">
+                    🔢
+                </div>
+
+                <h2>
+                    Sayıyı Tahmin Et
+                </h2>
+
+                <p>
+                    MaviGPT'nin tuttuğu sayıyı
+                    tahmin etmeye çalış!
+                </p>
+
+                <span class="play">
+                    Oyna →
+                </span>
+
+            </div>
+
+
+            <div
+                class="game"
+                onclick="rps()"
+            >
+
+                <div class="game-icon">
+                    ✊
+                </div>
+
+                <h2>
+                    Taş Kağıt Makas
+                </h2>
+
+                <p>
+                    MaviGPT'ye karşı
+                    Taş-Kağıt-Makas oyna.
+                </p>
+
+                <span class="play">
+                    Oyna →
+                </span>
+
+            </div>
+
+
+            <div
+                class="game"
+                onclick="wordGame()"
+            >
+
+                <div class="game-icon">
+                    🔤
+                </div>
+
+                <h2>
+                    Kelime Oyunu
+                </h2>
+
+                <p>
+                    Verilen harfle başlayan
+                    bir kelime bul!
+                </p>
+
+                <span class="play">
+                    Oyna →
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- GAME SCREEN -->
 
         <div
-            id="wifi"
-            class="item"
+            class="game-screen"
+            id="gameScreen"
         >
-            📶
+
+            <h2 id="gameTitle">
+                Oyun
+            </h2>
+
+            <div
+                class="question"
+                id="question"
+            >
+            </div>
+
+            <div
+                class="answers"
+                id="answers"
+            >
+            </div>
+
+            <div
+                class="result"
+                id="result"
+            >
+            </div>
+
+            <button
+                class="close-game"
+                onclick="closeGame()"
+            >
+                Oyunlardan devam et
+            </button>
+
         </div>
 
-        <div
-            id="egg"
-            class="item"
-        >
-            🥚
-        </div>
-
-    </div>
-
-
-    <div id="controls">
-
-        ⬅️ ⬆️ ⬇️ ➡️
-
-        <br>
-
-        Ok tuşlarıyla tavuğu hareket ettir!
-
-    </div>
-
-
-  <button onclick="restartGame()">
-    🔄 Yeniden Başlat
-</button>
+    </main>
 
 </div>
 
 
 <script>
 
-let highScore =
-    Number(localStorage.getItem("chickenHighScore")) || 26;
+    const gameScreen =
+        document.getElementById("gameScreen");
 
-document.getElementById("highScore").textContent =
-    highScore;
+    const gameTitle =
+        document.getElementById("gameTitle");
 
+    const question =
+        document.getElementById("question");
 
-/* BURADAN SONRA ESKİ JAVASCRIPT KODLARIN DEVAM EDECEK */
- 
+    const answers =
+        document.getElementById("answers");
 
-
-
-
-/* =====================================================
-   DEĞİŞKENLER
-===================================================== */
-
-let chickenX = 50;
-let chickenY = 300;
-
-let wifiX = 300;
-let wifiY = 150;
-
-let eggX = 500;
-let eggY = 200;
-
-let score = 0;
-
-let eggScore = 0;
-
-let time = 30;
-
-let gameRunning = true;
-
-const speed = 8;
+    const result =
+        document.getElementById("result");
 
 
-const chicken =
-    document.getElementById("chicken");
+    /* =====================================================
+       OYUN EKRANINI AÇ
+    ===================================================== */
 
-const wifi =
-    document.getElementById("wifi");
+    function openGame(title) {
 
-const egg =
-    document.getElementById("egg");
+        gameTitle.textContent = title;
 
-const farm =
-    document.getElementById("farm");
+        gameScreen.classList.add("show");
 
-const scoreText =
-    document.getElementById("score");
+        gameScreen.scrollIntoView({
+            behavior: "smooth"
+        });
 
-const eggsText =
-    document.getElementById("eggs");
-
-const timeText =
-    document.getElementById("time");
-
-const message =
-    document.getElementById("message");
+    }
 
 
-/* =====================================================
-   TAVUK
-===================================================== */
+    /* =====================================================
+       OYUNU KAPAT
+    ===================================================== */
 
-function updateChicken() {
+    function closeGame() {
 
-    chicken.style.left =
-        chickenX + "px";
+        gameScreen.classList.remove("show");
 
-    chicken.style.top =
-        chickenY + "px";
+        answers.innerHTML = "";
 
-}
+        result.textContent = "";
 
-
-/* =====================================================
-   RASTGELE KONUM
-===================================================== */
-
-function randomPosition() {
-
-    const maxX =
-        farm.clientWidth - 60;
-
-    const maxY =
-        farm.clientHeight - 60;
-
-    return {
-
-        x: Math.floor(
-            Math.random() * maxX
-        ),
-
-        y: Math.floor(
-            Math.random() * maxY
-        )
-
-    };
-
-}
+    }
 
 
-/* =====================================================
-   WI-FI YER DEĞİŞTİR
-===================================================== */
+    /* =====================================================
+       MİNİ QUIZ
+    ===================================================== */
 
-function moveWifi() {
+    const questions = [
 
-    const position =
-        randomPosition();
+        {
+            question: "Türkiye'nin başkenti neresidir?",
+            answers: [
+                "İstanbul",
+                "Ankara",
+                "İzmir",
+                "Bursa"
+            ],
+            correct: "Ankara"
+        },
 
-    wifiX = position.x;
-    wifiY = position.y;
+        {
+            question: "Bir yılda kaç ay vardır?",
+            answers: [
+                "10",
+                "11",
+                "12",
+                "13"
+            ],
+            correct: "12"
+        },
 
-    wifi.style.left =
-        wifiX + "px";
-
-    wifi.style.top =
-        wifiY + "px";
-
-}
-
-
-/* =====================================================
-   ALTIN YUMURTA YER DEĞİŞTİR
-===================================================== */
-
-function moveEgg() {
-
-    const position =
-        randomPosition();
-
-    eggX = position.x;
-    eggY = position.y;
-
-    egg.style.left =
-        eggX + "px";
-
-    egg.style.top =
-        eggY + "px";
-
-}
-
-
-/* =====================================================
-   OK TUŞLARI
-===================================================== */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (!gameRunning) {
-            return;
+        {
+            question: "Dünya'nın uydusu nedir?",
+            answers: [
+                "Güneş",
+                "Mars",
+                "Ay",
+                "Venüs"
+            ],
+            correct: "Ay"
         }
 
-
-        if (
-            event.key === "ArrowLeft" ||
-            event.key === "ArrowRight" ||
-            event.key === "ArrowUp" ||
-            event.key === "ArrowDown"
-        ) {
-
-            event.preventDefault();
-
-        }
+    ];
 
 
-        if (
-            event.key === "ArrowLeft"
-        ) {
+    function startQuiz() {
 
-            chickenX -= speed;
+        openGame("🧠 Mini Quiz");
 
-        }
-
-
-        if (
-            event.key === "ArrowRight"
-        ) {
-
-            chickenX += speed;
-
-        }
-
-
-        if (
-            event.key === "ArrowUp"
-        ) {
-
-            chickenY -= speed;
-
-        }
-
-
-        if (
-            event.key === "ArrowDown"
-        ) {
-
-            chickenY += speed;
-
-        }
-
-
-        /* SINIRLAR */
-
-        const maxX =
-            farm.clientWidth -
-            chicken.offsetWidth;
-
-        const maxY =
-            farm.clientHeight -
-            chicken.offsetHeight;
-
-
-        chickenX =
-            Math.max(
-                0,
-                Math.min(
-                    chickenX,
-                    maxX
+        const random =
+            questions[
+                Math.floor(
+                    Math.random() *
+                    questions.length
                 )
-            );
+            ];
+
+        question.textContent =
+            random.question;
+
+        answers.innerHTML = "";
+
+        result.textContent = "";
+
+        random.answers.forEach(
+            function(answer) {
+
+                const button =
+                    document.createElement("button");
+
+                button.className = "answer";
+
+                button.textContent =
+                    answer;
+
+                button.onclick =
+                    function() {
+
+                        if (
+                            answer ===
+                            random.correct
+                        ) {
+
+                            result.textContent =
+                                "🎉 Doğru cevap!";
+
+                        }
+
+                        else {
+
+                            result.textContent =
+                                "😅 Yanlış cevap! Doğru cevap: " +
+                                random.correct;
+
+                        }
+
+                    };
+
+                answers.appendChild(button);
+
+            }
+        );
+
+    }
 
 
-        chickenY =
-            Math.max(
-                0,
-                Math.min(
-                    chickenY,
-                    maxY
+    /* =====================================================
+       SAYI TAHMİN
+    ===================================================== */
+
+    function numberGuess() {
+
+        openGame("🔢 Sayıyı Tahmin Et");
+
+        const number =
+            Math.floor(
+                Math.random() * 10
+            ) + 1;
+
+        question.textContent =
+            "1 ile 10 arasında bir sayı tuttum!";
+
+        answers.innerHTML = "";
+
+        result.textContent = "";
+
+        for (
+            let i = 1;
+            i <= 10;
+            i++
+        ) {
+
+            const button =
+                document.createElement("button");
+
+            button.className = "answer";
+
+            button.textContent =
+                i;
+
+            button.onclick =
+                function() {
+
+                    if (i === number) {
+
+                        result.textContent =
+                            "🎉 Bildin!";
+
+                    }
+
+                    else {
+
+                        result.textContent =
+                            "😅 Olmadı! Tuttuğum sayı " +
+                            number +
+                            ".";
+
+                    }
+
+                };
+
+            answers.appendChild(button);
+
+        }
+
+    }
+
+
+    /* =====================================================
+       TAŞ KAĞIT MAKAS
+    ===================================================== */
+
+    function rps() {
+
+        openGame("✊ Taş Kağıt Makas");
+
+        question.textContent =
+            "Seçimini yap!";
+
+        answers.innerHTML = "";
+
+        result.textContent = "";
+
+        const choices = [
+            "✊ Taş",
+            "📄 Kağıt",
+            "✂️ Makas"
+        ];
+
+        choices.forEach(
+            function(choice) {
+
+                const button =
+                    document.createElement("button");
+
+                button.className =
+                    "answer";
+
+                button.textContent =
+                    choice;
+
+                button.onclick =
+                    function() {
+
+                        const botChoices = [
+                            "✊ Taş",
+                            "📄 Kağıt",
+                            "✂️ Makas"
+                        ];
+
+                        const bot =
+                            botChoices[
+                                Math.floor(
+                                    Math.random() *
+                                    botChoices.length
+                                )
+                            ];
+
+                        if (choice === bot) {
+
+                            result.textContent =
+                                "🤝 Berabere! MaviGPT: " +
+                                bot;
+
+                        }
+
+                        else if (
+                            (
+                                choice === "✊ Taş" &&
+                                bot === "✂️ Makas"
+                            ) ||
+                            (
+                                choice === "📄 Kağıt" &&
+                                bot === "✊ Taş"
+                            ) ||
+                            (
+                                choice === "✂️ Makas" &&
+                                bot === "📄 Kağıt"
+                            )
+                        ) {
+
+                            result.textContent =
+                                "🎉 Kazandın! MaviGPT: " +
+                                bot;
+
+                        }
+
+                        else {
+
+                            result.textContent =
+                                "😅 MaviGPT kazandı! MaviGPT: " +
+                                bot;
+
+                        }
+
+                    };
+
+                answers.appendChild(button);
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       KELİME OYUNU
+    ===================================================== */
+
+    function wordGame() {
+
+        openGame("🔤 Kelime Oyunu");
+
+        const letters = [
+            "A",
+            "B",
+            "K",
+            "M",
+            "S",
+            "T"
+        ];
+
+        const letter =
+            letters[
+                Math.floor(
+                    Math.random() *
+                    letters.length
                 )
-            );
+            ];
 
+        question.textContent =
+            "Bu harfle başlayan bir kelime yaz: " +
+            letter;
 
-        updateChicken();
+        answers.innerHTML = "";
 
-        checkCollisions();
+        result.textContent = "";
 
-    }
-);
+        const input =
+            document.createElement("input");
 
+        input.type = "text";
 
-/* =====================================================
-   ÇARPIŞMALAR
-===================================================== */
+        input.placeholder =
+            "Kelimen...";
 
-function checkCollisions() {
+        input.style.padding =
+            "13px";
 
+        input.style.border =
+            "1px solid #d5e2e8";
 
-    const chickenRect =
-        chicken.getBoundingClientRect();
+        input.style.borderRadius =
+            "12px";
 
+        input.style.width =
+            "100%";
 
-    /* -----------------------------
-       WI-FI
-    ----------------------------- */
+        input.style.maxWidth =
+            "400px";
 
-    const wifiRect =
-        wifi.getBoundingClientRect();
+        const button =
+            document.createElement("button");
 
+        button.className =
+            "answer";
 
-    const hitWifi =
+        button.textContent =
+            "Kontrol Et";
 
-        chickenRect.left <
-        wifiRect.right &&
+        button.style.marginTop =
+            "10px";
 
-        chickenRect.right >
-        wifiRect.left &&
+        button.onclick =
+            function() {
 
-        chickenRect.top <
-        wifiRect.bottom &&
+                const word =
+                    input.value.trim();
 
-        chickenRect.bottom >
-        wifiRect.top;
+                if (!word) {
 
+                    result.textContent =
+                        "Bir kelime yazmalısın 😄";
 
-    if (hitWifi) {
+                    return;
 
-        score++;
+                }
 
-        scoreText.textContent =
-            score;
+                if (
+                    word
+                        .toLocaleUpperCase("tr-TR")
+                        .startsWith(letter)
+                ) {
 
-        message.textContent =
-            "📶 WI-FI YAKALANDI! +1";
+                    result.textContent =
+                        "🎉 Harika! Kelimen kabul edildi.";
 
+                }
 
-        moveWifi();
+                else {
 
-    }
+                    result.textContent =
+                        "😅 Kelimen " +
+                        letter +
+                        " harfiyle başlamıyor.";
 
+                }
 
-    /* -----------------------------
-       ALTIN YUMURTA
-    ----------------------------- */
+            };
 
-    const eggRect =
-        egg.getBoundingClientRect();
+        answers.appendChild(input);
 
-
-    const hitEgg =
-
-        chickenRect.left <
-        eggRect.right &&
-
-        chickenRect.right >
-        eggRect.left &&
-
-        chickenRect.top <
-        eggRect.bottom &&
-
-        chickenRect.bottom >
-        eggRect.top;
-
-
-    if (hitEgg) {
-
-        score += 5;
-
-        eggScore++;
-
-        scoreText.textContent =
-            score;
-
-        eggsText.textContent =
-            eggScore;
-
-
-        message.textContent =
-            "🥚✨ ALTIN YUMURTA! +5";
-
-
-        moveEgg();
+        answers.appendChild(button);
 
     }
-
-}
-
-
-/* =====================================================
-   OYUNU YENİDEN BAŞLAT
-===================================================== */
-
-function restartGame() {
-
-    score = 0;
-
-    eggScore = 0;
-
-    time = 30;
-
-    gameRunning = true;
-
-
-    chickenX = 50;
-
-    chickenY = 300;
-
-
-    scoreText.textContent =
-        score;
-
-    eggsText.textContent =
-        eggScore;
-
-    timeText.textContent =
-        time;
-
-
-    message.textContent =
-        "🐔 Wi-Fi'ları ve altın yumurtaları yakala!";
-
-
-    updateChicken();
-
-    moveWifi();
-
-    moveEgg();
-
-}
-
-
-/* =====================================================
-   SÜRE
-===================================================== */
-
-setInterval(
-    function() {
-
-        if (!gameRunning) {
-            return;
-        }
-
-
-        time--;
-
-
-        timeText.textContent =
-            time;
-
-
-        if (time <= 0) {
-
-            gameRunning = false;
-
-
-            message.textContent =
-                "🏁 OYUN BİTTİ! " +
-                "Toplam skor: " +
-                score +
-                " 🐔";
-
-
-        }
-
-    },
-    1000
-);
-
-
-/* =====================================================
-   BAŞLANGIÇ
-===================================================== */
-
-updateChicken();
-
-moveWifi();
-
-moveEgg();
 
 </script>
 
 </body>
+
 </html>
+```
