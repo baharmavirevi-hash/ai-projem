@@ -197,7 +197,19 @@ def register_routes(app):
     # MAVİGPT
     # ========================================================
 
-    @app.route("/mavigpt")
+    @app.route("/mavigpt")    # ========================================================
+    # OYUNLAR
+    # ========================================================
+
+    @app.route("/games")
+    @login_required
+    def games():
+
+        return render_template(
+            "games.html",
+            user=current_user()
+        )
+    
     @app.route("/chat")
     @login_required
     def mavigpt():
