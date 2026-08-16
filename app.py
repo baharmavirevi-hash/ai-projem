@@ -18,7 +18,9 @@ app.secret_key = os.environ.get(
     "SECRET_KEY",
     "mavigpt-development-secret-key"
 )
+from datetime import timedelta
 
+app.permanent_session_lifetime = timedelta(days=30)
 
 # ============================================================
 # DATABASE
