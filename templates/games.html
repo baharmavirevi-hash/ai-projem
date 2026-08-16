@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Oyunlar | MaviGPT</title>
+    <title>MaviGPT Oyun Merkezi</title>
 
     <style>
         * {
@@ -16,7 +15,7 @@
         body {
             min-height: 100vh;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #dff7ff, #f4fbff);
+            background: linear-gradient(135deg, #dff7ff, #f5fcff);
             color: #234;
             padding: 25px;
         }
@@ -70,6 +69,7 @@
         .game-card p {
             color: #667;
             margin-bottom: 20px;
+            line-height: 1.5;
         }
 
         button {
@@ -88,7 +88,7 @@
             background: #54b9df;
         }
 
-        #gameArea {
+        .game-screen {
             display: none;
             margin-top: 25px;
             background: white;
@@ -98,25 +98,94 @@
             box-shadow: 0 8px 25px rgba(0,0,0,.08);
         }
 
-        .score {
-            font-size: 22px;
-            margin: 15px 0;
+        .game-screen h2 {
+            margin-bottom: 15px;
         }
 
-        #target {
-            display: none;
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 15px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #farm {
             position: relative;
-            margin: 30px auto;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #78cdea;
+            width: 100%;
+            max-width: 650px;
+            height: 350px;
+            margin: 20px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            background:
+                linear-gradient(
+                    #9ee7ff 0 35%,
+                    #8ed081 35% 100%
+                );
+            border: 4px solid #fff;
+        }
+
+        #chicken {
+            position: absolute;
+            left: 50%;
+            bottom: 35px;
+            transform: translateX(-50%);
+            font-size: 70px;
             cursor: pointer;
+            user-select: none;
+        }
+
+        .wifi {
+            position: absolute;
+            font-size: 35px;
+            cursor: pointer;
+            user-select: none;
+            animation: float 1s infinite alternate;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-8px);
+            }
         }
 
         .back {
-            margin-top: 15px;
-            background: #aaa;
+            background: #999;
+            margin-top: 10px;
+        }
+
+        #targetGame {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            height: 350px;
+            margin: 20px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #eefaff;
+            border: 4px solid #d8f5ff;
+        }
+
+        #target {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #78cdea;
+            cursor: pointer;
+            display: none;
+        }
+
+        .message {
+            min-height: 28px;
+            margin: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -127,61 +196,129 @@
 
     <div class="header">
         <h1>🎮 MaviGPT Oyun Merkezi</h1>
-        <p>İnternetsiz mini oyunlar burada! 💙</p>
+        <p>İnternetsiz mini oyunlar 💙</p>
     </div>
+
+
+    <!-- OYUNLAR -->
 
     <div class="games">
 
         <div class="game-card">
+
+            <div class="game-icon">🐔📶</div>
+
+            <h2>Tavuklu Wi-Fi</h2>
+
+            <p>
+                Tavuk interneti kaybetti!
+                Çiftlikte ortaya çıkan Wi-Fi'ları yakala.
+                Bakalım kaç tane toplayabileceksin? 😈
+            </p>
+
+            <button onclick="startChickenGame()">
+                Oyna 🐔
+            </button>
+
+        </div>
+
+
+        <div class="game-card">
+
             <div class="game-icon">🎯</div>
 
             <h2>Hedefi Yakala</h2>
 
             <p>
-                Hedef ekranda belirecek.
-                Ne kadar hızlı tıklarsan o kadar puan!
+                30 saniyede mümkün olduğunca
+                çok hedef yakala!
             </p>
 
-            <button onclick="startGame()">
-                Oyna 🎮
+            <button onclick="startTargetGame()">
+                Oyna 🎯
             </button>
-        </div>
 
-        <div class="game-card">
-            <div class="game-icon">🧠</div>
-
-            <h2>Yakında...</h2>
-
-            <p>
-                Yeni oyunlar üzerinde çalışıyoruz.
-            </p>
-
-            <button disabled>
-                Çok Yakında
-            </button>
         </div>
 
     </div>
 
-    <div id="gameArea">
 
-        <h2>🎯 Hedefi Yakala!</h2>
+    <!-- TAVUK OYUNU -->
 
-        <div class="score">
-            Puan: <span id="score">0</span>
-        </div>
+    <div id="chickenGame" class="game-screen">
+
+        <h2>🐔 Tavuklu Wi-Fi</h2>
 
         <p>
-            30 saniyede mümkün olduğunca çok hedef yakala!
+            Wi-Fi'ları yakala!
         </p>
 
-        <div id="timer">
-            Süre: 30
+        <div class="stats">
+
+            <span>
+                📶 <span id="wifiScore">0</span>
+            </span>
+
+            <span>
+                ⏱️ <span id="wifiTime">30</span>
+            </span>
+
         </div>
 
-        <div id="target" onclick="hitTarget()"></div>
+        <div id="farm">
 
-        <button class="back" onclick="closeGame()">
+            <div id="chicken">
+                🐔
+            </div>
+
+        </div>
+
+        <div
+            id="wifiMessage"
+            class="message">
+        </div>
+
+        <button
+            class="back"
+            onclick="closeGames()">
+            Oyundan Çık
+        </button>
+
+    </div>
+
+
+    <!-- HEDEF OYUNU -->
+
+    <div id="targetGame" class="game-screen">
+
+        <h2>🎯 Hedefi Yakala</h2>
+
+        <div class="stats">
+
+            <span>
+                Puan:
+                <span id="targetScore">0</span>
+            </span>
+
+            <span>
+                Süre:
+                <span id="targetTime">30</span>
+            </span>
+
+        </div>
+
+        <div id="targetArea">
+
+            <div
+                id="target"
+                onclick="hitTarget()">
+            </div>
+
+        </div>
+
+        <button
+            class="back"
+            onclick="closeGames()">
             Oyundan Çık
         </button>
 
@@ -189,46 +326,153 @@
 
 </div>
 
+
 <script>
 
-let score = 0;
-let time = 30;
-let timer;
-let playing = false;
+let chickenScore = 0;
+let chickenTime = 30;
+let chickenTimer = null;
+let wifiTimer = null;
 
-function startGame() {
+let targetScore = 0;
+let targetTime = 30;
+let targetTimer = null;
 
-    score = 0;
-    time = 30;
-    playing = true;
 
-    document.getElementById("score").textContent = score;
-    document.getElementById("timer").textContent = "Süre: " + time;
+/* =========================================================
+   TAVUK OYUNU
+========================================================= */
 
-    document.getElementById("gameArea").style.display = "block";
-    document.getElementById("target").style.display = "block";
+function startChickenGame() {
+
+    closeGames();
+
+    chickenScore = 0;
+    chickenTime = 30;
+
+    document.getElementById("wifiScore").textContent = chickenScore;
+    document.getElementById("wifiTime").textContent = chickenTime;
+
+    document.getElementById("chickenGame").style.display = "block";
+
+    clearInterval(chickenTimer);
+
+    chickenTimer = setInterval(() => {
+
+        chickenTime--;
+
+        document.getElementById("wifiTime").textContent =
+            chickenTime;
+
+        if (chickenTime <= 0) {
+
+            clearInterval(chickenTimer);
+
+            clearWifi();
+
+            alert(
+                "🐔 Oyun bitti!\n\n" +
+                "Topladığın Wi-Fi: " +
+                chickenScore
+            );
+        }
+
+    }, 1000);
+
+    spawnWifi();
+}
+
+
+function spawnWifi() {
+
+    clearWifi();
+
+    const farm = document.getElementById("farm");
+
+    const wifi = document.createElement("div");
+
+    wifi.className = "wifi";
+    wifi.textContent = "📶";
+
+    const maxX = farm.clientWidth - 50;
+    const maxY = farm.clientHeight - 100;
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    wifi.style.left = x + "px";
+    wifi.style.top = y + "px";
+
+    wifi.onclick = function () {
+
+        chickenScore++;
+
+        document.getElementById("wifiScore").textContent =
+            chickenScore;
+
+        document.getElementById("wifiMessage").textContent =
+            "📶 Wi-Fi yakalandı!";
+
+        spawnWifi();
+    };
+
+    farm.appendChild(wifi);
+}
+
+
+function clearWifi() {
+
+    document
+        .querySelectorAll(".wifi")
+        .forEach(wifi => wifi.remove());
+}
+
+
+/* =========================================================
+   HEDEF OYUNU
+========================================================= */
+
+function startTargetGame() {
+
+    closeGames();
+
+    targetScore = 0;
+    targetTime = 30;
+
+    document.getElementById("targetScore").textContent =
+        targetScore;
+
+    document.getElementById("targetTime").textContent =
+        targetTime;
+
+    document.getElementById("targetGame").style.display =
+        "block";
+
+    document.getElementById("target").style.display =
+        "block";
 
     moveTarget();
 
-    clearInterval(timer);
+    clearInterval(targetTimer);
 
-    timer = setInterval(() => {
+    targetTimer = setInterval(() => {
 
-        time--;
+        targetTime--;
 
-        document.getElementById("timer").textContent =
-            "Süre: " + time;
+        document.getElementById("targetTime").textContent =
+            targetTime;
 
-        if (time <= 0) {
+        if (targetTime <= 0) {
 
-            clearInterval(timer);
+            clearInterval(targetTimer);
 
-            playing = false;
-
-            document.getElementById("target").style.display = "none";
+            document.getElementById("target").style.display =
+                "none";
 
             alert(
-                "Oyun bitti! 🎉\n\nPuanın: " + score
+                "🎯 Oyun bitti!\n\n" +
+                "Puanın: " +
+                targetScore
             );
         }
 
@@ -238,11 +482,10 @@ function startGame() {
 
 function hitTarget() {
 
-    if (!playing) return;
+    targetScore++;
 
-    score++;
-
-    document.getElementById("score").textContent = score;
+    document.getElementById("targetScore").textContent =
+        targetScore;
 
     moveTarget();
 }
@@ -250,27 +493,51 @@ function hitTarget() {
 
 function moveTarget() {
 
-    const target = document.getElementById("target");
+    const area =
+        document.getElementById("targetArea");
 
-    const maxX = 250;
-    const maxY = 250;
+    const target =
+        document.getElementById("target");
 
-    const x = Math.random() * maxX - maxX / 2;
-    const y = Math.random() * maxY - maxY / 2;
+    const maxX =
+        area.clientWidth - 70;
 
-    target.style.transform =
-        `translate(${x}px, ${y}px)`;
+    const maxY =
+        area.clientHeight - 70;
+
+    const x =
+        Math.random() * maxX;
+
+    const y =
+        Math.random() * maxY;
+
+    target.style.left = x + "px";
+    target.style.top = y + "px";
 }
 
 
-function closeGame() {
+/* =========================================================
+   OYUNLARI KAPAT
+========================================================= */
 
-    clearInterval(timer);
+function closeGames() {
 
-    playing = false;
+    clearInterval(chickenTimer);
+    clearInterval(targetTimer);
 
-    document.getElementById("gameArea").style.display = "none";
-    document.getElementById("target").style.display = "none";
+    chickenTimer = null;
+    targetTimer = null;
+
+    clearWifi();
+
+    document.getElementById("chickenGame").style.display =
+        "none";
+
+    document.getElementById("targetGame").style.display =
+        "none";
+
+    document.getElementById("target").style.display =
+        "none";
 }
 
 </script>
