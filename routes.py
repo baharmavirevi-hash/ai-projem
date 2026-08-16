@@ -739,7 +739,7 @@ def register_routes(app):
         })
 
 
-    # ========================================================
+     # ========================================================
     # GİRİŞ
     # ========================================================
 
@@ -749,11 +749,18 @@ def register_routes(app):
     )
     def login():
 
+        # Zaten giriş yapılmışsa tekrar login sayfasına gönderme
         if session.get("user_id"):
 
-            return redirect(
-                url_for("home")
-            )
+            user = current_user()
+
+            if user:
+                return redirect(
+                    url_for("home")
+                )
+
+            # Kullanıcı artık veritabanında yoksa
+            session.clear()
 
         if request.method == "POST":
 
@@ -785,8 +792,13 @@ def register_routes(app):
 
             if user:
 
+                # Eski oturumu temizle
                 session.clear()
 
+                # Oturumu kalıcı yap
+                session.permanent = True
+
+                # Kullanıcı bilgilerini kaydet
                 session["user_id"] = user["id"]
 
                 session["username"] = (
@@ -810,7 +822,6 @@ def register_routes(app):
         return render_template(
             "login.html"
         )
-
 
     # ========================================================
     # KAYIT
