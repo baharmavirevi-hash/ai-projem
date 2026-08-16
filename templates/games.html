@@ -184,24 +184,29 @@ button:hover {
     </p>
 
 
-    <div class="info">
+   <div class="info">
 
-        <span>
-            📶
-            <span id="score">0</span>
-        </span>
+    <span>
+        📶
+        <span id="score">0</span>
+    </span>
 
-        <span>
-            🥚
-            <span id="eggs">0</span>
-        </span>
+    <span>
+        🥚
+        <span id="eggs">0</span>
+    </span>
 
-        <span>
-            ⏱️
-            <span id="time">30</span>
-        </span>
+    <span>
+        ⏱️
+        <span id="time">30</span>
+    </span>
 
-    </div>
+    <span>
+        🏆
+        <span id="highScore">26</span>
+    </span>
+
+</div>
 
 
     <div id="message">
@@ -243,14 +248,26 @@ button:hover {
     </div>
 
 
-    <button onclick="restartGame()">
-        🔄 Yeniden Başlat
-    </button>
+  <button onclick="restartGame()">
+    🔄 Yeniden Başlat
+</button>
 
 </div>
 
 
 <script>
+
+let highScore =
+    Number(localStorage.getItem("chickenHighScore")) || 26;
+
+document.getElementById("highScore").textContent =
+    highScore;
+
+
+/* BURADAN SONRA ESKİ JAVASCRIPT KODLARIN DEVAM EDECEK */
+ 
+
+
 
 
 /* =====================================================
