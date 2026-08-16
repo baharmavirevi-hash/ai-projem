@@ -3,121 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Oyunlar | MaviGPT</title>
+
+    <title>Oyunlar | MaviGPT</title>
+
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #eefaff; color: #17324d; }
-        .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
-        .top { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
-        h1 { margin:0; font-size:30px; }
-        .back { text-decoration:none; color:#17324d; background:#fff; border:1px solid #c9e8f5; padding:10px 14px; border-radius:12px; }
-        .card { background:#fff; border:1px solid #c9e8f5; border-radius:20px; padding:20px; box-shadow:0 8px 30px rgba(23,50,77,.08); }
-        .hud { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
-        .badge { background:#eefaff; border-radius:12px; padding:9px 12px; font-weight:700; }
-        #game { position:relative; width:100%; height:min(68vh,560px); min-height:420px; overflow:hidden; border-radius:18px; background:#dff5df; border:3px solid #9bc9d8; }
-        #player { position:absolute; width:44px; height:44px; display:grid; place-items:center; font-size:34px; z-index:5; user-select:none; }
-        .item { position:absolute; z-index:3; user-select:none; }
-        .signal { font-size:30px; }
-        .corn { font-size:28px; }
-        .boost { font-size:28px; }
-        .cat { font-size:34px; z-index:4; }
-        .wall { position:absolute; background:#687782; border-radius:8px; z-index:2; }
-        .message { margin-top:14px; font-weight:700; min-height:24px; }
-        .controls { display:flex; justify-content:center; gap:8px; margin-top:12px; }
-        .controls button, .restart { border:0; border-radius:12px; padding:12px 16px; background:#17324d; color:#fff; font-size:18px; cursor:pointer; }
-        .controls button:active, .restart:active { transform:scale(.96); }
-        .restart { margin-top:12px; font-size:15px; }
-        @media (max-width:650px) { .wrap{padding:12px}.top{align-items:flex-start}.top h1{font-size:24px} #game{min-height:380px;height:62vh}.controls{display:grid;grid-template-columns:repeat(3,64px);}.controls button:nth-child(1){grid-column:2}.controls button:nth-child(2){grid-column:1}.controls button:nth-child(3){grid-column:2}.controls button:nth-child(4){grid-column:3} }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dff7ff, #f4fbff);
+            color: #234;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 38px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #667;
+        }
+
+        .games {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,.08);
+            transition: .2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .game-card h2 {
+            margin-bottom: 10px;
+        }
+
+        .game-card p {
+            color: #667;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            border: none;
+            padding: 13px;
+            border-radius: 15px;
+            background: #78cdea;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #54b9df;
+        }
+
+        #gameArea {
+            display: none;
+            margin-top: 25px;
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        }
+
+        .score {
+            font-size: 22px;
+            margin: 15px 0;
+        }
+
+        #target {
+            display: none;
+            position: relative;
+            margin: 30px auto;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #78cdea;
+            cursor: pointer;
+        }
+
+        .back {
+            margin-top: 15px;
+            background: #aaa;
+        }
     </style>
 </head>
+
 <body>
-<div class="wrap">
-    <div class="top">
-        <h1>🎮 Tavuklu Wi-Fi</h1>
-        <a class="back" href="{{ url_for('mavigpt') }}">← MaviGPT</a>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🎮 MaviGPT Oyun Merkezi</h1>
+        <p>İnternetsiz mini oyunlar burada! 💙</p>
     </div>
-    <div class="card">
-        <div class="hud">
-            <div class="badge">❤️ Can: <span id="lives">3</span></div>
-            <div class="badge">📶 Sinyal: <span id="signal">100</span>%</div>
-            <div class="badge">🏆 Skor: <span id="score">0</span></div>
-            <div class="badge">🗺️ Bölüm: <span id="level">1</span>/5</div>
-            <div class="badge">⏱️ Süre: <span id="time">45</span></div>
+
+    <div class="games">
+
+        <div class="game-card">
+            <div class="game-icon">🎯</div>
+
+            <h2>Hedefi Yakala</h2>
+
+            <p>
+                Hedef ekranda belirecek.
+                Ne kadar hızlı tıklarsan o kadar puan!
+            </p>
+
+            <button onclick="startGame()">
+                Oyna 🎮
+            </button>
         </div>
-        <div id="game">
-            <div id="player">🐔</div>
+
+        <div class="game-card">
+            <div class="game-icon">🧠</div>
+
+            <h2>Yakında...</h2>
+
+            <p>
+                Yeni oyunlar üzerinde çalışıyoruz.
+            </p>
+
+            <button disabled>
+                Çok Yakında
+            </button>
         </div>
-        <div class="message" id="message">📶 Tüm sinyalleri topla ve kedilerden kaç!</div>
-        <div class="controls" aria-label="Dokunmatik kontroller">
-            <button data-key="up">⬆️</button>
-            <button data-key="left">⬅️</button>
-            <button data-key="down">⬇️</button>
-            <button data-key="right">➡️</button>
-        </div>
-        <button class="restart" id="restart">🔄 Yeniden Başlat</button>
+
     </div>
+
+    <div id="gameArea">
+
+        <h2>🎯 Hedefi Yakala!</h2>
+
+        <div class="score">
+            Puan: <span id="score">0</span>
+        </div>
+
+        <p>
+            30 saniyede mümkün olduğunca çok hedef yakala!
+        </p>
+
+        <div id="timer">
+            Süre: 30
+        </div>
+
+        <div id="target" onclick="hitTarget()"></div>
+
+        <button class="back" onclick="closeGame()">
+            Oyundan Çık
+        </button>
+
+    </div>
+
 </div>
+
 <script>
-(() => {
-    const game = document.getElementById('game');
-    const player = document.getElementById('player');
-    const scoreEl = document.getElementById('score');
-    const signalEl = document.getElementById('signal');
-    const livesEl = document.getElementById('lives');
-    const levelEl = document.getElementById('level');
-    const timeEl = document.getElementById('time');
-    const message = document.getElementById('message');
 
-    const levels = [
-        { time:45, signals:3, cats:1, walls:[[28,35,22,5],[62,20,5,30]] },
-        { time:42, signals:4, cats:2, walls:[[18,18,5,55],[42,10,5,55],[70,30,5,55],[25,70,45,5]] },
-        { time:38, signals:5, cats:2, walls:[[15,25,30,5],[55,12,5,38],[35,55,38,5],[18,78,5,18]] },
-        { time:34, signals:5, cats:3, walls:[[20,15,5,65],[45,15,5,65],[70,20,5,65],[25,45,20,5]] },
-        { time:30, signals:6, cats:4, walls:[[18,20,60,5],[18,45,5,45],[45,25,5,45],[70,45,5,45],[25,70,50,5]] }
-    ];
-    let level=1, lives=3, signal=100, score=0, timeLeft=45, x=30, y=25, running=true;
-    let last=performance.now(), timerAcc=0, hitCooldown=0;
-    const pressed = {up:false,down:false,left:false,right:false};
+let score = 0;
+let time = 30;
+let timer;
+let playing = false;
 
-    function setPlayer(){ player.style.left=x+'%'; player.style.top=y+'%'; }
-    function clearItems(){ game.querySelectorAll('.item,.wall').forEach(e=>e.remove()); }
-    function spawn(cls, emoji, px, py){ const e=document.createElement('div'); e.className='item '+cls; e.textContent=emoji; e.style.left=px+'%'; e.style.top=py+'%'; game.appendChild(e); return e; }
-    function blocked(nx,ny){
-        const px=nx/100*game.clientWidth, py=ny/100*game.clientHeight;
-        for(const w of game.querySelectorAll('.wall')){
-            const r=w.getBoundingClientRect(), g=game.getBoundingClientRect();
-            const wx=r.left-g.left, wy=r.top-g.top;
-            if(px+22>wx && px-22<wx+r.width && py+22>wy && py-22<wy+r.height) return true;
+function startGame() {
+
+    score = 0;
+    time = 30;
+    playing = true;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("timer").textContent = "Süre: " + time;
+
+    document.getElementById("gameArea").style.display = "block";
+    document.getElementById("target").style.display = "block";
+
+    moveTarget();
+
+    clearInterval(timer);
+
+    timer = setInterval(() => {
+
+        time--;
+
+        document.getElementById("timer").textContent =
+            "Süre: " + time;
+
+        if (time <= 0) {
+
+            clearInterval(timer);
+
+            playing = false;
+
+            document.getElementById("target").style.display = "none";
+
+            alert(
+                "Oyun bitti! 🎉\n\nPuanın: " + score
+            );
         }
-        return false;
-    }
-    function placeLevel(){
-        clearItems(); const cfg=levels[level-1]; timeLeft=cfg.time; signal=Math.max(55,100-(level-1)*5); x=8; y=8; running=true;
-        cfg.walls.forEach(a=>{const w=document.createElement('div');w.className='wall';w.style.left=a[0]+'%';w.style.top=a[1]+'%';w.style.width=a[2]+'%';w.style.height=a[3]+'%';game.appendChild(w);});
-        const positions=[[82,12],[82,78],[12,78],[52,85],[88,45],[55,12]];
-        for(let i=0;i<cfg.signals;i++) spawn('signal','📶',...positions[i]);
-        const corn=[[35,12],[62,78],[12,48],[86,25]]; if(level>=2) corn.slice(0,Math.min(level,4)).forEach(p=>spawn('corn','🌽',...p));
-        if(level>=3) spawn('boost','⚡',65,12);
-        const catPos=[[48,40],[75,60],[35,78],[82,50]];
-        for(let i=0;i<cfg.cats;i++) spawn('cat','🐈',...catPos[i]);
-        setPlayer(); update(); message.textContent=level===5?'👑 Son bölüm! Router Tavuk geliyor!':'📶 Tüm sinyalleri topla ve kedilerden kaç!';
-    }
-    function update(){ scoreEl.textContent=score; signalEl.textContent=Math.max(0,Math.floor(signal)); livesEl.textContent=lives; levelEl.textContent=level; timeEl.textContent=Math.max(0,Math.ceil(timeLeft)); }
-    function overlap(a,b){const A=a.getBoundingClientRect(),B=b.getBoundingClientRect();return !(A.right<B.left||A.left>B.right||A.bottom<B.top||A.top>B.bottom)}
-    function collect(){
-        const p=player;
-        game.querySelectorAll('.signal,.corn,.boost').forEach(e=>{if(e.parentElement&&overlap(p,e)){ if(e.classList.contains('signal')){score+=100;signal=Math.min(100,signal+10);} if(e.classList.contains('corn'))score+=50; if(e.classList.contains('boost')){score+=250;signal=Math.min(100,signal+20);} e.remove(); }});
-        if(hitCooldown<=0) game.querySelectorAll('.cat').forEach(e=>{if(overlap(p,e)){lives--;signal-=20;hitCooldown=1.2;x=8;y=8;setPlayer();message.textContent='🐈 YAKALANDIN! Daha dikkatli ol!';if(lives<=0) end(false);}});
-        if(!game.querySelector('.signal') && running){if(level<5){score+=500;level++;message.textContent='🎉 Bölüm tamam! +500 puan!';placeLevel();}else end(true);}
-    }
-    function end(win){running=false;message.textContent=win?'🏆 TÜM BÖLÜMLER TAMAMLANDI! Tavuk Wi-Fi'ı kurtardı! 🐔📶':'💀 Wi-Fi tamamen kesildi! Yeniden dene.';}
-    function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(running){hitCooldown=Math.max(0,hitCooldown-dt);timerAcc+=dt;if(timerAcc>=1){timerAcc=0;timeLeft--;signal-=0.8; if(timeLeft<=0||signal<=0) end(false);} let dx=0,dy=0;if(pressed.up)dy-=1;if(pressed.down)dy+=1;if(pressed.left)dx-=1;if(pressed.right)dx+=1;const sp=(level>=4?16:13)*dt;let nx=x+dx*sp,ny=y+dy*sp;nx=Math.max(2,Math.min(92,nx));ny=Math.max(2,Math.min(92,ny));if(!blocked(nx,ny)){x=nx;y=ny;setPlayer();}collect();update();}requestAnimationFrame(loop);}
-    document.addEventListener('keydown',e=>{const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};if(map[e.key]){pressed[map[e.key]]=true;e.preventDefault();}});
-    document.addEventListener('keyup',e=>{const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};if(map[e.key])pressed[map[e.key]]=false;});
-    document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',()=>pressed[k]=true);['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>pressed[k]=false));});
-    document.getElementById('restart').addEventListener('click',()=>{level=1;lives=3;score=0;placeLevel();});
-    placeLevel(); requestAnimationFrame(loop);
-})();
+
+    }, 1000);
+}
+
+
+function hitTarget() {
+
+    if (!playing) return;
+
+    score++;
+
+    document.getElementById("score").textContent = score;
+
+    moveTarget();
+}
+
+
+function moveTarget() {
+
+    const target = document.getElementById("target");
+
+    const maxX = 250;
+    const maxY = 250;
+
+    const x = Math.random() * maxX - maxX / 2;
+    const y = Math.random() * maxY - maxY / 2;
+
+    target.style.transform =
+        `translate(${x}px, ${y}px)`;
+}
+
+
+function closeGame() {
+
+    clearInterval(timer);
+
+    playing = false;
+
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("target").style.display = "none";
+}
+
 </script>
+
 </body>
 </html>
